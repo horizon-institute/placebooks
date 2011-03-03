@@ -3,8 +3,34 @@ package placebooks;
 import java.net.URI;
 import java.util.HashMap;
 
-// PlaceBookItem represents data and methods all kinds of media making up an 
-// individual PlaceBook provide, in common
+/**
+ * @author pszmp
+ * A PlacebookItem represents an item that appears in a Placebook, e.g. photo, map, bit 
+ * of text or web url.  This is an Abstract class that defines the general funcitonality
+ *  of PlacebookItems.  Decendant classes will be created that implement the specific 
+ *  functionality for each content type (image, map, url, etc).
+ *  
+ * PlacebookItems consist of the 'PlacebookItemID' field (a unique ID) and a number of 
+ * ItemParameters that are used to store the individual bits of data for an item (for 
+ * example, if it's a text item, the text; if it's an external web page, it's URL).  
+ * These will be accessed by the GetParameter and SetParameter methods, etc.
+ * Every PlacebookItem _must_ have the two parameters "Name" and "Type".  
+ *
+ * Name is the user specified title of the Item in their Placebook (e.g. 'A photo of
+ *  the sea') which will be plain text (n.b. should be parsed for HTML/bad things 
+ *  by database and view methods).
+ *  For packaging purposes the method 'GetData' is defined that will return the 
+ *  PlacebookItem and it's associated ItemParameters in the format suitable for 
+ *  packaging. 
+ *  @TODO with MarkD; define/document this format)
+ * 
+ *  The methods 'RenderBodyHTML' and 'CreateCache' are both abstract methods, to be 
+ *  implemented by the 'real' PlacebookItem classes. 
+ *  
+ *  'CreateCache' will generate a stream containing the data required for the 
+ *  cached version of this page suitable for inclusion in a downloadable package 
+ *  version of the Placebook. (@TODO with MarkD; define/document this format)
+ */
 public abstract class PlaceBookItem 
 {
 
@@ -48,9 +74,14 @@ public abstract class PlaceBookItem
 	// persistent database object
 	public abstract PersistentItem toPersistentItem();
 
+	/*  'RenderBodyHTML' will return a stream containing the item's body content in html 
+	 *  format, suitable for including in the placebook view. (@TODO with GUI programmer
+	 *   define/document how this will be used in GUI)
+	 */
+	public abstract Stream renderToHTML();
 	// Each PlaceBookItem must output some HTML representation of itself(?). Not
 	// sure whether this functionality should be here.
-	public abstract Stream renderToHTML();
+	
 
 	// Each PlaceBookItem must implement a way of adding relevant content to a
 	// mobile app package
