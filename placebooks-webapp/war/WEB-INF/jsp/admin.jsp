@@ -9,8 +9,10 @@
 </head>
 
 <body>
-<a href="admin/test">Make a test PlaceBook</a>
+<a href="admin/newPB">Make a test PlaceBook</a>
 <br />
-<a href="admin/delete">Delete all PlaceBooks</a>
+<a href="admin/getPlaceBooks">Print out all PlaceBooks</a>
+<br />
+<a href="admin/delPlaceBooks">Delete all PlaceBooks</a>
 </body>
 </html>

@@ -10,8 +10,9 @@
 
 <body>
 	<h2>Message</h2>
-	<div>Message reads:</div>
+	<hr>
 	<div>${text}</div>
+	<hr>
 	<div><a href="/placebooks/a/admin">Return to admin page</a></div>
 </body>
 </html>

@@ -103,7 +103,7 @@ http://www.everytrail.com/api/trip/tracks?version=3&user_id=260390&trip_id=96717
 	<!-- using  wget -E -H -k -K -p http://en.wikipedia.org/wiki/Borth -->
 	<webbundleitem id="6" owner="1" order="6">
 		<uri>
-		http://en.wikipedia.org/wiki/Borth
+		http://en.wikipedia.org/wiki/Borth.html
 		</uri>
 		<geometry>
 		POINT(52.5189367988799 -4.04983520507812)		
