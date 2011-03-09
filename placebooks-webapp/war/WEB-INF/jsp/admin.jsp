@@ -9,6 +9,8 @@
 </head>
 
 <body>
+<h1>Administration actions</h1>
+<hr>
 <a href="admin/newPB">Make a test PlaceBook</a>
 <br />
 <a href="admin/getPlaceBooks">Print out all PlaceBooks</a>

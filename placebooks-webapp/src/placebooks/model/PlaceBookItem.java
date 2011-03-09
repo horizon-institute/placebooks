@@ -3,16 +3,34 @@ package placebooks.model;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.*;
-import javax.jdo.annotations.*;
+
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
+
+import org.apache.log4j.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 // PlaceBookItem represents data and methods all kinds of media making up an 
 // individual PlaceBook provide, in common
 @PersistenceCapable
+@Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
+@Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public abstract class PlaceBookItem 
 {
+	private static final Logger log = 
+		Logger.getLogger(PlaceBookItem.class.getName());
 
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
@@ -39,8 +57,6 @@ public abstract class PlaceBookItem
 	@Persistent
 	private HashMap<String, String> parameters;
 
-	public PlaceBookItem() { }
-
 	// Make a new PlaceBookItem
 	public PlaceBookItem(int owner, Geometry geom, URL sourceURL)
 	{
@@ -66,6 +82,36 @@ public abstract class PlaceBookItem
 	public void clone(String key)
 	{
 
+	}
+
+
+	// Each class must append relevant configuration data
+	public abstract void appendConfiguration(Document config, Element root);
+
+	// Provide the concrete entity name for this class, for XML mapping
+	public abstract String getEntityName();
+
+	// Header common to all items
+	protected Element getConfigurationHeader(Document config)
+	{
+		log.info(getEntityName() + ": getConfigurationHeader");
+		Element item = config.createElement(getEntityName());
+		item.setAttribute("key", getKey());
+		item.setAttribute("owner", Integer.toString(getOwner()));
+
+		Element timestamp = config.createElement("timestamp");
+		timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
+		item.appendChild(timestamp);
+
+		Element geometry = config.createElement("geometry");
+		geometry.appendChild(config.createTextNode(getGeometry().toText()));
+		item.appendChild(geometry);
+
+		Element url = config.createElement("url");
+		url.appendChild(config.createTextNode(getSourceURL().toString()));
+		item.appendChild(url);
+
+		return item;
 	}
 
 /*

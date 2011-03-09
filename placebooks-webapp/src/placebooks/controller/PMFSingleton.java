@@ -15,8 +15,6 @@ public final class PMFSingleton
     private static final PersistenceManagerFactory pmfInstance =
 		JDOHelper.getPersistenceManagerFactory("default");
 
-	private static Properties propInstance;
-
     private PMFSingleton() {}
 
     public static PersistenceManagerFactory get() 

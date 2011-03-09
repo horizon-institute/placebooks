@@ -3,12 +3,19 @@ package placebooks.model;
 import java.util.*;
 import javax.jdo.annotations.*;
 
+import org.apache.log4j.*;
+
 import com.vividsolutions.jts.geom.Geometry;
+
 
 @PersistenceCapable
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public class PlaceBook
 {
+
+  	private static final Logger log = 
+		Logger.getLogger(PlaceBook.class.getName());
+
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
 	private String key;
@@ -23,32 +30,24 @@ public class PlaceBook
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	@Persistent
-	private ArrayList<PlaceBookItem> items;
+	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// The PlaceBook's configuration data
 	@Persistent
 	private HashMap<String, String> parameters;
 
-	public PlaceBook() { }
-
 	// Make a new PlaceBook
-	public PlaceBook(int owner, Geometry geom)
+	public PlaceBook(int owner, Geometry geom, List<PlaceBookItem> items)
 	{
 		this.owner = owner;
 		this.geom = geom;
+		setItems(items);
 		parameters = new HashMap<String, String>();
 		parameters.put("test", "testing");
 
 		this.timestamp = new Date();
-		
-		items = new ArrayList<PlaceBookItem>();
 	}
 
-	// Restore a PlaceBook from existing one in db
-	public PlaceBook(String key)
-	{
-
-	}
 
 	// Clone an existing PlaceBook (i.e., make a copy)
 	public void clone(String key)
@@ -56,15 +55,24 @@ public class PlaceBook
 
 	}
 
-	public void addItem(PlaceBookItem pbi)
+	public void setItems(List<PlaceBookItem> items)
 	{
-		items.add(pbi);
+		log.info("setItems(items), items.size = " + items.size());
+		this.items.clear();
+		this.items.addAll(items);
 	}
 
-	public ArrayList<PlaceBookItem> getItems()
+	public List<PlaceBookItem> getItems()
 	{
-		return items;
+		log.info("getItems(), this.items.size = " + items.size());
+		return Collections.unmodifiableList(items);
 	}
+
+	public void addItem(PlaceBookItem item) 
+	{
+  		items.add(item);
+	}
+
 
 	public void setItemKeys()
 	{

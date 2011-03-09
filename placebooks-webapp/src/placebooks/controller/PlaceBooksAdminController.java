@@ -19,6 +19,17 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
 
+import java.io.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
+// NOTE: This is currently a testing ground for basic server functionality.
+
 @Controller
 public class PlaceBooksAdminController
 {
@@ -40,163 +51,270 @@ public class PlaceBooksAdminController
 		try 
 		{
 			geometry = new WKTReader().read(
-							"POINT(52.5189367988799 -4.04983520507812)");
+								"POINT(52.5189367988799 -4.04983520507812)");
 		} 
 		catch (ParseException e)
 		{
 			log.error(e.toString());
 		}
 
-		PlaceBook p = new PlaceBook(owner, geometry);
+		List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 		try 
 		{
-			p.addItem(
+			items.add(
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
 			);
-			p.addItem(new AudioItem(owner, geometry, new URL("http://blah.com"),
+			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
 								new File("storage/audio.mp3")));
 
-			p.addItem(new VideoItem(owner, geometry, new URL("http://qwe.com"),
+			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
 								new File("storage/videofile.mp4")));
 
-			p.addItem(new ImageItem(owner, geometry, 
+			items.add(new ImageItem(owner, geometry, 
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
 
-/*			try 
-			{
-				StringReader reader = new StringReader(trace);
-				InputSource source = new InputSource(reader);
-				DocumentBuilderFactory factory = 
-					DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				this.trace = builder.parse(source);
-				reader.close();
-			} 
-			catch (ParserConfigurationException e)
-			{
-				log.error(e.toString());
-			}
-			catch (SAXException e)
-			{
-				log.error(e.toString());
-			}
-			catch (IOException e)
-			{
-				log.error(e.toString());
-			}
-
-
-			p.addItem(new GPSTraceItem(owner, geometry, 
-				new URL("http://www.blah.com"), gpxDoc));
-*/
-		
 
 		}
 		catch (java.net.MalformedURLException e)
 		{
 			log.error(e.toString());
 		}
+	
+		Document gpxDoc = null;
+		try 
+		{
+			// Some example XML
+			String trace = "<gpx version=\"1.0\" creator=\"PlaceBooks 1.0\" 				 xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 				 xmlns=\"http://www.topografix.com/GPX/1/1\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">			<time>			2011-02-14T13:31:10.084Z			</time>			<bounds minlat=\"52.950665120\" minlon=\"-1.183738050\" 					maxlat=\"52.950665120\" maxlon=\"-1.183738050\"/>			<trkseg>				<trkpt lat=\"52.950665120\" lon=\"-1.183738050\">				<ele>0.000000</ele>				<time>				2011-02-14T13:31:10.084Z				</time>				</trkpt>			</trkseg>			</gpx>";
+
+			StringReader reader = new StringReader(trace);
+			InputSource source = new InputSource(reader);
+			DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			gpxDoc = builder.parse(source);
+			reader.close();
+		} 
+		catch (ParserConfigurationException e)
+		{
+			log.error(e.toString());
+		}
+		catch (SAXException e)
+		{
+			log.error(e.toString());
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+	
+
+		try
+		{
+			items.add(new GPSTraceItem(owner, geometry, 
+					  				   new URL("http://www.blah.com"), gpxDoc));
+		}
+		catch (java.net.MalformedURLException e)
+		{
+			log.error(e.toString());
+		}
+
+
+
+		PlaceBook p = new PlaceBook(owner, geometry, items);
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		try
 		{
 			pm.currentTransaction().begin();
 			pm.makePersistent(p);
-			log.info("newPlaceBook key = " + p.getKey());
 			p.setItemKeys();
 			pm.currentTransaction().commit();
 		}
 		finally
 		{
 			if (pm.currentTransaction().isActive())
+			{
 				pm.currentTransaction().rollback();
-			//pm.close();
+				log.error("Rolling current persist transaction back");
+			}
 		}
+
+		pm.close();
 
 		return new ModelAndView("message", 
 								"text", 
 								"New PlaceBook created");
 
 	}
-	
-	@RequestMapping(value = "/admin/getPlaceBooks", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooks()
+
+
+	// Users of this method must close the PersistenceManager when they are done
+	@SuppressWarnings("unchecked")
+	private List<PlaceBook> getPlaceBooksQuery(String queryStr)
 	{
-		ArrayList<PlaceBook> pbs = new ArrayList<PlaceBook>();
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 	
 		try
 		{
-			pm.currentTransaction().begin();
-			Query query = pm.newQuery(PlaceBook.class, "owner == 1");
-			Collection result = (Collection)query.execute();
-			Iterator i = result.iterator();
-	        if (!i.hasNext())
-        		return null;
-			while (i.hasNext())
-				pbs.add((PlaceBook)i.next());
+			Query query = pm.newQuery(PlaceBook.class, queryStr);
+			return (List<PlaceBook>)query.execute();
+			//query.closeAll();
+		}
+		catch (ClassCastException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/getPlaceBooks", method = RequestMethod.GET)
+	public ModelAndView getPlaceBooks()
+	{
+
+		List<PlaceBook> pbs = getPlaceBooksQuery("owner == 1");
+		StringBuffer out = new StringBuffer();
+		if (pbs != null)
+		{
+			out.append(placeBooksToHTMLDebug(pbs));
+		}
+		else
+			out.append("PlaceBook query returned null");
+
+		PMFSingleton.get().getPersistenceManager().close();
+
+		return new ModelAndView("message", "text", out.toString());
+
+    }
+	
+	private String placeBooksToHTMLDebug(List<PlaceBook> pbs)
+	{
+		StringBuffer out = new StringBuffer();
+
+		for (PlaceBook pb : pbs)
+		{
+			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
+				+ pb.getOwner() + ", timestamp=" 
+				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
+				+ " elements [<a href='package/" + pb.getKey() 
+				+ "'>package</a>]<br/>");
 			
+			for (PlaceBookItem pbi : pb.getItems())
+			{
+
+				out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+				out.append(pbi.getEntityName());
+				out.append(": " + pbi.getKey() + ", owner=" 
+						   + pbi.getOwner() + ", timestamp=" 
+						   + pbi.getTimestamp().toString());
+
+				out.append("<br/>");
+			}
+
+			out.append("<br/>");
+		}
+
+		return out.toString();
+	}
+
+	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
+    public ModelAndView makePackage(@PathVariable("key") String key)
+	{
+		
+		List<PlaceBook> pbs = getPlaceBooksQuery("key == '" + key + "'");
+		
+		if (pbs.size() > 1)
+		{
+			PMFSingleton.get().getPersistenceManager().close();
+			return new ModelAndView("message", "text", 
+									"Found too many PlaceBooks for query");
+		}
+
+		PlaceBook pb = (PlaceBook)pbs.get(0);
+
+		try 
+		{
+
+			DocumentBuilder builder = 
+					DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document config = builder.newDocument();
+
+			Element root = config.createElement(PlaceBook.class.getName());
+			config.appendChild(root);
+			root.setAttribute("key", pb.getKey());
+			root.setAttribute("owner", Integer.toString(pb.getOwner()));
+			
+			Element timestamp = config.createElement("timestamp");
+			timestamp.appendChild(config.createTextNode(
+									pb.getTimestamp().toString()));
+			root.appendChild(timestamp);
+
+			Element geometry = config.createElement("geometry");
+			geometry.appendChild(config.createTextNode(
+									pb.getGeometry().toText()));
+			root.appendChild(geometry);
+			
+			for (PlaceBookItem pbi : pb.getItems())
+			{
+				pbi.appendConfiguration(config, root);
+			}
+ 
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer t = tf.newTransformer();
+			DOMSource source = new DOMSource(config);
+
+			StringWriter out = new StringWriter();
+			StreamResult result =  new StreamResult(out);
+			t.transform(source, result);
+
+			PMFSingleton.get().getPersistenceManager().close();
+
+			return new ModelAndView("package", "xmlcontent", 
+									out.getBuffer().toString());
+		}
+		catch (ParserConfigurationException e)
+		{
+			log.error(e.toString());
+		}
+		catch (TransformerConfigurationException e) 
+		{
+            log.error(e.toString());
+        }
+		catch (TransformerException e) 
+		{
+            log.error(e.toString());
+        }
+
+		PMFSingleton.get().getPersistenceManager().close();
+		return new ModelAndView("message", "text", "Error");
+
+	}
+
+
+	@RequestMapping(value = "/admin/delPlaceBooks", method = RequestMethod.GET)
+    public ModelAndView delete() 
+	{
+			
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+
+		try 
+		{
+			pm.currentTransaction().begin();
+			pm.newQuery(PlaceBook.class).deletePersistentAll();
+			pm.newQuery(TextItem.class).deletePersistentAll();
 			pm.currentTransaction().commit();
 		}
 		finally
 		{
 			if (pm.currentTransaction().isActive())
-				pm.currentTransaction().rollback();
-			//pm.close();
-		}
-
-		StringBuffer out = new StringBuffer();
-		if (pbs != null)
-		{
-			for (PlaceBook pb : pbs)
 			{
-				ArrayList<PlaceBookItem> items = pb.getItems();
-
-				out.append("PlaceBook: " + pb.getKey() + ", owner=" 
-					+ pb.getOwner() + ", timestamp=" 
-					+ pb.getTimestamp().toString() + ", " + items.size() 
-					+ " elements<br/>");
-				
-				for (PlaceBookItem pbi : items)
-				{
-
-					out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-					if (pbi instanceof TextItem)
-						out.append("TextItem");
-					else if (pbi instanceof VideoItem)
-						out.append("VideoItem");
-					else if (pbi instanceof AudioItem)
-						out.append("AudioItem");
-					else if (pbi instanceof ImageItem)
-						out.append("ImageItem");
-
-					out.append(": " + pbi.getKey() + ", owner=" 
-							   + pbi.getOwner() + ", timestamp=" 
-							   + pbi.getTimestamp().toString());
-
-					out.append("<br/>");
-				}
-				out.append("<br/>");
+				pm.currentTransaction().rollback();
+				log.error("Rolling current delete transaction back");
 			}
 		}
-				
-		return new ModelAndView("message", 
-								"text", 
-								out.toString());
 
-    }
-	
-	@RequestMapping(value = "/admin/delPlaceBooks", method = RequestMethod.GET)
-    public ModelAndView delete() 
-	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
-		Transaction tx = pm.currentTransaction();
-		tx.begin();
-		pm.newQuery(PlaceBook.class).deletePersistentAll();
-		pm.newQuery(TextItem.class).deletePersistentAll();
-		tx.commit();
+		pm.close();
 
 		log.info("Deleted all PlaceBooks");
 
