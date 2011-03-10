@@ -57,14 +57,12 @@ public class PlaceBook
 
 	public void setItems(List<PlaceBookItem> items)
 	{
-		log.info("setItems(items), items.size = " + items.size());
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
 	public List<PlaceBookItem> getItems()
 	{
-		log.info("getItems(), this.items.size = " + items.size());
 		return Collections.unmodifiableList(items);
 	}
 

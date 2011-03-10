@@ -6,6 +6,7 @@ import java.io.*;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 
@@ -28,16 +29,25 @@ public class ImageItem extends PlaceBookItem
 	@Persistent
 	private BufferedImage image; 
 
+	@NotPersistent
+	private File imagePath;
+	
 	public ImageItem(int owner, Geometry geom, URL sourceURL, 
 					 BufferedImage image)
 	{
 		super(owner, geom, sourceURL);
 		this.image = image;
+		imagePath = null;
 	}
 
 	public String getEntityName()
 	{
 		return ImageItem.class.getName();
+	}
+
+	public File getImagePath()
+	{
+		return imagePath;
 	}
 
 	public void appendConfiguration(Document config, Element root)
@@ -47,11 +57,12 @@ public class ImageItem extends PlaceBookItem
 		// Dump image to disk
 		try 
 		{
-			File file = new File(hashCode() + ".png");
-		    ImageIO.write(image, "PNG", file);
+			imagePath = new File(hashCode() + ".png");
+		    ImageIO.write(image, "PNG", imagePath);
 			Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(file.getPath()));
+			filename.appendChild(config.createTextNode(imagePath.getPath()));
 			item.appendChild(filename);
+			log.info("Wrote ImageItem data to " + imagePath.getAbsolutePath());
 		}
 		catch (IOException e)
 		{

@@ -11,10 +11,28 @@
 <body>
 <h1>Administration actions</h1>
 <hr>
-<a href="admin/newPB">Make a test PlaceBook</a>
+<a href="admin/new/placebook">Make a test PlaceBook</a>
 <br />
-<a href="admin/getPlaceBooks">Print out all PlaceBooks</a>
+<a href="admin/print/placebooks">List all PlaceBooks</a>
 <br />
-<a href="admin/delPlaceBooks">Delete all PlaceBooks</a>
+<a href="admin/delete/all">Delete all PlaceBooks</a>
+
+<br />
+<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
+<div>
+Upload video:
+	<input type='file' name='video'>
+	<input type='submit' value='Upload'>
+</div>
+</form>
+
+<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
+<div>
+Upload audio: 
+	<input type='file' name='audio'>
+	<input type='submit' value='Upload'>
+</div>
+</form>
+
 </body>
 </html>

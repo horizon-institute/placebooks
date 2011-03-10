@@ -3,30 +3,36 @@ package placebooks.controller;
 import placebooks.model.*;
 
 import java.util.*;
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.awt.image.BufferedImage;
+
 import javax.jdo.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.*;
+import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
 
-import java.io.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
 
 // NOTE: This is currently a testing ground for basic server functionality.
 
@@ -43,7 +49,7 @@ public class PlaceBooksAdminController
 		return "admin";
     }
 
-	@RequestMapping(value = "/admin/newPB", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
 		int owner = 1;
@@ -66,10 +72,16 @@ public class PlaceBooksAdminController
 							 "Test text string")
 			);
 			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
-								new File("storage/audio.mp3")));
+						new File(PropertiesSingleton.get(
+							this.getClass().getClassLoader()).getProperty(
+									"audio.dir", "") 
+								+ "testing.mp3")));
 
 			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
-								new File("storage/videofile.mp4")));
+						new File(PropertiesSingleton.get(
+							this.getClass().getClassLoader()).getProperty(
+									"video.dir", "") 
+								+ "testing.mp4")));
 
 			items.add(new ImageItem(owner, geometry, 
 				new URL("http://www.blah.com"), 
@@ -169,7 +181,8 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/getPlaceBooks", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/print/placebooks", 
+					method = RequestMethod.GET)
 	public ModelAndView getPlaceBooks()
 	{
 
@@ -197,8 +210,11 @@ public class PlaceBooksAdminController
 			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
 				+ pb.getOwner() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
-				+ " elements [<a href='package/" + pb.getKey() 
-				+ "'>package</a>]<br/>");
+				+ " elements [<a href='/placebooks/a/admin/package/" 
+				+ pb.getKey() 
+				+ "'>package</a>] [<a href='/placebooks/a/admin/delete/" 
+				+ pb.getKey() 
+				+ "'>delete</a>]<br/>");
 			
 			for (PlaceBookItem pbi : pb.getItems())
 			{
@@ -218,6 +234,65 @@ public class PlaceBooksAdminController
 		return out.toString();
 	}
 
+	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
+	public ModelAndView uploadFile(HttpServletRequest req)
+	{
+		try
+		{
+			ServletFileUpload upload = new ServletFileUpload();
+			FileItemIterator i = upload.getItemIterator(req);
+			while (i.hasNext())
+        	{
+				FileItemStream item = i.next();
+				log.info("item.toString="+item.toString());
+				if (!item.isFormField())
+				{
+					String property = null;
+					if(item.getFieldName().contentEquals("video"))
+						property = "video.dir";
+					else if (item.getFieldName().contentEquals("audio"))
+						property = "audio.dir";
+					else
+					{
+						return new ModelAndView("message", "text", 
+								  			    "Unsupported file type");
+					}
+					
+					File file = 
+						new File(
+							PropertiesSingleton.get(
+								this.getClass().getClassLoader()).getProperty(
+									property, "") 
+								+ "testing.mp4"
+						);
+
+					InputStream input = item.openStream();
+					OutputStream output = new FileOutputStream(file);
+					int byte_;
+					while ((byte_ = input.read()) != -1)
+						output.write(byte_);
+            		output.close();
+					input.close();
+
+					log.info("Wrote file " + file.getAbsolutePath());
+
+
+				}
+			}
+	    }
+        catch (FileUploadException e) 
+		{
+            log.error(e.toString());
+        }
+        catch (IOException e) 
+		{
+            log.error(e.toString());
+        }
+
+		return new ModelAndView("message", "text", 
+								"Done");
+	}
+
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
     public ModelAndView makePackage(@PathVariable("key") String key)
 	{
@@ -231,8 +306,45 @@ public class PlaceBooksAdminController
 									"Found too many PlaceBooks for query");
 		}
 
-		PlaceBook pb = (PlaceBook)pbs.get(0);
+		PlaceBook p = (PlaceBook)pbs.get(0);
+		String out = placeBookToXML(p);
+		
+		if (out != null)
+		{
+			String path = PropertiesSingleton.get(
+							this.getClass().getClassLoader()).getProperty(
+								"packages.dir", "") 
+							+ p.getKey();
 
+			if (new File(path).mkdirs())
+			{
+				try
+				{
+					FileWriter fw = 
+						new FileWriter(new File(path + "/config.xml"));
+					fw.write(out);
+					fw.close();
+				}
+				catch (IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+			
+			PMFSingleton.get().getPersistenceManager().close();
+			return new ModelAndView("package", "xmlcontent", out);
+		}
+
+		PMFSingleton.get().getPersistenceManager().close();
+		return new ModelAndView("message", "text", "Error");
+
+	}
+
+
+	public static String placeBookToXML(PlaceBook p)
+	{
+		StringWriter out = null;
+		
 		try 
 		{
 
@@ -242,36 +354,31 @@ public class PlaceBooksAdminController
 
 			Element root = config.createElement(PlaceBook.class.getName());
 			config.appendChild(root);
-			root.setAttribute("key", pb.getKey());
-			root.setAttribute("owner", Integer.toString(pb.getOwner()));
+			root.setAttribute("key", p.getKey());
+			root.setAttribute("owner", Integer.toString(p.getOwner()));
 			
 			Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(
-									pb.getTimestamp().toString()));
+									p.getTimestamp().toString()));
 			root.appendChild(timestamp);
 
 			Element geometry = config.createElement("geometry");
 			geometry.appendChild(config.createTextNode(
-									pb.getGeometry().toText()));
+									p.getGeometry().toText()));
 			root.appendChild(geometry);
 			
-			for (PlaceBookItem pbi : pb.getItems())
-			{
-				pbi.appendConfiguration(config, root);
-			}
+			for (PlaceBookItem item : p.getItems())
+				item.appendConfiguration(config, root);
  
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer t = tf.newTransformer();
 			DOMSource source = new DOMSource(config);
 
-			StringWriter out = new StringWriter();
+			out = new StringWriter();
 			StreamResult result =  new StreamResult(out);
 			t.transform(source, result);
-
-			PMFSingleton.get().getPersistenceManager().close();
-
-			return new ModelAndView("package", "xmlcontent", 
-									out.getBuffer().toString());
+		
+			return out.getBuffer().toString();
 		}
 		catch (ParserConfigurationException e)
 		{
@@ -285,15 +392,48 @@ public class PlaceBooksAdminController
 		{
             log.error(e.toString());
         }
+	
+		return null;
+	}
 
-		PMFSingleton.get().getPersistenceManager().close();
-		return new ModelAndView("message", "text", "Error");
+
+	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
+    public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
+	{
+
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+
+		try 
+		{
+			pm.currentTransaction().begin();
+			pm.newQuery(PlaceBook.class, 
+						"key == '" + key + "'").deletePersistentAll();
+			pm.currentTransaction().commit();
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current delete transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted all PlaceBooks");
+
+		return new ModelAndView("message", 
+								"text", 
+								"Deleted PlaceBook: " + key);
+
+
 
 	}
 
 
-	@RequestMapping(value = "/admin/delPlaceBooks", method = RequestMethod.GET)
-    public ModelAndView delete() 
+	@RequestMapping(value = "/admin/delete/all", method = RequestMethod.GET)
+    public ModelAndView deleteAllPlaceBook() 
 	{
 			
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
@@ -302,7 +442,7 @@ public class PlaceBooksAdminController
 		{
 			pm.currentTransaction().begin();
 			pm.newQuery(PlaceBook.class).deletePersistentAll();
-			pm.newQuery(TextItem.class).deletePersistentAll();
+			pm.newQuery(PlaceBookItem.class).deletePersistentAll();
 			pm.currentTransaction().commit();
 		}
 		finally
