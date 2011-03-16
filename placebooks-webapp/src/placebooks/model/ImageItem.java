@@ -72,4 +72,50 @@ public class ImageItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetHTML()
+	 */
+	@Override
+	public String GetHTML()
+	{
+		StringBuilder output = new StringBuilder();
+		output.append("<img src='");
+		output.append(imagePath.getPath());
+		output.append("' class='placebook-item-image' id='");
+		output.append(this.getPBKey());
+		output.append("' />");
+		return output.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetCSS()
+	 */
+	@Override
+	public String GetCSS()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
+	 */
+	@Override
+	public String GetJavaScript()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#toMobilePackage()
+	 */
+	@Override
+	public void toMobilePackage()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

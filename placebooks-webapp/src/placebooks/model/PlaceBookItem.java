@@ -21,8 +21,34 @@ import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-// PlaceBookItem represents data and methods all kinds of media making up an 
-// individual PlaceBook provide, in common
+/**
+ * @author pszmp
+ * A PlacebookItem represents an item that appears in a Placebook, e.g. photo, map, bit 
+ * of text or web url.  This is an Abstract class that defines the general funcitonality
+ *  of PlacebookItems.  Decendant classes will be created that implement the specific 
+ *  functionality for each content type (image, map, url, etc).
+ *  
+ * PlacebookItems consist of the 'PlacebookItemID' field (a unique ID) and a number of 
+ * ItemParameters that are used to store the individual bits of data for an item (for 
+ * example, if it's a text item, the text; if it's an external web page, it's URL).  
+ * These will be accessed by the GetParameter and SetParameter methods, etc.
+ * Every PlacebookItem _must_ have the two parameters "Name" and "Type".  
+ *
+ * Name is the user specified title of the Item in their Placebook (e.g. 'A photo of
+ *  the sea') which will be plain text (n.b. should be parsed for HTML/bad things 
+ *  by database and view methods).
+ *  For packaging purposes the method 'GetData' is defined that will return the 
+ *  PlacebookItem and it's associated ItemParameters in the format suitable for 
+ *  packaging. 
+ *  @TODO with MarkD; define/document this format)
+ * 
+ *  The methods 'RenderBodyHTML' and 'CreateCache' are both abstract methods, to be 
+ *  implemented by the 'real' PlacebookItem classes. 
+ *  
+ *  'CreateCache' will generate a stream containing the data required for the 
+ *  cached version of this page suitable for inclusion in a downloadable package 
+ *  version of the Placebook. (@TODO with MarkD; define/document this format)
+ */
 @PersistenceCapable
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
@@ -72,26 +98,38 @@ public abstract class PlaceBookItem
 
 	}
 
-	// Restore this PlaceBookItem from existing item in db
+	/** Restore this PlaceBookItem from existing item in db
+	 * @param key
+	 */
 	public PlaceBookItem(String key)
 	{
 
 	}
 
-	// Clone an existing PlaceBookItem (i.e., make a copy)
+	/** Clone an existing PlaceBookItem (i.e., make a copy)
+	 * @param key
+	 */
 	public void clone(String key)
 	{
 
 	}
 
 
-	// Each class must append relevant configuration data
+	/** Each class must append relevant configuration data
+	 * @param config
+	 * @param root
+	 */
 	public abstract void appendConfiguration(Document config, Element root);
 
-	// Provide the concrete entity name for this class, for XML mapping
+	/** Provide the concrete entity name for this class, for XML mapping
+	 * @return
+	 */
 	public abstract String getEntityName();
 
-	// Header common to all items
+	/** Header common to all items
+	 * @param config
+	 * @return
+	 */
 	protected Element getConfigurationHeader(Document config)
 	{
 		log.info(getEntityName() + ": getConfigurationHeader");
@@ -114,15 +152,35 @@ public abstract class PlaceBookItem
 		return item;
 	}
 
-/*
-	// Each PlaceBookItem must output some HTML representation of itself(?). Not
-	// sure whether this functionality should be here.
-	public abstract Stream renderToHTML();
 
-	// Each PlaceBookItem must implement a way of adding relevant content to a
-	// mobile app package
+	/**
+	 *   'GteHTML' will return a String containing the item's body content in html 
+	 *  format, suitable for including in the placebook view. (@TODO with GUI programmer
+	 *   define/document how this will be used in GUI)
+	 * @return String containing the HTML data for the content of the placebook item
+	 */
+	public abstract String GetHTML();
+
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * the CSS styles for the Placebook item, suitable for use in the Placebook page header
+	 * @return String of CSS style data
+	 */
+	public abstract String GetCSS();
+	
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * any required Javascript for the Placebook item
+	 * @return String of Javascript code
+	 */
+	public abstract String GetJavaScript();
+	
+	
+	/** Each PlaceBookItem must implement a way of adding relevant content to a
+	 * mobile app package
+	 */ 
 	public abstract void toMobilePackage();
-	*/
+	
 
 
 	public String getKey() { return key; }
