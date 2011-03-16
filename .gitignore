@@ -4,4 +4,4 @@ thumbs.db
 .buildpath
 .DS_Store
 datanucleus.log
-*.class
+bin/*
