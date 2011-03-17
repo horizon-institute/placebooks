@@ -33,6 +33,14 @@ Upload audio:
 	<input type='submit' value='Upload'>
 </div>
 </form>
+<h1>Everytrail Tests</h1>
+<div>
+<form action='admin/test/everytrail/login' method='POST'>
+	<div>Username: <input type='text' name='username'></div>
+	<div>Password: <input type='password' name='password'></div>
+	<input type='submit' value='Log in'>
+</form>
+</div>
 
 </body>
 </html>

@@ -465,4 +465,13 @@ public class PlaceBooksAdminController
     }
 
 
+	@RequestMapping(value = "/admin/test/everytrail/login", method = RequestMethod.POST)
+    public ModelAndView testEverytrailLogin(HttpServletRequest req) 
+	{
+		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
+		String response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+		return new ModelAndView("message", "text", response);
+	}
+
+
 }

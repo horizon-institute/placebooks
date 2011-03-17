@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="C:/Program Files/eclipse/plugins/javax.servlet_2.5.0.v200910301333.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/eclipse/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar"/>
 	<classpathentry kind="output" path="placebooks-webapp/war/WEB-INF/classes"/>
 </classpath>
