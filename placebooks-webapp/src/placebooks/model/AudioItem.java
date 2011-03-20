@@ -83,14 +83,5 @@ public class AudioItem extends PlaceBookItem
 		return "";
 	}
 
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#toMobilePackage()
-	 */
-	@Override
-	public void toMobilePackage()
-	{
-		// TODO Auto-generated method stub
-		
-	}
 
 }

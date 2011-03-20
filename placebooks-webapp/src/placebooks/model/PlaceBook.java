@@ -78,30 +78,6 @@ public class PlaceBook
 			pbi.setPBKey(key);
 	}
 
-/*
-	private String configToXML()
-	{
-		// Helper method for converting config to something readable for mobile
-		// package - maybe XML??
-	}
-
-	public String toMobilePackage()
-	{
-		// Maps configuration + contents of PlaceBook to something 
-		// comprehensible to mobile app. Dumps contents to filesystem for 
-		// download to mobile.
-		
-		// Make config into XML via configToXML()
-
-		for (PlaceBookItem p : items) 
-		{
-			// do something with p that dumps p to disk
-			p.toMobilePackage();
-		}
-
-		// Compress package and return location
-
-	}*/
 
 
 	public String getKey() { return key; }
