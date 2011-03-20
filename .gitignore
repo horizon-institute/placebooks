@@ -5,3 +5,4 @@ thumbs.db
 .DS_Store
 datanucleus.log
 bin/*
+.class
