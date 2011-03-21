@@ -13,7 +13,7 @@ public class EverytrailLoginResponse
 	private String status;
 	private String value;
 	
-	EverytrailLoginResponse(String status, String value)
+	public EverytrailLoginResponse(String status, String value)
 	{
 		this.status = status;
 		this.value = value;

@@ -22,6 +22,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import placebooks.controller.PlaceBooksAdminController;
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTripsResponse;
 
 /**
  * @author pszmp
