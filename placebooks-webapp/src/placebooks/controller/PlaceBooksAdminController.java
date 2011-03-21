@@ -39,7 +39,6 @@ import com.vividsolutions.jts.io.ParseException;
 @Controller
 public class PlaceBooksAdminController
 {
-
    	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminController.class.getName());
 

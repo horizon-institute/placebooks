@@ -23,9 +23,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class ImageItem extends PlaceBookItem
 {
-	private static final Logger log = 
-		Logger.getLogger(TextItem.class.getName());
-
 	@Persistent
 	private BufferedImage image; 
 
