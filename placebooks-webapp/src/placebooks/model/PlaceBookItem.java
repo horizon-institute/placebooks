@@ -54,7 +54,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public abstract class PlaceBookItem 
 {
-	private static final Logger log = 
+	protected static final Logger log = 
 		Logger.getLogger(PlaceBookItem.class.getName());
 
 	@PrimaryKey
