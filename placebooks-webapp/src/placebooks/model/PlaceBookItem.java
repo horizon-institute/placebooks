@@ -1,7 +1,6 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.*;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -62,7 +61,6 @@ public abstract class PlaceBookItem
 	{
 		this.owner = owner;
 		this.geom = geom;
-		this.pbKey = pbKey;
 		this.sourceURL = sourceURL;
 
 		parameters = new HashMap<String, String>();

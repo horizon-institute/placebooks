@@ -4,10 +4,12 @@ import java.util.Collection;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable
-public class Account
+public class User
 {
+	@PrimaryKey
 	@Persistent
 	private String email;
 
@@ -21,22 +23,24 @@ public class Account
 	private Collection<PlaceBook> placebooks;
 
 	@Persistent
-	private Collection<Account> friends;
+	private Collection<User> friends;
 
 	@Persistent
 	private Collection<Group> groups;
 
-	public Account(final String email, final String passwordHash)
+	public User(final String name, final String email, final String passwordHash)
+	{
+		this.name = name;
+		this.email = email;
+		this.passwordHash = passwordHash;
+	}
+
+	User()
 	{
 
 	}
 
-	Account()
-	{
-
-	}
-
-	public void add(final Account friend)
+	public void add(final User friend)
 	{
 		friends.add(friend);
 	}
@@ -46,7 +50,7 @@ public class Account
 		placebooks.add(placebook);
 	}
 
-	public Iterable<Account> friends()
+	public Iterable<User> friends()
 	{
 		return friends;
 	}

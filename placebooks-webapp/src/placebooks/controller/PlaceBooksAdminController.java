@@ -12,7 +12,6 @@ import org.apache.log4j.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -123,7 +122,7 @@ public class PlaceBooksAdminController
 
 		PlaceBook p = new PlaceBook(owner, geometry, items);
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 		try
 		{
 			pm.currentTransaction().begin();
@@ -153,7 +152,7 @@ public class PlaceBooksAdminController
 	@SuppressWarnings("unchecked")
 	private List<PlaceBook> getPlaceBooksQuery(String queryStr)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 	
 		try
 		{
@@ -182,7 +181,7 @@ public class PlaceBooksAdminController
 		else
 			out.append("PlaceBook query returned null");
 
-		PMFSingleton.get().getPersistenceManager().close();
+		PMFSingleton.getPersistenceManager().close();
 
 		return new ModelAndView("message", "text", out.toString());
 
@@ -226,12 +225,12 @@ public class PlaceBooksAdminController
 		
 		if (pbs.size() > 1)
 		{
-			PMFSingleton.get().getPersistenceManager().close();
+			PMFSingleton.getPersistenceManager().close();
 			return new ModelAndView("message", "text", 
 									"Found too many PlaceBooks for query");
 		}
 
-		PlaceBook pb = (PlaceBook)pbs.get(0);
+		PlaceBook pb = pbs.get(0);
 
 		try 
 		{
@@ -268,7 +267,7 @@ public class PlaceBooksAdminController
 			StreamResult result =  new StreamResult(out);
 			t.transform(source, result);
 
-			PMFSingleton.get().getPersistenceManager().close();
+			PMFSingleton.getPersistenceManager().close();
 
 			return new ModelAndView("package", "xmlcontent", 
 									out.getBuffer().toString());
@@ -286,7 +285,7 @@ public class PlaceBooksAdminController
             log.error(e.toString());
         }
 
-		PMFSingleton.get().getPersistenceManager().close();
+		PMFSingleton.getPersistenceManager().close();
 		return new ModelAndView("message", "text", "Error");
 
 	}
@@ -296,7 +295,7 @@ public class PlaceBooksAdminController
     public ModelAndView delete() 
 	{
 			
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 
 		try 
 		{

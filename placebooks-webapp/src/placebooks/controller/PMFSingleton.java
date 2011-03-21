@@ -1,6 +1,7 @@
 package placebooks.controller;
 
 import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
 /**
@@ -18,4 +19,9 @@ public final class PMFSingleton
 	{
         return pmfInstance;
     }
+    
+    public static PersistenceManager getPersistenceManager() 
+	{
+        return pmfInstance.getPersistenceManager();
+    }    
 }
