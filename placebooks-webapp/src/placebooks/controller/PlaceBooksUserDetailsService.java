@@ -19,6 +19,7 @@ public class PlaceBooksUserDetailsService implements UserDetailsService
 		final PersistenceManager persistenceManager = PMFSingleton.getPersistenceManager();
 		final User user = persistenceManager.getObjectById(User.class, email);
 
+		@SuppressWarnings("unchecked")
 		final org.springframework.security.core.userdetails.User userDetails = new org.springframework.security.core.userdetails.User(
 				user.getEmail(), user.getPasswordHash(), true, true, true, true, Collections.EMPTY_SET);
 

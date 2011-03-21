@@ -55,4 +55,34 @@ public class VideoItem extends PlaceBookItem
 			video = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetHTML()
+	 */
+	@Override
+	public String GetHTML()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetCSS()
+	 */
+	@Override
+	public String GetCSS()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
+	 */
+	@Override
+	public String GetJavaScript()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
 }

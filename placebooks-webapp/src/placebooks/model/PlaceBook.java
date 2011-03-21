@@ -57,14 +57,12 @@ public class PlaceBook
 
 	public void setItems(List<PlaceBookItem> items)
 	{
-		log.info("setItems(items), items.size = " + items.size());
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
 	public List<PlaceBookItem> getItems()
 	{
-		log.info("getItems(), this.items.size = " + items.size());
 		return Collections.unmodifiableList(items);
 	}
 
@@ -80,30 +78,6 @@ public class PlaceBook
 			pbi.setPBKey(key);
 	}
 
-/*
-	private String configToXML()
-	{
-		// Helper method for converting config to something readable for mobile
-		// package - maybe XML??
-	}
-
-	public String toMobilePackage()
-	{
-		// Maps configuration + contents of PlaceBook to something 
-		// comprehensible to mobile app. Dumps contents to filesystem for 
-		// download to mobile.
-		
-		// Make config into XML via configToXML()
-
-		for (PlaceBookItem p : items) 
-		{
-			// do something with p that dumps p to disk
-			p.toMobilePackage();
-		}
-
-		// Compress package and return location
-
-	}*/
 
 
 	public String getKey() { return key; }

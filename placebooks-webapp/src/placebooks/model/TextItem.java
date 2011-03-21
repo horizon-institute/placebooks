@@ -45,4 +45,40 @@ public class TextItem extends PlaceBookItem
 		item.appendChild(text);
 		root.appendChild(item);
 	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetHTML()
+	 */
+	@Override
+	public String GetHTML()
+	{
+		StringBuilder output = new StringBuilder();
+		output.append("<div class='placebook-item-text' id='");
+		output.append(this.getPBKey());
+		output.append("'>");
+		output.append(this.text);
+		output.append("'</div>");
+		return output.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetCSS()
+	 */
+	@Override
+	public String GetCSS()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
+	 */
+	@Override
+	public String GetJavaScript()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
 }

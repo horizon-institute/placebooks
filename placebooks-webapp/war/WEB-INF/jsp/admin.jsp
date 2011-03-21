@@ -11,10 +11,52 @@
 <body>
 <h1>Administration actions</h1>
 <hr>
-<a href="admin/newPB">Make a test PlaceBook</a>
+<a href="admin/new/placebook">Make a test PlaceBook</a>
 <br />
-<a href="admin/getPlaceBooks">Print out all PlaceBooks</a>
+<a href="admin/print/placebooks">List all PlaceBooks</a>
 <br />
-<a href="admin/delPlaceBooks">Delete all PlaceBooks</a>
+<a href="admin/delete/all">Delete all PlaceBooks</a>
+
+<br />
+<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
+<div>
+Upload video:
+	<input type='file' name='video'>
+	<input type='submit' value='Upload'>
+</div>
+</form>
+
+<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
+<div>
+Upload audio: 
+	<input type='file' name='audio'>
+	<input type='submit' value='Upload'>
+</div>
+</form>
+<h1>Everytrail Tests</h1>
+<div>
+<form action='admin/test/everytrail/login' method='POST'>
+	<h3>Log in</h3>
+	<div>Username: <input type='text' name='username'></div>
+	<div>Password: <input type='password' name='password'></div>
+	<input type='submit' value='Log in'>
+</form>
+</div>
+<div>
+	<form action='admin/test/everytrail/pictures' method='POST'>
+		<h3>List user's pictures</h3>
+		<div>Username: <input type='text' name='username'></div>
+		<div>Password: <input type='password' name='password'></div>
+		<input type='submit' value='List'>
+	</form>
+</div>
+<div>
+	<form action='admin/test/everytrail/trips' method='POST'>
+		<h3>List user's trips</h3>
+		<div>Username: <input type='text' name='username'></div>
+		<div>Password: <input type='password' name='password'></div>
+		<input type='submit' value='List'>
+	</form>
+</div>
 </body>
 </html>
