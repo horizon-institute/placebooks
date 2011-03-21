@@ -5,3 +5,4 @@ thumbs.db
 .DS_Store
 datanucleus.log
 placebooks-webapp/war/WEB-INF/classes/*
+*.bak

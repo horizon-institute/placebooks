@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks.model;
+package placebooks.controller;
 
 import java.io.*;
 import java.net.*;

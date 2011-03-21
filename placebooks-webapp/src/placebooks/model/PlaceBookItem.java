@@ -175,13 +175,6 @@ public abstract class PlaceBookItem
 	 */
 	public abstract String GetJavaScript();
 	
-	
-	/** Each PlaceBookItem must implement a way of adding relevant content to a
-	 * mobile app package
-	 */ 
-	public abstract void toMobilePackage();
-	
-
 
 	public String getKey() { return key; }
 
