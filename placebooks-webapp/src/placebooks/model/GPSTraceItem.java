@@ -29,9 +29,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class GPSTraceItem extends PlaceBookItem
 {
-	private static final Logger log = 
-		Logger.getLogger(GPSTraceItem.class.getName());
-
 	private Document trace;
 
 	public GPSTraceItem(int owner, Geometry geom, URL sourceURL, Document trace)

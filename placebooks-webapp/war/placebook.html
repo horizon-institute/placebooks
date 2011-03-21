@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PlaceBooks</title>
+<meta http-equiv=Content-Type content="text/html">
+<link rel="stylesheet" type="text/css" href="placebook.css">
+</head>
+<body>
+	<div class="content">
+		<div class="navbar">
+			<ul class="navbar-list">
+				<li class="noncurrent-page"><a href="placebook.html">PlaceBooks</a>
+				</li>
+				<li class="current-page"><a href="">My Account</a>
+				</li>
+				<li class="noncurrent-page"><a href="My_PlaceBooks.html">My PlaceBooks</a>
+				</li>
+				<li class="noncurrent-page"><a href="Make_a_PlaceBook.html">Make a PlaceBook</a>
+				</li>
+				<li class="noncurrent-page"><a href="Publish_It.html">Publish It</a>
+				</li>
+			</ul>
+		</div>
+
+		<form action="/placebooks-webapp/j_spring_security_check" method="post">
+			<div>Email:</div>
+			<input class="input" type="text" name="j_username" />
+			<div>Password:</div>
+			<input class="input" type="password" name="j_password" /> <input type="submit" title="Login" />
+		</form>
+	</div>
+
+</body>
+</html>

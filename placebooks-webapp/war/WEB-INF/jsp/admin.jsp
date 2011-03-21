@@ -21,11 +21,27 @@
 <h1>Everytrail Tests</h1>
 <div>
 <form action='admin/test/everytrail/login' method='POST'>
+	<h3>Log in</h3>
 	<div>Username: <input type='text' name='username'></div>
 	<div>Password: <input type='password' name='password'></div>
 	<input type='submit' value='Log in'>
 </form>
 </div>
-
+<div>
+	<form action='admin/test/everytrail/pictures' method='POST'>
+		<h3>List user's pictures</h3>
+		<div>Username: <input type='text' name='username'></div>
+		<div>Password: <input type='password' name='password'></div>
+		<input type='submit' value='List'>
+	</form>
+</div>
+<div>
+	<form action='admin/test/everytrail/trips' method='POST'>
+		<h3>List user's trips</h3>
+		<div>Username: <input type='text' name='username'></div>
+		<div>Password: <input type='password' name='password'></div>
+		<input type='submit' value='List'>
+	</form>
+</div>
 </body>
 </html>

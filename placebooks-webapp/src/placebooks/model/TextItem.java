@@ -19,9 +19,6 @@ import org.w3c.dom.Document;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class TextItem extends PlaceBookItem
 {
-  	private static final Logger log = 
-		Logger.getLogger(TextItem.class.getName());
-
 	@Persistent
 	private String text; 
 

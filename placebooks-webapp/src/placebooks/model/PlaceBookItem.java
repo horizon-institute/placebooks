@@ -195,3 +195,4 @@ public abstract class PlaceBookItem
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
 
 }
+
