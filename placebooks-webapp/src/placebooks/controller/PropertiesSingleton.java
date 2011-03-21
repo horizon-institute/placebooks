@@ -9,7 +9,12 @@ import java.util.Properties;
 
 public final class PropertiesSingleton 
 {
+	// TODO: enum
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
+	public static final String IDEN_VIDEO = "video.dir";
+	public static final String IDEN_AUDIO = "audio.dir";
+	public static final String IDEN_PACKAGE = "package.dir";
+	public static final String IDEN_CONFIG = "config.name";	
 
    	private static final Logger log = 
 		Logger.getLogger(PropertiesSingleton.class.getName());

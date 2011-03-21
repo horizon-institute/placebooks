@@ -22,7 +22,6 @@ import org.w3c.dom.Element;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * @author pszmp
  * A PlacebookItem represents an item that appears in a Placebook, e.g. photo, map, bit 
  * of text or web url.  This is an Abstract class that defines the general funcitonality
  *  of PlacebookItems.  Decendant classes will be created that implement the specific 
@@ -96,6 +95,8 @@ public abstract class PlaceBookItem
 
 		this.timestamp = new Date();
 
+		log.info("Created new PlaceBookItem, concrete name: " 
+				 + getEntityName());
 	}
 
 	/** Restore this PlaceBookItem from existing item in db
