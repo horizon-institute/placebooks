@@ -70,7 +70,7 @@ public class PlaceBooksAdminController
 			items.add(
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
-			);
+			);/*
 			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
 						new File(PropertiesSingleton.get(
 							this.getClass().getClassLoader()).getProperty(
@@ -87,7 +87,7 @@ public class PlaceBooksAdminController
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
 
-
+*/
 		}
 		catch (java.net.MalformedURLException e)
 		{
@@ -120,7 +120,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 	
-
+/*
 		try
 		{
 			items.add(new GPSTraceItem(owner, geometry, 
@@ -131,7 +131,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
-
+*/
 
 		PlaceBook p = new PlaceBook(owner, geometry, items);
 
@@ -469,9 +469,49 @@ public class PlaceBooksAdminController
     public ModelAndView testEverytrailLogin(HttpServletRequest req) 
 	{
 		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
-		String response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
-		return new ModelAndView("message", "text", response);
+		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: " + response.getValue() + "<br/>");
 	}
 
+	@RequestMapping(value = "/admin/test/everytrail/pictures", method = RequestMethod.POST)
+   public ModelAndView testEverytrailPictures(HttpServletRequest req) 
+	{
+		ModelAndView returnView;
+		
+		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+		log.debug("logged in");
+		if(response.getStatus().equals("success"))
+		{
+			EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(response.getValue());
+			log.debug(picturesResponse.getStatus());
+			returnView = new ModelAndView("message", "text", "Logged in and got picutre list: <br /><pre>" + picturesResponse.getStatus() + "</pre><br/>");
+		}
+		else
+		{
+			return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br />Log in value: " + response.getValue() + "<br/>");
+		}
+		return returnView;
+	}
+
+	@RequestMapping(value = "/admin/test/everytrail/trips", method = RequestMethod.POST)
+   public ModelAndView testEverytrailTrips(HttpServletRequest req) 
+	{
+		ModelAndView returnView;
+		
+		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+		log.debug("logged in");
+		if(response.getStatus().equals("success"))
+		{
+			EverytrailTripsResponse tripsResponse = EverytrailHelper.Trips(response.getValue());
+			log.debug(tripsResponse.getStatus());
+			returnView = new ModelAndView("message", "text", "Logged in and got trip list: <br /><pre>" + tripsResponse.getStatus() + "</pre><br/>");
+		}
+		else
+		{
+			return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: " + response.getValue() + "<br/>");
+		}
+		return returnView;
+	}
+	
 
 }

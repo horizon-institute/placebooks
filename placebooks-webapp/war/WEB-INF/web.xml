@@ -5,9 +5,7 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
    version="2.5"> 
 
-    <description>
-	PlaceBooks.
-    </description>
+    <description>PlaceBooks</description>
     <display-name>PlaceBooks web interface and backend</display-name>
 
 	<welcome-file-list>
@@ -28,7 +26,7 @@
 
   	<servlet-mapping>
     	<servlet-name>dispatcher</servlet-name>
-    	<url-pattern>/a/*</url-pattern>
+    	<url-pattern>/placebooks/a/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>
