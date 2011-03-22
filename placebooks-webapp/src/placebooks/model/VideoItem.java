@@ -44,7 +44,10 @@ public class VideoItem extends PlaceBookItem
 	@Persistent
 	public String getVideo()
 	{
-		return video.toString();
+		if (video != null)
+			return video.toString();
+		else
+			return null;
 	}
 	@Persistent
 	public void setVideo(String filepath)

@@ -2,26 +2,21 @@ package placebooks.model;
 
 import java.net.URL;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.apache.log4j.*;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Document;
 
 
 @PersistenceCapable
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class TextItem extends PlaceBookItem
 {
-  	private static final Logger log = 
-		Logger.getLogger(TextItem.class.getName());
-
 	@Persistent
 	private String text; 
 

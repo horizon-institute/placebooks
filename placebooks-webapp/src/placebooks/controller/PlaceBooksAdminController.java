@@ -1,37 +1,57 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
-import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.jdo.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-
-import javax.servlet.ServletException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.*;
-import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import placebooks.model.AudioItem;
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
+import placebooks.model.VideoItem;
+
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 
 // NOTE: This is currently a testing ground for basic server functionality.
@@ -39,7 +59,6 @@ import com.vividsolutions.jts.io.ParseException;
 @Controller
 public class PlaceBooksAdminController
 {
-
    	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminController.class.getName());
 
@@ -74,13 +93,13 @@ public class PlaceBooksAdminController
 			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
 						new File(PropertiesSingleton.get(
 							this.getClass().getClassLoader()).getProperty(
-									"audio.dir", "") 
+									PropertiesSingleton.IDEN_AUDIO, "") 
 								+ "testing.mp3")));
 
 			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
 						new File(PropertiesSingleton.get(
 							this.getClass().getClassLoader()).getProperty(
-									"video.dir", "") 
+									PropertiesSingleton.IDEN_VIDEO, "") 
 								+ "testing.mp4")));
 
 			items.add(new ImageItem(owner, geometry, 
@@ -161,7 +180,10 @@ public class PlaceBooksAdminController
 	}
 
 
-	// Users of this method must close the PersistenceManager when they are done
+	/** 
+	 * Users of this method must close the PersistenceManager when they are 
+	 * done.
+	 */
 	@SuppressWarnings("unchecked")
 	private List<PlaceBook> getPlaceBooksQuery(String queryStr)
 	{
@@ -200,7 +222,7 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", out.toString());
 
     }
-	
+
 	private String placeBooksToHTMLDebug(List<PlaceBook> pbs)
 	{
 		StringBuffer out = new StringBuffer();
@@ -214,7 +236,11 @@ public class PlaceBooksAdminController
 				+ pb.getKey() 
 				+ "'>package</a>] [<a href='/placebooks/a/admin/delete/" 
 				+ pb.getKey() 
-				+ "'>delete</a>]<br/>");
+				+ "'>delete</a>]<form action='/placebooks/a/admin/upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
+				+ pb.getKey() 
+				+ "'><input type='submit' value='Upload'></form><form action='/placebooks/a/admin/upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
+				+ pb.getKey() 
+				+ "'><input type='submit' value='Upload'></form><br/>");
 			
 			for (PlaceBookItem pbi : pb.getItems())
 			{
@@ -244,39 +270,99 @@ public class PlaceBooksAdminController
 			while (i.hasNext())
         	{
 				FileItemStream item = i.next();
-				log.info("item.toString="+item.toString());
 				if (!item.isFormField())
 				{
 					String property = null;
-					if(item.getFieldName().contentEquals("video"))
-						property = "video.dir";
-					else if (item.getFieldName().contentEquals("audio"))
-						property = "audio.dir";
+					String field = item.getFieldName();
+					int delim = field.indexOf(".");
+					if (delim == -1)
+					{
+						return new ModelAndView("message", "text", 
+					  			    "Error determining relevant PlaceBook key");
+					}
+
+					String prefix = field.substring(0, delim),
+						   suffix = field.substring(delim + 1, field.length());
+
+					log.info("prefix, suffix: " + prefix + "," + suffix);
+					if (prefix.contentEquals("video"))
+						property = PropertiesSingleton.IDEN_VIDEO;
+					else if (prefix.contentEquals("audio"))
+						property = PropertiesSingleton.IDEN_AUDIO;
 					else
 					{
 						return new ModelAndView("message", "text", 
 								  			    "Unsupported file type");
 					}
 					
-					File file = 
-						new File(
-							PropertiesSingleton.get(
-								this.getClass().getClassLoader()).getProperty(
-									property, "") 
-								+ "testing.mp4"
-						);
+					String path = PropertiesSingleton
+									.get(this.getClass().getClassLoader())
+									.getProperty(property, "");
+
+					if (!new File(path).exists() && !new File(path).mkdirs())
+					{
+						return new ModelAndView("message", "text", 
+								  			    "Failed to write file");
+					}
+					
+					File file = null;
+
+					PersistenceManager pm = 
+						PMFSingleton.get().getPersistenceManager();
+
+					try 
+					{
+						pm.currentTransaction().begin();
+
+						List<PlaceBook> pbs = 
+							getPlaceBooksQuery("key == '" + suffix + "'");
+						if (pbs.size() > 1)
+						{
+							pm.close();
+							return new ModelAndView("message", "text", 
+									"Found too many PlaceBooks for query");
+						}
+
+						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
+						{
+							VideoItem v = new VideoItem(1, null, null, null);
+							pbs.get(0).addItem(v);
+							v.setVideo(path + "/" + v.getKey());
+							file = new File(v.getVideo());
+						}
+						else if (property.equals(
+									PropertiesSingleton.IDEN_AUDIO))
+						{
+							AudioItem a = new AudioItem(1, null, null, null);
+							pbs.get(0).addItem(a);
+							a.setAudio(path + "/" + a.getKey());
+							file = new File(a.getAudio());
+						}
+
+						pm.currentTransaction().commit();
+					}
+					finally
+					{
+						if (pm.currentTransaction().isActive())
+						{
+							pm.currentTransaction().rollback();
+							log.error(
+								"Rolling current persist transaction back");
+						}
+					}
+					pm.close();
 
 					InputStream input = item.openStream();
 					OutputStream output = new FileOutputStream(file);
 					int byte_;
 					while ((byte_ = input.read()) != -1)
 						output.write(byte_);
-            		output.close();
+           			output.close();
 					input.close();
 
-					log.info("Wrote file " + file.getAbsolutePath());
-
-
+					log.info("Wrote " + prefix + " file " 
+							 + file.getAbsolutePath());
+						
 				}
 			}
 	    }
@@ -311,17 +397,23 @@ public class PlaceBooksAdminController
 		
 		if (out != null)
 		{
-			String path = PropertiesSingleton.get(
-							this.getClass().getClassLoader()).getProperty(
-								"packages.dir", "") 
+			String path = PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PACKAGE, "") 
 							+ p.getKey();
 
-			if (new File(path).mkdirs())
+			if (new File(path).exists() || new File(path).mkdirs())
 			{
 				try
 				{
 					FileWriter fw = 
-						new FileWriter(new File(path + "/config.xml"));
+						new FileWriter(new File(path + "/" + 
+							PropertiesSingleton
+								.get(this.getClass().getClassLoader())
+								.getProperty(PropertiesSingleton.IDEN_CONFIG, 
+											 "")
+						));
+
 					fw.write(out);
 					fw.close();
 				}

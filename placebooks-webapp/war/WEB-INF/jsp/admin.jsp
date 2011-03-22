@@ -18,21 +18,6 @@
 <a href="admin/delete/all">Delete all PlaceBooks</a>
 
 <br />
-<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
-<div>
-Upload video:
-	<input type='file' name='video'>
-	<input type='submit' value='Upload'>
-</div>
-</form>
-
-<form action='admin/upload/' method='POST' enctype='multipart/form-data'>
-<div>
-Upload audio: 
-	<input type='file' name='audio'>
-	<input type='submit' value='Upload'>
-</div>
-</form>
 <h1>Everytrail Tests</h1>
 <div>
 <form action='admin/test/everytrail/login' method='POST'>

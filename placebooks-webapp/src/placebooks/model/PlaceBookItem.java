@@ -1,27 +1,27 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.util.*;
+import java.net.MalformedURLException;
+import java.util.Date;
+import java.util.HashMap;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Extension;
-import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.Discriminator;
-import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
-import org.apache.log4j.*;
-
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * @author pszmp
  * A PlacebookItem represents an item that appears in a Placebook, e.g. photo, map, bit 
  * of text or web url.  This is an Abstract class that defines the general funcitonality
  *  of PlacebookItems.  Decendant classes will be created that implement the specific 
@@ -54,7 +54,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public abstract class PlaceBookItem 
 {
-	private static final Logger log = 
+	protected static final Logger log = 
 		Logger.getLogger(PlaceBookItem.class.getName());
 
 	@PrimaryKey
@@ -87,6 +87,7 @@ public abstract class PlaceBookItem
 	{
 		this.owner = owner;
 		this.geom = geom;
+		this.pbKey = pbKey;
 		this.sourceURL = sourceURL;
 
 		parameters = new HashMap<String, String>();
@@ -94,6 +95,8 @@ public abstract class PlaceBookItem
 
 		this.timestamp = new Date();
 
+		log.info("Created new PlaceBookItem, concrete name: " 
+				 + getEntityName());
 	}
 
 	/** Restore this PlaceBookItem from existing item in db
@@ -192,3 +195,4 @@ public abstract class PlaceBookItem
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
 
 }
+

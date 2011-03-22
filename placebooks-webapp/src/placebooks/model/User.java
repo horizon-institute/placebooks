@@ -1,7 +1,9 @@
 package placebooks.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -20,13 +22,14 @@ public class User
 	private String name;
 
 	@Persistent
-	private Collection<PlaceBook> placebooks;
+	private Collection<PlaceBook> placebooks = new ArrayList<PlaceBook>();
 
 	@Persistent
-	private Collection<User> friends;
+	@Join	
+	private Collection<User> friends = new ArrayList<User>();
 
 	@Persistent
-	private Collection<Group> groups;
+	private Collection<Group> groups = new ArrayList<Group>();
 
 	public User(final String name, final String email, final String passwordHash)
 	{

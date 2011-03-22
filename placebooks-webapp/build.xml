@@ -7,7 +7,7 @@
 	<property name="src.dir" value="src" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	<property name="catalina.home" value="/opt/local/share/java/tomcat6/lib/" />
+	<property name="catalina.home" value="D:/ktg/libraries/apache-tomcat-6.0.30/lib/" />
 
 	<property name="manager.url"   value="http://localhost:8080/manager"/>
 	<property name="manager.username"   value="admin"/>
@@ -118,7 +118,7 @@
 	<target name="clean" description="Clean compiled classes">
 		<delete includeemptydirs="true">
     		<fileset dir="${classes.dir}" includes="**/*">
-				<exclude name="log4j.properties" />
+				<exclude name="*.properties" />
 			</fileset>
 		</delete>
 		<delete file="datanucleus.log"/>
