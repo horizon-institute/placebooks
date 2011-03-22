@@ -1,38 +1,60 @@
 package placebooks.controller;
 
+<<<<<<< HEAD
 import placebooks.model.*;
 
 import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 import java.net.URL;
+=======
+>>>>>>> upstream/master
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.jdo.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-
-import javax.servlet.ServletException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.*;
-import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import placebooks.model.*;
+
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 
 // NOTE: This is currently a testing ground for basic server functionality.
@@ -55,7 +77,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
-		int owner = 1;
+		User owner = UserManager.getCurrentUser();
 		Geometry geometry = null;
 		try 
 		{
@@ -76,8 +98,24 @@ public class PlaceBooksAdminController
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
 			);
+<<<<<<< HEAD
 
 			p.addItem(new ImageItem(owner, geometry, 
+=======
+			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
+						new File(PropertiesSingleton.get(
+							this.getClass().getClassLoader()).getProperty(
+									PropertiesSingleton.IDEN_AUDIO, "") 
+								+ "testing.mp3")));
+
+			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
+						new File(PropertiesSingleton.get(
+							this.getClass().getClassLoader()).getProperty(
+									PropertiesSingleton.IDEN_VIDEO, "") 
+								+ "testing.mp4")));
+
+			items.add(new ImageItem(owner, geometry, 
+>>>>>>> upstream/master
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
 
@@ -125,7 +163,13 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
+<<<<<<< HEAD
 		
+=======
+
+
+		PlaceBook p = new PlaceBook(owner, geometry, items);
+>>>>>>> upstream/master
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		try
@@ -181,7 +225,7 @@ public class PlaceBooksAdminController
 	public ModelAndView getPlaceBooks()
 	{
 
-		List<PlaceBook> pbs = getPlaceBooksQuery("owner == 1");
+		List<PlaceBook> pbs = getPlaceBooksQuery("owner.email == stuart@tropic.org.uk");
 		StringBuffer out = new StringBuffer();
 		if (pbs != null)
 		{
@@ -203,7 +247,7 @@ public class PlaceBooksAdminController
 		for (PlaceBook pb : pbs)
 		{
 			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
-				+ pb.getOwner() + ", timestamp=" 
+				+ pb.getOwner().getEmail() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
 				+ " elements [<a href='../package/" 
 				+ pb.getKey() 
@@ -221,7 +265,7 @@ public class PlaceBooksAdminController
 				out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
 				out.append(pbi.getEntityName());
 				out.append(": " + pbi.getKey() + ", owner=" 
-						   + pbi.getOwner() + ", timestamp=" 
+						   + pbi.getOwner().getEmail() + ", timestamp=" 
 						   + pbi.getTimestamp().toString());
 
 				out.append("<br/>");
@@ -283,9 +327,14 @@ public class PlaceBooksAdminController
 
 					try 
 					{
+<<<<<<< HEAD
 
 						File file = null;
 
+=======
+						User stuart = UserManager.getUser("stuart@tropic.org.uk");
+						
+>>>>>>> upstream/master
 						pm.currentTransaction().begin();
 						PlaceBook p = (PlaceBook)pm.getObjectById(
 													PlaceBook.class, suffix);
@@ -297,23 +346,35 @@ public class PlaceBooksAdminController
 
 						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 						{
+<<<<<<< HEAD
 							VideoItem v = new VideoItem(1, null, null, 
 														new File(""));
 							p.addItem(v);
 							p.setItemKeys();
 							v.setVideo(path + "/" + v.getKey() + "." + ext);
 							
+=======
+							VideoItem v = new VideoItem(stuart, null, null, null);
+							pbs.get(0).addItem(v);
+							v.setVideo(path + "/" + v.getKey());
+>>>>>>> upstream/master
 							file = new File(v.getVideo());
 						}
 						else if (property.equals(
 									PropertiesSingleton.IDEN_AUDIO))
 						{
+<<<<<<< HEAD
 							AudioItem a = new AudioItem(1, null, null, 
 														new File(""));
 							p.addItem(a);
 							p.setItemKeys();
 							a.setAudio(path + "/" + a.getKey() + "." + ext);
 				
+=======
+							AudioItem a = new AudioItem(stuart, null, null, null);
+							pbs.get(0).addItem(a);
+							a.setAudio(path + "/" + a.getKey());
+>>>>>>> upstream/master
 							file = new File(a.getAudio());
 						}
 						
@@ -468,7 +529,7 @@ public class PlaceBooksAdminController
 			Element root = config.createElement(PlaceBook.class.getName());
 			config.appendChild(root);
 			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", Integer.toString(p.getOwner()));
+			root.setAttribute("owner", p.getOwner().getEmail());
 			
 			Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(

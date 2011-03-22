@@ -55,6 +55,7 @@
 		<copy todir="${classes.dir}/META-INF/">
 			<fileset dir="${src.dir}/META-INF" />
 		</copy>
+		<copy file="${src.dir}/*.properties" todir="${classes.dir}" />
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">
 			<include name="**/*" />
@@ -117,9 +118,7 @@
 
 	<target name="clean" description="Clean compiled classes">
 		<delete includeemptydirs="true">
-    		<fileset dir="${classes.dir}" includes="**/*">
-				<exclude name="*.properties" />
-			</fileset>
+    		<fileset dir="${classes.dir}" includes="**/*" />
 		</delete>
 		<delete file="datanucleus.log"/>
 	</target>

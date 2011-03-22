@@ -117,3 +117,4 @@ public class ImageItem extends PlaceBookItem
 	}
 
 }
+
