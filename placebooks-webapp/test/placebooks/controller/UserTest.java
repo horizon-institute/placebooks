@@ -64,7 +64,6 @@ public class UserTest
 		assert users.iterator().next().getName().equals("Kevin Glover");
 
 		manager.currentTransaction().commit();
-		
 		}
 		finally
 		{
@@ -74,5 +73,13 @@ public class UserTest
 			}
 			manager.close();
 		}
+	}
+	
+	@Test
+	public void userEmailQueryTest()
+	{
+		User user = UserManager.getUser("ktg@cs.nott.ac.uk");
+		assert user.getEmail().equals("ktg@cs.nott.ac.uk");
+		assert user.getName().equals("Kevin Glover");
 	}
 }
