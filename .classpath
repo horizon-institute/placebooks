@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="placebooks-webapp/src/|placebooks-webapp/src/|rdsystemsketch/|placebooks-webapp/test/|placebooks-webapp/test/|placebooks-webapp/war/WEB-INF/classes/|placebooks-webapp/war/WEB-INF/lib/" kind="src" path=""/>
+	<classpathentry kind="src" path="placebooks-webapp/src"/>
+	<classpathentry kind="src" path="placebooks-webapp/test"/>
+	<classpathentry kind="lib" path="placebooks-webapp/war/WEB-INF/classes"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Program Files/eclipse/plugins"/>
+	<classpathentry kind="lib" path="C:/Program Files/eclipse/plugins/tomcatplugin_0.9.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="placebooks-webapp/war/WEB-INF/classes"/>
+</classpath>

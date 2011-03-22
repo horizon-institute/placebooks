@@ -69,7 +69,7 @@ public class PlaceBooksAdminController
 			items.add(
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
-			);/*
+			);
 			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
 						new File(PropertiesSingleton.get(
 							this.getClass().getClassLoader()).getProperty(
@@ -86,7 +86,7 @@ public class PlaceBooksAdminController
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
 
-*/
+
 		}
 		catch (java.net.MalformedURLException e)
 		{
@@ -119,7 +119,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 	
-/*
+
 		try
 		{
 			items.add(new GPSTraceItem(owner, geometry, 
@@ -130,7 +130,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
-*/
+
 
 		PlaceBook p = new PlaceBook(owner, geometry, items);
 
