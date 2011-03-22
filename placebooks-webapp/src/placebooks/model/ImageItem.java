@@ -101,5 +101,4 @@ public class ImageItem extends PlaceBookItem
 		// TODO Auto-generated method stub
 		return "";
 	}
-
 }

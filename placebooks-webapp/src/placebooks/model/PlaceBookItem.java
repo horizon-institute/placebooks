@@ -1,7 +1,6 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -195,4 +194,3 @@ public abstract class PlaceBookItem
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
 
 }
-

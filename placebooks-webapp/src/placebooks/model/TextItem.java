@@ -75,5 +75,4 @@ public class TextItem extends PlaceBookItem
 		// TODO Auto-generated method stub
 		return "";
 	}
-
 }
