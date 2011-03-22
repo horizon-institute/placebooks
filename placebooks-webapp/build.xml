@@ -118,7 +118,7 @@
 	<target name="clean" description="Clean compiled classes">
 		<delete includeemptydirs="true">
     		<fileset dir="${classes.dir}" includes="**/*">
-				<exclude name="log4j.properties" />
+				<exclude name="*.properties" />
 			</fileset>
 		</delete>
 		<delete file="datanucleus.log"/>
