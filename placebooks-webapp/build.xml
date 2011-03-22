@@ -55,7 +55,8 @@
 		<copy todir="${classes.dir}/META-INF/">
 			<fileset dir="${src.dir}/META-INF" />
 		</copy>
-		<copy file="${src.dir}/*.properties" todir="${classes.dir}" />
+		<copy file="${src.dir}/log4j.properties" todir="${classes.dir}" />
+		<copy file="${src.dir}/placebooks.properties" todir="${classes.dir}" />
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">
 			<include name="**/*" />

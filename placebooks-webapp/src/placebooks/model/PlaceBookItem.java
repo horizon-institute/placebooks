@@ -1,8 +1,8 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -67,7 +67,7 @@ public abstract class PlaceBookItem
 	private String pbKey; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
-	private int owner;
+	private User owner;
 	
 	@Persistent
 	private Date timestamp;
@@ -85,7 +85,7 @@ public abstract class PlaceBookItem
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBookItem
-	public PlaceBookItem(int owner, Geometry geom, URL sourceURL)
+	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
 	{
 		this.owner = owner;
 		this.geom = geom;
@@ -121,7 +121,7 @@ public abstract class PlaceBookItem
 		log.info(getEntityName() + ": getConfigurationHeader");
 		Element item = config.createElement(getEntityName());
 		item.setAttribute("key", getKey());
-		item.setAttribute("owner", Integer.toString(getOwner()));
+		item.setAttribute("owner", getOwner().getKey());
 
 		Element timestamp = config.createElement("timestamp");
 		timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
@@ -175,8 +175,8 @@ public abstract class PlaceBookItem
 	public void setPBKey(String pbKey) { this.pbKey = pbKey; }
 	public String getPBKey() { return pbKey; }
 
-	public void setOwner(int owner) { this.owner = owner; }
-	public int getOwner() { return owner; }
+	public void setOwner(User owner) { this.owner = owner; }
+	public User getOwner() { return owner; }
 
 	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 	public Date getTimestamp() { return timestamp; }

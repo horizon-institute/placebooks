@@ -1,26 +1,12 @@
 package placebooks.controller;
 
-<<<<<<< HEAD
 import placebooks.model.*;
 
 import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 import java.net.URL;
-=======
->>>>>>> upstream/master
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -49,8 +35,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import placebooks.model.*;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -98,28 +82,9 @@ public class PlaceBooksAdminController
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
 			);
-<<<<<<< HEAD
-
 			p.addItem(new ImageItem(owner, geometry, 
-=======
-			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
-						new File(PropertiesSingleton.get(
-							this.getClass().getClassLoader()).getProperty(
-									PropertiesSingleton.IDEN_AUDIO, "") 
-								+ "testing.mp3")));
-
-			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
-						new File(PropertiesSingleton.get(
-							this.getClass().getClassLoader()).getProperty(
-									PropertiesSingleton.IDEN_VIDEO, "") 
-								+ "testing.mp4")));
-
-			items.add(new ImageItem(owner, geometry, 
->>>>>>> upstream/master
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
-
-
 		}
 		catch (java.net.MalformedURLException e)
 		{
@@ -162,14 +127,6 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-
-<<<<<<< HEAD
-		
-=======
-
-
-		PlaceBook p = new PlaceBook(owner, geometry, items);
->>>>>>> upstream/master
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		try
@@ -225,7 +182,7 @@ public class PlaceBooksAdminController
 	public ModelAndView getPlaceBooks()
 	{
 
-		List<PlaceBook> pbs = getPlaceBooksQuery("owner.email == stuart@tropic.org.uk");
+		List<PlaceBook> pbs = getPlaceBooksQuery("owner.email == 'stuart@tropic.org.uk'");
 		StringBuffer out = new StringBuffer();
 		if (pbs != null)
 		{
@@ -327,14 +284,10 @@ public class PlaceBooksAdminController
 
 					try 
 					{
-<<<<<<< HEAD
-
 						File file = null;
-
-=======
-						User stuart = UserManager.getUser("stuart@tropic.org.uk");
+						User user = 
+							UserManager.getUser("stuart@tropic.org.uk");
 						
->>>>>>> upstream/master
 						pm.currentTransaction().begin();
 						PlaceBook p = (PlaceBook)pm.getObjectById(
 													PlaceBook.class, suffix);
@@ -346,35 +299,23 @@ public class PlaceBooksAdminController
 
 						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 						{
-<<<<<<< HEAD
-							VideoItem v = new VideoItem(1, null, null, 
+							VideoItem v = new VideoItem(user, null, null, 
 														new File(""));
 							p.addItem(v);
 							p.setItemKeys();
 							v.setVideo(path + "/" + v.getKey() + "." + ext);
 							
-=======
-							VideoItem v = new VideoItem(stuart, null, null, null);
-							pbs.get(0).addItem(v);
-							v.setVideo(path + "/" + v.getKey());
->>>>>>> upstream/master
 							file = new File(v.getVideo());
 						}
 						else if (property.equals(
 									PropertiesSingleton.IDEN_AUDIO))
 						{
-<<<<<<< HEAD
-							AudioItem a = new AudioItem(1, null, null, 
+							AudioItem a = new AudioItem(user, null, null, 
 														new File(""));
 							p.addItem(a);
 							p.setItemKeys();
 							a.setAudio(path + "/" + a.getKey() + "." + ext);
 				
-=======
-							AudioItem a = new AudioItem(stuart, null, null, null);
-							pbs.get(0).addItem(a);
-							a.setAudio(path + "/" + a.getKey());
->>>>>>> upstream/master
 							file = new File(a.getAudio());
 						}
 						

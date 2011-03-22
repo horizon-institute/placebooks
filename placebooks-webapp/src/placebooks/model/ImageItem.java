@@ -31,7 +31,7 @@ public class ImageItem extends PlaceBookItem
 	@NotPersistent
 	private File imageFile;
 	
-	public ImageItem(int owner, Geometry geom, URL sourceURL, 
+	public ImageItem(User owner, Geometry geom, URL sourceURL, 
 					 BufferedImage image)
 	{
 		super(owner, geom, sourceURL);

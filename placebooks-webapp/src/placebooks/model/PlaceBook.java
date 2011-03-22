@@ -37,7 +37,7 @@ public class PlaceBook
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBook
-	public PlaceBook(int owner, Geometry geom)
+	public PlaceBook(User owner, Geometry geom)
 	{
 		this.owner = owner;
 		this.geom = geom;
@@ -47,7 +47,7 @@ public class PlaceBook
 		this.timestamp = new Date();
 	}
 	
-	public PlaceBook(int owner, Geometry geom, List<PlaceBookItem> items)
+	public PlaceBook(User owner, Geometry geom, List<PlaceBookItem> items)
 	{
 		this(owner, geom);
 		setItems(items);
