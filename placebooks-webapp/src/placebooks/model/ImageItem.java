@@ -27,11 +27,10 @@ public class ImageItem extends PlaceBookItem
 	@NotPersistent
 	private File imagePath;
 	
-	public ImageItem(User owner, Geometry geom, URL sourceURL, 
-					 BufferedImage image)
+	public ImageItem(User owner, Geometry geom, URL sourceURL, BufferedImage bufferedImage)
 	{
 		super(owner, geom, sourceURL);
-		this.image = image;
+		this.image = bufferedImage;
 		imagePath = null;
 	}
 

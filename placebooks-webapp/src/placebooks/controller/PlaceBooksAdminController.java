@@ -1,5 +1,6 @@
 package placebooks.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -40,15 +41,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.model.AudioItem;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTripsResponse;
-import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
-import placebooks.model.User;
-import placebooks.model.VideoItem;
+import placebooks.model.*;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -72,7 +65,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
-		User owner = UserManager.getUser("stuart@tropic.org.uk");
+		User owner = UserManager.getCurrentUser();
 		Geometry geometry = null;
 		try 
 		{
