@@ -3,15 +3,21 @@ package placebooks.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
 
 @PersistenceCapable
 public class User
 {
 	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
+	private String key;
+
+	@Unique
 	@Persistent
 	private String email;
 
@@ -25,7 +31,7 @@ public class User
 	private Collection<PlaceBook> placebooks = new ArrayList<PlaceBook>();
 
 	@Persistent
-	@Join	
+	@Join
 	private Collection<User> friends = new ArrayList<User>();
 
 	@Persistent
@@ -43,14 +49,14 @@ public class User
 
 	}
 
-	public void add(final User friend)
-	{
-		friends.add(friend);
-	}
-
 	public void add(final PlaceBook placebook)
 	{
 		placebooks.add(placebook);
+	}
+
+	public void add(final User friend)
+	{
+		friends.add(friend);
 	}
 
 	public Iterable<User> friends()
@@ -61,6 +67,11 @@ public class User
 	public String getEmail()
 	{
 		return email;
+	}
+
+	public String getKey()
+	{
+		return key;
 	}
 
 	public String getName()
