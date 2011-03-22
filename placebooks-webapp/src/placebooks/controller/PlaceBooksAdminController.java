@@ -47,6 +47,7 @@ import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
+import placebooks.model.User;
 import placebooks.model.VideoItem;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -71,7 +72,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
-		int owner = 1;
+		User owner = UserManager.getUser("stuart@tropic.org.uk");
 		Geometry geometry = null;
 		try 
 		{
@@ -208,7 +209,7 @@ public class PlaceBooksAdminController
 	public ModelAndView getPlaceBooks()
 	{
 
-		List<PlaceBook> pbs = getPlaceBooksQuery("owner == 1");
+		List<PlaceBook> pbs = getPlaceBooksQuery("owner.email == stuart@tropic.org.uk");
 		StringBuffer out = new StringBuffer();
 		if (pbs != null)
 		{
@@ -230,7 +231,7 @@ public class PlaceBooksAdminController
 		for (PlaceBook pb : pbs)
 		{
 			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
-				+ pb.getOwner() + ", timestamp=" 
+				+ pb.getOwner().getEmail() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
 				+ " elements [<a href='/placebooks/a/admin/package/" 
 				+ pb.getKey() 
@@ -248,7 +249,7 @@ public class PlaceBooksAdminController
 				out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
 				out.append(pbi.getEntityName());
 				out.append(": " + pbi.getKey() + ", owner=" 
-						   + pbi.getOwner() + ", timestamp=" 
+						   + pbi.getOwner().getEmail() + ", timestamp=" 
 						   + pbi.getTimestamp().toString());
 
 				out.append("<br/>");
@@ -312,6 +313,8 @@ public class PlaceBooksAdminController
 
 					try 
 					{
+						User stuart = UserManager.getUser("stuart@tropic.org.uk");
+						
 						pm.currentTransaction().begin();
 
 						List<PlaceBook> pbs = 
@@ -325,7 +328,7 @@ public class PlaceBooksAdminController
 
 						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 						{
-							VideoItem v = new VideoItem(1, null, null, null);
+							VideoItem v = new VideoItem(stuart, null, null, null);
 							pbs.get(0).addItem(v);
 							v.setVideo(path + "/" + v.getKey());
 							file = new File(v.getVideo());
@@ -333,7 +336,7 @@ public class PlaceBooksAdminController
 						else if (property.equals(
 									PropertiesSingleton.IDEN_AUDIO))
 						{
-							AudioItem a = new AudioItem(1, null, null, null);
+							AudioItem a = new AudioItem(stuart, null, null, null);
 							pbs.get(0).addItem(a);
 							a.setAudio(path + "/" + a.getKey());
 							file = new File(a.getAudio());
@@ -447,7 +450,7 @@ public class PlaceBooksAdminController
 			Element root = config.createElement(PlaceBook.class.getName());
 			config.appendChild(root);
 			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", Integer.toString(p.getOwner()));
+			root.setAttribute("owner", p.getOwner().getEmail());
 			
 			Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(
