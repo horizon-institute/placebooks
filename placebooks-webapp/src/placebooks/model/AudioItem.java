@@ -1,12 +1,16 @@
 package placebooks.model;
 
-import java.io.File;
+import placebooks.controller.PropertiesSingleton;
+
+import java.io.*;
 import java.net.URL;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+
+import org.apache.commons.io.IOUtils;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
@@ -33,9 +37,34 @@ public class AudioItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
-		Element filename = config.createElement("filename");
-		filename.appendChild(config.createTextNode(audio.getPath()));
-		item.appendChild(filename);
+
+		// TODO: identical to VideoItem.appendConfiguration... might be some 
+		// abstraction here to do.
+		try
+		{			
+			FileInputStream fis = new FileInputStream(audio);
+			File to = new File(
+						PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+							+ getPBKey() + "/" + audio.getName());
+
+			FileOutputStream fos = new FileOutputStream(to);
+
+			log.info("Copying audio file, from=" + audio.toString() + ", to=" 
+					 + to.toString());
+			IOUtils.copy(fis, fos);
+			fis.close();
+			fos.close();
+			Element filename = config.createElement("filename");
+			filename.appendChild(config.createTextNode(audio.getName()));
+			item.appendChild(filename);
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+
 		root.appendChild(item);
 	}
 
@@ -49,8 +78,6 @@ public class AudioItem extends PlaceBookItem
 	{
 		if (filepath != null)
 			audio = new File(filepath);
-		else
-			audio = null;
 	}
 
 	/* (non-Javadoc)

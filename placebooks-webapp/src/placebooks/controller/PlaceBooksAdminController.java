@@ -3,6 +3,7 @@ package placebooks.controller;
 import placebooks.model.*;
 
 import java.util.*;
+import java.util.zip.*;
 import java.io.*;
 import java.net.URL;
 import java.awt.image.BufferedImage;
@@ -36,6 +37,9 @@ import com.vividsolutions.jts.io.ParseException;
 
 // NOTE: This is currently a testing ground for basic server functionality.
 
+// TODO: general todo is to do file checking to reduce unnecessary file writes, 
+// part of which is ensuring new file writes in cases of changes
+
 @Controller
 public class PlaceBooksAdminController
 {
@@ -63,30 +67,21 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
-		List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
+		PlaceBook p = new PlaceBook(owner, geometry);
+
+		//List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 		try 
 		{
-			items.add(
+			p.addItem(
 				new TextItem(owner, geometry, new URL("http://www.google.com"),
 							 "Test text string")
-			);/*
-			items.add(new AudioItem(owner, geometry, new URL("http://blah.com"),
-						new File(PropertiesSingleton.get(
-							this.getClass().getClassLoader()).getProperty(
-									PropertiesSingleton.IDEN_AUDIO, "") 
-								+ "testing.mp3")));
+			);
 
-			items.add(new VideoItem(owner, geometry, new URL("http://qwe.com"),
-						new File(PropertiesSingleton.get(
-							this.getClass().getClassLoader()).getProperty(
-									PropertiesSingleton.IDEN_VIDEO, "") 
-								+ "testing.mp4")));
-
-			items.add(new ImageItem(owner, geometry, 
+			p.addItem(new ImageItem(owner, geometry, 
 				new URL("http://www.blah.com"), 
 				new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
 
-*/
+
 		}
 		catch (java.net.MalformedURLException e)
 		{
@@ -119,10 +114,10 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 	
-/*
+
 		try
 		{
-			items.add(new GPSTraceItem(owner, geometry, 
+			p.addItem(new GPSTraceItem(owner, geometry, 
 					  				   new URL("http://www.blah.com"), gpxDoc));
 		}
 		catch (java.net.MalformedURLException e)
@@ -130,9 +125,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
-*/
-
-		PlaceBook p = new PlaceBook(owner, geometry, items);
+		
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		try
@@ -212,13 +205,13 @@ public class PlaceBooksAdminController
 			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
 				+ pb.getOwner() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
-				+ " elements [<a href='/placebooks/a/admin/package/" 
+				+ " elements [<a href='../package/" 
 				+ pb.getKey() 
-				+ "'>package</a>] [<a href='/placebooks/a/admin/delete/" 
+				+ "'>package</a>] [<a href='../delete/" 
 				+ pb.getKey() 
-				+ "'>delete</a>]<form action='/placebooks/a/admin/upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
+				+ "'>delete</a>]<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
 				+ pb.getKey() 
-				+ "'><input type='submit' value='Upload'></form><form action='/placebooks/a/admin/upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
+				+ "'><input type='submit' value='Upload'></form><form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
 				+ pb.getKey() 
 				+ "'><input type='submit' value='Upload'></form><br/>");
 			
@@ -284,42 +277,59 @@ public class PlaceBooksAdminController
 						return new ModelAndView("message", "text", 
 								  			    "Failed to write file");
 					}
-					
-					File file = null;
 
 					PersistenceManager pm = 
-						PMFSingleton.get().getPersistenceManager();
+							PMFSingleton.get().getPersistenceManager();
 
 					try 
 					{
-						pm.currentTransaction().begin();
 
-						List<PlaceBook> pbs = 
-							getPlaceBooksQuery("key == '" + suffix + "'");
-						if (pbs.size() > 1)
-						{
-							pm.close();
-							return new ModelAndView("message", "text", 
-									"Found too many PlaceBooks for query");
-						}
+						File file = null;
+
+						pm.currentTransaction().begin();
+						PlaceBook p = (PlaceBook)pm.getObjectById(
+													PlaceBook.class, suffix);
+
+						int extIdx = item.getName().lastIndexOf(".");
+						String ext = 
+							item.getName().substring(extIdx + 1, 
+												     item.getName().length());
 
 						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 						{
-							VideoItem v = new VideoItem(1, null, null, null);
-							((PlaceBook)pbs.get(0)).addItem(v);
-							v.setVideo(path + "/" + v.getKey());
+							VideoItem v = new VideoItem(1, null, null, 
+														new File(""));
+							p.addItem(v);
+							p.setItemKeys();
+							v.setVideo(path + "/" + v.getKey() + "." + ext);
+							
 							file = new File(v.getVideo());
 						}
 						else if (property.equals(
 									PropertiesSingleton.IDEN_AUDIO))
 						{
-							AudioItem a = new AudioItem(1, null, null, null);
-							((PlaceBook)pbs.get(0)).addItem(a);
-							a.setAudio(path + "/" + a.getKey());
+							AudioItem a = new AudioItem(1, null, null, 
+														new File(""));
+							p.addItem(a);
+							p.setItemKeys();
+							a.setAudio(path + "/" + a.getKey() + "." + ext);
+				
 							file = new File(a.getAudio());
 						}
-
+						
 						pm.currentTransaction().commit();
+
+						InputStream input = item.openStream();
+						OutputStream output = new FileOutputStream(file);
+						int byte_;
+						while ((byte_ = input.read()) != -1)
+							output.write(byte_);
+        	   			output.close();
+						input.close();
+
+						log.info("Wrote " + prefix + " file " 
+								 + file.getAbsolutePath());
+
 					}
 					finally
 					{
@@ -330,18 +340,8 @@ public class PlaceBooksAdminController
 								"Rolling current persist transaction back");
 						}
 					}
+
 					pm.close();
-
-					InputStream input = item.openStream();
-					OutputStream output = new FileOutputStream(file);
-					int byte_;
-					while ((byte_ = input.read()) != -1)
-						output.write(byte_);
-           			output.close();
-					input.close();
-
-					log.info("Wrote " + prefix + " file " 
-							 + file.getAbsolutePath());
 						
 				}
 			}
@@ -363,31 +363,26 @@ public class PlaceBooksAdminController
     public ModelAndView makePackage(@PathVariable("key") String key)
 	{
 		
-		List<PlaceBook> pbs = getPlaceBooksQuery("key == '" + key + "'");
-		
-		if (pbs.size() > 1)
-		{
-			PMFSingleton.get().getPersistenceManager().close();
-			return new ModelAndView("message", "text", 
-									"Found too many PlaceBooks for query");
-		}
+		PlaceBook p = (PlaceBook)PMFSingleton
+							.get()
+							.getPersistenceManager()
+							.getObjectById(PlaceBook.class, key);
 
-		PlaceBook p = (PlaceBook)pbs.get(0);
 		String out = placeBookToXML(p);
 		
 		if (out != null)
 		{
-			String path = PropertiesSingleton
-							.get(this.getClass().getClassLoader())
-							.getProperty(PropertiesSingleton.IDEN_PACKAGE, "") 
-							+ p.getKey();
-
-			if (new File(path).exists() || new File(path).mkdirs())
+			String pkgPath = 
+				PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+					+ p.getKey();
+			if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 			{
 				try
 				{
 					FileWriter fw = 
-						new FileWriter(new File(path + "/" + 
+						new FileWriter(new File(pkgPath + "/" + 
 							PropertiesSingleton
 								.get(this.getClass().getClassLoader())
 								.getProperty(PropertiesSingleton.IDEN_CONFIG, 
@@ -402,18 +397,64 @@ public class PlaceBooksAdminController
 					log.error(e.toString());
 				}
 			}
-			
+
 			PMFSingleton.get().getPersistenceManager().close();
-			return new ModelAndView("package", "xmlcontent", out);
+
+			// Compress package path and serve it
+			try 
+			{
+				String pkgZPath = 
+					PropertiesSingleton
+						.get(this.getClass().getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+
+				if (new File(pkgZPath).exists() || new File(pkgZPath).mkdirs())
+				{
+
+					FileOutputStream fos = 
+						new FileOutputStream(pkgZPath + p.getKey() + ".zip");
+
+					ZipOutputStream zos = 
+						new ZipOutputStream(new BufferedOutputStream(fos));
+					zos.setMethod(ZipOutputStream.DEFLATED);
+
+					String files[] = new File(pkgPath).list();
+					BufferedInputStream bis = null;
+
+					byte data[] = new byte[2048];
+					for (int i = 0; i < files.length; ++i)
+					{
+						File entry = new File(pkgPath + "/" + files[i]);
+						log.info("Adding file to archive: " + entry.getPath());
+						FileInputStream fis = new FileInputStream(entry);
+						bis = new BufferedInputStream(fis, 2048);
+						zos.putNextEntry(new ZipEntry(entry.getPath()));
+
+						int j;
+		            	while((j = bis.read(data, 0, 2048)) != -1)
+        					zos.write(data, 0, j);
+            			bis.close();
+         			}
+				
+					zos.close();
+				}
+
+			} 
+			catch(IOException e) 
+			{
+        		log.error(e.toString());
+			}
+			
+			return new ModelAndView("package", "payload", out);
 		}
 
 		PMFSingleton.get().getPersistenceManager().close();
-		return new ModelAndView("message", "text", "Error");
+		return new ModelAndView("message", "text", "Error generating package");
 
 	}
 
 
-	public static String placeBookToXML(PlaceBook p)
+	private static String placeBookToXML(PlaceBook p)
 	{
 		StringWriter out = null;
 		
@@ -439,9 +480,11 @@ public class PlaceBooksAdminController
 									p.getGeometry().toText()));
 			root.appendChild(geometry);
 			
+			// Note: ImageItem, VideoItem and AudioItem write their data to a 
+			// package directly as well as creating XML configuration
 			for (PlaceBookItem item : p.getItems())
 				item.appendConfiguration(config, root);
- 
+
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer t = tf.newTransformer();
 			DOMSource source = new DOMSource(config);

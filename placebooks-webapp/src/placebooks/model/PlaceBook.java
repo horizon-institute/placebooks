@@ -37,22 +37,20 @@ public class PlaceBook
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBook
-	public PlaceBook(int owner, Geometry geom, List<PlaceBookItem> items)
+	public PlaceBook(int owner, Geometry geom)
 	{
 		this.owner = owner;
 		this.geom = geom;
-		setItems(items);
 		parameters = new HashMap<String, String>();
 		parameters.put("test", "testing");
 
 		this.timestamp = new Date();
 	}
-
-
-	// Clone an existing PlaceBook (i.e., make a copy)
-	public void clone(String key)
+	
+	public PlaceBook(int owner, Geometry geom, List<PlaceBookItem> items)
 	{
-
+		this(owner, geom);
+		setItems(items);
 	}
 
 	public void setItems(List<PlaceBookItem> items)
@@ -71,14 +69,16 @@ public class PlaceBook
   		items.add(item);
 	}
 
+	public boolean removeItem(PlaceBookItem item)
+	{
+		return items.remove(item);
+	}
 
 	public void setItemKeys()
 	{
 		for (PlaceBookItem pbi : items) 
 			pbi.setPBKey(key);
 	}
-
-
 
 	public String getKey() { return key; }
 

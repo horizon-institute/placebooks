@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.PropertiesSingleton;
+
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.io.*;
@@ -27,14 +29,14 @@ public class ImageItem extends PlaceBookItem
 	private BufferedImage image; 
 
 	@NotPersistent
-	private File imagePath;
+	private File imageFile;
 	
 	public ImageItem(int owner, Geometry geom, URL sourceURL, 
 					 BufferedImage image)
 	{
 		super(owner, geom, sourceURL);
 		this.image = image;
-		imagePath = null;
+		imageFile = null;
 	}
 
 	public String getEntityName()
@@ -44,7 +46,7 @@ public class ImageItem extends PlaceBookItem
 
 	public File getImagePath()
 	{
-		return imagePath;
+		return imageFile;
 	}
 
 	public void appendConfiguration(Document config, Element root)
@@ -54,12 +56,22 @@ public class ImageItem extends PlaceBookItem
 		// Dump image to disk
 		try 
 		{
-			imagePath = new File(hashCode() + ".png");
-		    ImageIO.write(image, "PNG", imagePath);
-			Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(imagePath.getPath()));
-			item.appendChild(filename);
-			log.info("Wrote ImageItem data to " + imagePath.getAbsolutePath());
+			String path = PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+							+ getPBKey();
+			imageFile = new File(path + "/" + getKey() + ".png");
+			log.info("Writing ImageItem data to " 
+					 + imageFile.getAbsolutePath());
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
+			    ImageIO.write(image, "PNG", imageFile);
+				Element filename = config.createElement("filename");
+				filename.appendChild(
+					config.createTextNode(imageFile.getName())
+				);
+				item.appendChild(filename);
+			}
 		}
 		catch (IOException e)
 		{
@@ -77,7 +89,7 @@ public class ImageItem extends PlaceBookItem
 	{
 		StringBuilder output = new StringBuilder();
 		output.append("<img src='");
-		output.append(imagePath.getPath());
+		output.append(imageFile.getPath());
 		output.append("' class='placebook-item-image' id='");
 		output.append(this.getPBKey());
 		output.append("' />");
