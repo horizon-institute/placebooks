@@ -2,17 +2,15 @@ package placebooks.model;
 
 import java.net.URL;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.apache.log4j.*;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Document;
 
 
 @PersistenceCapable
@@ -22,7 +20,7 @@ public class TextItem extends PlaceBookItem
 	@Persistent
 	private String text; 
 
-	public TextItem(int owner, Geometry geom, URL sourceURL, String text)
+	public TextItem(User owner, Geometry geom, URL sourceURL, String text)
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;
@@ -77,5 +75,4 @@ public class TextItem extends PlaceBookItem
 		// TODO Auto-generated method stub
 		return "";
 	}
-
 }

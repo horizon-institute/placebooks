@@ -1,21 +1,19 @@
 package placebooks.model;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.io.*;
-
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
 
 import javax.imageio.ImageIO;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
-import org.apache.log4j.*;
-
-import org.w3c.dom.Element;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -29,7 +27,7 @@ public class ImageItem extends PlaceBookItem
 	@NotPersistent
 	private File imagePath;
 	
-	public ImageItem(int owner, Geometry geom, URL sourceURL, 
+	public ImageItem(User owner, Geometry geom, URL sourceURL, 
 					 BufferedImage image)
 	{
 		super(owner, geom, sourceURL);
@@ -103,5 +101,4 @@ public class ImageItem extends PlaceBookItem
 		// TODO Auto-generated method stub
 		return "";
 	}
-
 }
