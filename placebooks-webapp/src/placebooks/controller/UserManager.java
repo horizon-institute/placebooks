@@ -23,6 +23,7 @@ public class UserManager
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static User getUser(final PersistenceManager manager, final String email)
 	{
 
