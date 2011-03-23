@@ -7,7 +7,7 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import placebooks.controller.PMFSingleton;
 import placebooks.model.User;
 
-public class InitializeUsers
+public class InitializeDatabase
 {
 	/**
 	 * @param args

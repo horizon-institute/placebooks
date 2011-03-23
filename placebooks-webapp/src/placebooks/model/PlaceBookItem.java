@@ -4,18 +4,17 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Extension;
-import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.Discriminator;
-import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
-import org.apache.log4j.*;
-
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -64,7 +63,7 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
-	private String pbKey; // PlaceBook this PlaceBookItem belongs to
+	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
 	private User owner;
@@ -89,7 +88,6 @@ public abstract class PlaceBookItem
 	{
 		this.owner = owner;
 		this.geom = geom;
-		this.pbKey = pbKey;
 		this.sourceURL = sourceURL;
 
 		parameters = new HashMap<String, String>();
@@ -172,8 +170,8 @@ public abstract class PlaceBookItem
 
 	public String getKey() { return key; }
 
-	public void setPBKey(String pbKey) { this.pbKey = pbKey; }
-	public String getPBKey() { return pbKey; }
+	public void setPlaceBook(PlaceBook placebook) { this.placebook = placebook; }
+	public PlaceBook getPlaceBook() { return placebook; }
 
 	public void setOwner(User owner) { this.owner = owner; }
 	public User getOwner() { return owner; }

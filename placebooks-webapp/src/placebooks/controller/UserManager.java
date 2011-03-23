@@ -1,5 +1,7 @@
 package placebooks.controller;
 
+import java.util.Collection;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -15,7 +17,7 @@ public class UserManager
 		final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails)
 		{
-			UserDetails details = ((UserDetails)principal);
+			final UserDetails details = ((UserDetails) principal);
 			return getUser(details.getUsername());
 		}
 		return null;
@@ -23,12 +25,11 @@ public class UserManager
 
 	public static User getUser(final PersistenceManager manager, final String email)
 	{
-		manager.currentTransaction().begin();
-
-		final Query query = manager.newQuery(User.class, "email == '" + email + "'");
+		final Query query = manager.newQuery(User.class, "email == \"" + email.toLowerCase() + "\"");
 		final Object result = query.execute();
-		manager.currentTransaction().commit();
-		if (result instanceof User) { return (User) result; }
+		@SuppressWarnings("unchecked")
+		final Collection<User> users = (Collection<User>) result;
+		if (!users.isEmpty()) { return users.iterator().next(); }
 
 		return null;
 	}
@@ -44,14 +45,5 @@ public class UserManager
 		{
 			manager.close();
 		}
-	}
-
-	public static User login()
-	{
-		return null;
-	}
-
-	public static void logout()
-	{
 	}
 }

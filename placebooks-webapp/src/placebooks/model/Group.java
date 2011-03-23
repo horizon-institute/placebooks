@@ -3,10 +3,8 @@ package placebooks.model;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-@PersistenceCapable
 public class Group implements Iterable<PlaceBook>
 {
 	@Persistent

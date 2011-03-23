@@ -134,12 +134,11 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 		try
 		{
 			pm.currentTransaction().begin();
 			pm.makePersistent(p);
-			p.setItemKeys();
 			pm.currentTransaction().commit();
 		}
 		finally
@@ -167,7 +166,7 @@ public class PlaceBooksAdminController
 	@SuppressWarnings("unchecked")
 	private List<PlaceBook> getPlaceBooksQuery(String queryStr)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 	
 		try
 		{
@@ -197,7 +196,7 @@ public class PlaceBooksAdminController
 		else
 			out.append("PlaceBook query returned null");
 
-		PMFSingleton.get().getPersistenceManager().close();
+		PMFSingleton.getPersistenceManager().close();
 
 		return new ModelAndView("message", "text", out.toString());
 
@@ -286,7 +285,7 @@ public class PlaceBooksAdminController
 					}
 
 					PersistenceManager pm = 
-							PMFSingleton.get().getPersistenceManager();
+							PMFSingleton.getPersistenceManager();
 
 					try 
 					{
@@ -295,8 +294,7 @@ public class PlaceBooksAdminController
 							UserManager.getUser("stuart@tropic.org.uk");
 						
 						pm.currentTransaction().begin();
-						PlaceBook p = (PlaceBook)pm.getObjectById(
-													PlaceBook.class, suffix);
+						PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
 
 						int extIdx = item.getName().lastIndexOf(".");
 						String ext = 
@@ -308,7 +306,6 @@ public class PlaceBooksAdminController
 							VideoItem v = new VideoItem(user, null, null, 
 														new File(""));
 							p.addItem(v);
-							p.setItemKeys();
 							v.setVideo(path + "/" + v.getKey() + "." + ext);
 							
 							file = new File(v.getVideo());
@@ -319,7 +316,6 @@ public class PlaceBooksAdminController
 							AudioItem a = new AudioItem(user, null, null, 
 														new File(""));
 							p.addItem(a);
-							p.setItemKeys();
 							a.setAudio(path + "/" + a.getKey() + "." + ext);
 				
 							file = new File(a.getAudio());
@@ -371,10 +367,7 @@ public class PlaceBooksAdminController
     public ModelAndView makePackage(@PathVariable("key") String key)
 	{
 		
-		PlaceBook p = (PlaceBook)PMFSingleton
-							.get()
-							.getPersistenceManager()
-							.getObjectById(PlaceBook.class, key);
+		PlaceBook p = PMFSingleton.getPersistenceManager().getObjectById(PlaceBook.class, key);
 
 		String out = placeBookToXML(p);
 		
@@ -406,7 +399,7 @@ public class PlaceBooksAdminController
 				}
 			}
 
-			PMFSingleton.get().getPersistenceManager().close();
+			PMFSingleton.getPersistenceManager().close();
 
 			// Compress package path and serve it
 			try 
@@ -456,7 +449,7 @@ public class PlaceBooksAdminController
 			return new ModelAndView("package", "payload", out);
 		}
 
-		PMFSingleton.get().getPersistenceManager().close();
+		PMFSingleton.getPersistenceManager().close();
 		return new ModelAndView("message", "text", "Error generating package");
 
 	}
@@ -524,7 +517,7 @@ public class PlaceBooksAdminController
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 
 		try 
 		{
@@ -559,7 +552,7 @@ public class PlaceBooksAdminController
     public ModelAndView deleteAllPlaceBook() 
 	{
 			
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 
 		try 
 		{

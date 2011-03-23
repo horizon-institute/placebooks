@@ -1,14 +1,14 @@
 package placebooks.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Unique;
 
 @PersistenceCapable
 public class User
@@ -17,7 +17,6 @@ public class User
 	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
 	private String key;
 
-	@Unique
 	@Persistent
 	private String email;
 
@@ -27,20 +26,17 @@ public class User
 	@Persistent
 	private String name;
 
-	@Persistent
-	private Collection<PlaceBook> placebooks = new ArrayList<PlaceBook>();
+	@Persistent(persistenceModifier=PersistenceModifier.PERSISTENT, mappedBy="owner")
+	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
 	@Persistent
 	@Join
-	private Collection<User> friends = new ArrayList<User>();
-
-	@Persistent
-	private Collection<Group> groups = new ArrayList<Group>();
+	private Collection<User> friends = new HashSet<User>();
 
 	public User(final String name, final String email, final String passwordHash)
 	{
 		this.name = name;
-		this.email = email;
+		this.email = email.toLowerCase();
 		this.passwordHash = passwordHash;
 	}
 
@@ -59,7 +55,7 @@ public class User
 		friends.add(friend);
 	}
 
-	public Iterable<User> friends()
+	public Iterable<User> getFriends()
 	{
 		return friends;
 	}
@@ -84,12 +80,17 @@ public class User
 		return passwordHash;
 	}
 
-	public Iterable<Group> groups()
+	public void remove(final PlaceBook placebook)
 	{
-		return groups;
+		placebooks.remove(placebook);
 	}
-
-	public Iterable<PlaceBook> placebooks()
+	
+	public void remove(final User friend)
+	{
+		friends.remove(friend);
+	}
+	
+	public Iterable<PlaceBook> getPlacebooks()
 	{
 		return placebooks;
 	}
