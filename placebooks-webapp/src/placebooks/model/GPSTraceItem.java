@@ -35,7 +35,8 @@ public class GPSTraceItem extends PlaceBookItem
 {
 	private Document trace;
 
-	public GPSTraceItem(User owner, Geometry geom, URL sourceURL, Document trace)
+	public GPSTraceItem(String owner, Geometry geom, URL sourceURL, 
+						Document trace)
 	{
 		super(owner, geom, sourceURL);
 		this.trace = trace;

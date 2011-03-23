@@ -25,7 +25,7 @@ public class VideoItem extends PlaceBookItem
 	// Videos are stored on disk, not database
 	private File video; 
 
-	public VideoItem(User owner, Geometry geom, URL sourceURL, File video)
+	public VideoItem(String owner, Geometry geom, URL sourceURL, File video)
 	{
 		super(owner, geom, sourceURL);
 		this.video = video;

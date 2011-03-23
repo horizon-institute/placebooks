@@ -21,7 +21,7 @@ public class PlaceBook
 	private String key;
 
 	@Persistent
-	private User owner;
+	private String owner;
 	
 	@Persistent
 	private Date timestamp;
@@ -37,7 +37,7 @@ public class PlaceBook
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBook
-	public PlaceBook(User owner, Geometry geom)
+	public PlaceBook(String owner, Geometry geom)
 	{
 		this.owner = owner;
 		this.geom = geom;
@@ -47,7 +47,7 @@ public class PlaceBook
 		this.timestamp = new Date();
 	}
 	
-	public PlaceBook(User owner, Geometry geom, List<PlaceBookItem> items)
+	public PlaceBook(String owner, Geometry geom, List<PlaceBookItem> items)
 	{
 		this(owner, geom);
 		setItems(items);
@@ -82,8 +82,8 @@ public class PlaceBook
 
 	public String getKey() { return key; }
 
-	public void setOwner(User owner) { this.owner = owner; }
-	public User getOwner() { return owner; }
+	public void setOwner(String owner) { this.owner = owner; }
+	public String getOwner() { return owner; }
 
 	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 	public Date getTimestamp() { return timestamp; }

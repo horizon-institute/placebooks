@@ -20,7 +20,7 @@ public class TextItem extends PlaceBookItem
 	@Persistent
 	private String text; 
 
-	public TextItem(User owner, Geometry geom, URL sourceURL, String text)
+	public TextItem(String owner, Geometry geom, URL sourceURL, String text)
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;

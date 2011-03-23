@@ -61,7 +61,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
-		User owner = UserManager.getCurrentUser();
+		
 		Geometry geometry = null;
 		try 
 		{
@@ -73,9 +73,10 @@ public class PlaceBooksAdminController
 			log.error(e.toString());
 		}
 
+		String owner = UserManager.getUser("stuart@tropic.org.uk").getKey();
+
 		PlaceBook p = new PlaceBook(owner, geometry);
 
-		//List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 		try 
 		{
 			p.addItem(
@@ -95,7 +96,7 @@ public class PlaceBooksAdminController
 		try 
 		{
 			// Some example XML
-			String trace = "<gpx version=\"1.0\" creator=\"PlaceBooks 1.0\" 				 xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" 				 xmlns=\"http://www.topografix.com/GPX/1/1\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">			<time>			2011-02-14T13:31:10.084Z			</time>			<bounds minlat=\"52.950665120\" minlon=\"-1.183738050\" 					maxlat=\"52.950665120\" maxlon=\"-1.183738050\"/>			<trkseg>				<trkpt lat=\"52.950665120\" lon=\"-1.183738050\">				<ele>0.000000</ele>				<time>				2011-02-14T13:31:10.084Z				</time>				</trkpt>			</trkseg>			</gpx>";
+			String trace = "<gpx version=\"1.0\" creator=\"PlaceBooks 1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.topografix.com/GPX/1/1\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><time>2011-02-14T13:31:10.084Z</time><bounds minlat=\"52.950665120\" minlon=\"-1.183738050\" maxlat=\"52.950665120\" maxlon=\"-1.183738050\"/><trkseg><trkpt lat=\"52.950665120\" lon=\"-1.183738050\"><ele>0.000000</ele><time>2011-02-14T13:31:10.084Z</time></trkpt></trkseg></gpx>";
 
 			StringReader reader = new StringReader(trace);
 			InputSource source = new InputSource(reader);
@@ -182,7 +183,10 @@ public class PlaceBooksAdminController
 	public ModelAndView getPlaceBooks()
 	{
 
-		List<PlaceBook> pbs = getPlaceBooksQuery("owner.email == 'stuart@tropic.org.uk'");
+		List<PlaceBook> pbs = 
+			getPlaceBooksQuery("owner == '" + 
+				UserManager.getUser("stuart@tropic.org.uk").getKey() + "'");
+
 		StringBuffer out = new StringBuffer();
 		if (pbs != null)
 		{
@@ -204,7 +208,7 @@ public class PlaceBooksAdminController
 		for (PlaceBook pb : pbs)
 		{
 			out.append("PlaceBook: " + pb.getKey() + ", owner=" 
-				+ pb.getOwner().getEmail() + ", timestamp=" 
+				+ pb.getOwner() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
 				+ " elements [<a href='../package/" 
 				+ pb.getKey() 
@@ -222,7 +226,7 @@ public class PlaceBooksAdminController
 				out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
 				out.append(pbi.getEntityName());
 				out.append(": " + pbi.getKey() + ", owner=" 
-						   + pbi.getOwner().getEmail() + ", timestamp=" 
+						   + pbi.getOwner() + ", timestamp=" 
 						   + pbi.getTimestamp().toString());
 
 				out.append("<br/>");
@@ -285,8 +289,8 @@ public class PlaceBooksAdminController
 					try 
 					{
 						File file = null;
-						User user = 
-							UserManager.getUser("stuart@tropic.org.uk");
+						String owner = 
+							UserManager.getUser("stuart@tropic.org.uk").getKey();
 						
 						pm.currentTransaction().begin();
 						PlaceBook p = (PlaceBook)pm.getObjectById(
@@ -299,7 +303,7 @@ public class PlaceBooksAdminController
 
 						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 						{
-							VideoItem v = new VideoItem(user, null, null, 
+							VideoItem v = new VideoItem(owner, null, null, 
 														new File(""));
 							p.addItem(v);
 							p.setItemKeys();
@@ -310,7 +314,7 @@ public class PlaceBooksAdminController
 						else if (property.equals(
 									PropertiesSingleton.IDEN_AUDIO))
 						{
-							AudioItem a = new AudioItem(user, null, null, 
+							AudioItem a = new AudioItem(owner, null, null, 
 														new File(""));
 							p.addItem(a);
 							p.setItemKeys();
@@ -470,7 +474,7 @@ public class PlaceBooksAdminController
 			Element root = config.createElement(PlaceBook.class.getName());
 			config.appendChild(root);
 			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", p.getOwner().getEmail());
+			root.setAttribute("owner", p.getOwner());
 			
 			Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(
@@ -532,7 +536,7 @@ public class PlaceBooksAdminController
 			if (pm.currentTransaction().isActive())
 			{
 				pm.currentTransaction().rollback();
-				log.error("Rolling current delete transaction back");
+				log.error("Rolling current delete single transaction back");
 			}
 		}
 
@@ -567,7 +571,7 @@ public class PlaceBooksAdminController
 			if (pm.currentTransaction().isActive())
 			{
 				pm.currentTransaction().rollback();
-				log.error("Rolling current delete transaction back");
+				log.error("Rolling current delete all transaction back");
 			}
 		}
 

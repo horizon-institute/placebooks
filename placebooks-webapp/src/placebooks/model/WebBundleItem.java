@@ -26,7 +26,7 @@ public class WebBundleItem extends PlaceBookItem
 
 	private File wgetBundle;
 
-	public WebBundleItem(User owner, Geometry geom, URL sourceURL)
+	public WebBundleItem(String owner, Geometry geom, URL sourceURL)
 	{
 		super(owner, geom, sourceURL);
 		thumbnail = null;
