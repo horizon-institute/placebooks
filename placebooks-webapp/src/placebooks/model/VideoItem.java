@@ -1,12 +1,16 @@
 package placebooks.model;
 
-import java.io.File;
+import placebooks.controller.PropertiesSingleton;
+
+import java.io.*;
 import java.net.URL;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+
+import org.apache.commons.io.IOUtils;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
@@ -35,27 +39,45 @@ public class VideoItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
-		Element filename = config.createElement("filename");
-		filename.appendChild(config.createTextNode(video.getPath()));
-		item.appendChild(filename);
+
+		try
+		{			
+			FileInputStream fis = new FileInputStream(video);
+			File to = new File(
+						PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+							+ getPBKey() + "/" + video.getName());
+
+			FileOutputStream fos = new FileOutputStream(to);
+
+			log.info("Copying video file, from=" + video.toString() + ", to=" 
+					 + to.toString());
+			IOUtils.copy(fis, fos);
+			fis.close();
+			fos.close();
+			Element filename = config.createElement("filename");
+			filename.appendChild(config.createTextNode(video.getName()));
+			item.appendChild(filename);
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+
 		root.appendChild(item);
 	}
 
 	@Persistent
 	public String getVideo()
 	{
-		if (video != null)
-			return video.toString();
-		else
-			return null;
+		return video.toString();
 	}
 	@Persistent
 	public void setVideo(String filepath)
 	{
 		if (filepath != null)
 			video = new File(filepath);
-		else
-			video = null;
 	}
 
 	/* (non-Javadoc)

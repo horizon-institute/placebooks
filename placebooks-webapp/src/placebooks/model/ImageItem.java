@@ -1,19 +1,23 @@
 package placebooks.model;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import placebooks.controller.PropertiesSingleton;
 
-import javax.imageio.ImageIO;
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.NotPersistent;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.io.*;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 
-import org.w3c.dom.Document;
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.*;
+
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -25,14 +29,14 @@ public class ImageItem extends PlaceBookItem
 	private BufferedImage image; 
 
 	@NotPersistent
-	private File imagePath;
+	private File imageFile;
 	
 	public ImageItem(User owner, Geometry geom, URL sourceURL, 
 					 BufferedImage image)
 	{
 		super(owner, geom, sourceURL);
 		this.image = image;
-		imagePath = null;
+		imageFile = null;
 	}
 
 	public String getEntityName()
@@ -42,7 +46,7 @@ public class ImageItem extends PlaceBookItem
 
 	public File getImagePath()
 	{
-		return imagePath;
+		return imageFile;
 	}
 
 	public void appendConfiguration(Document config, Element root)
@@ -52,12 +56,22 @@ public class ImageItem extends PlaceBookItem
 		// Dump image to disk
 		try 
 		{
-			imagePath = new File(hashCode() + ".png");
-		    ImageIO.write(image, "PNG", imagePath);
-			Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(imagePath.getPath()));
-			item.appendChild(filename);
-			log.info("Wrote ImageItem data to " + imagePath.getAbsolutePath());
+			String path = PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+							+ getPBKey();
+			imageFile = new File(path + "/" + getKey() + ".png");
+			log.info("Writing ImageItem data to " 
+					 + imageFile.getAbsolutePath());
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
+			    ImageIO.write(image, "PNG", imageFile);
+				Element filename = config.createElement("filename");
+				filename.appendChild(
+					config.createTextNode(imageFile.getName())
+				);
+				item.appendChild(filename);
+			}
 		}
 		catch (IOException e)
 		{
@@ -75,7 +89,7 @@ public class ImageItem extends PlaceBookItem
 	{
 		StringBuilder output = new StringBuilder();
 		output.append("<img src='");
-		output.append(imagePath.getPath());
+		output.append(imageFile.getPath());
 		output.append("' class='placebook-item-image' id='");
 		output.append(this.getPBKey());
 		output.append("' />");
@@ -101,4 +115,6 @@ public class ImageItem extends PlaceBookItem
 		// TODO Auto-generated method stub
 		return "";
 	}
+
 }
+

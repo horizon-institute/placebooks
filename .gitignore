@@ -4,6 +4,6 @@ thumbs.db
 .buildpath
 .DS_Store
 datanucleus.log
-placebooks-webapp/war/WEB-INF/classes/*.class
 placebooks-webapp/src/META-INF
 *.bak
+*.class

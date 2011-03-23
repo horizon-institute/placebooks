@@ -13,7 +13,8 @@ public final class PropertiesSingleton
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
 	public static final String IDEN_VIDEO = "video.dir";
 	public static final String IDEN_AUDIO = "audio.dir";
-	public static final String IDEN_PACKAGE = "package.dir";
+	public static final String IDEN_PKG = "packages.dir";
+	public static final String IDEN_PKG_Z = "packages-zipped.dir";
 	public static final String IDEN_CONFIG = "config.name";	
 
    	private static final Logger log = 
@@ -34,7 +35,7 @@ public final class PropertiesSingleton
 		}
 		catch (IOException e)
 		{
-			log.error("Attempted to load properties from " 
+			log.error("Error in loading properties from " 
 				      + PROPERTIES_FILENAME);
 			log.error(e.toString());
 		}
