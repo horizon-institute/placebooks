@@ -57,6 +57,12 @@ public class PlaceBooksAdminController
 	{
 		return "admin";
     }
+	
+	@RequestMapping(value = "/account", method = RequestMethod.GET)
+    public String accountPage() 
+	{
+		return "account";
+    }
 
 
 	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
@@ -64,7 +70,7 @@ public class PlaceBooksAdminController
 	{
 
 		// TODO: set these as vars to pass in to method
-		String owner = UserManager.getUser("stuart@tropic.org.uk").getKey();
+		User owner = UserManager.getUser("stuart@tropic.org.uk");
 		Geometry geom = null;
 		URL url = null;
 
@@ -131,7 +137,6 @@ public class PlaceBooksAdminController
 							VideoItem v = new VideoItem(owner, geom, url, 
 														new File(""));
 							p.addItem(v);
-							p.setItemKeys();
 							v.setVideo(path + "/" + v.getKey() + "." + ext);
 							
 							file = new File(v.getVideo());
@@ -142,7 +147,6 @@ public class PlaceBooksAdminController
 							AudioItem a = new AudioItem(owner, geom, url, 
 														new File(""));
 							p.addItem(a);
-							p.setItemKeys();
 							a.setAudio(path + "/" + a.getKey() + "." + ext);
 				
 							file = new File(a.getAudio());
@@ -394,7 +398,7 @@ public class PlaceBooksAdminController
 			Element root = config.createElement(PlaceBook.class.getName());
 			config.appendChild(root);
 			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", p.getOwner());
+			root.setAttribute("owner", p.getOwner().getKey());
 			
 			Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(
@@ -438,3 +442,4 @@ public class PlaceBooksAdminController
 	}
 
 }
+

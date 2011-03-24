@@ -47,7 +47,7 @@ public class VideoItem extends PlaceBookItem
 						PropertiesSingleton
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPBKey() + "/" + video.getName());
+							+ getPlaceBook().getKey() + "/" + video.getName());
 
 			FileOutputStream fos = new FileOutputStream(to);
 

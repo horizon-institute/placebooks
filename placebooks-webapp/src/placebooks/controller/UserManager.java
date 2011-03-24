@@ -1,6 +1,6 @@
 package placebooks.controller;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -17,7 +17,7 @@ public class UserManager
 		final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails)
 		{
-			UserDetails details = ((UserDetails)principal);
+			final UserDetails details = ((UserDetails) principal);
 			return getUser(details.getUsername());
 		}
 		return null;
@@ -26,25 +26,13 @@ public class UserManager
 	@SuppressWarnings("unchecked")
 	public static User getUser(final PersistenceManager manager, final String email)
 	{
-
-		// stuart: This technique does not work? query.execute() always returns a Collection for this kind of query, even when the result is 1
-
-/*		manager.currentTransaction().begin();
-
-		final Query query = manager.newQuery(User.class, "email == '" + email + "'");
-
+		final Query query = manager.newQuery(User.class, "email == \"" + email.toLowerCase() + "\"");
 		final Object result = query.execute();
-		manager.currentTransaction().commit();
-		if (result instanceof User) { return (User) result; }
-*/
+		@SuppressWarnings("unchecked")
+		final Collection<User> users = (Collection<User>) result;
+		if (!users.isEmpty()) { return users.iterator().next(); }
 
-		final Query query = manager.newQuery(User.class, "email == '" + email + "'");
-		final List<User> users = (List<User>)query.execute();
-
-		if (users.size() < 1)
-			return null;
-
-		return users.get(0);
+		return null;
 	}
 
 	public static User getUser(final String email)
@@ -58,14 +46,5 @@ public class UserManager
 		{
 			manager.close();
 		}
-	}
-
-	public static User login()
-	{
-		return null;
-	}
-
-	public static void logout()
-	{
 	}
 }

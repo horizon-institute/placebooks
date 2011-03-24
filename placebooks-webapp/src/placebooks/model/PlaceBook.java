@@ -1,9 +1,19 @@
 package placebooks.model;
 
-import java.util.*;
-import javax.jdo.annotations.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
-import org.apache.log4j.*;
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.PersistenceModifier;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -12,7 +22,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public class PlaceBook
 {
-
   	private static final Logger log = 
 		Logger.getLogger(PlaceBook.class.getName());
 
@@ -21,7 +30,7 @@ public class PlaceBook
 	private String key;
 
 	@Persistent
-	private String owner;
+	private User owner;
 	
 	@Persistent
 	private Date timestamp;
@@ -29,7 +38,7 @@ public class PlaceBook
 	@Persistent
 	private Geometry geom; // Pertaining to the PlaceBook
 
-	@Persistent
+	@Persistent(mappedBy="placebook")
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// The PlaceBook's configuration data
@@ -37,9 +46,10 @@ public class PlaceBook
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBook
-	public PlaceBook(String owner, Geometry geom)
+	public PlaceBook(User owner, Geometry geom)
 	{
 		this.owner = owner;
+		this.owner.add(this);
 		this.geom = geom;
 		parameters = new HashMap<String, String>();
 		parameters.put("test", "testing");
@@ -47,7 +57,7 @@ public class PlaceBook
 		this.timestamp = new Date();
 	}
 	
-	public PlaceBook(String owner, Geometry geom, List<PlaceBookItem> items)
+	public PlaceBook(User owner, Geometry geom, List<PlaceBookItem> items)
 	{
 		this(owner, geom);
 		setItems(items);
@@ -67,23 +77,19 @@ public class PlaceBook
 	public void addItem(PlaceBookItem item) 
 	{
   		items.add(item);
+  		item.setPlaceBook(this);
 	}
 
 	public boolean removeItem(PlaceBookItem item)
 	{
+		item.setPlaceBook(null);
 		return items.remove(item);
-	}
-
-	public void setItemKeys()
-	{
-		for (PlaceBookItem pbi : items) 
-			pbi.setPBKey(key);
 	}
 
 	public String getKey() { return key; }
 
-	public void setOwner(String owner) { this.owner = owner; }
-	public String getOwner() { return owner; }
+	public void setOwner(User owner) { this.owner = owner; }
+	public User getOwner() { return owner; }
 
 	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 	public Date getTimestamp() { return timestamp; }

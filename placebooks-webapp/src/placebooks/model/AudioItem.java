@@ -47,7 +47,7 @@ public class AudioItem extends PlaceBookItem
 						PropertiesSingleton
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPBKey() + "/" + audio.getName());
+							+ getPlaceBook().getKey() + "/" + audio.getName());
 
 			FileOutputStream fos = new FileOutputStream(to);
 

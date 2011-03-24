@@ -49,7 +49,7 @@ public class TextItem extends PlaceBookItem
 	{
 		StringBuilder output = new StringBuilder();
 		output.append("<div class='placebook-item-text' id='");
-		output.append(this.getPBKey());
+		output.append(this.getPlaceBook().getKey());
 		output.append("'>");
 		output.append(this.text);
 		output.append("'</div>");
