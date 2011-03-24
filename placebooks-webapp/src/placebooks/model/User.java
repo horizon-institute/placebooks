@@ -9,6 +9,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
 
 @PersistenceCapable
 public class User
@@ -17,6 +18,7 @@ public class User
 	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
 	private String key;
 
+	@Unique
 	@Persistent
 	private String email;
 

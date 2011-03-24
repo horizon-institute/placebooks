@@ -1,19 +1,24 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-
-import java.util.*;
-import java.util.zip.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,17 +33,20 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.apache.log4j.Logger;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import placebooks.model.AudioItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -70,7 +78,8 @@ public class PlaceBooksAdminController
 	{
 
 		// TODO: set these as vars to pass in to method
-		User owner = UserManager.getUser("stuart@tropic.org.uk");
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();		
+		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
 		Geometry geom = null;
 		URL url = null;
 
@@ -116,65 +125,48 @@ public class PlaceBooksAdminController
 								  			    "Failed to write file");
 					}
 
-					PersistenceManager pm = 
-							PMFSingleton.get().getPersistenceManager();
+					File file = null;
+										
+					pm.currentTransaction().begin();
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
 
-					try 
+					int extIdx = item.getName().lastIndexOf(".");
+					String ext = 
+						item.getName().substring(extIdx + 1, 
+											     item.getName().length());
+
+					if (property.equals(PropertiesSingleton.IDEN_VIDEO))
 					{
-						File file = null;
-											
-						pm.currentTransaction().begin();
-						PlaceBook p = (PlaceBook)pm.getObjectById(
-													PlaceBook.class, suffix);
-
-						int extIdx = item.getName().lastIndexOf(".");
-						String ext = 
-							item.getName().substring(extIdx + 1, 
-												     item.getName().length());
-
-						if (property.equals(PropertiesSingleton.IDEN_VIDEO))
-						{
-							VideoItem v = new VideoItem(owner, geom, url, 
-														new File(""));
-							p.addItem(v);
-							v.setVideo(path + "/" + v.getKey() + "." + ext);
-							
-							file = new File(v.getVideo());
-						}
-						else if (property.equals(
-									PropertiesSingleton.IDEN_AUDIO))
-						{
-							AudioItem a = new AudioItem(owner, geom, url, 
-														new File(""));
-							p.addItem(a);
-							a.setAudio(path + "/" + a.getKey() + "." + ext);
-				
-							file = new File(a.getAudio());
-						}
+						VideoItem v = new VideoItem(owner, geom, url, 
+													new File(""));
+						p.addItem(v);
+						v.setVideo(path + "/" + v.getKey() + "." + ext);
 						
-						pm.currentTransaction().commit();
-
-						InputStream input = item.openStream();
-						OutputStream output = new FileOutputStream(file);
-						int byte_;
-						while ((byte_ = input.read()) != -1)
-							output.write(byte_);
-        	   			output.close();
-						input.close();
-
-						log.info("Wrote " + prefix + " file "
-								 + file.getAbsolutePath());
-
+						file = new File(v.getVideo());
 					}
-					finally
+					else if (property.equals(
+								PropertiesSingleton.IDEN_AUDIO))
 					{
-						if (pm.currentTransaction().isActive())
-						{
-							pm.currentTransaction().rollback();
-							log.error(
-								"Rolling current persist transaction back");
-						}
+						AudioItem a = new AudioItem(owner, geom, url, 
+													new File(""));
+						p.addItem(a);
+						a.setAudio(path + "/" + a.getKey() + "." + ext);
+			
+						file = new File(a.getAudio());
 					}
+					
+					pm.currentTransaction().commit();
+
+					InputStream input = item.openStream();
+					OutputStream output = new FileOutputStream(file);
+					int byte_;
+					while ((byte_ = input.read()) != -1)
+						output.write(byte_);
+    	   			output.close();
+					input.close();
+
+					log.info("Wrote " + prefix + " file "
+							 + file.getAbsolutePath());
 
 					pm.close();
 						
@@ -189,6 +181,15 @@ public class PlaceBooksAdminController
 		{
             log.error(e.toString());
         }
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error(
+					"Rolling current persist transaction back");
+			}
+		}
 
 		return new ModelAndView("message", "text", 
 								"Done");
@@ -200,7 +201,7 @@ public class PlaceBooksAdminController
 									@PathVariable("key") String key)
 	{
 		
-		PlaceBook p = (PlaceBook)PMFSingleton
+		PlaceBook p = PMFSingleton
 							.get()
 							.getPersistenceManager()
 							.getObjectById(PlaceBook.class, key);

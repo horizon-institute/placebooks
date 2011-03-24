@@ -3,9 +3,18 @@
  */
 package placebooks.controller;
 
-import java.io.*;
-import java.net.*;
-import java.net.Proxy.Type;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -21,7 +30,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.controller.PlaceBooksAdminController;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTripsResponse;
@@ -178,7 +186,7 @@ public class EverytrailHelper
 		{
 			while(paramNames.hasMoreElements())
 			{
-				String paramName = (String) paramNames.nextElement();
+				String paramName = paramNames.nextElement();
 				data.append(URLEncoder.encode(paramName, "UTF-8") + "=" + URLEncoder.encode(params.get(paramName), "UTF-8"));
 				if(paramNames.hasMoreElements())
 				{

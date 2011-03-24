@@ -23,7 +23,6 @@ public class UserManager
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static User getUser(final PersistenceManager manager, final String email)
 	{
 		final Query query = manager.newQuery(User.class, "email == \"" + email.toLowerCase() + "\"");
@@ -35,7 +34,7 @@ public class UserManager
 		return null;
 	}
 
-	public static User getUser(final String email)
+	private static User getUser(final String email)
 	{
 		final PersistenceManager manager = PMFSingleton.get().getPersistenceManager();
 		try
