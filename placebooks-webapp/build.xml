@@ -2,6 +2,8 @@
 
 <project default="install" basedir=".">
 
+	<property file="build.properties" />
+	
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
@@ -21,8 +23,6 @@
 	<property name="manager.url"   value="http://localhost:8080/manager"/>
 	<property name="manager.username"   value="admin"/>
 	<property name="manager.password"   value="r4nd0m"/>	
-
-	<property file="build.properties" />
 
 	<path id="classpath">
   		<fileset dir="${lib.dir}">
