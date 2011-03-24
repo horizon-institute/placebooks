@@ -50,6 +50,15 @@
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
 			   includeAntRuntime="no">
 			<src path="${src.dir}" />
+			<compilerarg value="-Xlint:unchecked" />
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+
+	<target name="compile-test" depends="compile"
+			description="Compile test classes">
+		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
+			   includeAntRuntime="no">
 			<src path="${test.dir}" />
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath refid="classpath"/>
@@ -73,7 +82,7 @@
 		</jar>
 	</target>
 
-	<target name="test" depends="compile,enhance,staging" 
+	<target name="test" depends="compile-test,enhance,staging" 
 			description="JUnit testing">
 		<junit fork="yes" haltonfailure="yes" showoutput="yes">
 			<classpath>
@@ -82,6 +91,7 @@
 			</classpath>
       		<formatter type="brief" usefile="false" />
       		<test name="placebooks.controller.UserTest" />
+			<test name="placebooks.controller.PlaceBookTests" />
     	</junit>
 	</target>
 
@@ -114,6 +124,14 @@
 		</javadoc>
 	</target>
 
+	<target name="initdb" depends="compile,enhance">
+        <java classname="placebooks.utils.InitializeDatabase">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement path="${classes.dir}" />
+			</classpath>
+		</java>
+    </target>
 
   	<target name="install" depends="war"
    			description="Install application to servlet container">

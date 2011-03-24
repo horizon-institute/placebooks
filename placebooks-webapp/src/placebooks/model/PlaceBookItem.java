@@ -20,35 +20,6 @@ import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-/**
- * TODO: THIS JAVADOC COMMENT IS NO LONGER RELEVANT/CORRECT
- *
- * A PlacebookItem represents an item that appears in a Placebook, e.g. photo, map, bit 
- * of text or web url.  This is an Abstract class that defines the general funcitonality
- *  of PlacebookItems.  Decendant classes will be created that implement the specific 
- *  functionality for each content type (image, map, url, etc).
- *  
- * PlacebookItems consist of the 'PlacebookItemID' field (a unique ID) and a number of 
- * ItemParameters that are used to store the individual bits of data for an item (for 
- * example, if it's a text item, the text; if it's an external web page, it's URL).  
- * These will be accessed by the GetParameter and SetParameter methods, etc.
- * Every PlacebookItem _must_ have the two parameters "Name" and "Type".  
- *
- * Name is the user specified title of the Item in their Placebook (e.g. 'A photo of
- *  the sea') which will be plain text (n.b. should be parsed for HTML/bad things 
- *  by database and view methods).
- *  For packaging purposes the method 'GetData' is defined that will return the 
- *  PlacebookItem and it's associated ItemParameters in the format suitable for 
- *  packaging. 
- *  @TODO with MarkD; define/document this format)
- * 
- *  The methods 'RenderBodyHTML' and 'CreateCache' are both abstract methods, to be 
- *  implemented by the 'real' PlacebookItem classes. 
- *  
- *  'CreateCache' will generate a stream containing the data required for the 
- *  cached version of this page suitable for inclusion in a downloadable package 
- *  version of the Placebook. (@TODO with MarkD; define/document this format)
- */
 @PersistenceCapable
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
@@ -66,7 +37,7 @@ public abstract class PlaceBookItem
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
-	private String owner;
+	private User owner;
 	
 	@Persistent
 	private Date timestamp;
@@ -84,7 +55,7 @@ public abstract class PlaceBookItem
 	private HashMap<String, String> parameters;
 
 	// Make a new PlaceBookItem
-	public PlaceBookItem(String owner, Geometry geom, URL sourceURL)
+	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
 	{
 		this.owner = owner;
 		this.geom = geom;
@@ -119,7 +90,7 @@ public abstract class PlaceBookItem
 		log.info(getEntityName() + ": getConfigurationHeader");
 		Element item = config.createElement(getEntityName());
 		item.setAttribute("key", getKey());
-		item.setAttribute("owner", getOwner());
+		item.setAttribute("owner", getOwner().getKey());
 
 		Element timestamp = config.createElement("timestamp");
 		timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
@@ -173,8 +144,8 @@ public abstract class PlaceBookItem
 	public void setPlaceBook(PlaceBook placebook) { this.placebook = placebook; }
 	public PlaceBook getPlaceBook() { return placebook; }
 
-	public void setOwner(String owner) { this.owner = owner; }
-	public String getOwner() { return owner; }
+	public void setOwner(User owner) { this.owner = owner; }
+	public User getOwner() { return owner; }
 
 	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 	public Date getTimestamp() { return timestamp; }

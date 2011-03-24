@@ -60,8 +60,7 @@ public class PlaceBooksAdminControllerDebug
 			log.error(e.toString());
 		}
 
-		String owner = UserManager.getUser("stuart@tropic.org.uk").getKey();
-
+		User owner = UserManager.getUser("stuart@tropic.org.uk");
 		PlaceBook p = new PlaceBook(owner, geometry);
 
 		try 
@@ -121,7 +120,7 @@ public class PlaceBooksAdminControllerDebug
 		{
 			pm.currentTransaction().begin();
 			pm.makePersistent(p);
-			p.setItemKeys();
+			//p.setItemKeys();
 			pm.currentTransaction().commit();
 		}
 		finally
@@ -153,11 +152,8 @@ public class PlaceBooksAdminControllerDebug
 		List<PlaceBook> pbs = null;
 		try
 		{
-			Query query = pm.newQuery(
-							PlaceBook.class, "owner == '" + 
-							UserManager.getUser("stuart@tropic.org.uk")
-								.getKey() + "'"
-						  );
+			Query query = pm.newQuery(PlaceBook.class, 
+									  "owner.email == 'stuart@tropic.org.uk'");
 			pbs = (List<PlaceBook>)query.execute();
 			//query.closeAll();
 		}
@@ -172,7 +168,7 @@ public class PlaceBooksAdminControllerDebug
 			for (PlaceBook pb : pbs)
 			{
 				out.append("PlaceBook: " + pb.getKey() + ", owner=" 
-					+ pb.getOwner() + ", timestamp=" 
+					+ pb.getOwner().getEmail() + ", timestamp=" 
 					+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
 					+ " elements [<a href='../package/" 
 					+ pb.getKey() 
@@ -190,7 +186,7 @@ public class PlaceBooksAdminControllerDebug
 					out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
 					out.append(pbi.getEntityName());
 					out.append(": " + pbi.getKey() + ", owner=" 
-							   + pbi.getOwner() + ", timestamp=" 
+							   + pbi.getOwner().getEmail() + ", timestamp=" 
 							   + pbi.getTimestamp().toString());
 
 					out.append("<br/>");

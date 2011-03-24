@@ -23,7 +23,7 @@ public class AudioItem extends PlaceBookItem
 {
 	private File audio; 
 
-	public AudioItem(String owner, Geometry geom, URL sourceURL, File audio)
+	public AudioItem(User owner, Geometry geom, URL sourceURL, File audio)
 	{
 		super(owner, geom, sourceURL);
 		this.audio = audio;
