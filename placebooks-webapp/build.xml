@@ -22,6 +22,7 @@
 	<property name="manager.username"   value="admin"/>
 	<property name="manager.password"   value="r4nd0m"/>	
 
+	<property file="build.properties" />
 
 	<path id="classpath">
   		<fileset dir="${lib.dir}">
