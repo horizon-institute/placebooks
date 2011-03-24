@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  
+  <ScrollView android:id="@+id/ScrollView01"
+android:layout_width="fill_parent" android:layout_height="fill_parent">
+<LinearLayout android:id="@+id/LinearLayout02"
+android:layout_width="fill_parent" android:layout_height="wrap_content"
+android:orientation="vertical">
+  
+  
+	  <TextView android:id="@+id/orgXMLTxt"
+	  android:layout_width="fill_parent"
+	  android:layout_height="wrap_content"
+	  android:textColor="#33FF00"
+	  android:textSize="11sp" />
+<!--  
+	<Button 
+	android:text="Parse It"
+	android:id="@+id/parseBtn"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content" />
+
+	<TextView
+	android:id="@+id/parsedXMLTxt"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content" />
+	-->
+	
+	</LinearLayout>
+	
+	</ScrollView>
+	
+
+</LinearLayout>
+
+
+
+<!--  
+<TextView 
+	android:text="placebook_title" 
+	android:id="@+id/Title" 
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" 
+	android:gravity="center_horizontal"
+	android:layout_gravity="fill_horizontal"
+    android:layout_weight="1" />
+    
+<TextView
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:id="@+id/my_xml"
+  />
+  
+-->
+
