@@ -16,13 +16,23 @@ public class PlaceBooksUserDetailsService implements UserDetailsService
 	@Override
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException, DataAccessException
 	{
-		final PersistenceManager persistenceManager = PMFSingleton.getPersistenceManager();
-		final User user = persistenceManager.getObjectById(User.class, email);
-
-		@SuppressWarnings("unchecked")
-		final org.springframework.security.core.userdetails.User userDetails = new org.springframework.security.core.userdetails.User(
-				user.getEmail(), user.getPasswordHash(), true, true, true, true, Collections.EMPTY_SET);
-
-		return userDetails;
+		PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		try
+		{
+		final User user = UserManager.getUser(manager, email);
+		if(user != null)
+		{
+			@SuppressWarnings("unchecked")
+			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+					user.getEmail(), user.getPasswordHash(), true, true, true, true, Collections.EMPTY_SET);
+	
+			return userDetails;
+		}
+		}
+		finally
+		{
+			manager.close();
+		}
+		return null;
 	}
 }

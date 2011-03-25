@@ -1,28 +1,28 @@
+<!-- Build file for compiling, deploying and testing PlaceBooks webapp -->
+
 <project default="install" basedir=".">
 
+	<property file="build.properties" />
+	
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
 	<property name="lib.dir" value="${war.dir}/WEB-INF/lib" />
 	<property name="src.dir" value="src" />
+	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	<property name="catalina.home" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat 6.0/lib" />
-
-	<property name="manager.url"   value="http://127.0.0.1:8080/manager"/>
-	<property name="manager.username"   value="ant"/>
-	<property name="manager.password"   value="r4nd0m"/>	
-
+	
 	<!-- Configure the custom Ant tasks for the Manager application -->
   	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
   	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
   	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
 
-	<path id="classpath.enhance">
-		<path refid="classpath"/>
-		<pathelement path="${classes.dir}" />
-    </path>
-
+	<!-- Local properties, machine-specific, CHANGE ME -->
+	<property name="catalina.home" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat 6.0/lib" />
+	<property name="manager.url"   value="http://127.0.0.1:8080/manager"/>
+	<property name="manager.username"   value="ant"/>
+	<property name="manager.password"   value="r4nd0m"/>	
 
 	<path id="classpath">
   		<fileset dir="${lib.dir}">
@@ -31,8 +31,14 @@
 		<fileset dir="${catalina.home}">
 			<include name="*.jar"/>
 		</fileset>
+		<pathelement path="${java.class.path}" />
 	</path>
-	
+
+	<path id="classpath.enhance">
+		<path refid="classpath"/>
+		<pathelement path="${classes.dir}" />
+    </path>
+
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
@@ -48,22 +54,46 @@
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath refid="classpath"/>
 		</javac>
-	</target>	
+	</target>
 
-	<target name="war" depends="compile,enhance"
-			description="Create the web archive file">
+	<target name="compile-test" depends="compile"
+			description="Compile test classes">
+		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
+			   includeAntRuntime="no">
+			<src path="${test.dir}" />
+			<compilerarg value="-Xlint:unchecked" />
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+
+	<target name="staging" depends="makedirs" 
+			description="Stage config + META-INF files to classes dir">
 		<copy todir="${classes.dir}/META-INF/">
 			<fileset dir="${src.dir}/META-INF" />
 		</copy>
 		<copy file="${src.dir}/log4j.properties" todir="${classes.dir}" />
 		<copy file="${src.dir}/placebooks.properties" todir="${classes.dir}" />
+	</target>
+
+	<target name="war" depends="compile,enhance,staging"
+			description="Create the web archive file">
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">
 			<include name="**/*" />
-			<!--manifest>
-				<attribute name="Main-Class" value="${entrypoint}" />
-			</manifest-->
 		</jar>
+	</target>
+
+	<target name="test" depends="compile-test,enhance,staging" 
+			description="JUnit testing">
+		<junit fork="yes" haltonfailure="yes" showoutput="yes">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement path="${classes.dir}" />
+			</classpath>
+      		<formatter type="brief" usefile="false" />
+      		<test name="placebooks.controller.UserTest" />
+			<test name="placebooks.controller.PlaceBookTests" />
+    	</junit>
 	</target>
 
 	<taskdef name="nucleusenhancer"
@@ -95,8 +125,16 @@
 		</javadoc>
 	</target>
 
+	<target name="initdb" depends="compile,enhance">
+        <java classname="placebooks.utils.InitializeDatabase">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement path="${classes.dir}" />
+			</classpath>
+		</java>
+    </target>
 
-  	<target name="install" depends="compile,war"
+  	<target name="install" depends="war"
    			description="Install application to servlet container">
 		<deploy url="${manager.url}" username="${manager.username}"
        			password="${manager.password}" path="/${basepackage.name}"
@@ -110,7 +148,7 @@
   	</target>
 
 
- 	<target name="reload" depends="compile,war"
+ 	<target name="reload" depends="war"
    			description="Reload application on servlet container">
 
     	<reload url="${manager.url}" username="${manager.username}"
