@@ -1,6 +1,7 @@
 package placebooks.controller;
 
 import placebooks.model.*;
+import placebooks.model.EverytrailHelper;
 
 import java.util.*;
 import java.util.zip.*;

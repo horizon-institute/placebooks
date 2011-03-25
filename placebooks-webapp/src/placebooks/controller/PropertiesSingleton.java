@@ -16,6 +16,11 @@ public final class PropertiesSingleton
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
 	public static final String IDEN_CONFIG = "config.name";	
+	public static final String PROXY_ACTIVE = "proxy.active";	
+	public static final String PROXY_HOST = "proxy.host";	
+	public static final String PROXY_PORT = "proxy.port";	
+	public static final String EVERYTRAIL_API_USER = "api_everytrail.user";	
+	public static final String EVERYTRAIL_API_PASSWORD = "api_everytrail.password";	
 
    	private static final Logger log = 
 		Logger.getLogger(PropertiesSingleton.class.getName());

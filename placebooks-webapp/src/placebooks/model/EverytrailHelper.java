@@ -5,7 +5,6 @@ package placebooks.model;
 
 import java.io.*;
 import java.net.*;
-import java.net.Proxy.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -21,7 +20,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.controller.PlaceBooksAdminController;
+import placebooks.controller.PropertiesSingleton;
 
 /**
  * @author pszmp
@@ -33,11 +32,6 @@ public class EverytrailHelper
 		Logger.getLogger(EverytrailHelper.class.getName());
 
 	private static String apiBaseUrl = "http://www.everytrail.com/api/";
-	private static String apiUsername = "94482eab9c605cfed58b396b74ae7466";
-	private static String apiPassword = "135df832868a3543";
-	
-	private static String httpProxyName = "wwwcache.cs.nott.ac.uk";
-	private static int httpProxyPort = 3128;
 	
 	static class HttpAuthenticator extends Authenticator {
 		private String username, password;
@@ -80,12 +74,14 @@ public class EverytrailHelper
 		    data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
 		    // Send data by setting up the api password http authentication and UoN proxy
-		    // TODO Add global config for proxy support...
-		    Authenticator.setDefault(new HttpAuthenticator(apiUsername, apiPassword));
+		    Authenticator.setDefault(new HttpAuthenticator(
+		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""),
+		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")
+		    ));
 		    URL url = new URL(apiBaseUrl +  "user/login");
-		    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyName, httpProxyPort));
-
-		    URLConnection conn = url.openConnection(proxy);
+		    
+		    // Use getConnection to get the URLConnection with or without a proxy 
+		    URLConnection conn = EverytrailHelper.getConnection(url);
 		    conn.setDoOutput(true);
 		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 		    wr.write(data);
@@ -158,6 +154,29 @@ public class EverytrailHelper
 		return output;
 	}
 	
+/**
+ * Gets the http connection for the API paying attention to the Placebooks proxy configuration values
+ * requires a try/catch block as per url.openconnection()
+ * @param URL url The url to get the connection for
+ * @return URLConnection A url connection as per url.openConnection - with or without proxy
+ */
+	private static URLConnection getConnection(URL url) throws IOException
+	{
+		URLConnection conn;
+	   if(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_ACTIVE, "false").equalsIgnoreCase("true"))
+	   {
+		    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, ""),
+		   		 Integer.parseInt(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""))));
+		    conn = url.openConnection(proxy);
+	    }
+	    else
+	    {
+	   	 conn = url.openConnection();
+	    }
+	    return conn;
+	}
+
 	/**
 	 * Perform a post to the given Everytrail api destination with the parameters specified
 	 * @param postDestination API destination after http://www.everytrail.com/api/ - e.g. user/trips
@@ -185,11 +204,14 @@ public class EverytrailHelper
 
 		    // Send data by setting up the api password http authentication and UoN proxy
 		    // TODO Add global config for proxy support...
-		    Authenticator.setDefault(new HttpAuthenticator(apiUsername, apiPassword));
-		    URL url = new URL(apiBaseUrl + postDestination);
-		    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyName, httpProxyPort));
+		    Authenticator.setDefault(new HttpAuthenticator(
+		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""),
+				    PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")
+		    ));
 
-		    URLConnection conn = url.openConnection(proxy);
+		    URL url = new URL(apiBaseUrl + postDestination);
+		    URLConnection conn = EverytrailHelper.getConnection(url);
+
 		    
 		    conn.setDoOutput(true);
 		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -245,11 +267,51 @@ public class EverytrailHelper
 		{
 			params.put("start", start);
 		}
-		String postResponse = getPostResponseWithParams("user/photos", params);
+		String postResponse = getPostResponseWithParams("user/pictures", params);
 		String resultStatus = postResponse;
 		Vector<String> picturesList = new Vector<String>();
 		
 		EverytrailPicturesResponse returnValue = new EverytrailPicturesResponse(resultStatus, picturesList);
+		return returnValue;
+	}
+	
+	/**
+	 * Get a list of tracks for a given trip
+	 * @param String trackId an everytrail track id obtained from a user's trip - is it is a private trip, accessing the track may require logging in first
+	 * at least get the user id
+	 * @return EverytrailPicturesResponse 
+	 */
+	public static EverytrailTracksResponse Tracks(String trackId)
+	{
+		return Tracks(trackId, null, null);
+	}
+	
+	
+	/**
+	 * Get a list of tracks for a given trip
+	 * @param String trackId an everytrail track id obtained from a user's trip - is it is a private trip, accessing the track may require logging in first
+	 * at least get the user id
+	 * @param username String Everytrail username for private tracks
+	 * @param password String Everytrail password for private tracks
+	 * @return EverytrailPicturesResponse 
+	 */
+	public static EverytrailTracksResponse Tracks(String trackId, String username, String password)
+	{
+		Hashtable<String, String> params = new Hashtable<String, String>();
+		params.put("track_id", trackId);
+		if( username != null)
+		{
+			params.put("username", username);
+		}
+		if( password != null)
+		{
+			params.put("password", password);
+		}
+		String postResponse = getPostResponseWithParams("trip/tracks", params);
+		String resultStatus = postResponse;
+		Vector<String> tracksList = new Vector<String>();
+		
+		EverytrailTracksResponse returnValue = new EverytrailTracksResponse(resultStatus, tracksList);
 		return returnValue;
 	}
 	

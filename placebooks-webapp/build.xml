@@ -7,10 +7,10 @@
 	<property name="src.dir" value="src" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	<property name="catalina.home" value="/opt/local/share/java/tomcat6/lib/" />
+	<property name="catalina.home" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat 6.0/lib" />
 
-	<property name="manager.url"   value="http://localhost:8080/manager"/>
-	<property name="manager.username"   value="admin"/>
+	<property name="manager.url"   value="http://127.0.0.1:8080/manager"/>
+	<property name="manager.username"   value="ant"/>
 	<property name="manager.password"   value="r4nd0m"/>	
 
 	<!-- Configure the custom Ant tasks for the Manager application -->
