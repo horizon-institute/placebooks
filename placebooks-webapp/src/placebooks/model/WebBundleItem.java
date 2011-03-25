@@ -14,6 +14,8 @@ import javax.jdo.annotations.InheritanceStrategy;
 
 import org.apache.log4j.Logger;
 
+import org.apache.commons.io.FileUtils;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
@@ -48,7 +50,27 @@ public class WebBundleItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
-		// TODO
+		
+		try
+		{
+			File from = new File(
+							PropertiesSingleton
+								.get(this.getClass().getClassLoader())
+								.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
+									"") + getKey());
+
+			File to = new File(
+						PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+							+ getPlaceBook().getKey() + "/" + getKey());
+			FileUtils.copyDirectory(from, to);
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+
 		root.appendChild(item);
 	}
 
