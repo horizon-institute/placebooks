@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.PropertiesSingleton;
+
 import java.io.*;
 
 import java.awt.image.BufferedImage;
@@ -10,6 +12,8 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 
+import org.apache.log4j.Logger;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
@@ -19,20 +23,21 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class WebBundleItem extends PlaceBookItem
 {
-	public static final String WGET_EXEC = "wget -E -H -k -K -p";
+  	private static final Logger log = 
+		Logger.getLogger(WebBundleItem.class.getName());
+
 
 	@Persistent
 	private BufferedImage thumbnail;
 
-	private File wgetBundle;
+	private File webBundle;
 
-	public WebBundleItem(User owner, Geometry geom, URL sourceURL)
+	public WebBundleItem(User owner, Geometry geom, URL sourceURL, 
+						 File webBundle)
 	{
 		super(owner, geom, sourceURL);
+		this.webBundle = webBundle;
 		thumbnail = null;
-//		Process p = Runtime.getRuntime().exec(WGET_EXEC + " " 
-//											  + sourceURL.toString());
-		
 	}
 
 	public String getEntityName()
@@ -43,6 +48,7 @@ public class WebBundleItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
+		// TODO
 		root.appendChild(item);
 	}
 
@@ -82,17 +88,15 @@ public class WebBundleItem extends PlaceBookItem
 	}
 
 	@Persistent
-	public String getWgetBundle()
+	public String getWebBundle()
 	{
-		return wgetBundle.toString();
+		return webBundle.toString();
 	}
 	@Persistent
-	public void setWgetBundle(String filepath)
+	public void setWebBundle(String filepath)
 	{
 		if (filepath != null)
-			wgetBundle = new File(filepath);
-		else
-			wgetBundle = null;
+			webBundle = new File(filepath);
 	}
 
 	/* (non-Javadoc)

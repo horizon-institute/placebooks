@@ -74,42 +74,156 @@ public class PlaceBooksAdminController
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
-		URL url = null;
+		WebBundleItem wbi = null;
 
-		for (Enumeration<String> params = req.getParameterNames(); params.hasMoreElements(); )
+		try
 		{
-			String param = params.nextElement();
-			String value = req.getParameterValues(param)[0];
-			if (!processItemData(itemData, pm, param, value))
+			pm.currentTransaction().begin();
+
+			for (Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements(); )
 			{
-				int delim = param.indexOf(".");
-				if (delim == -1)
+				String param = params.nextElement();
+				String value = req.getParameterValues(param)[0];
+				if (!processItemData(itemData, pm, param, value))
 				{
-					pm.close();
-					return new ModelAndView("message", "text", 
-							 			    "Error");
+					int delim = param.indexOf(".");
+					if (delim == -1)
+					{
+						pm.close();
+						return new ModelAndView("message", "text", 
+												"Error");
+					}
+
+					String prefix = param.substring(0, delim),
+						   suffix = param.substring(delim + 1, param.length());
+
+					if (prefix.contentEquals("url"))
+					{
+						try
+						{
+							PlaceBook p = 
+								(PlaceBook)pm.getObjectById(PlaceBook.class, 
+															suffix);
+							wbi = new WebBundleItem(null, null, new URL(value),
+													new File(""));
+							p.addItem(wbi);
+						}
+						catch (java.net.MalformedURLException e)
+						{
+							log.error(e.toString());
+						}
+					}
 				}
 
-				String prefix = param.substring(0, delim),
-					   suffix = param.substring(delim + 1, param.length());
+			}
 
-				if (prefix.contentEquals("url"))
+			wbi.setOwner(itemData.getOwner());
+			wbi.setGeometry(itemData.getGeometry());
+
+			if (wbi == null || (wbi != null && wbi.getSourceURL() == null))
+			{
+				pm.close();
+				return new ModelAndView("message", "text", 
+										"Error setting data elements");
+			}
+
+			StringBuffer wgetCmd = new StringBuffer();
+			wgetCmd.append(
+				PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_WGET, "")
+			);
+
+			if (wgetCmd.equals(""))
+			{
+				pm.close();
+				return new ModelAndView("message", "text", 
+										"Error in wget command");
+			}
+
+			wgetCmd.append(" --user-agent=\"");
+			wgetCmd.append(
+				PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_USER_AGENT, "")
+			);
+			wgetCmd.append("\" ");
+
+			String webBundlePath = 
+				PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") 
+				+ wbi.getKey();
+
+			wgetCmd.append("-P " + webBundlePath + " " 
+						   + wbi.getSourceURL().toString());
+
+			log.info("wgetCmd=" + wgetCmd.toString());
+
+			if (new File(webBundlePath).exists() || 
+				new File(webBundlePath).mkdirs())
+			{
+				try
 				{
+					Process p = Runtime.getRuntime().exec(wgetCmd.toString());
+
+					BufferedReader stderr = 
+						new BufferedReader(
+							new InputStreamReader(p.getErrorStream()));
+					
+					String line = "";
+					while ((line = stderr.readLine()) != null)
+						log.error("[wget output] " + line);
+					log.info("Waiting for process...");
 					try
 					{
-						url = new URL(value);
+						p.waitFor();
 					}
-					catch (java.net.MalformedURLException e)
+					catch (InterruptedException e)
 					{
 						log.error(e.toString());
 					}
+					log.info("... Process ended");
+
+					String urlStr = wbi.getSourceURL().toString();
+					int protocol = urlStr.indexOf("://");
+					wbi.setWebBundle(
+						webBundlePath + "/" 
+						+ urlStr.substring(protocol + 3, urlStr.length())
+					);
+					log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
+
+				}
+				catch (IOException e)
+				{
+					log.error(e.toString());
 				}
 			}
 
+
+			pm.currentTransaction().commit();
 		}
-		return new ModelAndView("message", "text", "URL = " + url.toString());
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+		}
+
+		pm.close();
+
+		return new ModelAndView("message", "text", "Scraped");
 	}
 	
+	private void scrape()
+	{
+		
+	}
+
+
 	// Helper class for passing around general PlaceBookItem data
 	private static class ItemData
 	{
@@ -268,11 +382,11 @@ public class PlaceBooksAdminController
 
 			}
 
-			if (itemData.getOwner() == null)
+			if (pbi == null || itemData.getOwner() == null)
 			{
 				pm.close();
 				return new ModelAndView("message", "text", 
-										"Error getting associated user");
+										"Error setting data elements");
 			}
 
 

@@ -182,7 +182,7 @@ public class PlaceBooksAdminControllerDebug
 					+ pb.getKey() 
 					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form><form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
 					+ pb.getKey() 
-					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>");
+					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>");
 			
 				for (PlaceBookItem pbi : pb.getItems())
 				{
