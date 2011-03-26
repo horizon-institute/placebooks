@@ -13,6 +13,6 @@
 	<hr>
 	<div>${text}</div>
 	<hr>
-	<div><a href="../../admin">Return to admin page</a></div>
+	<div><a href="<%=request.getContextPath()%>/placebooks/a/admin">Return to admin page</a></div>
 </body>
 </html>

@@ -67,6 +67,8 @@ public class EverytrailHelper
 		String loginStatus = "";
 		String loginStatusValue = "";
 	    
+		log.info(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER));
+		log.info(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD));
 		try
 		{
 		    // Construct data to post - username and password
@@ -100,6 +102,7 @@ public class EverytrailHelper
 			log.debug(e.getMessage());
 		}
 
+		log.info(postResponse.toString());
 		// Parse the XML response and construct the response data to return
 		try
 		{
@@ -165,6 +168,8 @@ public class EverytrailHelper
 		URLConnection conn;
 	   if(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_ACTIVE, "false").equalsIgnoreCase("true"))
 	   {
+	   	log.info("proxy:" + PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, "") + " " +
+	   			PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""));
 		    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
 		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, ""),
 		   		 Integer.parseInt(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""))));
