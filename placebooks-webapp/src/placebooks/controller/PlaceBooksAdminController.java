@@ -481,17 +481,18 @@ public class PlaceBooksAdminController
 						);
 					zos.setMethod(ZipOutputStream.DEFLATED);
 
-					String files[] = new File(pkgPath).list();
+					ArrayList<File> files = new ArrayList<File>();
+					getFileListRecursive(new File(pkgPath), files);
+
 
 					byte data[] = new byte[2048];
 					BufferedInputStream bis = null;
-					for (int i = 0; i < files.length; ++i)
+					for (File file : files)
 					{
-						File entry = new File(pkgPath + "/" + files[i]);
-						log.info("Adding file to archive: " + entry.getPath());
-						FileInputStream fis = new FileInputStream(entry);
+						log.info("Adding file to archive: " + file.getPath());
+						FileInputStream fis = new FileInputStream(file);
 						bis = new BufferedInputStream(fis, 2048);
-						zos.putNextEntry(new ZipEntry(entry.getPath()));
+						zos.putNextEntry(new ZipEntry(file.getPath()));
 
 						int j;
 		            	while((j = bis.read(data, 0, 2048)) != -1)
@@ -535,8 +536,19 @@ public class PlaceBooksAdminController
 
 	}
 
+	private static void getFileListRecursive(File path, ArrayList<File> out)
+	{
+		ArrayList<File> files = 
+			new ArrayList<File>(Arrays.asList(path.listFiles()));
 
-
+		for (File file : files)
+		{
+			if (file.isDirectory())
+				getFileListRecursive(file, out);
+			else
+				out.add(file);
+		}
+	}
 
 	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
