@@ -6,3 +6,4 @@ thumbs.db
 datanucleus.log
 *.bak
 *.class
+build.properties
