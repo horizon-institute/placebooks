@@ -61,15 +61,18 @@ public class PlaceBooksAdminControllerDebug
 		}
 		
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		pm.currentTransaction().begin();
 		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
 		PlaceBook p = new PlaceBook(owner, geometry);
+
 		try
 		{
 
 			try 
 			{
 				p.addItem(
-					new TextItem(owner, geometry, new URL("http://www.google.com"),
+					new TextItem(owner, geometry, 
+								 new URL("http://www.google.com"),
 								 "Test text string")
 				);
 				p.addItem(new ImageItem(owner, geometry, 
@@ -110,18 +113,16 @@ public class PlaceBooksAdminControllerDebug
 	
 			try
 			{
-				p.addItem(new GPSTraceItem(owner, geometry, 
-						  				   new URL("http://www.blah.com"), gpxDoc));
+				p.addItem(
+					new GPSTraceItem(owner, geometry, 
+									 new URL("http://www.blah.com"), gpxDoc));
 			}
 			catch (java.net.MalformedURLException e)
 			{
 				log.error(e.toString());
 			}
 
-
-			pm.currentTransaction().begin();
 			pm.makePersistent(p);
-			//p.setItemKeys();
 			pm.currentTransaction().commit();
 		}
 		finally
@@ -172,7 +173,8 @@ public class PlaceBooksAdminControllerDebug
 				out.append("<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
 					+ pb.getKey() + ", owner=" 
 					+ pb.getOwner().getEmail() + ", timestamp=" 
-					+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
+					+ pb.getTimestamp().toString() + ", " 
+					+ pb.getGeometry().toString() + ", " + pb.getItems().size()
 					+ " elements</b> [<a href='../package/" 
 					+ pb.getKey() 
 					+ "'>package</a>] [<a href='../delete/" 

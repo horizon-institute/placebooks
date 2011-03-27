@@ -2,6 +2,7 @@
 
 <project default="install" basedir=".">
 
+	<!-- Set catalina.home, hamcrest.home and junit.home in build.properties -->
 	<property file="build.properties" />
 	
 	<property name="warfile.dir" value="build" />
@@ -18,12 +19,6 @@
   	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
   	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
 
-	<!-- Local properties, machine-specific, CHANGE ME -->
-	<property name="catalina.home" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat 6.0/lib" />
-	<property name="manager.url"   value="http://127.0.0.1:8080/manager"/>
-	<property name="manager.username"   value="ant"/>
-	<property name="manager.password"   value="r4nd0m"/>	
-
 	<path id="classpath">
   		<fileset dir="${lib.dir}">
     		<include name="*.jar"/>
@@ -32,6 +27,8 @@
 			<include name="*.jar"/>
 		</fileset>
 		<pathelement path="${java.class.path}" />
+		<pathelement path="${hamcrest.home}" />
+		<pathelement path="${junit.home}" />
 	</path>
 
 	<path id="classpath.enhance">

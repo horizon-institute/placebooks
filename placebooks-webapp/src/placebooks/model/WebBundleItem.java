@@ -65,6 +65,10 @@ public class WebBundleItem extends PlaceBookItem
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
 							+ getPlaceBook().getKey() + "/" + getKey());
 			FileUtils.copyDirectory(from, to);
+
+			Element filename = config.createElement("filename");
+			filename.appendChild(config.createTextNode(webBundle.getName()));
+			item.appendChild(filename);
 		}
 		catch (IOException e)
 		{
