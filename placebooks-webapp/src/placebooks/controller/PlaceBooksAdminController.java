@@ -1,19 +1,16 @@
 package placebooks.controller;
 
 import placebooks.model.*;
-
 import java.util.*;
-import java.util.zip.*;
 import java.io.*;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,17 +26,20 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.apache.log4j.Logger;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import placebooks.model.AudioItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -218,12 +218,6 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 	
-	private void scrape()
-	{
-		
-	}
-
-
 	// Helper class for passing around general PlaceBookItem data
 	private static class ItemData
 	{
@@ -272,10 +266,8 @@ public class PlaceBooksAdminController
 		}
 		else
 			return false;
-
 		return true;
 	}
-
 
 	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
@@ -335,7 +327,6 @@ public class PlaceBooksAdminController
 								  			    "Failed to write file");
 					}
 
-	
 					File file = null;
 										
 					PlaceBook p = 
@@ -366,7 +357,6 @@ public class PlaceBooksAdminController
 						file = new File(((AudioItem)pbi).getAudio());
 					}
 					
-
 					InputStream input = item.openStream();
 					OutputStream output = new FileOutputStream(file);
 					int byte_;
@@ -424,7 +414,7 @@ public class PlaceBooksAdminController
 									@PathVariable("key") String key)
 	{
 		
-		PlaceBook p = (PlaceBook)PMFSingleton
+		PlaceBook p = PMFSingleton
 							.get()
 							.getPersistenceManager()
 							.getObjectById(PlaceBook.class, key);

@@ -2,6 +2,8 @@
 
 <project default="install" basedir=".">
 
+	<property file="build.properties" />
+	
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
@@ -17,11 +19,10 @@
   	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
 
 	<!-- Local properties, machine-specific, CHANGE ME -->
-	<property name="catalina.home" value="/opt/local/share/java/tomcat6/lib/" />
-	<property name="manager.url"   value="http://localhost:8080/manager"/>
-	<property name="manager.username"   value="admin"/>
+	<property name="catalina.home" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat 6.0/lib" />
+	<property name="manager.url"   value="http://127.0.0.1:8080/manager"/>
+	<property name="manager.username"   value="ant"/>
 	<property name="manager.password"   value="r4nd0m"/>	
-
 
 	<path id="classpath">
   		<fileset dir="${lib.dir}">

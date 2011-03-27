@@ -12,18 +12,17 @@ import placebooks.model.User;
 
 public class UserManager
 {
-	public static User getCurrentUser()
+	public static User getCurrentUser(final PersistenceManager manager)
 	{
 		final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails)
 		{
 			final UserDetails details = ((UserDetails) principal);
-			return getUser(details.getUsername());
+			return getUser(manager, details.getUsername());
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static User getUser(final PersistenceManager manager, final String email)
 	{
 		final Query query = manager.newQuery(User.class, "email == \"" + email.toLowerCase() + "\"");
@@ -33,18 +32,5 @@ public class UserManager
 		if (!users.isEmpty()) { return users.iterator().next(); }
 
 		return null;
-	}
-
-	public static User getUser(final String email)
-	{
-		final PersistenceManager manager = PMFSingleton.get().getPersistenceManager();
-		try
-		{
-			return getUser(manager, email);
-		}
-		finally
-		{
-			manager.close();
-		}
 	}
 }
