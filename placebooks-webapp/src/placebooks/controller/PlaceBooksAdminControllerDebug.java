@@ -61,15 +61,18 @@ public class PlaceBooksAdminControllerDebug
 		}
 		
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		pm.currentTransaction().begin();
 		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
 		PlaceBook p = new PlaceBook(owner, geometry);
+
 		try
 		{
 
 			try 
 			{
 				p.addItem(
-					new TextItem(owner, geometry, new URL("http://www.google.com"),
+					new TextItem(owner, geometry, 
+								 new URL("http://www.google.com"),
 								 "Test text string")
 				);
 				p.addItem(new ImageItem(owner, geometry, 
@@ -110,18 +113,16 @@ public class PlaceBooksAdminControllerDebug
 	
 			try
 			{
-				p.addItem(new GPSTraceItem(owner, geometry, 
-						  				   new URL("http://www.blah.com"), gpxDoc));
+				p.addItem(
+					new GPSTraceItem(owner, geometry, 
+									 new URL("http://www.blah.com"), gpxDoc));
 			}
 			catch (java.net.MalformedURLException e)
 			{
 				log.error(e.toString());
 			}
 
-
-			pm.currentTransaction().begin();
 			pm.makePersistent(p);
-			//p.setItemKeys();
 			pm.currentTransaction().commit();
 		}
 		finally
@@ -168,32 +169,37 @@ public class PlaceBooksAdminControllerDebug
 		{
 			for (PlaceBook pb : pbs)
 			{
-				out.append("PlaceBook: " + pb.getKey() + ", owner=" 
+				// TODO: sort of breaking MVC here, I'm aware, needs to be fixed
+				out.append("<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
+					+ pb.getKey() + ", owner=" 
 					+ pb.getOwner().getEmail() + ", timestamp=" 
-					+ pb.getTimestamp().toString() + ", " + pb.getItems().size()
-					+ " elements [<a href='../package/" 
+					+ pb.getTimestamp().toString() + ", " 
+					+ pb.getGeometry().toString() + ", " + pb.getItems().size()
+					+ " elements</b> [<a href='../package/" 
 					+ pb.getKey() 
 					+ "'>package</a>] [<a href='../delete/" 
 					+ pb.getKey() 
 					+ "'>delete</a>]<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
 					+ pb.getKey() 
-					+ "'><input type='submit' value='Upload'></form><form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
+					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form><form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
 					+ pb.getKey() 
-					+ "'><input type='submit' value='Upload'></form><br/>");
+					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form><form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
+					+ pb.getKey() 
+					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>");
 			
 				for (PlaceBookItem pbi : pb.getItems())
 				{
 
-					out.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+					out.append("<div style='border:1px dotted;padding:5px'>");
 					out.append(pbi.getEntityName());
 					out.append(": " + pbi.getKey() + ", owner=" 
 							   + pbi.getOwner().getEmail() + ", timestamp=" 
 							   + pbi.getTimestamp().toString());
 
-					out.append("<br/>");
+					out.append("</div>");
 				}
 
-				out.append("<br/>");
+				out.append("</div><br />");
 			}
 
 		}

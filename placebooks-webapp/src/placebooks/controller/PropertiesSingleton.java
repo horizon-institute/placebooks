@@ -1,6 +1,6 @@
 package placebooks.controller;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -11,11 +11,24 @@ public final class PropertiesSingleton
 {
 	// TODO: enum
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
-	public static final String IDEN_VIDEO = "video.dir";
-	public static final String IDEN_AUDIO = "audio.dir";
+
+	public static final String IDEN_VIDEO = "videoitem.dir";
+	public static final String IDEN_AUDIO = "audioitem.dir";
+	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
+	
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
-	public static final String IDEN_CONFIG = "config.name";	
+	
+	public static final String IDEN_CONFIG = "config.name";
+	public static final String IDEN_WGET = "webbundleitem.wget";
+	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
+	
+	public static final String PROXY_ACTIVE = "proxy.active";	
+	public static final String PROXY_HOST = "proxy.host";	
+	public static final String PROXY_PORT = "proxy.port";	
+	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";	
+	public static final String EVERYTRAIL_API_PASSWORD = 
+		"everytrail.api_password";	
 
    	private static final Logger log = 
 		Logger.getLogger(PropertiesSingleton.class.getName());
