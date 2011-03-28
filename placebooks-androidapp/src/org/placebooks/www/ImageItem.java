@@ -22,7 +22,8 @@ public class ImageItem extends Item {
 
 	@Override
 	public String toString() {
-		return "\nImageItem filename=" + filename + "\nURL= " + URL;
+		//return filename;
+		return "\nFilename=" + filename + "\nURL=" + URL;
 		//+ "\ntoString()=" + super.toString();
 	}
 }

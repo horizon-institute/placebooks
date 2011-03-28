@@ -13,7 +13,7 @@ public class AudioItem extends Item {
 	
 	@Override
 	public String toString() {
-		return "\nAudioItem " + "\nFilename= " + filename; 
+		return "\nFilename= " + filename; 
 	}
 	
 

@@ -20,7 +20,7 @@ public class TextItem extends Item {
 	
 	@Override
 	public String toString() {
-		return "TextItem " + "\nURL= " + URL + "\nText=" + Text; 
+		return "Text=" + Text + "\nURL=" + URL; 
 	}
 	
 }

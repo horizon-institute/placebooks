@@ -13,7 +13,7 @@ public class VideoItem extends Item {
 	
 	@Override
 	public String toString() {
-		return "\nVideoItem " + "\nFilename= " + filename; 
+		return "\nFilename= " + filename; 
 	}
 	
 }

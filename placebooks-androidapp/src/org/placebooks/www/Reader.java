@@ -36,6 +36,12 @@ import android.widget.TextView;
 public class Reader extends Activity {
 	
 	private TextView orgXmlTxt;
+	private String textText;
+	private String textURL;
+	private String imageFilename;
+	private String imageURL;
+	private String videoFilename;
+	private String audioFilename;
 
 	
 	//we know the xml file will always be called config.xml, so read this from the SD Card
@@ -50,8 +56,8 @@ public class Reader extends Activity {
 	        try {
 	        	
 	        	setContentView(R.layout.reader); 
-				orgXmlTxt = (TextView) findViewById(R.id.orgXMLTxt);
-				orgXmlTxt.setText(getMyXML());
+				//orgXmlTxt = (TextView) findViewById(R.id.orgXMLTxt);
+				//orgXmlTxt.setText(getMyXML());
 		        getMyXML();				
 			
 				
@@ -68,11 +74,9 @@ public class Reader extends Activity {
 				 TextView pngName = (TextView)findViewById(R.id.pngname);
 					ImageView pngView = (ImageView)findViewById(R.id.pngview);
 					
-					ImageItem imgItem = new ImageItem(); //make a new object of this class to access its method
-					String imgName = imgItem.getFilename(); //get the filename of the image
-					
-					
-			        String myPngPath = "/sdcard/package/" + imgName;
+					//ImageItem imgItem = new ImageItem(); //make a new object of this class to access its method
+									
+			        String myPngPath = "/sdcard/package/" + imageFilename;
 			        //"/sdcard/package/" + "0073a3b22ede9a5b012ede9a5c070002.png";
 			        pngName.setText(myPngPath);
 				        
@@ -103,10 +107,19 @@ public class Reader extends Activity {
 			//	ArrayList<Book> parsedExampleDataSet = myExampleHandler.getParsedData();
 			//  Book parsedExampleDataSet = myExampleHandler.getParsedData();
 				Book parsedExampleDataSet = myExampleHandler.getParsedData();
-
+				
 				inLine.append(parsedExampleDataSet.toString());
-
+				
+				textText = parsedExampleDataSet.textText;
+				textURL = parsedExampleDataSet.textURL;
+				imageFilename = parsedExampleDataSet.imageFilename;
+				imageURL = parsedExampleDataSet.imageURL;
+				videoFilename = parsedExampleDataSet.videoFilename;
+				audioFilename = parsedExampleDataSet.audioFilename;
+				
 				in.close();
+				
+			
 				return inLine.toString();
 				    
 				/*	Iterator<Book> itr = parsedExampleDataSet.iterator();
