@@ -34,10 +34,12 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -72,13 +74,43 @@ public class PlaceBooksAdminController
 		return "account";
     }
 
+	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
+	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
+			@RequestParam final String password)
+	{
+		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+		User user = new User(name, email, encoder.encodePassword(password, null));
+
+		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		try
+		{
+			manager.currentTransaction().begin();
+			manager.makePersistent(user);
+			manager.currentTransaction().commit();
+		}
+		catch(Exception e)
+		{
+			log.error("Error creating user", e);			
+		}
+		finally
+		{
+			if (manager.currentTransaction().isActive())
+			{
+				manager.currentTransaction().rollback();
+				log.error("Rolling back user creation");
+			}
+			manager.close();
+		}
+
+		return "account";
+	}
 
 	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
 	{
 
 		// TODO: set these as vars to pass in to method
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();		
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();		
 		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
 		Geometry geom = null;
 		URL url = null;
@@ -202,7 +234,6 @@ public class PlaceBooksAdminController
 	{
 		
 		PlaceBook p = PMFSingleton
-							.get()
 							.getPersistenceManager()
 							.getObjectById(PlaceBook.class, key);
 
@@ -236,7 +267,7 @@ public class PlaceBooksAdminController
 				}
 			}
 
-			PMFSingleton.get().getPersistenceManager().close();
+			PMFSingleton.getPersistenceManager().close();
 
 			try 
 			{
@@ -307,7 +338,7 @@ public class PlaceBooksAdminController
 			//return new ModelAndView("package", "payload", out);
 		}
 
-		PMFSingleton.get().getPersistenceManager().close();
+		PMFSingleton.getPersistenceManager().close();
 		return new ModelAndView("message", "text", "Error generating package");
 
 	}
@@ -319,7 +350,7 @@ public class PlaceBooksAdminController
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 
 		try 
 		{
@@ -354,7 +385,7 @@ public class PlaceBooksAdminController
     public ModelAndView deleteAllPlaceBook() 
 	{
 			
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.getPersistenceManager();
 
 		try 
 		{

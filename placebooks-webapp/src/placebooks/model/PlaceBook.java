@@ -12,8 +12,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 
@@ -21,8 +19,8 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public class PlaceBook
 {
-  	private static final Logger log = 
-		Logger.getLogger(PlaceBook.class.getName());
+  	//private static final Logger log = 
+	//	Logger.getLogger(PlaceBook.class.getName());
 
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
