@@ -4,11 +4,13 @@
 
 <html>
 <head>
-<title>PlaceBooks web interface</title>
+<title>List PlaceBooks</title>
 </head>
 
 
 <body>
-Blah blah blah
+<c:forEach var="pb" items="${requestScope.pbs}" varStatus="rowCounter">
+${pb.key}
+</c:forEach>
 </body>
 </html>

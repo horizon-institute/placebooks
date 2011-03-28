@@ -68,22 +68,6 @@ public class PlaceBooksAdminControllerDebug
 		try
 		{
 
-			try 
-			{
-				p.addItem(
-					new TextItem(owner, geometry, 
-								 new URL("http://www.google.com"),
-								 "Test text string")
-				);
-				p.addItem(new ImageItem(owner, geometry, 
-					new URL("http://www.blah.com"), 
-					new BufferedImage(100, 100, BufferedImage.TYPE_INT_BGR)));
-			}
-			catch (java.net.MalformedURLException e)
-			{
-				log.error(e.toString());
-			}
-		
 			Document gpxDoc = null;
 			try 
 			{
@@ -170,23 +154,36 @@ public class PlaceBooksAdminControllerDebug
 			for (PlaceBook pb : pbs)
 			{
 				// TODO: sort of breaking MVC here, I'm aware, needs to be fixed
-				out.append("<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
-					+ pb.getKey() + ", owner=" 
-					+ pb.getOwner().getEmail() + ", timestamp=" 
-					+ pb.getTimestamp().toString() + ", " 
-					+ pb.getGeometry().toString() + ", " + pb.getItems().size()
-					+ " elements</b> [<a href='../package/" 
-					+ pb.getKey() 
-					+ "'>package</a>] [<a href='../delete/" 
-					+ pb.getKey() 
-					+ "'>delete</a>]<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
-					+ pb.getKey() 
-					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form><form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
-					+ pb.getKey() 
-					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form><form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
-					+ pb.getKey() 
-					+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>");
-			
+				out.append(
+				"<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
+				+ pb.getKey() + ", owner=" 
+				+ pb.getOwner().getEmail() + ", timestamp=" 
+				+ pb.getTimestamp().toString() + ", " 
+				+ pb.getGeometry().toString() + ", " + pb.getItems().size()
+				+ " elements</b> [<a href='../package/" 
+				+ pb.getKey() 
+				+ "'>package</a>] [<a href='../delete/" 
+				+ pb.getKey() 
+				+ "'>delete</a>]<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
+				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
+				+ "<form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>"
+				+ "<form action='../text/' method='POST'>Text: <input type='text' name='text."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
+				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload image: <input type='file' name='image."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
+				+ "<form action='../text/' method='POST'>Upload GPS trace: <input type='file' name='gpstrace."
+				+ pb.getKey() 
+				+ "'><input type='hidden' value='http://www.everytrail.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
+				);
+
 				for (PlaceBookItem pbi : pb.getItems())
 				{
 
@@ -205,6 +202,8 @@ public class PlaceBooksAdminControllerDebug
 		}
 		else
 			out.append("PlaceBook query returned null");
+
+//		ModelAndView mav = new ModelAndView("placebooks", "pbs", out.toString());
 
 		PMFSingleton.get().getPersistenceManager().close();
 

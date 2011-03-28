@@ -1,16 +1,22 @@
 package placebooks.controller;
 
 import placebooks.model.*;
+
 import java.util.*;
 import java.io.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
+
 import javax.jdo.PersistenceManager;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,20 +32,20 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import placebooks.model.AudioItem;
-import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.User;
-import placebooks.model.VideoItem;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -48,6 +54,9 @@ import com.vividsolutions.jts.io.WKTReader;
 
 // TODO: general todo is to do file checking to reduce unnecessary file writes, 
 // part of which is ensuring new file writes in cases of changes
+// 
+// TODO: stop orphan / null field elements being added to database
+
 
 @Controller
 public class PlaceBooksAdminController
@@ -66,6 +75,103 @@ public class PlaceBooksAdminController
 	{
 		return "account";
     }
+
+	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public ModelAndView uploadText(HttpServletRequest req)
+	{
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		
+		ItemData itemData = new ItemData();
+		PlaceBookItem pbi = null;
+
+		try
+		{
+			pm.currentTransaction().begin();
+
+			for (Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements(); )
+			{
+				String param = params.nextElement();
+				String value = req.getParameterValues(param)[0];
+				if (!processItemData(itemData, pm, param, value))
+				{
+					int delim = param.indexOf(".");
+					if (delim == -1)
+					{
+						pm.close();
+						return new ModelAndView("message", "text", 
+												"Error");
+					}
+
+					String prefix = param.substring(0, delim),
+						   suffix = param.substring(delim + 1, param.length());
+
+					PlaceBook p = 
+						(PlaceBook)pm.getObjectById(PlaceBook.class, suffix);
+
+					if (prefix.contentEquals("text"))
+					{
+						pbi = new TextItem(null, null, null, value);
+						p.addItem(pbi);			
+					}
+					else if (prefix.contentEquals("gpstrace"))
+					{
+						Document gpxDoc = null;
+						StringReader reader = new StringReader(value);
+						InputSource source = new InputSource(reader);
+						DocumentBuilder builder = DocumentBuilderFactory
+													.newInstance()
+													.newDocumentBuilder();
+						gpxDoc = builder.parse(source);
+						reader.close();
+						pbi = new GPSTraceItem(null, null, null, gpxDoc);
+						p.addItem(pbi);			
+					}
+
+				}
+
+			}
+		
+			if (pbi == null || itemData.getOwner() == null)
+			{
+				pm.close();
+				return new ModelAndView("message", "text", 
+										"Error setting data elements");
+			}
+
+			pbi.setOwner(itemData.getOwner());
+			pbi.setGeometry(itemData.getGeometry());
+			pbi.setSourceURL(itemData.getSourceURL());
+
+			pm.currentTransaction().commit();
+		}
+		catch (ParserConfigurationException e)
+		{
+			log.error(e.toString());
+		}
+		catch (SAXException e)
+		{
+			log.error(e.toString());
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+		}
+
+		pm.close();
+
+		return new ModelAndView("message", "text", "TextItem added");
+	}
+
 
 	@RequestMapping(value = "/admin/webbundle/*", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
@@ -121,7 +227,8 @@ public class PlaceBooksAdminController
 			wbi.setOwner(itemData.getOwner());
 			wbi.setGeometry(itemData.getGeometry());
 
-			if (wbi == null || (wbi != null && wbi.getSourceURL() == null))
+			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
+												wbi.getOwner() == null)))
 			{
 				pm.close();
 				return new ModelAndView("message", "text", 
@@ -235,6 +342,7 @@ public class PlaceBooksAdminController
 		public URL getSourceURL() { return sourceURL; }
 	}
 
+	// Assumes currently open PersistenceManager
 	private static boolean processItemData(ItemData i, PersistenceManager pm,  
 										   String field, String value)
 	{
@@ -305,7 +413,21 @@ public class PlaceBooksAdminController
 					String prefix = field.substring(0, delim),
 						   suffix = field.substring(delim + 1, field.length());
 
-					if (prefix.contentEquals("video"))
+					PlaceBook p = (PlaceBook)pm.getObjectById(
+													PlaceBook.class, suffix);
+
+					if (prefix.contentEquals("image"))
+					{
+						pbi = new ImageItem(null, null, null, null);
+						p.addItem(pbi);
+						
+						InputStream input = item.openStream();
+						BufferedImage b = ImageIO.read(input);
+						input.close();
+						((ImageItem)pbi).setImage(b);
+						continue;
+					}
+					else if (prefix.contentEquals("video"))
 						property = PropertiesSingleton.IDEN_VIDEO;
 					else if (prefix.contentEquals("audio"))
 						property = PropertiesSingleton.IDEN_AUDIO;
@@ -329,9 +451,6 @@ public class PlaceBooksAdminController
 
 					File file = null;
 										
-					PlaceBook p = 
-						(PlaceBook)pm.getObjectById(PlaceBook.class, suffix);
-
 					int extIdx = item.getName().lastIndexOf(".");
 					String ext = 
 						item.getName().substring(extIdx + 1, 

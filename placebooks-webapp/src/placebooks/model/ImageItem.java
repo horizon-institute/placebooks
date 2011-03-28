@@ -47,6 +47,16 @@ public class ImageItem extends PlaceBookItem
 		return imageFile;
 	}
 
+	public void setImage(BufferedImage image)
+	{
+		this.image = image;
+	}
+
+	public BufferedImage getImage()
+	{
+		return image;
+	}
+
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
