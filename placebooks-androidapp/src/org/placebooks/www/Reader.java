@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 //import java.io.BufferedReader;
 import java.io.FileInputStream;
+//import java.util.ArrayList;
 //import java.io.InputStreamReader;
 
 import javax.xml.parsers.SAXParser;
@@ -17,22 +18,23 @@ import org.xml.sax.XMLReader;
 
 import org.placebooks.www.R;
 
-import org.placebooks.www.XMLDataSet;
 import org.placebooks.www.XMLHandler;
+//import java.util.Iterator;
+
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 
 
 //import android.view.View;
 //import android.widget.Button;
 import android.widget.TextView;
-import android.widget.LinearLayout;
+//import android.widget.LinearLayout;
 
 
 public class Reader extends Activity {
 	
-	/** Create Object For SiteList Class */
-    XMLDataSet dataSet = null;
-
-
 	private TextView orgXmlTxt;
 
 	
@@ -44,82 +46,76 @@ public class Reader extends Activity {
 	 @Override
 	public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);	//icicle
-	        
-	        /** Create a new layout to display the view */
-            LinearLayout layout = new LinearLayout(this);
-            layout.setOrientation(1);
-
-            /** Create a new textview array to display the results */
-            TextView url[];
-            TextView path[];
 	       	       	        
-	      /*  try {
+	        try {
 	        	
-	        /*	setContentView(R.layout.reader); 
+	        	setContentView(R.layout.reader); 
 				orgXmlTxt = (TextView) findViewById(R.id.orgXMLTxt);
 				orgXmlTxt.setText(getMyXML());
+		        getMyXML();				
 			
 				
 			} catch (Exception e) {
 				orgXmlTxt.setText(e.getMessage());
-			} */
-            
-            
-            try {
-	            StringBuffer inLine = new StringBuffer();
+			} 
+			
+			displayImage();         	
+			
+	 } //end of onCreate
+	 
+			 private void displayImage(){
+				 
+				 TextView pngName = (TextView)findViewById(R.id.pngname);
+					ImageView pngView = (ImageView)findViewById(R.id.pngview);
+					
+					ImageItem imgItem = new ImageItem(); //make a new object of this class to access its method
+					String imgName = imgItem.getFilename(); //get the filename of the image
+					
+					
+			        String myPngPath = "/sdcard/package/" + imgName;
+			        //"/sdcard/package/" + "0073a3b22ede9a5b012ede9a5c070002.png";
+			        pngName.setText(myPngPath);
+				        
+				    BitmapFactory.Options options = new BitmapFactory.Options();
+				    options.inSampleSize = 2;
+				    Bitmap bm = BitmapFactory.decodeFile(myPngPath, options);
+				    pngView.setImageBitmap(bm); 
+				 
+			 }
+	
+			private String getMyXML() throws Exception {
+						
+				StringBuffer inLine = new StringBuffer();
 				/* Get a SAXParser from the SAXPArserFactory. */
 				SAXParserFactory spf = SAXParserFactory.newInstance();
 				SAXParser sp = spf.newSAXParser();
-	
+
 				/* Get the XMLReader of the SAXParser we created. */
 				XMLReader xr = sp.getXMLReader();
 				/* Create a new ContentHandler and apply it to the XML-Reader */
 				XMLHandler myExampleHandler = new XMLHandler();
 				xr.setContentHandler(myExampleHandler);
-	
-				FileInputStream in = new FileInputStream("/sdcard/config.xml");  //text.txt
-	
+
+				FileInputStream in = new FileInputStream("/sdcard/package/config.xml");  //text.txt
+
 				xr.parse(new InputSource(in));
 				
-				
-            }
-            catch (Exception e) {
-                System.out.println("XML Pasing Excpetion = " + e);
-        }
-            
-            /** Get result from MyXMLHandler SitlesList Object */
-			dataSet = XMLHandler.dataSet;
+			//	ArrayList<Book> parsedExampleDataSet = myExampleHandler.getParsedData();
+			//  Book parsedExampleDataSet = myExampleHandler.getParsedData();
+				Book parsedExampleDataSet = myExampleHandler.getParsedData();
 
-	        	
-	        	
-	        	
-			
-	 } //end of onCreate
-	 
-//			private String getMyXML() throws Exception {
-//						
-//				StringBuffer inLine = new StringBuffer();
-				/* Get a SAXParser from the SAXPArserFactory. */
-//				SAXParserFactory spf = SAXParserFactory.newInstance();
-//				SAXParser sp = spf.newSAXParser();
+				inLine.append(parsedExampleDataSet.toString());
 
-				/* Get the XMLReader of the SAXParser we created. */
-//				XMLReader xr = sp.getXMLReader();
-				/* Create a new ContentHandler and apply it to the XML-Reader */
-//				XMLHandler myExampleHandler = new XMLHandler();
-//				xr.setContentHandler(myExampleHandler);
-
-//				FileInputStream in = new FileInputStream("/sdcard/config.xml");  //text.txt
-
-//				xr.parse(new InputSource(in));
-//				
-//				XMLDataSet parsedExampleDataSet = myExampleHandler.getParsedData();
-//				inLine.append(parsedExampleDataSet.toString());
-//				in.close();
-//				return inLine.toString();
+				in.close();
+				return inLine.toString();
 				    
-				
-//			}
+				/*	Iterator<Book> itr = parsedExampleDataSet.iterator();
+			    while (itr.hasNext()) {
+			      String element = itr.next().toString();
+					inLine.append("hello");
+			    }
+			  */  
+			}
 	        
 			
 }

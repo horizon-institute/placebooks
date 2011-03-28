@@ -37,7 +37,6 @@ public class PlaceBooks extends Activity {
        
         Button button = (Button) findViewById(R.id.Button01);
         button.setOnClickListener(new OnClickListener() {
-        	           	           @Override
         	           	           public void onClick(View v) {
         	           	        	 
         	           	        	 //call the download method passing it the url to the placebooks package
@@ -48,8 +47,7 @@ public class PlaceBooks extends Activity {
        
         Button buttonR = (Button) findViewById(R.id.Button02);
         buttonR.setOnClickListener(new OnClickListener() {
-        	@Override
-			public void onClick(View v){
+        	public void onClick(View v){
         		Intent i = new Intent();
         		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
         		startActivity(i);		

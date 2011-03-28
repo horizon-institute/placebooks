@@ -16,6 +16,18 @@ android:orientation="vertical">
 	  android:layout_height="wrap_content"
 	  android:textColor="#33FF00"
 	  android:textSize="11sp" />
+	  
+	  <TextView  
+    android:id="@+id/pngname"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    />
+	  
+	  <ImageView  
+    android:id="@+id/pngview"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    />
 <!--  
 	<Button 
 	android:text="Parse It"

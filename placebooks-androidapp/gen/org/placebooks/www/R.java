@@ -19,6 +19,8 @@ public final class R {
         public static final int LinearLayout02=0x7f050003;
         public static final int ScrollView01=0x7f050002;
         public static final int orgXMLTxt=0x7f050004;
+        public static final int pngname=0x7f050005;
+        public static final int pngview=0x7f050006;
     }
     public static final class layout {
         public static final int main=0x7f030000;
