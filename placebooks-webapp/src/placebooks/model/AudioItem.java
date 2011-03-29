@@ -41,24 +41,30 @@ public class AudioItem extends PlaceBookItem
 		// TODO: identical to VideoItem.appendConfiguration... might be some 
 		// abstraction here to do.
 		try
-		{			
-			FileInputStream fis = new FileInputStream(audio);
-			File to = new File(
-						PropertiesSingleton
+		{	
+			// Check package dir exists already
+			String path = PropertiesSingleton
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPlaceBook().getKey() + "/" + audio.getName());
+							+ getPlaceBook().getKey();
 
-			FileOutputStream fos = new FileOutputStream(to);
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
 
-			log.info("Copying audio file, from=" + audio.toString() + ", to=" 
-					 + to.toString());
-			IOUtils.copy(fis, fos);
-			fis.close();
-			fos.close();
-			Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(audio.getName()));
-			item.appendChild(filename);
+				FileInputStream fis = new FileInputStream(audio);
+				File to = new File(path + "/" + audio.getName());
+
+				log.info("Copying audio file, from=" + audio.toString() 
+						 + ", to=" + to.toString());
+			
+				FileOutputStream fos = new FileOutputStream(to);
+				IOUtils.copy(fis, fos);
+				fis.close();
+				fos.close();
+				Element filename = config.createElement("filename");
+				filename.appendChild(config.createTextNode(audio.getName()));
+				item.appendChild(filename);
+			}
 		}
 		catch (IOException e)
 		{

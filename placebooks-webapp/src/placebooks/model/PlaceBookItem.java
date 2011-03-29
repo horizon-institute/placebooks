@@ -117,16 +117,18 @@ public abstract class PlaceBookItem
 
 
 	/**
-	 *   'GteHTML' will return a String containing the item's body content in html 
-	 *  format, suitable for including in the placebook view. (@TODO with GUI programmer
-	 *   define/document how this will be used in GUI)
-	 * @return String containing the HTML data for the content of the placebook item
+	 * 'GetHTML' will return a String containing the item's body content in 
+	 * html format, suitable for including in the placebook view. (@TODO with 
+	 * GUI programmer define/document how this will be used in GUI)
+	 * @return String containing the HTML data for the content of the placebook
+	 * item
 	 */
 	public abstract String GetHTML();
 
 	/**
 	 * Along with GetHTML this method is used to generate a string containing
-	 * the CSS styles for the Placebook item, suitable for use in the Placebook page header
+	 * the CSS styles for the Placebook item, suitable for use in the Placebook
+	 * page header
 	 * @return String of CSS style data
 	 */
 	public abstract String GetCSS();
