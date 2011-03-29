@@ -47,6 +47,8 @@ import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -75,6 +77,35 @@ public class PlaceBooksAdminController
 	{
 		return "account";
     }
+
+	@RequestMapping(value = "/admin/placebooks/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
+										  HttpServletResponse res,
+										  @PathVariable("key") String key)
+	{
+		PlaceBook p = PMFSingleton
+							.get()
+							.getPersistenceManager()
+							.getObjectById(PlaceBook.class, key);
+
+		try
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, p);
+			sos.flush();
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		PMFSingleton.get().getPersistenceManager().close();
+
+		return null;
+	}
 
 	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
@@ -115,20 +146,6 @@ public class PlaceBooksAdminController
 						pbi = new TextItem(null, null, null, value);
 						p.addItem(pbi);			
 					}
-					else if (prefix.contentEquals("gpstrace"))
-					{
-						Document gpxDoc = null;
-						StringReader reader = new StringReader(value);
-						InputSource source = new InputSource(reader);
-						DocumentBuilder builder = DocumentBuilderFactory
-													.newInstance()
-													.newDocumentBuilder();
-						gpxDoc = builder.parse(source);
-						reader.close();
-						pbi = new GPSTraceItem(null, null, null, gpxDoc);
-						p.addItem(pbi);			
-					}
-
 				}
 
 			}
@@ -145,18 +162,6 @@ public class PlaceBooksAdminController
 			pbi.setSourceURL(itemData.getSourceURL());
 
 			pm.currentTransaction().commit();
-		}
-		catch (ParserConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (SAXException e)
-		{
-			log.error(e.toString());
-		}
-		catch (IOException e)
-		{
-			log.error(e.toString());
 		}
 		finally
 		{
@@ -425,6 +430,23 @@ public class PlaceBooksAdminController
 						BufferedImage b = ImageIO.read(input);
 						input.close();
 						((ImageItem)pbi).setImage(b);
+						
+						continue;
+					}
+					else if (prefix.contentEquals("gpstrace"))
+					{
+						Document gpxDoc = null;
+						//StringReader reader = new StringReader(value);
+						InputStream reader = item.openStream();
+						InputSource source = new InputSource(reader);
+						DocumentBuilder builder = DocumentBuilderFactory
+													.newInstance()
+													.newDocumentBuilder();
+						gpxDoc = builder.parse(source);
+						reader.close();
+						pbi = new GPSTraceItem(null, null, null, gpxDoc);
+						p.addItem(pbi);
+
 						continue;
 					}
 					else if (prefix.contentEquals("video"))
@@ -509,10 +531,18 @@ public class PlaceBooksAdminController
 		{
             log.error(e.toString());
         }
-        catch (IOException e) 
+		catch (ParserConfigurationException e)
 		{
-            log.error(e.toString());
-        }
+			log.error(e.toString());
+		}
+		catch (SAXException e)
+		{
+			log.error(e.toString());
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
 		finally
 		{
 			if (pm.currentTransaction().isActive())
@@ -637,10 +667,10 @@ public class PlaceBooksAdminController
 			}
 			
 			return null;
-			//return new ModelAndView("package", "payload", out);
 		}
+		else
+			PMFSingleton.get().getPersistenceManager().close();
 
-		PMFSingleton.get().getPersistenceManager().close();
 		return new ModelAndView("message", "text", "Error generating package");
 
 	}

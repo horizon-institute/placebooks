@@ -48,7 +48,9 @@ public class PlaceBooksAdminControllerDebug
 	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
     public ModelAndView newPlaceBookTest() 
 	{
-		
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		pm.currentTransaction().begin();
+
 		Geometry geometry = null;
 		try 
 		{
@@ -60,52 +62,12 @@ public class PlaceBooksAdminControllerDebug
 			log.error(e.toString());
 		}
 		
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
-		pm.currentTransaction().begin();
 		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
+
 		PlaceBook p = new PlaceBook(owner, geometry);
 
 		try
 		{
-
-			Document gpxDoc = null;
-			try 
-			{
-				// Some example XML
-				String trace = "<gpx version=\"1.0\" creator=\"PlaceBooks 1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.topografix.com/GPX/1/1\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><time>2011-02-14T13:31:10.084Z</time><bounds minlat=\"52.950665120\" minlon=\"-1.183738050\" maxlat=\"52.950665120\" maxlon=\"-1.183738050\"/><trkseg><trkpt lat=\"52.950665120\" lon=\"-1.183738050\"><ele>0.000000</ele><time>2011-02-14T13:31:10.084Z</time></trkpt></trkseg></gpx>";
-	
-				StringReader reader = new StringReader(trace);
-				InputSource source = new InputSource(reader);
-				DocumentBuilder builder = 
-					DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				gpxDoc = builder.parse(source);
-				reader.close();
-			} 
-			catch (ParserConfigurationException e)
-			{
-				log.error(e.toString());
-			}
-			catch (SAXException e)
-			{
-				log.error(e.toString());
-			}
-			catch (IOException e)
-			{
-				log.error(e.toString());
-			}
-		
-	
-			try
-			{
-				p.addItem(
-					new GPSTraceItem(owner, geometry, 
-									 new URL("http://www.blah.com"), gpxDoc));
-			}
-			catch (java.net.MalformedURLException e)
-			{
-				log.error(e.toString());
-			}
-
 			pm.makePersistent(p);
 			pm.currentTransaction().commit();
 		}
@@ -160,11 +122,11 @@ public class PlaceBooksAdminControllerDebug
 				+ pb.getOwner().getEmail() + ", timestamp=" 
 				+ pb.getTimestamp().toString() + ", " 
 				+ pb.getGeometry().toString() + ", " + pb.getItems().size()
-				+ " elements</b> [<a href='../package/" 
-				+ pb.getKey() 
-				+ "'>package</a>] [<a href='../delete/" 
-				+ pb.getKey() 
-				+ "'>delete</a>]<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
+				+ " elements</b> [<a href='../package/" + pb.getKey() 
+				+ "'>package</a>] [<a href='../delete/" + pb.getKey() 
+				+ "'>delete</a>] [<a href='../placebooks/" + pb.getKey() 
+				+ "'>json</a>]" 
+				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
 				+ pb.getKey() 
 				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
 				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
@@ -179,7 +141,7 @@ public class PlaceBooksAdminControllerDebug
 				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload image: <input type='file' name='image."
 				+ pb.getKey() 
 				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../text/' method='POST'>Upload GPS trace: <input type='file' name='gpstrace."
+				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload GPS trace: <input type='file' name='gpstrace."
 				+ pb.getKey() 
 				+ "'><input type='hidden' value='http://www.everytrail.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
 				);
