@@ -6,5 +6,5 @@
     >
 
 <Button android:text="Get My PlaceBook" android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-<Button android:text="View My PlaceBookXML" android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+<Button android:text="View My PlaceBook" android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>

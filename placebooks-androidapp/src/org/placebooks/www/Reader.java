@@ -25,6 +25,9 @@ import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 
 
 //import android.view.View;
@@ -36,6 +39,11 @@ import android.widget.TextView;
 public class Reader extends Activity {
 	
 	private TextView orgXmlTxt;
+	private TextView txtTitle;
+	private ImageView pngView;
+	private TextView txtText1;
+	private TextView txtPage1;
+	
 	private String textText;
 	private String textURL;
 	private String imageFilename;
@@ -58,34 +66,61 @@ public class Reader extends Activity {
 	        	setContentView(R.layout.reader); 
 				//orgXmlTxt = (TextView) findViewById(R.id.orgXMLTxt);
 				//orgXmlTxt.setText(getMyXML());
-		        getMyXML();				
+	        	txtTitle = (TextView) findViewById(R.id.txtTitle);
+	        	//txtTitle.setText(titleVar);
+	        	txtPage1 = (TextView) findViewById(R.id.txtPage1);
+	        		        	
+		        getMyXML();		//call method to parse XML			
 			
 				
 			} catch (Exception e) {
 				orgXmlTxt.setText(e.getMessage());
 			} 
 			
-			displayImage();         	
+			displayImage(); //once XML is parsed and variables are set, call the methods to display content
+			displayText();
 			
 	 } //end of onCreate
 	 
 			 private void displayImage(){
 				 
-				 TextView pngName = (TextView)findViewById(R.id.pngname);
-					ImageView pngView = (ImageView)findViewById(R.id.pngview);
+				 //TextView pngName = (TextView)findViewById(R.id.pngname);		// textview for the file path for the image
+				 pngView = (ImageView)findViewById(R.id.pngview);
 					
 					//ImageItem imgItem = new ImageItem(); //make a new object of this class to access its method
 									
 			        String myPngPath = "/sdcard/package/" + imageFilename;
 			        //"/sdcard/package/" + "0073a3b22ede9a5b012ede9a5c070002.png";
-			        pngName.setText(myPngPath);
+			        //pngName.setText(myPngPath);		// display the text for the file path
 				        
 				    BitmapFactory.Options options = new BitmapFactory.Options();
-				    options.inSampleSize = 2;
+				    options.inSampleSize = 1;
 				    Bitmap bm = BitmapFactory.decodeFile(myPngPath, options);
 				    pngView.setImageBitmap(bm); 
 				 
 			 }
+			 
+			 private void displayText(){
+				 
+				txtText1 = (TextView) findViewById(R.id.txtText1);
+		        txtText1.setText(textText);
+								 
+			 }
+			 
+			/* 
+			 @Override
+			    public boolean onTouchEvent(MotionEvent event) {
+			       switch (event.getAction()) {
+			      case MotionEvent.ACTION_DOWN:
+			         ImageView img =(ImageView)findViewById(R.id.pngview);
+			           img.setVisibility(View.VISIBLE);
+			         return true;
+			      case MotionEvent.ACTION_UP:
+			        return false; // something else
+			                default:
+			                        return false;// all others
+			      }
+			    }*/
 	
 			private String getMyXML() throws Exception {
 						
@@ -106,16 +141,17 @@ public class Reader extends Activity {
 				
 			//	ArrayList<Book> parsedExampleDataSet = myExampleHandler.getParsedData();
 			//  Book parsedExampleDataSet = myExampleHandler.getParsedData();
-				Book parsedExampleDataSet = myExampleHandler.getParsedData();
+				Book book = myExampleHandler.getParsedData();
 				
-				inLine.append(parsedExampleDataSet.toString());
+				inLine.append(book.toString());
 				
-				textText = parsedExampleDataSet.textText;
-				textURL = parsedExampleDataSet.textURL;
-				imageFilename = parsedExampleDataSet.imageFilename;
-				imageURL = parsedExampleDataSet.imageURL;
-				videoFilename = parsedExampleDataSet.videoFilename;
-				audioFilename = parsedExampleDataSet.audioFilename;
+				textText = book.textText;
+				//textText.append(book.toString());
+				textURL = book.textURL;
+				imageFilename = book.imageFilename;
+				imageURL = book.imageURL;
+				videoFilename = book.videoFilename;
+				audioFilename = book.audioFilename;
 				
 				in.close();
 				
