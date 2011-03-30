@@ -41,24 +41,30 @@ public class VideoItem extends PlaceBookItem
 		Element item = getConfigurationHeader(config);
 
 		try
-		{			
-			FileInputStream fis = new FileInputStream(video);
-			File to = new File(
-						PropertiesSingleton
+		{
+			// Check package dir exists already
+			String path = PropertiesSingleton
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPlaceBook().getKey() + "/" + video.getName());
+							+ getPlaceBook().getKey();
 
-			FileOutputStream fos = new FileOutputStream(to);
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
 
-			log.info("Copying video file, from=" + video.toString() + ", to=" 
-					 + to.toString());
-			IOUtils.copy(fis, fos);
-			fis.close();
-			fos.close();
-			Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(video.getName()));
-			item.appendChild(filename);
+				FileInputStream fis = new FileInputStream(video);
+				File to = new File(path + "/" + video.getName());
+			
+				log.info("Copying video file, from=" + video.toString() 
+						 + ", to=" + to.toString());
+			
+				FileOutputStream fos = new FileOutputStream(to);
+				IOUtils.copy(fis, fos);
+				fis.close();
+				fos.close();
+				Element filename = config.createElement("filename");
+				filename.appendChild(config.createTextNode(video.getName()));
+				item.appendChild(filename);
+			}
 		}
 		catch (IOException e)
 		{
