@@ -5,7 +5,7 @@
 
 	<persistence-manager-factory name="default">
 		<property name="javax.jdo.PersistenceManagerFactoryClass"
-			value="org.datanucleus.jdo.JDOPersistenceManagerFactory" />
+			value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory" />
 		<property name="javax.jdo.option.ConnectionDriverName" 
 				  value="com.mysql.jdbc.Driver" />
 		<property name="javax.jdo.option.ConnectionURL" 
