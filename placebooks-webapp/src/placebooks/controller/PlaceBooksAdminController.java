@@ -99,14 +99,14 @@ public class PlaceBooksAdminController
 			@RequestParam final String password)
 	{
 		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-		User user = new User(name, email, encoder.encodePassword(password, null));
+		final User user = new User(name, email, encoder.encodePassword(password, null));
 
 		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
 		try
 		{
 			manager.currentTransaction().begin();
 			manager.makePersistent(user);
-			manager.currentTransaction().commit();
+			manager.currentTransaction().commit();	
 		}
 		catch(Exception e)
 		{
@@ -122,7 +122,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 
-		return "account";
+		return "redirect:/login.html";
 	}
 	
 	@RequestMapping(value = "/admin/placebooks/{key}", 
