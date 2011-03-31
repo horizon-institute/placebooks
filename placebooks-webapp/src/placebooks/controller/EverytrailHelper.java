@@ -201,7 +201,7 @@ public class EverytrailHelper
 		{
 			while(paramNames.hasMoreElements())
 			{
-				String paramName = (String) paramNames.nextElement();
+				String paramName = paramNames.nextElement();
 				data.append(URLEncoder.encode(paramName, "UTF-8") + "=" + URLEncoder.encode(params.get(paramName), "UTF-8"));
 				if(paramNames.hasMoreElements())
 				{

@@ -135,9 +135,7 @@ public class PlaceBooksAdminController
 					{
 						try
 						{
-							PlaceBook p = 
-								(PlaceBook)pm.getObjectById(PlaceBook.class, 
-															suffix);
+							PlaceBook p = pm.getObjectById(PlaceBook.class,	suffix);
 							wbi = new WebBundleItem(null, null, new URL(value),
 													new File(""));
 							p.addItem(wbi);
@@ -254,9 +252,9 @@ public class PlaceBooksAdminController
 	// Helper class for passing around general PlaceBookItem data
 	private static class ItemData
 	{
-		private static Geometry geometry;
-		private static URL sourceURL;
-		private static User owner;
+		private Geometry geometry;
+		private URL sourceURL;
+		private User owner;
 
 		public ItemData() { }
 
@@ -307,9 +305,6 @@ public class PlaceBooksAdminController
 	{
 		// TODO: set these as vars to pass in to method
 		PersistenceManager pm = PMFSingleton.getPersistenceManager();		
-		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
-		Geometry geom = null;
-		URL url = null;
 	
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
@@ -366,8 +361,7 @@ public class PlaceBooksAdminController
 
 					File file = null;
 										
-					PlaceBook p = 
-						(PlaceBook)pm.getObjectById(PlaceBook.class, suffix);
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
 
 					int extIdx = item.getName().lastIndexOf(".");
 					String ext = 
