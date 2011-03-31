@@ -1,12 +1,27 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-import java.util.*;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.jdo.PersistenceManager;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +39,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,12 +52,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import placebooks.model.AudioItem;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
+import placebooks.model.WebBundleItem;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -50,6 +72,9 @@ import com.vividsolutions.jts.io.WKTReader;
 
 // TODO: general todo is to do file checking to reduce unnecessary file writes, 
 // part of which is ensuring new file writes in cases of changes
+// 
+// TODO: stop orphan / null field elements being added to database
+
 
 @Controller
 public class PlaceBooksAdminController
@@ -99,6 +124,107 @@ public class PlaceBooksAdminController
 
 		return "account";
 	}
+	
+	@RequestMapping(value = "/admin/placebooks/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
+										  HttpServletResponse res,
+										  @PathVariable("key") String key)
+	{
+		PlaceBook p = PMFSingleton
+							.get()
+							.getPersistenceManager()
+							.getObjectById(PlaceBook.class, key);
+
+		try
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, p);
+			sos.flush();
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		PMFSingleton.get().getPersistenceManager().close();
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public ModelAndView uploadText(HttpServletRequest req)
+	{
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		
+		ItemData itemData = new ItemData();
+		PlaceBookItem pbi = null;
+
+		try
+		{
+			pm.currentTransaction().begin();
+
+			for (Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements(); )
+			{
+				String param = params.nextElement();
+				String value = req.getParameterValues(param)[0];
+				if (!processItemData(itemData, pm, param, value))
+				{
+					int delim = param.indexOf(".");
+					if (delim == -1)
+					{
+						return new ModelAndView("message", "text", 
+												"Error");
+					}
+
+					String prefix = param.substring(0, delim),
+						   suffix = param.substring(delim + 1, param.length());
+
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
+
+					if (prefix.contentEquals("text"))
+					{
+						String value_ = null;
+						if (value.length() > 0)
+							value_ = value;
+						pbi = new TextItem(null, null, null, value_);
+						p.addItem(pbi);			
+					}
+				}
+
+			}
+		
+			if ((pbi != null && ((TextItem)pbi).getText() == null) || 
+				pbi == null || itemData.getOwner() == null)
+			{
+				return new ModelAndView("message", "text", 
+										"Error setting data elements");
+			}
+
+			pbi.setOwner(itemData.getOwner());
+			pbi.setGeometry(itemData.getGeometry());
+			pbi.setSourceURL(itemData.getSourceURL());
+
+			pm.currentTransaction().commit();
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+		}
+
+		pm.close();
+
+		return new ModelAndView("message", "text", "TextItem added");
+	}
+
 
 	@RequestMapping(value = "/admin/webbundle/*", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
@@ -135,8 +261,12 @@ public class PlaceBooksAdminController
 					{
 						try
 						{
-							PlaceBook p = pm.getObjectById(PlaceBook.class,	suffix);
-							wbi = new WebBundleItem(null, null, new URL(value),
+							PlaceBook p = pm.getObjectById(PlaceBook.class, 
+															suffix);
+							URL sourceURL = null;
+							if (value.length() > 0)
+								sourceURL = new URL(value);
+							wbi = new WebBundleItem(null, null, sourceURL,
 													new File(""));
 							p.addItem(wbi);
 						}
@@ -148,17 +278,20 @@ public class PlaceBooksAdminController
 				}
 
 			}
-
-			wbi.setOwner(itemData.getOwner());
-			wbi.setGeometry(itemData.getGeometry());
-
-			if (wbi == null || (wbi != null && wbi.getSourceURL() == null))
+			
+			if (wbi != null)
 			{
-				pm.close();
+				wbi.setOwner(itemData.getOwner());
+				wbi.setGeometry(itemData.getGeometry());
+			}
+	
+			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
+												wbi.getOwner() == null)))
+			{
 				return new ModelAndView("message", "text", 
 										"Error setting data elements");
 			}
-
+			
 			StringBuffer wgetCmd = new StringBuffer();
 			wgetCmd.append(
 				PropertiesSingleton
@@ -168,7 +301,6 @@ public class PlaceBooksAdminController
 
 			if (wgetCmd.equals(""))
 			{
-				pm.close();
 				return new ModelAndView("message", "text", 
 										"Error in wget command");
 			}
@@ -249,63 +381,11 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 	
-	// Helper class for passing around general PlaceBookItem data
-	private static class ItemData
-	{
-		private Geometry geometry;
-		private URL sourceURL;
-		private User owner;
-
-		public ItemData() { }
-
-		public void setOwner(User owner) { this.owner = owner; }
-		public User getOwner() { return owner; }
-		public void setGeometry(Geometry geometry) { this.geometry = geometry; }
-		public Geometry getGeometry() { return geometry; }
-		public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
-		public URL getSourceURL() { return sourceURL; }
-	}
-
-	private static boolean processItemData(ItemData i, PersistenceManager pm,  
-										   String field, String value)
-	{
-		if (field.equals("owner"))
-		{
-			i.setOwner(UserManager.getUser(pm, value));
-		}
-		else if (field.equals("sourceurl"))
-		{
-			try
-			{
-				i.setSourceURL(new URL(value));
-			}
-			catch (java.net.MalformedURLException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else if (field.equals("geometry"))
-		{
-			try
-			{
-				i.setGeometry(new WKTReader().read(value));
-			}
-			catch (ParseException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else
-			return false;
-		return true;
-	}
-
 	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
 	{
-		// TODO: set these as vars to pass in to method
-		PersistenceManager pm = PMFSingleton.getPersistenceManager();		
-	
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
 
@@ -329,7 +409,6 @@ public class PlaceBooksAdminController
 					int delim = field.indexOf(".");
 					if (delim == -1)
 					{
-						pm.close();
 						return new ModelAndView("message", "text", 
 					  			    "Error determining relevant PlaceBook key");
 					}
@@ -337,13 +416,42 @@ public class PlaceBooksAdminController
 					String prefix = field.substring(0, delim),
 						   suffix = field.substring(delim + 1, field.length());
 
-					if (prefix.contentEquals("video"))
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
+
+					if (prefix.contentEquals("image"))
+					{
+						pbi = new ImageItem(null, null, null, null);
+						p.addItem(pbi);
+						
+						InputStream input = item.openStream();
+						BufferedImage b = ImageIO.read(input);
+						input.close();
+						((ImageItem)pbi).setImage(b);
+						
+						continue;
+					}
+					else if (prefix.contentEquals("gpstrace"))
+					{
+						Document gpxDoc = null;
+						//StringReader reader = new StringReader(value);
+						InputStream reader = item.openStream();
+						InputSource source = new InputSource(reader);
+						DocumentBuilder builder = DocumentBuilderFactory
+													.newInstance()
+													.newDocumentBuilder();
+						gpxDoc = builder.parse(source);
+						reader.close();
+						pbi = new GPSTraceItem(null, null, null, gpxDoc);
+						p.addItem(pbi);
+
+						continue;
+					}
+					else if (prefix.contentEquals("video"))
 						property = PropertiesSingleton.IDEN_VIDEO;
 					else if (prefix.contentEquals("audio"))
 						property = PropertiesSingleton.IDEN_AUDIO;
 					else
 					{
-						pm.close();
 						return new ModelAndView("message", "text", 
 								  			    "Unsupported file type");
 					}
@@ -354,15 +462,12 @@ public class PlaceBooksAdminController
 
 					if (!new File(path).exists() && !new File(path).mkdirs())
 					{
-						pm.close();
 						return new ModelAndView("message", "text", 
 								  			    "Failed to write file");
 					}
 
 					File file = null;
 										
-					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
-
 					int extIdx = item.getName().lastIndexOf(".");
 					String ext = 
 						item.getName().substring(extIdx + 1, 
@@ -405,7 +510,6 @@ public class PlaceBooksAdminController
 
 			if (pbi == null || itemData.getOwner() == null)
 			{
-				pm.close();
 				return new ModelAndView("message", "text", 
 										"Error setting data elements");
 			}
@@ -421,10 +525,18 @@ public class PlaceBooksAdminController
 		{
             log.error(e.toString());
         }
-        catch (IOException e) 
+		catch (ParserConfigurationException e)
 		{
-            log.error(e.toString());
-        }
+			log.error(e.toString());
+		}
+		catch (SAXException e)
+		{
+			log.error(e.toString());
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
 		finally
 		{
 			if (pm.currentTransaction().isActive())
@@ -446,6 +558,7 @@ public class PlaceBooksAdminController
 	{
 		
 		PlaceBook p = PMFSingleton
+							.get()
 							.getPersistenceManager()
 							.getObjectById(PlaceBook.class, key);
 
@@ -479,7 +592,7 @@ public class PlaceBooksAdminController
 				}
 			}
 
-			PMFSingleton.getPersistenceManager().close();
+			PMFSingleton.get().getPersistenceManager().close();
 
 			try 
 			{
@@ -548,33 +661,19 @@ public class PlaceBooksAdminController
 			}
 			
 			return null;
-			//return new ModelAndView("package", "payload", out);
 		}
+		else
+			PMFSingleton.get().getPersistenceManager().close();
 
-		PMFSingleton.getPersistenceManager().close();
 		return new ModelAndView("message", "text", "Error generating package");
 
-	}
-
-	private static void getFileListRecursive(File path, ArrayList<File> out)
-	{
-		ArrayList<File> files = 
-			new ArrayList<File>(Arrays.asList(path.listFiles()));
-
-		for (File file : files)
-		{
-			if (file.isDirectory())
-				getFileListRecursive(file, out);
-			else
-				out.add(file);
-		}
 	}
 
 	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
-		PersistenceManager pm = PMFSingleton.getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
@@ -604,12 +703,11 @@ public class PlaceBooksAdminController
 
 	}
 
-
 	@RequestMapping(value = "/admin/delete/all", method = RequestMethod.GET)
     public ModelAndView deleteAllPlaceBook() 
 	{
 			
-		PersistenceManager pm = PMFSingleton.getPersistenceManager();
+		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
@@ -639,6 +737,72 @@ public class PlaceBooksAdminController
 
 	
 	// Helper methods below
+
+	private static void getFileListRecursive(File path, ArrayList<File> out)
+	{
+		ArrayList<File> files = 
+			new ArrayList<File>(Arrays.asList(path.listFiles()));
+
+		for (File file : files)
+		{
+			if (file.isDirectory())
+				getFileListRecursive(file, out);
+			else
+				out.add(file);
+		}
+	}
+
+	// Helper class for passing around general PlaceBookItem data
+	private static class ItemData
+	{
+		private Geometry geometry;
+		private URL sourceURL;
+		private User owner;
+
+		public ItemData() { }
+
+		public void setOwner(User owner) { this.owner = owner; }
+		public User getOwner() { return owner; }
+		public void setGeometry(Geometry geometry) { this.geometry = geometry; }
+		public Geometry getGeometry() { return geometry; }
+		public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
+		public URL getSourceURL() { return sourceURL; }
+	}
+
+	// Assumes currently open PersistenceManager
+	private static boolean processItemData(ItemData i, PersistenceManager pm,  
+										   String field, String value)
+	{
+		if (field.equals("owner"))
+		{
+			i.setOwner(UserManager.getUser(pm, value));
+		}
+		else if (field.equals("sourceurl"))
+		{
+			try
+			{
+				i.setSourceURL(new URL(value));
+			}
+			catch (java.net.MalformedURLException e)
+			{
+				log.error(e.toString());
+			}
+		}
+		else if (field.equals("geometry"))
+		{
+			try
+			{
+				i.setGeometry(new WKTReader().read(value));
+			}
+			catch (ParseException e)
+			{
+				log.error(e.toString());
+			}
+		}
+		else
+			return false;
+		return true;
+	}
 
 	private static String placeBookToXML(PlaceBook p)
 	{

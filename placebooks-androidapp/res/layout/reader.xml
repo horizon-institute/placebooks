@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@android:color/white">
+  
+<ScrollView android:id="@+id/ScrollView01"
+android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<LinearLayout android:id="@+id/LinearLayout02"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+  
+  	  <TextView android:id="@+id/txtTitle"
+  	  android:text="Summer at Borth 2011"
+	  android:layout_width="fill_parent" 
+      android:layout_height="fill_parent" 
+      android:gravity="center_horizontal"      
+	  android:textColor="#000000"
+      android:layout_weight="1.5"
+      android:textSize="18.5sp"
+      android:textStyle="bold"
+	  />
+  <!-- 
+	  <TextView android:id="@+id/orgXMLTxt"
+	  android:layout_width="fill_parent"
+	  android:layout_height="wrap_content"
+	  android:textColor="#33FF00"
+	  android:textSize="11sp" />
+	  
+	  <TextView  
+    android:id="@+id/pngname"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    />
+    -->
+	  
+	  <ImageView  
+    android:id="@+id/pngview"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+
+    />
+    
+     <TextView android:id="@+id/txtText1"
+	  android:layout_width="fill_parent" 
+      android:layout_height="fill_parent" 
+	  android:textColor="#000000"
+      android:textSize="13sp"
+	  />
+	  
+	    <TextView android:id="@+id/txtPage1"
+	  android:text="- end of page 1 -"
+	  android:layout_width="fill_parent" 
+      android:layout_height="fill_parent" 
+      android:gravity="center_horizontal"      
+	  android:textColor="#000000"
+      android:textSize="10sp"
+	  />  
+       
+
+  </LinearLayout>
+	
+</ScrollView>
+	
+
+</LinearLayout>
+
+
+
