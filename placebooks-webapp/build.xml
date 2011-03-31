@@ -36,6 +36,12 @@
 		<pathelement path="${classes.dir}" />
     </path>
 
+	<path id="classpath.gwt">
+		<path path="${src.dir}"/>
+		<pathelement path="lib/gwt-user.jar" />
+		<pathelement path="lib/gwt-dev.jar" />	
+    </path>
+	
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
@@ -53,6 +59,14 @@
 		</javac>
 	</target>
 
+	<target name="compile-gwt">
+		<java classpathref="classpath.gwt" failonerror="true" fork="true"
+	        classname="com.google.gwt.dev.Compiler"> 
+	        <arg line="-war ${war.dir}"/> 
+	        <arg line="placebooks.PlaceBookEditor"/> 
+		</java> 
+	</target>
+	
 	<target name="compile-test" depends="compile"
 			description="Compile test classes">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
