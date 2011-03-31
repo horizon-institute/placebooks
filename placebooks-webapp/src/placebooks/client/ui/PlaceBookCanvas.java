@@ -15,32 +15,33 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookCanvas extends Composite
 {
-	private static PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
-
 	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookCanvas>
 	{
 	}
+
+	private static PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
 	Panel palette;
 
 	private PlaceBook placebook;
-	
+
 	private final Collection<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
-	
-	public PlaceBookCanvas(PlaceBook placebook)
+
+	public PlaceBookCanvas(final PlaceBook placebook)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		setPlaceBook(placebook);
 	}
-	
-	private void setPlaceBook(PlaceBook placebook)
+
+	private void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
-		
-		for(PlaceBookItem item: placebook.getItems())
+
+		for (int index = 0; index < placebook.getItems().length(); index++)
 		{
-			PlaceBookItemFrame frame = new PlaceBookItemFrame(item);
+			final PlaceBookItem item = placebook.getItems().get(index);
+			final PlaceBookItemFrame frame = new PlaceBookItemFrame(item);
 			items.add(frame);
 		}
 	}

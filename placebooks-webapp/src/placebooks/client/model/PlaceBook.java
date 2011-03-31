@@ -1,13 +1,16 @@
 package placebooks.client.model;
 
-import java.util.Collection;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
-public class PlaceBook
+public class PlaceBook extends JavaScriptObject
 {
-	private Collection<PlaceBookItem> items;
+	protected PlaceBook() {}
 	
-	public Iterable<PlaceBookItem> getItems()
-	{
-		return items;
-	}
+	public final native JsArray<PlaceBookItem> getItems() /*-{ return this.items; }-*/;
+
+	public final native String getLastName() /*-{ return this.last_name; }-*/;
+
+	public final native int computeAge() /*-{ return this.getComputedAge(); }-*/;
+
 }

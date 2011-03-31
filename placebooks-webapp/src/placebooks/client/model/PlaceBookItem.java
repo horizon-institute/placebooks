@@ -1,18 +1,27 @@
 package placebooks.client.model;
 
-import java.util.Date;
+import placebooks.model.User;
 
-public class PlaceBookItem
+import com.google.gwt.core.client.JavaScriptObject;
+
+public abstract class PlaceBookItem extends JavaScriptObject
 {
-	private String id;
+	protected PlaceBookItem() {}
 	
-	private String ownderId;
+	public final native String getKey() /*-{ return this.key; }-*/;
+
+	public final native String getPlaceBook() /*-{ return this.placebook; }-*/;
 	
-	private int order;
+	public final native User getUser() /*-{ return this.owner; }-*/;
 	
-	private String uri;
-	
-	private Date date;
+	//@Persistent
+	//private Date timestamp;
+
+	//@Persistent
+	//private Geometry geom;
+
+	//@Persistent
+	//private URL sourceURL; // The original internet resource string if it exists
 	
 	// geometry
 }
