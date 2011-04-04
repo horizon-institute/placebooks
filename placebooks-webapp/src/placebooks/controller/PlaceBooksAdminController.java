@@ -1,19 +1,11 @@
 package placebooks.controller;
 
+import placebooks.model.*;
+import placebooks.model.json.*;
+
+import java.util.*;
+import java.io.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +15,12 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,8 +36,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,20 +48,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.model.AudioItem;
-import placebooks.model.GPSTraceItem;
-import placebooks.model.ImageItem;
-import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
-import placebooks.model.User;
-import placebooks.model.VideoItem;
-import placebooks.model.WebBundleItem;
+import placebooks.model.*;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -125,40 +117,98 @@ public class PlaceBooksAdminController
 		return "redirect:/login.html";
 	}
 	
-	@RequestMapping(value = "/admin/placebooks/{key}", 
+	// TODO: currently uses startsWith for string search. Is this right??
+	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/admin/placebooks/{owner}", 
 					method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
 	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
 										  HttpServletResponse res,
-										  @PathVariable("key") String key)
+										  @PathVariable("owner") String owner)
 	{
-		PlaceBook p = PMFSingleton
-							.get()
-							.getPersistenceManager()
-							.getObjectById(PlaceBook.class, key);
-
-		try
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+		final Query q = pm.newQuery(PlaceBook.class);
+		q.setFilter("owner.email.startsWith('" + owner + "')");
+		Collection<PlaceBook> pbs = (Collection<PlaceBook>)q.execute();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		if (!pbs.isEmpty())
 		{
-			ObjectMapper mapper = new ObjectMapper();
-			ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, p);
-			sos.flush();
-		}
-		catch (IOException e)
-		{
-			log.error(e.toString());
+			Shelf s = new Shelf(pbs);
+			try
+			{
+				ObjectMapper mapper = new ObjectMapper();
+				ServletOutputStream sos = res.getOutputStream();
+				res.setContentType("application/json");
+				mapper.writeValue(sos, s);
+				sos.flush();
+			}
+			catch (IOException e)
+			{
+				log.error(e.toString());
+			}
 		}
 
-		PMFSingleton.get().getPersistenceManager().close();
+		pm.close();
 
 		return null;
 	}
+
+	@RequestMapping(value = "/admin/metadata/*", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public ModelAndView addMetadata(HttpServletRequest req)
+	{		
+		String key = null, mKey = null, mVal = null;
+
+		for (Enumeration<String> params = req.getParameterNames(); 
+			 params.hasMoreElements(); )
+		{
+			String param = params.nextElement();
+			String value = req.getParameterValues(param)[0];
+
+			if (param.equals("placebook_key"))
+				key = value;
+			else if (param.equals("metadata_key"))
+				mKey = value;
+			else if (param.equals("metadata_value"))
+				mVal = value;
+		}
+
+		if (key != null && mKey != null && mVal != null)
+		{
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+			
+			try
+			{	
+				pm.currentTransaction().begin();
+				PlaceBook p = pm.getObjectById(PlaceBook.class, key);
+				p.addParameter(mKey, mVal);
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "Metadata added");
+		}
+		else
+			return new ModelAndView("message", "text", "Error adding metadata");
+	}
+
 
 	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView uploadText(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
@@ -230,7 +280,8 @@ public class PlaceBooksAdminController
 	@SuppressWarnings("unchecked")
 	public ModelAndView createWebBundle(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		WebBundleItem wbi = null;
@@ -384,7 +435,8 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
@@ -673,7 +725,8 @@ public class PlaceBooksAdminController
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
@@ -707,7 +760,8 @@ public class PlaceBooksAdminController
     public ModelAndView deleteAllPlaceBook() 
 	{
 			
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
