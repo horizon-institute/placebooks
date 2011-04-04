@@ -13,14 +13,16 @@ import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.IdentityType;
 
 import org.apache.log4j.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable
+@PersistenceCapable(identityType=IdentityType.DATASTORE)
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
@@ -48,9 +50,11 @@ public abstract class PlaceBookItem
 	@Persistent
 	private URL sourceURL; // The original internet resource string if it exists
 
-	// The PlaceBookItem's parameters:
-	// 		Layout on GUI
-	// 		State data, etc.
+	// Searchable metadata attributes, e.g., title, description, etc.
+	@Persistent
+	private HashMap<String, String> metadata;
+
+	// The PlaceBookItem's configuration data
 	@Persistent
 	private HashMap<String, String> parameters;
 
@@ -62,7 +66,6 @@ public abstract class PlaceBookItem
 		this.sourceURL = sourceURL;
 
 		parameters = new HashMap<String, String>();
-		parameters.put("Testing this", "blah blah");
 
 		this.timestamp = new Date();
 
@@ -139,7 +142,27 @@ public abstract class PlaceBookItem
 	 * @return String of Javascript code
 	 */
 	public abstract String GetJavaScript();
-	
+
+
+	public void addParameter(String key, String value)
+	{
+		parameters.put(key, value);
+	}
+
+	public String getParameter(String key)
+	{
+		return parameters.get(key);
+	}
+
+	public void addMetadata(String key, String value)
+	{
+		metadata.put(key, value);
+	}
+
+	public String getMetadata(String key)
+	{
+		return metadata.get(key);
+	}
 
 	public String getKey() { return key; }
 

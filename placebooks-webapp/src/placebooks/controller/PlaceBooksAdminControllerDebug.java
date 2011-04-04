@@ -90,8 +90,7 @@ public class PlaceBooksAdminControllerDebug
 		List<PlaceBook> pbs = null;
 		try
 		{
-			Query query = pm.newQuery(PlaceBook.class, 
-									  "owner.email == 'stuart@tropic.org.uk'");
+			Query query = pm.newQuery(PlaceBook.class);
 			pbs = (List<PlaceBook>)query.execute();
 			//query.closeAll();
 		}
@@ -100,66 +99,21 @@ public class PlaceBooksAdminControllerDebug
 			log.error(e.toString());
 		}
 
-		StringBuffer out = new StringBuffer();
+		ModelAndView mav = null;
 		if (pbs != null)
 		{
-			for (PlaceBook pb : pbs)
-			{
-				// TODO: sort of breaking MVC here, I'm aware, needs to be fixed
-				out.append(
-				"<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
-				+ pb.getKey() + ", owner=" 
-				+ pb.getOwner().getEmail() + ", timestamp=" 
-				+ pb.getTimestamp().toString() + ", " 
-				+ pb.getGeometry().toString() + ", " + pb.getItems().size()
-				+ " elements</b> [<a href='../package/" + pb.getKey() 
-				+ "'>package</a>] [<a href='../delete/" + pb.getKey() 
-				+ "'>delete</a>] [<a href='../placebooks/" + pb.getKey() 
-				+ "'>json</a>]" 
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>"
-				+ "<form action='../text/' method='POST'>Text: <input type='text' name='text."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload image: <input type='file' name='image."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload GPS trace: <input type='file' name='gpstrace."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='http://www.everytrail.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				);
-
-				for (PlaceBookItem pbi : pb.getItems())
-				{
-
-					out.append("<div style='border:1px dotted;padding:5px'>");
-					out.append(pbi.getEntityName());
-					out.append(": " + pbi.getKey() + ", owner=" 
-							   + pbi.getOwner().getEmail() + ", timestamp=" 
-							   + pbi.getTimestamp().toString());
-
-					out.append("</div>");
-				}
-
-				out.append("</div><br />");
-			}
-
+			mav = new ModelAndView("placebooks");
+			mav.addObject("pbs", pbs);
 		}
 		else
-			out.append("PlaceBook query returned null");
-
-//		ModelAndView mav = new ModelAndView("placebooks", "pbs", out.toString());
+		{
+			mav = new ModelAndView("message", "text", 
+								   "Error listing PlaceBooks");
+		}
 
 		PMFSingleton.get().getPersistenceManager().close();
-
-		return new ModelAndView("message", "text", out.toString());
+	
+		return mav;
 
     }
 
