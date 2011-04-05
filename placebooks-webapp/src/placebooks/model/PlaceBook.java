@@ -9,6 +9,9 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+
+import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -17,8 +20,9 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public class PlaceBook
 {
-  	//private static final Logger log = 
-	//	Logger.getLogger(PlaceBook.class.getName());
+	@NotPersistent
+	protected static final Logger log = 
+		Logger.getLogger(PlaceBook.class.getName());
 
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
@@ -52,9 +56,14 @@ public class PlaceBook
 	public PlaceBook(User owner, Geometry geom)
 	{
 		this.owner = owner;
-		this.owner.add(this);
+		if (owner != null)
+			this.owner.add(this);
 		this.geom = geom;
 		this.timestamp = new Date();
+
+		log.info("Created new PlaceBook: timestamp=" 
+				 + this.timestamp.toString());
+
 	}
 	
 	public PlaceBook(User owner, Geometry geom, List<PlaceBookItem> items)
@@ -85,25 +94,38 @@ public class PlaceBook
 		item.setPlaceBook(null);
 		return items.remove(item);
 	}
-
-	public void addMetadata(String key, String value)
+	
+	// TODO: make PlaceBook and PlaceBookItem extend a class supporting this
+	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
 	}
 
-	public String getMetadata(String key)
+	public String getMetadataValue(String key)
 	{
 		return metadata.get(key);
 	}
-	public void addParameter(String key, String value)
+
+	public Map<String, String> getMetadata()
+	{
+		return Collections.unmodifiableMap(metadata);
+	}
+
+	public void addParameterEntry(String key, String value)
 	{
 		parameters.put(key, value);
 	}
 
-	public String getParameter(String key)
+	public String getParameterValue(String key)
 	{
 		return parameters.get(key);
 	}
+
+	public Map<String, String> getParameters()
+	{
+		return Collections.unmodifiableMap(parameters);
+	}
+
 
 	public String getKey() { return key; }
 

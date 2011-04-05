@@ -1,8 +1,7 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
@@ -14,6 +13,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
 public abstract class PlaceBookItem 
 {
+	@NotPersistent
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBookItem.class.getName());
 
@@ -52,11 +53,11 @@ public abstract class PlaceBookItem
 
 	// Searchable metadata attributes, e.g., title, description, etc.
 	@Persistent
-	private HashMap<String, String> metadata;
+	private HashMap<String, String> metadata = new HashMap<String, String>();
 
 	// The PlaceBookItem's configuration data
 	@Persistent
-	private HashMap<String, String> parameters;
+	private HashMap<String, String> parameters = new HashMap<String, String>();
 
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
@@ -64,13 +65,11 @@ public abstract class PlaceBookItem
 		this.owner = owner;
 		this.geom = geom;
 		this.sourceURL = sourceURL;
-
-		parameters = new HashMap<String, String>();
-
 		this.timestamp = new Date();
 
 		log.info("Created new PlaceBookItem, concrete name: " 
-				 + getEntityName());
+				 + getEntityName() + ", timestamp=" 
+				 + this.timestamp.toString());
 	}
 
 	/** Each class must append relevant configuration data
@@ -144,24 +143,34 @@ public abstract class PlaceBookItem
 	public abstract String GetJavaScript();
 
 
-	public void addParameter(String key, String value)
-	{
-		parameters.put(key, value);
-	}
-
-	public String getParameter(String key)
-	{
-		return parameters.get(key);
-	}
-
-	public void addMetadata(String key, String value)
+	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
 	}
 
-	public String getMetadata(String key)
+	public String getMetadataValue(String key)
 	{
 		return metadata.get(key);
+	}
+
+	public Map<String, String> getMetadata()
+	{
+		return Collections.unmodifiableMap(metadata);
+	}
+
+	public void addParameterEntry(String key, String value)
+	{
+		parameters.put(key, value);
+	}
+
+	public String getParameterValue(String key)
+	{
+		return parameters.get(key);
+	}
+
+	public Map<String, String> getParameters()
+	{
+		return Collections.unmodifiableMap(parameters);
 	}
 
 	public String getKey() { return key; }

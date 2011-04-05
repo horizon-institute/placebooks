@@ -3,6 +3,7 @@ package placebooks.model.json;
 import placebooks.model.PlaceBook;
 
 import java.util.Collection;
+import java.util.*; //TMP
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -12,65 +13,39 @@ import org.apache.log4j.Logger;
 
 public class Shelf
 {
-
 	@JsonIgnore
   	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
-	private String[] keys;
-
-	@JsonProperty
-	private String[] owners;
-
-	@JsonProperty
-	private String[] titles;
+	private PlaceBookEntry[] entries;
 
 	public Shelf(Collection<PlaceBook> pbs) 
 	{
 		log.info("Creating JSON Shelf...");
-		String[] keys = new String[pbs.size()];
-		String[] owners = new String[pbs.size()];
-		String[] titles = new String[pbs.size()];
+		PlaceBookEntry[] entries = new PlaceBookEntry[pbs.size()];
 
 		int i = 0; 
 		for (PlaceBook pb : pbs)
 		{
-			keys[i] = pb.getKey();
-			owners[i] = pb.getOwner().getEmail();
-			String title = pb.getMetadata("title");
-			if (title == null)
-				titles[i] = "[null]";
+			Set s = (Set)pb.getMetadata().entrySet();
+			for (Iterator j = s.iterator(); j.hasNext(); )
+			{
+				Map.Entry e = (Map.Entry)j.next();
+				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+			}
+
+			entries[i] = new PlaceBookEntry();
+			entries[i].setKey(pb.getKey());
+			entries[i].setOwner(pb.getOwner().getEmail());
+			entries[i].setTitle(pb.getMetadataValue("title"));
+			entries[i].setNumItems(pb.getItems().size());
+			entries[i].setDescription(pb.getMetadataValue("description"));
+			
 			++i;
 		}
 
-		setKeys(keys);
-		setOwners(owners);
-		setTitles(titles);
+		this.entries = entries;
 	}
 
-	public String[] getKeys()
-	{
-		return keys;
-	}
-	public void setKeys(String[] keys)
-	{
-		this.keys = keys;
-	}
-	public String[] getOwners()
-	{
-		return owners;
-	}
-	public void setOwners(String[] owners)
-	{
-		this.owners = owners;
-	}
-	public String[] getTitles()
-	{
-		return titles;
-	}
-	public void setTitles(String[] titles)
-	{
-		this.titles = titles;
-	}
 
 }

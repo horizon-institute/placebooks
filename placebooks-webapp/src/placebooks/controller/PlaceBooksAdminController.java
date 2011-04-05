@@ -119,11 +119,11 @@ public class PlaceBooksAdminController
 	
 	// TODO: currently uses startsWith for string search. Is this right??
 	// owner.key query on key value for User works without startsWith
-	@RequestMapping(value = "/admin/placebooks/{owner}", 
+	@RequestMapping(value = "/admin/shelf/{owner}", 
 					method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")
 	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
-										  HttpServletResponse res,
+										  HttpServletResponse res, 
 										  @PathVariable("owner") String owner)
 	{
 		final PersistenceManager pm = 
@@ -154,27 +154,69 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/metadata/*", method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
-	public ModelAndView addMetadata(HttpServletRequest req)
-	{		
-		String key = null, mKey = null, mVal = null;
-
-		for (Enumeration<String> params = req.getParameterNames(); 
-			 params.hasMoreElements(); )
+	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
+	public ModelAndView addPlaceBook(@RequestParam String owner,
+									 @RequestParam String geometry)
+	{
+		if (owner != null)
 		{
-			String param = params.nextElement();
-			String value = req.getParameterValues(param)[0];
+			Geometry geometry_ = null;
+			try 
+			{
+				geometry_ = new WKTReader().read(geometry);
+			} 
+			catch (ParseException e)
+			{
+				log.error(e.toString());
+			}
+			
+			// If created inside getting the PersistenceManager, some fields are
+			// null. Not sure why... TODO
+			PlaceBook p = new PlaceBook(null, geometry_);
 
-			if (param.equals("placebook_key"))
-				key = value;
-			else if (param.equals("metadata_key"))
-				mKey = value;
-			else if (param.equals("metadata_value"))
-				mVal = value;
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+
+			User owner_ = UserManager.getUser(pm, owner);
+
+			if (owner_ == null)
+			{
+				return new ModelAndView("message", "text", 
+										"User does not exist");
+			}
+	
+			p.setOwner(owner_);		
+
+			try
+			{	
+				pm.currentTransaction().begin();
+				pm.makePersistent(p);
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "PlaceBook added");
 		}
+		else
+			return new ModelAndView("message", "text", "Error in POST");
+	}
 
-		if (key != null && mKey != null && mVal != null)
+
+	@RequestMapping(value = "/admin/add_metadata", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public ModelAndView addMetadata(@RequestParam String key, 
+									@RequestParam String mKey, 
+									@RequestParam String mValue)
+	{		
+		if (key != null && mKey != null && mValue != null)
 		{
 			final PersistenceManager pm = 
 				PMFSingleton.get().getPersistenceManager();
@@ -183,7 +225,7 @@ public class PlaceBooksAdminController
 			{	
 				pm.currentTransaction().begin();
 				PlaceBook p = pm.getObjectById(PlaceBook.class, key);
-				p.addParameter(mKey, mVal);
+				p.addMetadataEntry(mKey, mValue);
 				pm.currentTransaction().commit();
 			}
 			finally
@@ -199,11 +241,11 @@ public class PlaceBooksAdminController
 			return new ModelAndView("message", "text", "Metadata added");
 		}
 		else
-			return new ModelAndView("message", "text", "Error adding metadata");
+			return new ModelAndView("message", "text", "Error in POST");
 	}
 
 
-	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/text", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView uploadText(HttpServletRequest req)
 	{
@@ -276,7 +318,8 @@ public class PlaceBooksAdminController
 	}
 
 
-	@RequestMapping(value = "/admin/webbundle/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/webbundle", 
+					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView createWebBundle(HttpServletRequest req)
 	{
@@ -432,7 +475,8 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 	
-	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/upload", 
+					method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
 	{
 		final PersistenceManager pm = 
@@ -756,7 +800,8 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/admin/delete/all", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete/all_placebooks", 
+					method = RequestMethod.GET)
     public ModelAndView deleteAllPlaceBook() 
 	{
 			

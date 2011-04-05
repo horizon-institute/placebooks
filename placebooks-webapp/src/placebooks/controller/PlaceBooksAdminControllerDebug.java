@@ -1,6 +1,6 @@
 package placebooks.controller;
 
-import java.util.List;
+import java.util.*;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -34,56 +34,10 @@ public class PlaceBooksAdminControllerDebug
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
 
-	// Create a new fake PlaceBook for testing
-	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
-    public ModelAndView newPlaceBookTest() 
-	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
-		pm.currentTransaction().begin();
-
-		Geometry geometry = null;
-		try 
-		{
-			geometry = new WKTReader().read(
-								"POINT(52.5189367988799 -4.04983520507812)");
-		} 
-		catch (ParseException e)
-		{
-			log.error(e.toString());
-		}
-		
-		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
-
-		PlaceBook p = new PlaceBook(owner, geometry);
-
-		try
-		{
-			pm.makePersistent(p);
-			pm.currentTransaction().commit();
-		}
-		finally
-		{
-			if (pm.currentTransaction().isActive())
-			{
-				pm.currentTransaction().rollback();
-				log.error("Rolling current persist transaction back");
-			}
-		}
-
-		pm.close();
-
-		return new ModelAndView("message", 
-								"text", 
-								"New PlaceBook created");
-
-	}
-
-
-
-	@RequestMapping(value = "/admin/print/placebooks", 
+	@RequestMapping(value = "/admin/debug/print_placebooks", 
 					method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")	
-	public ModelAndView getPlaceBooks()
+	public ModelAndView printPlaceBooks()
 	{
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
@@ -109,6 +63,17 @@ public class PlaceBooksAdminControllerDebug
 		{
 			mav = new ModelAndView("message", "text", 
 								   "Error listing PlaceBooks");
+		}
+
+		for (PlaceBook pb : pbs)
+		{
+			Set s = (Set)pb.getMetadata().entrySet();
+			for (Iterator i = s.iterator(); i.hasNext(); )
+			{
+				Map.Entry e = (Map.Entry)i.next();
+				log.info("entry: '" + e.getKey() + "' => '" + e.getValue() 
+						 + "'");
+			}
 		}
 
 		PMFSingleton.get().getPersistenceManager().close();

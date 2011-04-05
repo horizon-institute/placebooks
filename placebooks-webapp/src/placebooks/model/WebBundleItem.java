@@ -11,6 +11,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.NotPersistent;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class WebBundleItem extends PlaceBookItem
 {
+	@NotPersistent
   	private static final Logger log = 
 		Logger.getLogger(WebBundleItem.class.getName());
 
