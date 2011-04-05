@@ -16,6 +16,10 @@ import java.io.IOException;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.app.ProgressDialog;
+import android.content.Context;
+
+
 //import android.widget.Toast;
 //import java.util.zip.ZipInputStream;
 //import java.util.zip.ZipEntry;
@@ -27,21 +31,34 @@ import android.view.View.OnClickListener;
 
 public class PlaceBooks extends Activity {
 	
-	//private static final String MEDIA_PATH = new String("/sdcard/downloadFile.zip");
+	private static String placebooksfolder = new String("/PlaceBooks");
+	private File file;
+	private ProgressDialog progressDialog;
 		
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main);	//push main layout into the content view
+         	
+        
+        //create /placebooks dir on app startup
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            Log.d("MyApp", "No SDCARD");
+        } else {
+        File directory = new File(Environment.getExternalStorageDirectory()+File.separator+"PlaceBooks");
+        directory.mkdirs();
+        }
+
        
         Button button = (Button) findViewById(R.id.Button01);
         button.setOnClickListener(new OnClickListener() {
         	           	           public void onClick(View v) {
-        	           	        	 
+        	            	        	
+        	           	        	   
         	           	        	 //call the download method passing it the url to the placebooks package
         	           	        	String savedFilePath = Download("http://cs.swan.ac.uk/~csmarkd/package.zip");
-        	           	        	//Toast.makeText(PlaceBooks.this, "file path:  " + " " + savedFilePath, Toast.LENGTH_SHORT).show();
+
         	           	           }
         	           	         });
        
@@ -58,9 +75,40 @@ public class PlaceBooks extends Activity {
     }
     
     
+    private void runDialog(final int seconds)
+    
+    {
+    
+            progressDialog = ProgressDialog.show(this, "Please wait....", "Here your message");
+    
+            new Thread(new Runnable(){
+    
+                public void run(){
+    
+                    try {
+    
+                                Thread.sleep(seconds * 1000);
+    
+                        progressDialog.dismiss();
+    
+                    } catch (InterruptedException e) {
+    
+                        e.printStackTrace();
+    
+                    }
+    
+                }
+    
+            }).start();
+    }
+    
+    
+    
+    
+    
     public String Download(String Url)
     {
-    	
+		
      String filepath=null;
      try {
       //set the download URL, a url that points to a file on the internet
@@ -86,7 +134,7 @@ public class PlaceBooks extends Activity {
       
       String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
       Log.i("Local filename:",""+filename);
-      File file = new File(SDCardRoot,filename); //SDCardRoot
+      file = new File(SDCardRoot + placebooksfolder,filename); //SDCardRoot/PlaceBooks
 
       
       if(file.createNewFile())
@@ -110,8 +158,14 @@ public class PlaceBooks extends Activity {
       byte[] buffer = new byte[1024];
       int bufferLength = 0; //used to store a temporary size of the buffer
 
+	 
+
+   //   pbarDialog = ProgressDialog.show(mContext.this,
+    //          "Please wait...", "Doing Extreme Calculations...", true);
+      
       //now, read through the input buffer and write the contents to the file
       while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+    	  
        //add the data in the buffer to the file in the file output stream (the file on the sd card
        fileOutput.write(buffer, 0, bufferLength);
        //add up the size so we know how much is downloaded
