@@ -268,10 +268,7 @@ public class PlaceBooksAdminController
 				{
 					int delim = param.indexOf(".");
 					if (delim == -1)
-					{
-						return new ModelAndView("message", "text", 
-												"Error");
-					}
+						continue;
 
 					String prefix = param.substring(0, delim),
 						   suffix = param.substring(delim + 1, param.length());
@@ -342,11 +339,7 @@ public class PlaceBooksAdminController
 				{
 					int delim = param.indexOf(".");
 					if (delim == -1)
-					{
-						pm.close();
-						return new ModelAndView("message", "text", 
-												"Error");
-					}
+						continue;
 
 					String prefix = param.substring(0, delim),
 						   suffix = param.substring(delim + 1, param.length());
@@ -504,10 +497,7 @@ public class PlaceBooksAdminController
 					String field = item.getFieldName();
 					int delim = field.indexOf(".");
 					if (delim == -1)
-					{
-						return new ModelAndView("message", "text", 
-					  			    "Error determining relevant PlaceBook key");
-					}
+						continue;
 
 					String prefix = field.substring(0, delim),
 						   suffix = field.substring(delim + 1, field.length());
