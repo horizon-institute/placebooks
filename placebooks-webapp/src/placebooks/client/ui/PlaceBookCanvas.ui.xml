@@ -1,15 +1,16 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:p="urn:import:placebooks.client.ui">
 	<ui:style>
-		.important {
-			font-weight: bold;
+		.canvas {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 00px;
+			bottom: 0px;		
 		}
-		
-		.palette {
-		}
-	</ui:style>
-	<g:AbsolutePanel>
-		<g:AbsolutePanel styleName="{style.palette}" ui:field="palette"></g:AbsolutePanel>
-	</g:AbsolutePanel>
+	</ui:style>	
+	<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+		<p:EditablePanel>Example <b>bold</b>text</p:EditablePanel>
+	</p:MousePanel>
 </ui:UiBinder> 

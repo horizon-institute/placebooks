@@ -1,7 +1,5 @@
 package placebooks.client.model;
 
-import placebooks.model.User;
-
 import com.google.gwt.core.client.JavaScriptObject;
 
 public abstract class PlaceBookItem extends JavaScriptObject

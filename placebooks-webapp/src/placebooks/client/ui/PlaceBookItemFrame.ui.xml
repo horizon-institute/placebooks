@@ -1,0 +1,90 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:p="urn:import:placebooks.client.ui"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.itemFrame {
+			position: absolute;
+			width: 100px;
+			height: 80px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+		}
+	
+		.menuButton {
+			top: 0px;
+			position: absolute;
+			right: 0px;
+			width: 20px;
+			height: 20px;
+			border: 1px solid #669;
+			background-color: #555;
+			-webkit-transition: opacity .5s linear;
+			transition: opacity .5s linear;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;			
+		}
+		
+		.expandSection {
+			bottom: 0px;
+			position: absolute;
+			right: 0px;
+			width: 20px;
+			height: 20px;
+			border: 1px solid #669;
+			background-color: #557;
+			-webkit-transition: opacity .5s linear;
+			transition: opacity .5s linear;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;			
+		}
+		
+		.dragSection {
+			top: 20px;
+			bottom: 20px;
+			position: absolute;
+			right: 0px;
+			width: 20px;
+			border: 1px solid #669;
+			background-color: #557;
+			-webkit-transition: opacity .5s linear;
+			transition: opacity .5s linear;	
+											-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+		}
+		
+		.borderSection {
+			top: 0px;
+			bottom: 0px;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			border: 1px solid #669;
+			-webkit-transition: opacity .5s linear;
+			transition: opacity .5s linear;	
+								-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+			z-index: -5;
+		}
+		
+		.widget {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 20px;
+			bottom: 0px;			
+		}
+	</ui:style>
+	<p:MousePanel styleName="{style.itemFrame}" ui:field="frame">
+		<p:EditablePanel styleName="{style.widget}" ui:field="widget">Some <b>text</b></p:EditablePanel>
+		<p:MousePanel styleName="{style.borderSection}" ui:field="borderSection"><p:MousePanel></p:MousePanel></p:MousePanel>	
+		<p:MousePanel styleName="{style.menuButton}" ui:field="menuButton"><p:MousePanel></p:MousePanel></p:MousePanel>	
+		<p:MousePanel styleName="{style.dragSection}" ui:field="dragSection"><p:MousePanel></p:MousePanel></p:MousePanel>
+		<p:MousePanel styleName="{style.expandSection}" ui:field="expandSection"><p:MousePanel></p:MousePanel></p:MousePanel>
+	</p:MousePanel>
+</ui:UiBinder> 
