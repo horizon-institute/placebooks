@@ -43,9 +43,10 @@ public class PlaceBooks extends Activity {
 //	private String filepath;
 //  private ProgressDialog progressDialog;
 //    private Context myContext = PlaceBooks.this;
-    
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     private ProgressDialog mProgressDialog;
+    private String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
+ 
 		
     /** Called when the activity is first created. */
     @Override
@@ -101,6 +102,7 @@ public class PlaceBooks extends Activity {
     	 */
         String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
         new DownloadFileAsync().execute(url);
+        
     }
     
     @Override
@@ -108,7 +110,7 @@ public class PlaceBooks extends Activity {
         switch (id) {
             case DIALOG_DOWNLOAD_PROGRESS:
                 mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("Downloading PlaceBook..");
+                mProgressDialog.setMessage("Downloading & Unpacking PlaceBook..");
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mProgressDialog.setCancelable(true);
                 mProgressDialog.show();
@@ -154,7 +156,7 @@ public class PlaceBooks extends Activity {
                 /**
                  * This needs to be changed to whatever the filename you are downloading is called. 
                  */
-                String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
+                //String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
                 Log.i("Local filename:",""+filename);
                 file = new File(SDCardRoot + placebooksfolder,filename); //SDCardRoot/PlaceBooks
 
@@ -193,10 +195,19 @@ public class PlaceBooks extends Activity {
                     Log.i("Progress:","downloadedSize:"+downloadedSize+"totalSize:"+ totalSize) ;
 
                    }
-                        
+                     
                 fileOutput.flush();
                 fileOutput.close();
                 
+                // location of the downloaded .zip file on the sd card
+                String fileLoc = (Environment.getExternalStorageDirectory() +placebooksfolder + "/" +filename);
+                File sdCard = Environment.getExternalStorageDirectory();
+                String unzipLocation = sdCard.toString()+"/PlaceBooks";//(Environment.getExternalStorageDirectory() +placebooksfolder); 
+                
+                Decompress d = new Decompress(fileLoc, unzipLocation); 
+                d.unzip();
+                
+    
                 if(downloadedSize==totalSize)   filepath=file.getPath();
                 
             //catch some possible errors...  
