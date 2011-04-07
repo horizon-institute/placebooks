@@ -21,5 +21,6 @@ public class EditablePanel extends HTMLPanel
 	{
 		super(html);
 		getElement().setAttribute("contentEditable", "true");
+		getElement().getStyle().setProperty("textAlign", "justify");
 	}	
 }
