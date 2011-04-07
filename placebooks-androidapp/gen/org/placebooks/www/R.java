@@ -16,12 +16,13 @@ public final class R {
     public static final class id {
         public static final int Button01=0x7f050000;
         public static final int Button02=0x7f050001;
-        public static final int LinearLayout02=0x7f050003;
-        public static final int ScrollView01=0x7f050002;
-        public static final int pngview=0x7f050005;
-        public static final int txtPage1=0x7f050007;
-        public static final int txtText1=0x7f050006;
-        public static final int txtTitle=0x7f050004;
+        public static final int LinearLayout02=0x7f050004;
+        public static final int ScrollView01=0x7f050003;
+        public static final int pngview=0x7f050006;
+        public static final int status=0x7f050002;
+        public static final int txtPage1=0x7f050008;
+        public static final int txtText1=0x7f050007;
+        public static final int txtTitle=0x7f050005;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -30,5 +31,10 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040001;
         public static final int hello=0x7f040000;
+        public static final int run_task=0x7f040002;
+        public static final int task_cancelled=0x7f040005;
+        public static final int task_completed=0x7f040006;
+        public static final int task_starting=0x7f040004;
+        public static final int task_working=0x7f040003;
     }
 }

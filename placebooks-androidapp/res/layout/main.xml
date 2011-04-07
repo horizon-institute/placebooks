@@ -7,4 +7,8 @@
 
 <Button android:text="Get My PlaceBook" android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 <Button android:text="View My PlaceBook" android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+<TextView android:id="@+id/status"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    />
 </LinearLayout>
