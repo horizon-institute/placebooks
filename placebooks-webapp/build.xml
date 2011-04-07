@@ -13,11 +13,6 @@
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	
-	<!-- Configure the custom Ant tasks for the Manager application -->
-  	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
-  	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
-  	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
 
 	<path id="classpath">
   		<fileset dir="${lib.dir}">
@@ -30,7 +25,18 @@
 		<pathelement path="${hamcrest.home}" />
 		<pathelement path="${junit.home}" />
 	</path>
-
+	
+	<!-- Configure the custom Ant tasks for the Manager application -->
+  	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask">
+		<classpath refid="classpath" />
+	</taskdef>
+  	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask">
+		<classpath refid="classpath" />
+	</taskdef>
+  	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask">
+		<classpath refid="classpath" />
+	</taskdef>
+	
 	<path id="classpath.enhance">
 		<path refid="classpath"/>
 		<pathelement path="${classes.dir}" />
