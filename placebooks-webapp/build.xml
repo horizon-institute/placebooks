@@ -8,16 +8,21 @@
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
-	<property name="lib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="warlib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="lib.dir" value="lib" />
 	<property name="src.dir" value="src" />
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
+	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
 
 	<path id="classpath">
-  		<fileset dir="${lib.dir}">
+  		<fileset dir="${warlib.dir}">
     		<include name="*.jar"/>
   		</fileset>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
 		<fileset dir="${catalina.home}">
 			<include name="*.jar"/>
 		</fileset>
@@ -25,27 +30,28 @@
 		<pathelement path="${hamcrest.home}" />
 		<pathelement path="${junit.home}" />
 	</path>
+
+	<path id="classpath.gwt">
+		<path path="${src.dir}"/>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+    </path>
 	
 	<!-- Configure the custom Ant tasks for the Manager application -->
-  	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask">
+  	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
 		<classpath refid="classpath" />
 	</taskdef>
-  	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask">
+  	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
 		<classpath refid="classpath" />
 	</taskdef>
-  	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask">
+  	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
 		<classpath refid="classpath" />
 	</taskdef>
 	
 	<path id="classpath.enhance">
 		<path refid="classpath"/>
 		<pathelement path="${classes.dir}" />
-    </path>
-
-	<path id="classpath.gwt">
-		<path path="${src.dir}"/>
-		<pathelement path="lib/gwt-user.jar" />
-		<pathelement path="lib/gwt-dev.jar" />	
     </path>
 	
 	<target name="makedirs">
@@ -65,11 +71,11 @@
 		</javac>
 	</target>
 
-	<target name="compile-gwt">
+	<target name="compile-gwt" description="Compile GWT web interface">
 		<java classpathref="classpath.gwt" failonerror="true" fork="true"
 	        classname="com.google.gwt.dev.Compiler"> 
 	        <arg line="-war ${war.dir}"/> 
-	        <arg line="placebooks.PlaceBookEditor"/> 
+	        <arg line="${editor.name}"/> 
 		</java> 
 	</target>
 	
@@ -173,9 +179,7 @@
   	</target>
 
 	<target name="clean" description="Clean compiled classes">
-		<delete includeemptydirs="true">
-    		<fileset dir="${classes.dir}" includes="**/*" />
-		</delete>
+		<delete dir="${classes.dir}" />
 		<delete file="datanucleus.log"/>
 	</target>
 
@@ -189,8 +193,13 @@
 		</delete>
 	</target>
 
+	<target name="clean-gwt" description="Clean GWT-generated files">
+		<delete dir="${war.dir}/${editor.name}" />
+		<delete dir="${war.dir}/WEB-INF/deploy" />
+	</target>
+
 	<target name="clean-all" description="Clean everything" 
-			depends="clean,clean-dist">
+			depends="clean,clean-dist,clean-gwt">
 	</target>
 
 	<target name="reinstall" description="Uninstalls and reinstalls project"
