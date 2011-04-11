@@ -7,3 +7,4 @@ datanucleus.log
 placebooks-webapp/src/META-INF
 *.bak
 *.class
+placebooks-webapp/build.properties
