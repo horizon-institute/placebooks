@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.NotPersistent;
@@ -45,6 +46,16 @@ public class ImageItem extends PlaceBookItem
 	public File getImagePath()
 	{
 		return imageFile;
+	}
+
+	public void setImage(BufferedImage image)
+	{
+		this.image = image;
+	}
+
+	public BufferedImage getImage()
+	{
+		return image;
 	}
 
 	public void appendConfiguration(Document config, Element root)

@@ -6,6 +6,7 @@ import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Column;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,7 +18,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class TextItem extends PlaceBookItem
 {
-	@Persistent
 	private String text; 
 
 	public TextItem(User owner, Geometry geom, URL sourceURL, String text)
@@ -39,6 +39,17 @@ public class TextItem extends PlaceBookItem
 		text.appendChild(config.createTextNode(this.text));
 		item.appendChild(text);
 		root.appendChild(item);
+	}
+
+	@Persistent
+	@Column(jdbcType = "CLOB")
+	public String getText()
+	{
+		return text;
+	}
+	public void setText(String text)
+	{
+		this.text = text;
 	}
 
 	/* (non-Javadoc)
