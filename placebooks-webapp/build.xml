@@ -114,8 +114,9 @@
 				<pathelement path="${classes.dir}" />
 			</classpath>
       		<formatter type="brief" usefile="false" />
-      		<test name="placebooks.controller.UserTest" />
-			<test name="placebooks.controller.PlaceBookTests" />
+      		<test name="placebooks.test.UserTest" />
+			<test name="placebooks.test.PlaceBookTests" />
+			<test name="placebooks.test.EverytrailHelperTest" />			
     	</junit>
 	</target>
 
