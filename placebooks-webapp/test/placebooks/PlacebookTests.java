@@ -1,4 +1,4 @@
-package placebooks.model.controller;
+package placebooks.test;
 
 import java.net.URL;
 
