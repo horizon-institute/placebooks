@@ -64,14 +64,33 @@ public abstract class PlaceBookItem
 	{
 		this.owner = owner;
 		this.geom = geom;
-		this.sourceURL = sourceURL;
 		this.timestamp = new Date();
-
+		this.sourceURL = sourceURL;
 		log.info("Created new PlaceBookItem, concrete name: " 
 				 + getEntityName() + ", timestamp=" 
 				 + this.timestamp.toString());
 	}
 
+	public PlaceBookItem(User owner, Geometry geom)
+	{
+		this.owner = owner;
+		this.geom = geom;
+		this.timestamp = new Date();
+		log.info("Created new empty PlaceBookItem, concrete name: " 
+				 + getEntityName() + ", timestamp=" 
+				 + this.timestamp.toString());
+	}
+
+	public PlaceBookItem(User owner)
+	{
+		this.owner = owner;
+		this.timestamp = new Date();
+		log.info("Created new empty PlaceBookItem, concrete name: " 
+				 + getEntityName() + ", timestamp=" 
+				 + this.timestamp.toString());
+	}
+
+	
 	/** Each class must append relevant configuration data
 	 * @param config
 	 * @param root

@@ -9,6 +9,8 @@ import static org.junit.Assert.fail;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -19,6 +21,8 @@ import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
+import placebooks.model.ImageItem;
+import placebooks.model.User;
 
 /**
  * @author pszmp
@@ -93,10 +97,10 @@ public class EverytrailHelperTest
 	public void testVideosString()
 	{
 		String user_id = logInTestUser();
-		EverytrailVideosResponse picturesResponse = EverytrailHelper.Videos(user_id, test_password, test_password);
-		assertEquals("success", picturesResponse.getStatus());
-		// As default should return 10 pictures starting at 0 and test user has about 4 pictures
-		assertEquals(0, picturesResponse.getVideos().size());
+		EverytrailVideosResponse videosResponse = EverytrailHelper.Videos(user_id, test_password, test_password);
+		assertEquals("success", videosResponse.getStatus());
+		// As default should return 0 videos starting at 0 and test user has about 4 pictures
+		assertEquals(0, videosResponse.getVideos().size());
 	}
 
 	
@@ -171,7 +175,8 @@ public class EverytrailHelperTest
 		try
 		{
 			date = dfm.parse("2010-01-01 00:00:00 +0000");
-		} catch (java.text.ParseException e)
+		}
+		catch (java.text.ParseException e)
 		{
 			log.error(e.getMessage());
 			fail(e.getMessage());
@@ -182,4 +187,16 @@ public class EverytrailHelperTest
 		assertEquals(1, response.getTrips().size());
 	}
 
+	@Test
+	public void testImageItemFromEverytrail()
+	{
+		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(logInTestUser());
+		Vector<Node> pictures = picturesResponse.getPictures();
+		
+		User testUser = new User("test user", "placebooks_everytrail_test@hotmail.com", "pass_hash");
+		ImageItem imageItem = new ImageItem(testUser, pictures.firstElement());
+		
+		
+	}
+	
 }

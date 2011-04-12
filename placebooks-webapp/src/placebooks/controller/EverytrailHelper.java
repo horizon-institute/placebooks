@@ -263,7 +263,6 @@ public class EverytrailHelper
 			} 
 
 		    // Send data by setting up the api password http authentication and UoN proxy
-		    // TODO Add global config for proxy support...
 		    Authenticator.setDefault(new HttpAuthenticator(
 		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""),
 				    PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")
