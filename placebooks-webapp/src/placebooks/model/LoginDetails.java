@@ -41,7 +41,7 @@ public class LoginDetails
 		return password;
 	}
 
-	public String getUserid()
+	public String getUserID()
 	{
 		return userid;
 	}
