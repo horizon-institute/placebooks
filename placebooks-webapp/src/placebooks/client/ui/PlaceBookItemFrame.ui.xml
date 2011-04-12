@@ -73,10 +73,10 @@
 		
 		.widget {
 			position: absolute;
-			top: 0px;
-			left: 0px;
-			right: 20px;
-			bottom: 0px;	
+			top: 2px;
+			left: 2px;
+			right: 24px;
+			bottom: 2px;	
 			overflow: hidden;		
 		}
 	</ui:style>

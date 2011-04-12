@@ -105,6 +105,7 @@ public class PlaceBookItemFrame extends Composite
 		GWT.log("Mouse Out");
 		if (!resize)
 		{
+			frame.getElement().getStyle().setZIndex(0);			
 			menuButton.getElement().getStyle().setOpacity(0);
 			borderSection.getElement().getStyle().setOpacity(0);
 			expandSection.getElement().getStyle().setOpacity(0);
@@ -116,6 +117,7 @@ public class PlaceBookItemFrame extends Composite
 	void handleMouseOver(final MouseOverEvent event)
 	{
 		GWT.log("Mouse Over");
+		frame.getElement().getStyle().setZIndex(2);
 		menuButton.getElement().getStyle().setOpacity(1);
 		borderSection.getElement().getStyle().setOpacity(1);
 		expandSection.getElement().getStyle().setOpacity(1);
