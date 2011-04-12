@@ -6,4 +6,4 @@ thumbs.db
 datanucleus.log
 *.bak
 *.class
-build.properties
+placebooks-webapp/build.properties

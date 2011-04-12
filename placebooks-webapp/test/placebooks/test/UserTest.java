@@ -1,10 +1,12 @@
-package placebooks.controller;
+package placebooks.test;
 
 import javax.jdo.PersistenceManager;
 
 import org.junit.Test;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
+import placebooks.controller.PMFSingleton;
+import placebooks.controller.UserManager;
 import placebooks.model.User;
 
 public class UserTest

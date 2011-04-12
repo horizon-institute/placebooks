@@ -1,4 +1,4 @@
-package placebooks.controller;
+package placebooks.test;
 
 import java.net.URL;
 
@@ -6,6 +6,8 @@ import javax.jdo.PersistenceManager;
 
 import org.junit.Test;
 
+import placebooks.controller.PMFSingleton;
+import placebooks.controller.UserManager;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
