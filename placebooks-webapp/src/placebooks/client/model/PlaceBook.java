@@ -11,6 +11,6 @@ public class PlaceBook extends JavaScriptObject
 
 	public final native String getLastName() /*-{ return this.last_name; }-*/;
 
-	public final native int computeAge() /*-{ return this.getComputedAge(); }-*/;
+	public final native int computeAge() /*-{ return this.computedAge; }-*/;
 
 }

@@ -11,6 +11,5 @@
 		}
 	</ui:style>	
 	<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
-		<p:EditablePanel>Example <b>bold</b>text</p:EditablePanel>
 	</p:MousePanel>
 </ui:UiBinder> 

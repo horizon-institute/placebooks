@@ -1,7 +1,9 @@
 package placebooks.model;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Join;
@@ -31,6 +33,9 @@ public class User
 	@Persistent(persistenceModifier=PersistenceModifier.PERSISTENT, mappedBy="owner")
 	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
+	@Persistent(persistenceModifier=PersistenceModifier.PERSISTENT, mappedBy="user")
+	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
+	
 	@Persistent
 	@Join
 	private Collection<User> friends = new HashSet<User>();
@@ -47,9 +52,26 @@ public class User
 
 	}
 
+	public void add(final LoginDetails loginDetail)
+	{
+		loginDetails.add(loginDetail);
+	}
+	
 	public void add(final PlaceBook placebook)
 	{
 		placebooks.add(placebook);
+	}
+	
+	public LoginDetails getLoginDetails(String service)
+	{
+		for(LoginDetails login: loginDetails)
+		{
+			if(login.getService().equals(service))
+			{
+				return login;
+			}
+		}
+		return null;
 	}
 
 	public void add(final User friend)
