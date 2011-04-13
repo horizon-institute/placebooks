@@ -39,6 +39,12 @@ public class ImageItem extends PlaceBookItem
 		imageFile = null;
 	}
 
+	public void deleteItemData()
+	{
+		if (!imageFile.delete())
+			log.error("Problem deleting image file " + imageFile.toString());
+	}
+
 	public String getEntityName()
 	{
 		return ImageItem.class.getName();
