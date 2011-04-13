@@ -17,13 +17,14 @@
 	[<a href='../package/${pb.key}'>package</a>] 
 	[<a href='../delete/${pb.key}'>delete</a>] 
 	[<a href='../shelf/${pb.owner.email}'>shelf for this user</a>]
-	<form action='../add_metadata' method='POST'>
+	<form action='../add_placebook_metadata' method='POST'>
 		Add metadata:
 		<input type='hidden' name='key' value='${pb.key}'> 
-		<input type='text' name='mKey'>
-		<input type='text' name='mValue'>
+		key (String): <input type='text' name='mKey'>
+		value (String): <input type='text' name='mValue'>
 		<input type='submit' value='Add'>
 	</form>
+
 	<form action='../add_item/upload' method='POST' enctype='multipart/form-data'>
 		Upload video: 
 		<input type='file' name='video.${pb.key}'>
@@ -79,9 +80,25 @@
 		<div style='border:1px dotted;padding:5px'>
 		${item.class}: ${item.key}, owner=${item.owner.email}, 
 		timestamp=${item.timestamp}
+		
+		<form action='../add_placebookitem_mapping/metadata' method='POST'>
+			Add metadata:
+			<input type='hidden' name='key' value='${item.key}'> 
+			key (String): <input type='text' name='mKey'>
+			value (String): <input type='text' name='mValue'>
+			<input type='submit' value='Add'>
+		</form><form action='../add_placebookitem_mapping/parameter' method='POST'>
+			Add parameter:
+			<input type='hidden' name='key' value='${item.key}'> 
+			key (String): <input type='text' name='mKey'>
+			value (int): <input type='text' name='mValue'>
+			<input type='submit' value='Add'>
+		</form>
+
 		</div>
 	</c:forEach>
 	</div><br/>
 </c:forEach>
+<div><a href="<%=request.getContextPath()%>/placebooks/a/admin">Return to admin page</a></div>
 </body>
 </html>

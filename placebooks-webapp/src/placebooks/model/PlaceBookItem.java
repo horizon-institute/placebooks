@@ -53,11 +53,11 @@ public abstract class PlaceBookItem
 
 	// Searchable metadata attributes, e.g., title, description, etc.
 	@Persistent
-	private HashMap<String, String> metadata = new HashMap<String, String>();
+	private Map<String, String> metadata = new HashMap<String, String>();
 
 	// The PlaceBookItem's configuration data
 	@Persistent
-	private HashMap<String, String> parameters = new HashMap<String, String>();
+	private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
@@ -71,25 +71,9 @@ public abstract class PlaceBookItem
 				 + this.timestamp.toString());
 	}
 
-	public PlaceBookItem(User owner, Geometry geom)
-	{
-		this.owner = owner;
-		this.geom = geom;
-		this.timestamp = new Date();
-		log.info("Created new empty PlaceBookItem, concrete name: " 
-				 + getEntityName() + ", timestamp=" 
-				 + this.timestamp.toString());
-	}
-
-	public PlaceBookItem(User owner)
-	{
-		this.owner = owner;
-		this.timestamp = new Date();
-		log.info("Created new empty PlaceBookItem, concrete name: " 
-				 + getEntityName() + ", timestamp=" 
-				 + this.timestamp.toString());
-	}
-
+	/** Each class must provide a method for deleting any data sitting on disk
+	 */
+	public abstract void deleteItemData();
 	
 	/** Each class must append relevant configuration data
 	 * @param config
@@ -133,7 +117,46 @@ public abstract class PlaceBookItem
 			item.appendChild(url);
 		}
 
+		// Write metadata and parameters
+		if (this.hasMetadata())
+		{
+			item.appendChild(setToConfig(config,
+										 (Set)this.getMetadata().entrySet(), 
+										 "metadata")
+							);
+		}
+		if (this.hasParameters())
+		{
+			item.appendChild(setToConfig(config, 
+										 (Set)this.getParameters().entrySet(), 
+							 			 "parameters")
+							);
+		}
+
 		return item;
+	}
+
+
+	private Element setToConfig(Document config, Set s, String name)
+	{
+		Iterator i = s.iterator();
+		if (i.hasNext())
+		{
+			Element sElem = config.createElement(name);
+
+			for ( ; i.hasNext(); )
+			{
+				Map.Entry e = (Map.Entry)i.next();
+				Element elem = config.createElement(e.getKey().toString());
+				elem.appendChild(
+					config.createTextNode(e.getValue().toString()));
+				sElem.appendChild(elem);
+			}
+
+			return sElem;
+		}
+
+		return null;
 	}
 
 
@@ -177,19 +200,29 @@ public abstract class PlaceBookItem
 		return Collections.unmodifiableMap(metadata);
 	}
 
-	public void addParameterEntry(String key, String value)
+	public boolean hasMetadata()
+	{
+		return (!metadata.isEmpty());
+	}
+
+	public void addParameterEntry(String key, Integer value)
 	{
 		parameters.put(key, value);
 	}
 
-	public String getParameterValue(String key)
+	public Integer getParameterValue(String key)
 	{
 		return parameters.get(key);
 	}
 
-	public Map<String, String> getParameters()
+	public Map<String, Integer> getParameters()
 	{
 		return Collections.unmodifiableMap(parameters);
+	}
+
+	public boolean hasParameters()
+	{
+		return (!parameters.isEmpty());
 	}
 
 	public String getKey() { return key; }

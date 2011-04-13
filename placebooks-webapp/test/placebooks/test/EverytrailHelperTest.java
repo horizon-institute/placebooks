@@ -194,7 +194,7 @@ public class EverytrailHelperTest
 		Vector<Node> pictures = picturesResponse.getPictures();
 		
 		User testUser = new User("test user", "placebooks_everytrail_test@hotmail.com", "pass_hash");
-		ImageItem imageItem = new ImageItem(testUser, pictures.firstElement());
+		ImageItem imageItem = imageItemFromEverytrailImage(testUser, pictures.firstElement());
 		assertEquals(imageItem.getImage().getWidth(), 800);
 		assertEquals(imageItem.getImage().getHeight(), 479);
 	}

@@ -74,6 +74,12 @@ public class VideoItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	public void deleteItemData()
+	{
+		if (!video.delete())
+			log.error("Problem deleting video file " + video.toString());
+	}
+
 	@Persistent
 	public String getVideo()
 	{
