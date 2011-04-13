@@ -154,7 +154,7 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
 	public ModelAndView addPlaceBook(@RequestParam String owner,
 									 @RequestParam String geometry)
 	{
