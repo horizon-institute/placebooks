@@ -7,3 +7,4 @@ datanucleus.log
 *.bak
 *.class
 placebooks-webapp/build.properties
+placebooks-webapp/src/META-INF/jdoconfig.xml

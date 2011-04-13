@@ -346,7 +346,7 @@ public class EverytrailHelper
 					{
 						picturesToReturn.add(picture_node);
 					}
-					//log.debug("Picture: " + picturesDataIndex + " " + picture_node.getTextContent());
+					log.debug("Picture: " + picturesDataIndex + " " + picture_node.getTextContent());
 				}
 			}
 		}

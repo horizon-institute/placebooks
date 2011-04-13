@@ -139,7 +139,7 @@ public class ImageItem extends PlaceBookItem
 				{
 					GeometryFactory gf = new GeometryFactory();
 					Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))));
-					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
+					//log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					this.setGeometry(newGeom);
 				}
 				catch(Exception ex)
