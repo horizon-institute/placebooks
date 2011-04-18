@@ -49,6 +49,18 @@ public class WebBundleItem extends PlaceBookItem
 		return WebBundleItem.class.getName();
 	}
 
+	public void deleteItemData()
+	{
+		try
+		{
+			FileUtils.deleteDirectory(webBundle);
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+	}
+
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);

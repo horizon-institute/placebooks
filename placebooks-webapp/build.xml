@@ -57,7 +57,6 @@
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
-		<mkdir dir="${classes.dir}/META-INF" />
 		<mkdir dir="${javadoc.dir}" />
 	</target>
 
@@ -90,10 +89,7 @@
 	</target>
 
 	<target name="staging" depends="makedirs" 
-			description="Stage config + META-INF files to classes dir">
-		<copy todir="${classes.dir}/META-INF/">
-			<fileset dir="${src.dir}/META-INF" />
-		</copy>
+			description="Stage configs to classes dir">
 		<copy file="${src.dir}/log4j.properties" todir="${classes.dir}" />
 		<copy file="${src.dir}/placebooks.properties" todir="${classes.dir}" />
 	</target>

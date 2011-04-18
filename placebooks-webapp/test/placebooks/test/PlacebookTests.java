@@ -1,10 +1,7 @@
 package placebooks.test;
-
 import java.net.URL;
 
 import javax.jdo.PersistenceManager;
-
-import org.junit.Test;
 
 import placebooks.controller.PMFSingleton;
 import placebooks.controller.UserManager;
@@ -16,9 +13,29 @@ import placebooks.model.User;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+/**
+ * 
+ */
+
+/**
+ * @author pszmp
+ *
+ */
 public class PlacebookTests
 {
-	@Test
+
+	public static Test suite()
+	{
+		TestSuite suite = new TestSuite(PlacebookTests.class.getName());
+		//$JUnit-BEGIN$
+
+		//$JUnit-END$
+		return suite;
+	}
+
 	public void newPlacebook() throws Exception
 	{
 		final PersistenceManager manager = PMFSingleton.getPersistenceManager();

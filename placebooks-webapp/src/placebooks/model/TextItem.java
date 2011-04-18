@@ -26,6 +26,8 @@ public class TextItem extends PlaceBookItem
 		this.text = text;
 	}
 
+	public void deleteItemData() { }
+
 	public String getEntityName()
 	{
 		return TextItem.class.getName();
@@ -33,10 +35,10 @@ public class TextItem extends PlaceBookItem
 
 	public void appendConfiguration(Document config, Element root)
 	{
-		log.info("TextItem.appendConfiguration(), text=" + this.text);
+		log.info("TextItem.appendConfiguration(), text=" + this.getText());
 		Element item = getConfigurationHeader(config);
 		Element text = config.createElement("text");
-		text.appendChild(config.createTextNode(this.text));
+		text.appendChild(config.createTextNode(this.getText()));
 		item.appendChild(text);
 		root.appendChild(item);
 	}

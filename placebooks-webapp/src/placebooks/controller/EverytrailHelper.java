@@ -3,6 +3,17 @@
  */
 package placebooks.controller;
 
+import java.awt.geom.Point2D;
+import java.beans.XMLEncoder;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.ByteOrder;
+import java.awt.image.BufferedImage;
+import java.util.logging.XMLFormatter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +36,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.IIOByteBuffer;
+import javax.imageio.stream.ImageInputStream;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Entity;
@@ -33,6 +48,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 import placebooks.model.*;
 
@@ -263,7 +284,6 @@ public class EverytrailHelper
 			} 
 
 		    // Send data by setting up the api password http authentication and UoN proxy
-		    // TODO Add global config for proxy support...
 		    Authenticator.setDefault(new HttpAuthenticator(
 		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""),
 				    PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")
@@ -347,7 +367,7 @@ public class EverytrailHelper
 					{
 						picturesToReturn.add(picture_node);
 					}
-					//log.debug("Picture: " + picturesDataIndex + " " + picture_node.getTextContent());
+					log.debug("Picture: " + picturesDataIndex + " " + picture_node.getTextContent());
 				}
 			}
 		}
@@ -763,5 +783,96 @@ public class EverytrailHelper
 
 		EverytrailTripsResponse returnValue = new EverytrailTripsResponse(responseStatus.getStatus(), tripsList);
 		return returnValue;
+	}
+
+	public static ImageItem imageItemFromEverytrailImage(User owner, 
+														 Node everytrailPicture)
+	{
+		ImageItem imageItem = new ImageItem(owner, null, null, null);
+
+		NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
+		for(int attributeIndex=0;attributeIndex<pictureAttributes.getLength();attributeIndex++)
+		{
+			if(pictureAttributes.item(attributeIndex).getNodeName().equals("id"))
+			{
+				imageItem.addParameterEntry("picture_id", Integer.getInteger(pictureAttributes.item(attributeIndex).getNodeValue()));
+			}
+		}
+		NodeList pictureProperties = everytrailPicture.getChildNodes();		
+		for(int propertyIndex=0;propertyIndex<pictureProperties.getLength();propertyIndex++)
+		{
+			Node item = pictureProperties.item(propertyIndex);
+			String itemName = item.getNodeName(); 
+			log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+			if(itemName.equals("fullsize"))
+			{
+				try
+				{
+					imageItem.setSourceURL(new URL(item.getTextContent()));					
+					URL url = imageItem.getSourceURL();
+					URLConnection conn;
+				   if(PropertiesSingleton.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_ACTIVE, "false").equalsIgnoreCase("true"))
+				   {
+				   	log.debug("Using proxy: " + PropertiesSingleton.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, "") + ":" +
+				   			PropertiesSingleton.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""));
+					    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+					   		 PropertiesSingleton.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, ""),
+					   		 Integer.parseInt(PropertiesSingleton.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""))));
+					    conn = url.openConnection(proxy);
+				    }
+				    else
+				    {
+				   	 conn = url.openConnection();
+				    }
+				   
+				   
+				   // Get the response
+				   BufferedImage bi = ImageIO.read(conn.getInputStream());
+				   imageItem.setImage(bi);
+				   log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");	
+				}
+				catch(MalformedURLException ex)
+				{
+					log.error("Can't convert Everytrail Picture URL to a valid URL.");
+					log.debug(ex.getMessage());
+				}
+				catch(IOException ex)
+				{
+					log.error("Can't download Everytrail Picture and convert to BufferedImage.");
+					log.debug(ex.getMessage());					
+				}
+			}
+			if(itemName.equals("location"))
+			{
+				NamedNodeMap locationAttributes = item.getAttributes();
+				String lat = null;
+				String lon = null;
+				for(int locAttributeIndex=0;locAttributeIndex<locationAttributes.getLength();locAttributeIndex++)
+				{
+					if(locationAttributes.item(locAttributeIndex).getNodeName().equals("lat"))
+					{
+						lat = locationAttributes.item(locAttributeIndex).getNodeValue();
+					}
+					if(locationAttributes.item(locAttributeIndex).getNodeName().equals("lon"))
+					{
+						lon = locationAttributes.item(locAttributeIndex).getNodeValue();
+					}
+				}
+				try
+				{
+					GeometryFactory gf = new GeometryFactory();
+					Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat))));
+					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
+					imageItem.setGeometry(newGeom);
+				}
+				catch(Exception ex)
+				{
+					log.error("Couldn't get lat/lon data from Everytrail picture.");
+					log.debug(ex.getMessage());
+				}
+			}
+		}
+
+		return imageItem;
 	}
 }
