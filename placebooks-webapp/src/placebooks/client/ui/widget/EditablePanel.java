@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.widget;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;

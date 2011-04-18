@@ -1,15 +1,32 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:p="urn:import:placebooks.client.ui">
+	xmlns:p="urn:import:placebooks.client.ui.widget">
 	<ui:style>
 		.canvas {
 			position: absolute;
 			top: 0px;
 			left: 0px;
-			right: 00px;
-			bottom: 0px;		
+			right: 0px;
+			bottom: 0px;
+			margin-right: 150px;
+			background-color: #BBD;		
+			box-shadow: 2px 2px 2px #333;
+		}
+		
+		.palette {
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			bottom: 0px;
+			width: 150px;
+			z-index: -10;
+			background: #556;		
 		}
 	</ui:style>	
-	<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+	<p:MousePanel>
+		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+		</p:MousePanel>	
+		<p:MousePanel styleName="{style.palette}" ui:field="palette">
+		</p:MousePanel>
 	</p:MousePanel>
 </ui:UiBinder> 

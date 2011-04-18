@@ -1,11 +1,13 @@
 package placebooks.client.ui;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.widget.DropMenu;
+import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -23,12 +25,9 @@ public class PlaceBookItemFrame extends Composite
 	}
 
 	private static PlaceBookItemFrameUiBinder uiBinder = GWT.create(PlaceBookItemFrameUiBinder.class);
-
+	
 	@UiField
-	Panel dragSection;
-
-	@UiField
-	Panel expandSection;
+	MousePanel dragSection;
 
 	@UiField
 	Panel menuButton;
@@ -38,95 +37,97 @@ public class PlaceBookItemFrame extends Composite
 
 	@UiField
 	Panel frame;
+	
+	final DropMenu dropMenu = new DropMenu();
 
-	private boolean move = false;
-	private boolean resize = false;
+	private boolean drag = false;
 
 	private int dragOffsetX = 0;
 	private int dragOffsetY = 0;
+	
+	private int panel = 0;
+	private int order = 0;
 
-	//private PlaceBookItem item;
+	private PlaceBookItem item;
 
 	@UiField
 	Panel widgetPanel;
 
 	public PlaceBookItemFrame(final PlaceBookItem item, final Widget widget)
 	{
-		//this.item = item;
+		this.item = item;
 		initWidget(uiBinder.createAndBindUi(this));
 		widgetPanel.add(widget);
-		widget.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		widget.getElement().getStyle().setTop(0, Unit.PX);
-		widget.getElement().getStyle().setBottom(0, Unit.PX);
-		widget.getElement().getStyle().setLeft(0, Unit.PX);
-		widget.getElement().getStyle().setRight(0, Unit.PX);	
 	}
 
-	boolean acceptMouseMove()
+	boolean isDragging()
 	{
-		return move || resize;
-	}
-
-	@UiHandler("dragSection")
-	void handleDragMouseDown(final MouseDownEvent event)
-	{
-		GWT.log("Drag started");
-		move = true;
-		dragOffsetX = event.getRelativeX(frame.getElement());
-		dragOffsetY = event.getRelativeY(frame.getElement());
-	}
-
-	@UiHandler("expandSection")
-	void handleExpandMouseDown(final MouseDownEvent event)
-	{
-		GWT.log("Drag started");
-		resize = true;
-		dragOffsetX = frame.getAbsoluteLeft() - (frame.getOffsetWidth() - event.getRelativeX(frame.getElement()));
-		dragOffsetY = frame.getAbsoluteTop() - (frame.getOffsetHeight() - event.getRelativeY(frame.getElement()));
-	}
-
-	void handleMouseMove(final int x, final int y)
-	{
-		if (move)
-		{
-			frame.getElement().getStyle().setLeft(x - dragOffsetX, Unit.PX);
-			frame.getElement().getStyle().setTop(y - dragOffsetY, Unit.PX);
-		}
-		else if (resize)
-		{
-			frame.getElement().getStyle().setWidth(x - dragOffsetX, Unit.PX);
-			frame.getElement().getStyle().setHeight(y - dragOffsetY, Unit.PX);
-		}
+		return drag;
 	}
 
 	@UiHandler("frame")
 	void handleMouseOut(final MouseOutEvent event)
 	{
-		GWT.log("Mouse Out");
-		if (!resize)
-		{
-			frame.getElement().getStyle().setZIndex(0);			
-			menuButton.getElement().getStyle().setOpacity(0);
-			borderSection.getElement().getStyle().setOpacity(0);
-			expandSection.getElement().getStyle().setOpacity(0);
-			dragSection.getElement().getStyle().setOpacity(0);
-		}
+		frame.getElement().getStyle().setZIndex(0);			
+		menuButton.getElement().getStyle().setOpacity(0);
+		borderSection.getElement().getStyle().setOpacity(0);
+		dragSection.getElement().getStyle().setOpacity(0);
 	}
 
 	@UiHandler("frame")
 	void handleMouseOver(final MouseOverEvent event)
 	{
-		GWT.log("Mouse Over");
 		frame.getElement().getStyle().setZIndex(2);
 		menuButton.getElement().getStyle().setOpacity(1);
 		borderSection.getElement().getStyle().setOpacity(1);
-		expandSection.getElement().getStyle().setOpacity(1);
 		dragSection.getElement().getStyle().setOpacity(1);
+	}
+	
+	int getPanel()
+	{
+		return panel;
+	}
+	
+	int getOrder()
+	{
+		return order;
+	}
+	
+	void setPanel(int panel)
+	{
+		this.panel = panel;
+	}
+	
+	void setOrder(int order)
+	{
+		GWT.log("Order: " + order);
+		this.order = order;
+	}
+	
+	@UiHandler("menuButton")
+	void handleMenuClick(final ClickEvent event)
+	{
+		GWT.log("Menu click");
+	}
+	
+	void addDragStartHandler(final MouseDownHandler handler)
+	{
+		dragSection.addMouseDownHandler(handler);
+	}
+	
+	void startDrag(final MouseDownEvent event)
+	{
+		frame.getElement().getStyle().setOpacity(0.8);
+		frame.getElement().getStyle().setProperty("boxShadow", "2px 2px 5px #666");
+		dragOffsetX = event.getRelativeX(frame.getElement());
+		dragOffsetY = event.getRelativeY(frame.getElement());		
+		drag = true;		
 	}
 
 	void stopDrag()
 	{
-		move = false;
-		resize = false;
+		frame.getElement().getStyle().setOpacity(1);
+		frame.getElement().getStyle().setProperty("boxShadow", "none");		
+		drag = false;
 	}
 }

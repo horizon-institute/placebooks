@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.widget;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
