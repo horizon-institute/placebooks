@@ -95,7 +95,7 @@ public class EverytrailHelper
 		    URL url = new URL(apiBaseUrl +  "user/login");
 		    
 		    // Use getConnection to get the URLConnection with or without a proxy 
-		    URLConnection conn = EverytrailHelper.getConnection(url);
+		    URLConnection conn = CommunicationHelper.getConnection(url);
 		    conn.setDoOutput(true);
 		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 		    wr.write(data);
@@ -142,31 +142,6 @@ public class EverytrailHelper
 		return output;
 	}
 	
-/**
- * Gets the http connection for the API paying attention to the Placebooks proxy configuration values
- * requires a try/catch block as per url.openconnection()
- * @param URL url The url to get the connection for
- * @return URLConnection A url connection as per url.openConnection - with or without proxy
- */
-	private static URLConnection getConnection(URL url) throws IOException
-	{
-		URLConnection conn;
-	   if(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_ACTIVE, "false").equalsIgnoreCase("true"))
-	   {
-	   	log.debug("Using proxy: " + PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, "") + ":" +
-	   			PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""));
-		    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, ""),
-		   		 Integer.parseInt(PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_PORT, ""))));
-		    conn = url.openConnection(proxy);
-	    }
-	    else
-	    {
-	   	 conn = url.openConnection();
-	    }
-	    return conn;
-	}
-
 	/**
 	 * Parse and Everytrail SPI response into an XML document from HTTP string response.
 	 * @param Strung Post response from everytrail http post
@@ -263,13 +238,14 @@ public class EverytrailHelper
 			} 
 
 		    // Send data by setting up the api password http authentication and UoN proxy
-		    Authenticator.setDefault(new HttpAuthenticator(
+		    
+			Authenticator.setDefault(new HttpAuthenticator(
 		   		 PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""),
 				    PropertiesSingleton.get(EverytrailHelper.class.getClassLoader()).getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")
 		    ));
 
 		    URL url = new URL(apiBaseUrl + postDestination);
-		    URLConnection conn = EverytrailHelper.getConnection(url);
+		    URLConnection conn = CommunicationHelper.getConnection(url);
 
 		    
 		    conn.setDoOutput(true);
