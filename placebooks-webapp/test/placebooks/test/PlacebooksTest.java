@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks;
+package placebooks.test;
 
 
 import org.junit.After;

@@ -7,17 +7,24 @@ import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 
 @PersistenceCapable(identityType=IdentityType.DATASTORE)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
 public class PlaceBook
 {
 	@NotPersistent
@@ -35,19 +42,17 @@ public class PlaceBook
 	private Date timestamp;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)	
 	private Geometry geom; // Pertaining to the PlaceBook
 
+	// TODO: Cascading deletes via dependent=true: not sure about this
 	@Persistent(mappedBy="placebook")
-	@Element(dependent = "true") // TODO: Cascading deletes: not sure about this
+	@javax.jdo.annotations.Element(dependent = "true") 
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
 	@Persistent
 	private Map<String, String> metadata = new HashMap<String, String>();
-
-	// The PlaceBook's configuration data
-	@Persistent
-	private Map<String, String> parameters = new HashMap<String, String>();
 
 	@Persistent(dependent="true")
 	private PlaceBookIndex index;
@@ -72,12 +77,50 @@ public class PlaceBook
 		setItems(items);
 	}
 
+	public Element createConfigurationRoot(Document config)
+	{
+		log.info("PlaceBook.appendConfiguration(), key=" + this.getKey());
+		Element root = config.createElement(PlaceBook.class.getName());
+		root.setAttribute("key", this.getKey());
+		root.setAttribute("owner", this.getOwner().getKey());
+		
+		Element timestamp = config.createElement("timestamp");
+		timestamp.appendChild(config.createTextNode(
+								this.getTimestamp().toString()));
+		root.appendChild(timestamp);
+
+		Element geometry = config.createElement("geometry");
+		geometry.appendChild(config.createTextNode(
+								this.getGeometry().toText()));
+		root.appendChild(geometry);
+
+		Iterator i = ((Set)this.getMetadata().entrySet()).iterator();
+		if (i.hasNext())
+		{
+			Element sElem = config.createElement("metadata");
+
+			for ( ; i.hasNext(); )
+			{
+				Map.Entry e = (Map.Entry)i.next();
+				Element elem = config.createElement(e.getKey().toString());
+				elem.appendChild(
+					config.createTextNode(e.getValue().toString()));
+				sElem.appendChild(elem);
+			}
+
+			root.appendChild(sElem);
+		}
+
+		return root;
+	}
+
 	public void setItems(List<PlaceBookItem> items)
 	{
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
+	@JsonIgnore
 	public List<PlaceBookItem> getItems()
 	{
 		return Collections.unmodifiableList(items);
@@ -95,7 +138,6 @@ public class PlaceBook
 		return items.remove(item);
 	}
 	
-	// TODO: make PlaceBook and PlaceBookItem extend a class supporting this
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
@@ -111,21 +153,10 @@ public class PlaceBook
 		return Collections.unmodifiableMap(metadata);
 	}
 
-	public void addParameterEntry(String key, String value)
+	public boolean hasMetadata()
 	{
-		parameters.put(key, value);
+		return (!metadata.isEmpty());
 	}
-
-	public String getParameterValue(String key)
-	{
-		return parameters.get(key);
-	}
-
-	public Map<String, String> getParameters()
-	{
-		return Collections.unmodifiableMap(parameters);
-	}
-
 
 	public String getKey() { return key; }
 

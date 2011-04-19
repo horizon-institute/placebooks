@@ -60,6 +60,8 @@ public class GPSTraceItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	public void deleteItemData() { }
+
 	@Persistent
 	@Column(jdbcType = "CLOB")
 	public String getTrace()

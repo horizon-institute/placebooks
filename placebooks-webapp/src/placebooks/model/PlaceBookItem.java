@@ -1,22 +1,28 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 
 import org.apache.log4j.Logger;
-
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -26,6 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
+@JsonTypeInfo(include=JsonTypeInfo.As.PROPERTY, use=JsonTypeInfo.Id.CLASS)
 public abstract class PlaceBookItem 
 {
 	@NotPersistent
@@ -37,15 +45,18 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)	
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.UserKeyJSONSerializer.class)	
 	private User owner;
 	
 	@Persistent
 	private Date timestamp;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)
 	private Geometry geom;
 
 	@Persistent
@@ -53,11 +64,11 @@ public abstract class PlaceBookItem
 
 	// Searchable metadata attributes, e.g., title, description, etc.
 	@Persistent
-	private HashMap<String, String> metadata = new HashMap<String, String>();
+	private Map<String, String> metadata = new HashMap<String, String>();
 
 	// The PlaceBookItem's configuration data
 	@Persistent
-	private HashMap<String, String> parameters = new HashMap<String, String>();
+	private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
@@ -71,25 +82,9 @@ public abstract class PlaceBookItem
 				 + this.timestamp.toString());
 	}
 
-	public PlaceBookItem(User owner, Geometry geom)
-	{
-		this.owner = owner;
-		this.geom = geom;
-		this.timestamp = new Date();
-		log.info("Created new empty PlaceBookItem, concrete name: " 
-				 + getEntityName() + ", timestamp=" 
-				 + this.timestamp.toString());
-	}
-
-	public PlaceBookItem(User owner)
-	{
-		this.owner = owner;
-		this.timestamp = new Date();
-		log.info("Created new empty PlaceBookItem, concrete name: " 
-				 + getEntityName() + ", timestamp=" 
-				 + this.timestamp.toString());
-	}
-
+	/** Each class must provide a method for deleting any data sitting on disk
+	 */
+	public abstract void deleteItemData();
 	
 	/** Each class must append relevant configuration data
 	 * @param config
@@ -133,7 +128,42 @@ public abstract class PlaceBookItem
 			item.appendChild(url);
 		}
 
+		// Write metadata and parameters
+		if (this.hasMetadata())
+		{
+			item.appendChild(setToConfig(config,
+										 this.getMetadata(), 
+										 "metadata")
+							);
+		}
+		if (this.hasParameters())
+		{
+			item.appendChild(setToConfig(config, 
+										 this.getParameters(), 
+							 			 "parameters")
+							);
+		}
+
 		return item;
+	}
+
+
+	private Element setToConfig(Document config, Map<String,?> m, String name)
+	{
+		if (!m.isEmpty())
+		{
+			Element sElem = config.createElement(name);
+			for (Map.Entry<String,?> e: m.entrySet())
+			{
+				Element elem = config.createElement(e.getKey());
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				sElem.appendChild(elem);
+			}
+
+			return sElem;
+		}
+
+		return null;
 	}
 
 
@@ -177,19 +207,29 @@ public abstract class PlaceBookItem
 		return Collections.unmodifiableMap(metadata);
 	}
 
-	public void addParameterEntry(String key, String value)
+	public boolean hasMetadata()
+	{
+		return (!metadata.isEmpty());
+	}
+
+	public void addParameterEntry(String key, Integer value)
 	{
 		parameters.put(key, value);
 	}
 
-	public String getParameterValue(String key)
+	public Integer getParameterValue(String key)
 	{
 		return parameters.get(key);
 	}
 
-	public Map<String, String> getParameters()
+	public Map<String, Integer> getParameters()
 	{
 		return Collections.unmodifiableMap(parameters);
+	}
+
+	public boolean hasParameters()
+	{
+		return (!parameters.isEmpty());
 	}
 
 	public String getKey() { return key; }
@@ -208,6 +248,4 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL() { return sourceURL; }
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
-
 }
-

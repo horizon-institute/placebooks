@@ -1,59 +1,40 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:p="urn:import:placebooks.client.ui"
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.itemFrame {
 			position: absolute;
-			width: 100px;
-			height: 80px;
 		}
-	
+		
 		.menuButton {
 			top: 0px;
 			position: absolute;
 			right: 0px;
-			width: 20px;
-			height: 20px;
-			border: 2px solid #447;
+			width: 16px;
+			height: 16px;
+			border: 1px solid #447;
 			background-color: #669;
+			padding: 2px;
+			opacity: 0;
 			-webkit-transition: opacity .5s linear;
 			transition: opacity .5s linear;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;			
-		}
-		
-		.expandSection {
-			bottom: 0px;
-			position: absolute;
-			right: 0px;
-			width: 20px;
-			height: 20px;
-			border: 2px solid #447;
-			background-color: #669;
-			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;		
-			cursor: se-resize;	
+			visibility: hidden;
 		}
 		
 		.dragSection {
 			top: 20px;
-			bottom: 20px;
+			bottom: 0px;
 			position: absolute;
 			right: 0px;
 			width: 20px;
-			border: 2px solid #447;
+			border: 1px solid #447;
+			opacity: 0;			
 			background-color: #669;
 			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;	
-											-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;
+			transition: opacity .5s linear;
 			cursor: move;
+			visibility: hidden;		
+			min-height: 10px;	
 		}
 		
 		.borderSection {
@@ -62,29 +43,36 @@
 			position: absolute;
 			left: 0px;
 			right: 0px;
-			border: 2px solid #447;
+			border: 1px dashed #447;
+			opacity: 0;			
 			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;	
-								-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;
+			transition: opacity .5s linear;
 			z-index: -5;
+			visibility: hidden;			
 		}
 		
 		.widget {
-			position: absolute;
-			top: 2px;
-			left: 2px;
-			right: 24px;
-			bottom: 2px;	
-			overflow: hidden;		
+			position: relative;
+			margin-top: 1px;
+			margin-left: 22px;
+			margin-right: 22px;
+			margin-bottom: 1px;
+			overflow: hidden;
 		}
 	</ui:style>
+
+	<ui:with field='res' type='placebooks.client.ui.Resources' />
+
 	<p:MousePanel styleName="{style.itemFrame}" ui:field="frame">
 		<g:SimplePanel styleName="{style.widget}" ui:field="widgetPanel"></g:SimplePanel>
-		<p:MousePanel styleName="{style.borderSection}" ui:field="borderSection"><p:MousePanel></p:MousePanel></p:MousePanel>	
-		<p:MousePanel styleName="{style.menuButton}" ui:field="menuButton"><p:MousePanel></p:MousePanel></p:MousePanel>	
-		<p:MousePanel styleName="{style.dragSection}" ui:field="dragSection"><p:MousePanel></p:MousePanel></p:MousePanel>
-		<p:MousePanel styleName="{style.expandSection}" ui:field="expandSection"><p:MousePanel></p:MousePanel></p:MousePanel>
+		<p:MousePanel styleName="{style.borderSection}" ui:field="borderSection">
+			<p:MousePanel></p:MousePanel>
+		</p:MousePanel>
+		<p:MousePanel styleName="{style.menuButton}" ui:field="menuButton">
+			<g:Image resource='{res.dropMenuIcon}' />
+		</p:MousePanel>
+		<p:MousePanel styleName="{style.dragSection}" ui:field="dragSection">
+			<p:MousePanel></p:MousePanel>
+		</p:MousePanel>
 	</p:MousePanel>
 </ui:UiBinder> 

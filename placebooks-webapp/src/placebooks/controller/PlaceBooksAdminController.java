@@ -1,14 +1,23 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-import placebooks.model.json.*;
-
-import java.util.*;
-import java.io.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -16,11 +25,9 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,11 +43,8 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-
 import org.apache.log4j.Logger;
-
 import org.codehaus.jackson.map.ObjectMapper;
-
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,14 +52,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.model.*;
+import placebooks.model.AudioItem;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
+import placebooks.model.WebBundleItem;
+import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -154,7 +165,7 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
 	public ModelAndView addPlaceBook(@RequestParam String owner,
 									 @RequestParam String geometry)
 	{
@@ -210,12 +221,68 @@ public class PlaceBooksAdminController
 	}
 
 
-	@RequestMapping(value = "/admin/add_metadata", method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
-	public ModelAndView addMetadata(@RequestParam String key, 
-									@RequestParam String mKey, 
-									@RequestParam String mValue)
-	{		
+	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookItemMapping(
+		@RequestParam String key, 
+		@RequestParam String mKey, 
+		@RequestParam String mValue,
+		@PathVariable("type") String type
+	)
+	{
+		if (!type.equals("metadata") && !type.equals("parameter"))
+			return new ModelAndView("message", "text", "Error in type");
+
+		if (key != null && mKey != null && mValue != null)
+		{
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+			
+			try
+			{	
+				pm.currentTransaction().begin();
+				PlaceBookItem p = pm.getObjectById(PlaceBookItem.class, key);
+				if (type.equals("metadata"))
+					p.addMetadataEntry(mKey, mValue);
+				else if (type.equals("parameter"))
+				{
+					int iValue = -1;
+					try
+					{
+						iValue = Integer.parseInt(mValue);
+					}
+					catch (NumberFormatException e)
+					{
+						log.error("Error parsing parameter data value");
+					}
+					
+					p.addParameterEntry(mKey, new Integer(iValue));
+				}
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "Metadata/param added");
+		}
+		else
+			return new ModelAndView("message", "text", "Error in POST");
+	}
+
+
+	@RequestMapping(value = "/admin/add_placebook_metadata", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookMetadata(@RequestParam String key, 
+											 @RequestParam String mKey, 
+											 @RequestParam String mValue)
+	{
 		if (key != null && mKey != null && mValue != null)
 		{
 			final PersistenceManager pm = 
@@ -765,6 +832,10 @@ public class PlaceBooksAdminController
 		try 
 		{
 			pm.currentTransaction().begin();
+/*			PlaceBook p = pm.getObjectById(PlaceBook.class, key);
+			for (PlaceBookItem item : p.getItems())
+				item.deleteItemData();
+*/
 			pm.newQuery(PlaceBook.class, 
 						"key == '" + key + "'").deletePersistentAll();
 			pm.currentTransaction().commit();
@@ -794,13 +865,22 @@ public class PlaceBooksAdminController
 					method = RequestMethod.GET)
     public ModelAndView deleteAllPlaceBook() 
 	{
-			
+		
 		final PersistenceManager pm = 
 			PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
 			pm.currentTransaction().begin();
+/*			Query query = pm.newQuery(PlaceBook.class);
+			pbs = (List<PlaceBook>)query.execute();
+			for (PlaceBook pb : pbs)
+			{
+				for (PlaceBookItem item : pb.getItems())
+					item.deleteItemData();
+			}
+*/
+
 			pm.newQuery(PlaceBook.class).deletePersistentAll();
 			pm.newQuery(PlaceBookItem.class).deletePersistentAll();
 			pm.currentTransaction().commit();
@@ -904,21 +984,9 @@ public class PlaceBooksAdminController
 					DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document config = builder.newDocument();
 
-			Element root = config.createElement(PlaceBook.class.getName());
+			Element root = p.createConfigurationRoot(config);
 			config.appendChild(root);
-			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", p.getOwner().getKey());
-			
-			Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(
-									p.getTimestamp().toString()));
-			root.appendChild(timestamp);
 
-			Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(
-									p.getGeometry().toText()));
-			root.appendChild(geometry);
-			
 			// Note: ImageItem, VideoItem and AudioItem write their data to a 
 			// package directly as well as creating XML configuration
 			for (PlaceBookItem item : p.getItems())

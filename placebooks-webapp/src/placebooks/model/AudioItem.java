@@ -74,6 +74,12 @@ public class AudioItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	public void deleteItemData()
+	{
+		if (!audio.delete())
+			log.error("Problem deleting audio file " + audio.toString());
+	}
+
 	@Persistent
 	public String getAudio()
 	{
