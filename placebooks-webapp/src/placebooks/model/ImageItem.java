@@ -16,6 +16,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -26,9 +27,11 @@ import com.vividsolutions.jts.geom.Geometry;
 public class ImageItem extends PlaceBookItem
 {
 	@Persistent
+	@JsonIgnore	
 	private BufferedImage image; 
 
 	@NotPersistent
+	@JsonIgnore
 	private File imageFile;
 	
 	public ImageItem(User owner, Geometry geom, URL sourceURL, 
