@@ -2,6 +2,7 @@ package placebooks.client.ui;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.widget.DropMenu;
+import placebooks.client.ui.widget.EditablePanel;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
@@ -53,11 +54,17 @@ public class PlaceBookItemFrame extends Composite
 	@UiField
 	Panel widgetPanel;
 
-	public PlaceBookItemFrame(final PlaceBookItem item, final Widget widget)
+	public PlaceBookItemFrame(final PlaceBookItem item)
 	{
 		this.item = item;
+		if(item.getClassName().equals("placebooks.model.TextItem"))
+		{
+			EditablePanel panel = new EditablePanel(item.getText());
+			
+			widgetPanel.add(panel);
+		}
 		initWidget(uiBinder.createAndBindUi(this));
-		widgetPanel.add(widget);
+
 	}
 
 	boolean isDragging()

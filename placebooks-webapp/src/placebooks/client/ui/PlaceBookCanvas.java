@@ -6,7 +6,6 @@ import java.util.List;
 
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.widget.EditablePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -20,7 +19,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -39,6 +37,8 @@ public class PlaceBookCanvas extends Composite
 	
 	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
 
+	//private final List<PlaceBookItemFrame> paletteItems = new ArrayList<PlaceBookItemFrame>();
+	
 	private PlaceBookItemFrame dragItem = null;
 	private int dragPanel = 0;
 	private int dragOrder = 0;
@@ -61,11 +61,11 @@ public class PlaceBookCanvas extends Composite
 			canvas.add(panel);
 		}
 
-		add(new PlaceBookItemFrame(
-				null,
-				new EditablePanel(
-						"Lorem ipsum dolor sit amet, <b>consectetur</b> adipisicing elit, sed do <i>eiusmod</i> tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo</li></ul>")));
-		add(new PlaceBookItemFrame(null, new Image("http://farm4.static.flickr.com/3229/2476270026_87b4f3e236.jpg")));
+//		add(new PlaceBookItemFrame(
+//				null,
+//				new EditablePanel(
+//						"Lorem ipsum dolor sit amet, <b>consectetur</b> adipisicing elit, sed do <i>eiusmod</i> tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo</li></ul>")));
+//		add(new PlaceBookItemFrame(null, new Image("http://farm4.static.flickr.com/3229/2476270026_87b4f3e236.jpg")));
 		
 		Window.addResizeHandler(new ResizeHandler()
 		{
@@ -85,8 +85,8 @@ public class PlaceBookCanvas extends Composite
 		for (int index = 0; index < placebook.getItems().length(); index++)
 		{
 			final PlaceBookItem item = placebook.getItems().get(index);
-			final PlaceBookItemFrame frame = new PlaceBookItemFrame(item, null);
-			items.add(frame);
+			final PlaceBookItemFrame frame = new PlaceBookItemFrame(item);
+			add(frame);
 		}
 	}
 
