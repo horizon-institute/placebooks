@@ -23,51 +23,53 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MousePanel extends ComplexPanel implements HasMouseOverHandlers, HasMouseMoveHandlers, HasClickHandlers, HasMouseDownHandlers, HasMouseUpHandlers, HasMouseOutHandlers
+public class MousePanel extends ComplexPanel implements HasMouseOverHandlers, HasMouseMoveHandlers, HasClickHandlers,
+		HasMouseDownHandlers, HasMouseUpHandlers, HasMouseOutHandlers
 {
 	public MousePanel()
 	{
 		setElement(DOM.createDiv());
 	}
-	
+
 	@Override
-	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler)
+	public void add(final Widget widget)
 	{
-		return addDomHandler(handler, MouseOutEvent.getType());
+		add(widget, getElement());
 	}
 
 	@Override
-	public HandlerRegistration addMouseUpHandler(MouseUpHandler handler)
-	{
-		return addDomHandler(handler, MouseUpEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addMouseDownHandler(MouseDownHandler handler)
-	{
-		return addDomHandler(handler, MouseDownEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addClickHandler(ClickHandler handler)
+	public HandlerRegistration addClickHandler(final ClickHandler handler)
 	{
 		return addDomHandler(handler, ClickEvent.getType());
 	}
 
 	@Override
-	public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler)
+	public HandlerRegistration addMouseDownHandler(final MouseDownHandler handler)
+	{
+		return addDomHandler(handler, MouseDownEvent.getType());
+	}
+
+	@Override
+	public HandlerRegistration addMouseMoveHandler(final MouseMoveHandler handler)
 	{
 		return addDomHandler(handler, MouseMoveEvent.getType());
 	}
 
 	@Override
-	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler)
+	public HandlerRegistration addMouseOutHandler(final MouseOutHandler handler)
+	{
+		return addDomHandler(handler, MouseOutEvent.getType());
+	}
+
+	@Override
+	public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler)
 	{
 		return addDomHandler(handler, MouseOverEvent.getType());
 	}
-	
-	public void add(Widget widget)
+
+	@Override
+	public HandlerRegistration addMouseUpHandler(final MouseUpHandler handler)
 	{
-		add(widget, getElement());
+		return addDomHandler(handler, MouseUpEvent.getType());
 	}
 }

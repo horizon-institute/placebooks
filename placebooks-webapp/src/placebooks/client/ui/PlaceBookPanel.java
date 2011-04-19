@@ -7,7 +7,6 @@ import java.util.List;
 
 import placebooks.client.PlaceBookEditor;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -38,7 +37,7 @@ public class PlaceBookPanel extends SimplePanel
 
 	public void add(final PlaceBookItemFrame item)
 	{
-		if(item.getOrder() > items.size())
+		if (item.getOrder() > items.size())
 		{
 			items.add(item);
 		}
@@ -48,40 +47,30 @@ public class PlaceBookPanel extends SimplePanel
 		}
 		reorder();
 	}
-	
+
+	public int getIndex()
+	{
+		return panelIndex;
+	}
+
 	public void remove(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
 		reorder();
 	}
 
-	private void reorder()
+	boolean isIn(final int x, final int y)
 	{
-		int order = 0;
-		for(PlaceBookItemFrame item: items)
-		{
-			item.setOrder(order);
-			order++;
-		}
+		final int left = getElement().getOffsetLeft();
+		final int width = getElement().getOffsetWidth();
+		final int top = getElement().getOffsetTop();
+		final int height = getElement().getOffsetHeight();
+		return left < x && x < (left + width) && top < y && y < (top + height);
 	}
 
-	public int getIndex()
-	{
-		return panelIndex;
-	}
-	
 	void reflow()
 	{
 		reflow(null, 0);
-	}
-	
-	boolean isIn(final int x, final int y)
-	{
-		int left = getElement().getOffsetLeft();
-		int width = getElement().getOffsetWidth();
-		int top = getElement().getOffsetTop();
-		int height = getElement().getOffsetHeight();
-		return left < x && x < (left + width) && top < y && y < (top + height); 
 	}
 
 	int reflow(final PlaceBookItemFrame newItem, final int y)
@@ -89,7 +78,7 @@ public class PlaceBookPanel extends SimplePanel
 		Collections.sort(items, new Comparator<PlaceBookItemFrame>()
 		{
 			@Override
-			public int compare(PlaceBookItemFrame o1, PlaceBookItemFrame o2)
+			public int compare(final PlaceBookItemFrame o1, final PlaceBookItemFrame o2)
 			{
 				return o1.getOrder() - o2.getOrder();
 			}
@@ -98,9 +87,9 @@ public class PlaceBookPanel extends SimplePanel
 		int result = 0;
 		int order = 0;
 		int height = getElement().getOffsetTop();
-		for (PlaceBookItemFrame item : items)
+		for (final PlaceBookItemFrame item : items)
 		{
-			if(newItem != null && y > height && y < height + item.getElement().getClientHeight())
+			if (newItem != null && y > height && y < height + item.getElement().getClientHeight())
 			{
 				newItem.getElement().getStyle().setWidth(30, Unit.PCT);
 				newItem.getElement().getStyle().setLeft(panelIndex * 30 + 5, Unit.PCT);
@@ -109,20 +98,19 @@ public class PlaceBookPanel extends SimplePanel
 				height += newItem.getElement().getClientHeight();
 				result = order;
 			}
- 			if(!item.isDragging())
+			if (!item.isDragging())
 			{
 				item.getElement().getStyle().setWidth(30, Unit.PCT);
 				item.getElement().getStyle().setLeft(panelIndex * 30 + 5, Unit.PCT);
 				item.getElement().getStyle().setTop(height, Unit.PX);
-	
+
 				height += item.getElement().getClientHeight();
 			}
- 			order ++;
+			order++;
 		}
-		
-		
-		if(newItem != null && y > height)
-		{	
+
+		if (newItem != null && y > height)
+		{
 			newItem.getElement().getStyle().setWidth(30, Unit.PCT);
 			newItem.getElement().getStyle().setLeft(panelIndex * 30 + 5, Unit.PCT);
 			newItem.getElement().getStyle().setTop(height, Unit.PX);
@@ -130,7 +118,17 @@ public class PlaceBookPanel extends SimplePanel
 			height += newItem.getElement().getClientHeight();
 			result = order;
 		}
-		
+
 		return result;
+	}
+
+	private void reorder()
+	{
+		int order = 0;
+		for (final PlaceBookItemFrame item : items)
+		{
+			item.setOrder(order);
+			order++;
+		}
 	}
 }

@@ -34,11 +34,11 @@ public class PlaceBookCanvas extends Composite
 	Panel canvas;
 
 	private static final int columns = 3;
-	
+
 	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
 
-	//private final List<PlaceBookItemFrame> paletteItems = new ArrayList<PlaceBookItemFrame>();
-	
+	// private final List<PlaceBookItemFrame> paletteItems = new ArrayList<PlaceBookItemFrame>();
+
 	private PlaceBookItemFrame dragItem = null;
 	private int dragPanel = 0;
 	private int dragOrder = 0;
@@ -61,20 +61,29 @@ public class PlaceBookCanvas extends Composite
 			canvas.add(panel);
 		}
 
-//		add(new PlaceBookItemFrame(
-//				null,
-//				new EditablePanel(
-//						"Lorem ipsum dolor sit amet, <b>consectetur</b> adipisicing elit, sed do <i>eiusmod</i> tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo</li></ul>")));
-//		add(new PlaceBookItemFrame(null, new Image("http://farm4.static.flickr.com/3229/2476270026_87b4f3e236.jpg")));
-		
+		// add(new PlaceBookItemFrame(
+		// null,
+		// new EditablePanel(
+		// "Lorem ipsum dolor sit amet, <b>consectetur</b> adipisicing elit, sed do <i>eiusmod</i> tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo</li></ul>")));
+		// add(new PlaceBookItemFrame(null, new
+		// Image("http://farm4.static.flickr.com/3229/2476270026_87b4f3e236.jpg")));
+
 		Window.addResizeHandler(new ResizeHandler()
 		{
 			@Override
-			public void onResize(ResizeEvent event)
+			public void onResize(final ResizeEvent event)
 			{
-				reflow();				
+				reflow();
 			}
 		});
+	}
+
+	public void reflow()
+	{
+		for (final PlaceBookPanel panel : panels)
+		{
+			panel.reflow();
+		}
 	}
 
 	public void setPlaceBook(final PlaceBook placebook)
@@ -95,18 +104,18 @@ public class PlaceBookCanvas extends Composite
 	{
 		if (dragItem != null)
 		{
-			int x = event.getRelativeX(canvas.getElement());
-			int y = event.getRelativeY(canvas.getElement());
-			GWT.log(x + ", " + y);			
-			for(PlaceBookPanel panel: panels)
+			final int x = event.getRelativeX(canvas.getElement());
+			final int y = event.getRelativeY(canvas.getElement());
+			GWT.log(x + ", " + y);
+			for (final PlaceBookPanel panel : panels)
 			{
-				if(panel.isIn(x, y))
+				if (panel.isIn(x, y))
 				{
-					if(panel.getIndex() != dragPanel)
+					if (panel.getIndex() != dragPanel)
 					{
-						PlaceBookPanel lastPanel = panels.get(dragPanel);
+						final PlaceBookPanel lastPanel = panels.get(dragPanel);
 						lastPanel.reflow();
-						dragPanel = panel.getIndex();						
+						dragPanel = panel.getIndex();
 					}
 					dragOrder = panel.reflow(dragItem, y);
 					break;
@@ -115,20 +124,6 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
-	private void setPanel(PlaceBookItemFrame item, int panelIndex, int order)
-	{
-		if(panelIndex == item.getPanel() && order == item.getOrder())
-		{
-			return;
-		}
-		PlaceBookPanel panel = panels.get(item.getPanel());
-		panel.remove(item);
-		panel = panels.get(panelIndex);
-		item.setPanel(panelIndex);
-		item.setOrder(order);
-		panel.add(item);
-	}
-	
 	@UiHandler("canvas")
 	void handleMouseUp(final MouseUpEvent event)
 	{
@@ -146,10 +141,10 @@ public class PlaceBookCanvas extends Composite
 	{
 		items.add(item);
 		canvas.add(item);
-		
-		PlaceBookPanel panel = panels.get(item.getPanel());
+
+		final PlaceBookPanel panel = panels.get(item.getPanel());
 		panel.add(item);
-		
+
 		item.addDragStartHandler(new MouseDownHandler()
 		{
 			@Override
@@ -158,6 +153,17 @@ public class PlaceBookCanvas extends Composite
 				startDrag(item, event);
 			}
 		});
+	}
+
+	private void setPanel(final PlaceBookItemFrame item, final int panelIndex, final int order)
+	{
+		if (panelIndex == item.getPanel() && order == item.getOrder()) { return; }
+		PlaceBookPanel panel = panels.get(item.getPanel());
+		panel.remove(item);
+		panel = panels.get(panelIndex);
+		item.setPanel(panelIndex);
+		item.setOrder(order);
+		panel.add(item);
 	}
 
 	private void startDrag(final PlaceBookItemFrame itemFrame, final MouseDownEvent event)
@@ -170,12 +176,4 @@ public class PlaceBookCanvas extends Composite
 		dragItem = itemFrame;
 		dragItem.startDrag(event);
 	}
-
-	public void reflow()
-	{
-		for(PlaceBookPanel panel: panels)
-		{
-			panel.reflow();
-		}		
-	}	
 }

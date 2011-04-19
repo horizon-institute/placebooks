@@ -11,6 +11,9 @@
 			margin-right: 150px;
 			background-color: #BBD;		
 			box-shadow: 2px 2px 2px #333;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
 		}
 		
 		.palette {
@@ -20,7 +23,10 @@
 			bottom: 0px;
 			width: 150px;
 			z-index: -10;
-			background: #556;		
+			background: #556;	
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;	
 		}
 	</ui:style>	
 	<p:MousePanel>

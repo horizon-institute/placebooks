@@ -10,7 +10,7 @@ public interface Resources extends ClientBundle
 {
 	@Source("dropMenuIcon.png")
 	ImageResource dropMenuIcon();
-	
+
 	@Source("placebookpanel.css")
 	PlaceBookPanelCSS placebookpanel();
 }
