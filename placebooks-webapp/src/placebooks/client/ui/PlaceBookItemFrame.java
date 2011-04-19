@@ -7,6 +7,7 @@ import placebooks.client.ui.widget.EditablePanel;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -98,7 +99,6 @@ public class PlaceBookItemFrame extends Composite
 	@UiHandler("frame")
 	void handleMouseOut(final MouseOutEvent event)
 	{
-		frame.getElement().getStyle().setZIndex(0);
 		menuButton.getElement().getStyle().setOpacity(0);
 		borderSection.getElement().getStyle().setOpacity(0);
 		dragSection.getElement().getStyle().setOpacity(0);
@@ -107,9 +107,11 @@ public class PlaceBookItemFrame extends Composite
 	@UiHandler("frame")
 	void handleMouseOver(final MouseOverEvent event)
 	{
-		frame.getElement().getStyle().setZIndex(2);
+		menuButton.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		menuButton.getElement().getStyle().setOpacity(1);
+		borderSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
 		borderSection.getElement().getStyle().setOpacity(1);
+		dragSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
 		dragSection.getElement().getStyle().setOpacity(1);
 	}
 
@@ -131,7 +133,6 @@ public class PlaceBookItemFrame extends Composite
 
 	void startDrag(final MouseDownEvent event)
 	{
-		frame.getElement().getStyle().setOpacity(0.8);
 		frame.getElement().getStyle().setProperty("boxShadow", "2px 2px 5px #666");
 		// dragOffsetX = event.getRelativeX(frame.getElement());
 		// dragOffsetY = event.getRelativeY(frame.getElement());
@@ -140,7 +141,6 @@ public class PlaceBookItemFrame extends Composite
 
 	void stopDrag()
 	{
-		frame.getElement().getStyle().setOpacity(1);
 		frame.getElement().getStyle().setProperty("boxShadow", "none");
 		drag = false;
 	}

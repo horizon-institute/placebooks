@@ -12,12 +12,13 @@
 			right: 0px;
 			width: 16px;
 			height: 16px;
-			border: 2px solid #447;
+			border: 1px solid #447;
 			background-color: #669;
 			padding: 2px;
 			opacity: 0;
 			-webkit-transition: opacity .5s linear;
 			transition: opacity .5s linear;
+			visibility: hidden;
 		}
 		
 		.dragSection {
@@ -26,12 +27,14 @@
 			position: absolute;
 			right: 0px;
 			width: 20px;
-			border: 2px solid #447;
+			border: 1px solid #447;
 			opacity: 0;			
 			background-color: #669;
 			-webkit-transition: opacity .5s linear;
 			transition: opacity .5s linear;
 			cursor: move;
+			visibility: hidden;		
+			min-height: 10px;	
 		}
 		
 		.borderSection {
@@ -40,19 +43,20 @@
 			position: absolute;
 			left: 0px;
 			right: 0px;
-			border: 2px solid #447;
+			border: 1px dashed #447;
 			opacity: 0;			
 			-webkit-transition: opacity .5s linear;
 			transition: opacity .5s linear;
 			z-index: -5;
+			visibility: hidden;			
 		}
 		
 		.widget {
 			position: relative;
-			margin-top: 2px;
+			margin-top: 1px;
 			margin-left: 22px;
-			margin-right: 24px;
-			margin-bottom: 2px;
+			margin-right: 22px;
+			margin-bottom: 1px;
 			overflow: hidden;
 		}
 	</ui:style>
