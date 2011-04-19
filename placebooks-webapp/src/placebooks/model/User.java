@@ -1,9 +1,7 @@
 package placebooks.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Join;
@@ -13,7 +11,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 @PersistenceCapable
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class User
 {
 	@PrimaryKey
@@ -30,12 +33,14 @@ public class User
 	@Persistent
 	private String name;
 
-	@Persistent(persistenceModifier=PersistenceModifier.PERSISTENT, mappedBy="owner")
+	@JsonIgnore
+	@Persistent(persistenceModifier = PersistenceModifier.PERSISTENT, mappedBy = "owner")
 	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
-	@Persistent(persistenceModifier=PersistenceModifier.PERSISTENT, mappedBy="user")
+	@JsonIgnore
+	@Persistent(persistenceModifier = PersistenceModifier.PERSISTENT, mappedBy = "user")
 	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
-	
+
 	@Persistent
 	@Join
 	private Collection<User> friends = new HashSet<User>();
@@ -56,22 +61,10 @@ public class User
 	{
 		loginDetails.add(loginDetail);
 	}
-	
+
 	public void add(final PlaceBook placebook)
 	{
 		placebooks.add(placebook);
-	}
-	
-	public LoginDetails getLoginDetails(String service)
-	{
-		for(LoginDetails login: loginDetails)
-		{
-			if(login.getService().equals(service))
-			{
-				return login;
-			}
-		}
-		return null;
 	}
 
 	public void add(final User friend)
@@ -79,19 +72,28 @@ public class User
 		friends.add(friend);
 	}
 
-	public Iterable<User> getFriends()
-	{
-		return friends;
-	}
-
 	public String getEmail()
 	{
 		return email;
 	}
 
+	public Iterable<User> getFriends()
+	{
+		return friends;
+	}
+
 	public String getKey()
 	{
 		return key;
+	}
+
+	public LoginDetails getLoginDetails(final String service)
+	{
+		for (final LoginDetails login : loginDetails)
+		{
+			if (login.getService().equals(service)) { return login; }
+		}
+		return null;
 	}
 
 	public String getName()
@@ -104,19 +106,19 @@ public class User
 		return passwordHash;
 	}
 
+	public Iterable<PlaceBook> getPlacebooks()
+	{
+		return placebooks;
+	}
+
 	public void remove(final PlaceBook placebook)
 	{
 		placebooks.remove(placebook);
 	}
-	
+
 	public void remove(final User friend)
 	{
 		friends.remove(friend);
-	}
-	
-	public Iterable<PlaceBook> getPlacebooks()
-	{
-		return placebooks;
 	}
 
 	public void setName(final String name)

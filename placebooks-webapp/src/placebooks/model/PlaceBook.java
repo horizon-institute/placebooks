@@ -14,12 +14,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 
 @PersistenceCapable(identityType=IdentityType.DATASTORE)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
 public class PlaceBook
 {
 	@NotPersistent
@@ -37,6 +42,7 @@ public class PlaceBook
 	private Date timestamp;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)	
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	// TODO: Cascading deletes via dependent=true: not sure about this
@@ -114,6 +120,7 @@ public class PlaceBook
 		this.items.addAll(items);
 	}
 
+	@JsonIgnore
 	public List<PlaceBookItem> getItems()
 	{
 		return Collections.unmodifiableList(items);

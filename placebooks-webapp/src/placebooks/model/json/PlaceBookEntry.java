@@ -38,5 +38,4 @@ public class PlaceBookEntry
 	{ 
 		this.description = description; 
 	}
-
 }

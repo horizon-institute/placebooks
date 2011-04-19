@@ -1,14 +1,23 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-import placebooks.model.json.*;
-
-import java.util.*;
-import java.io.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -16,11 +25,9 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,11 +43,8 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-
 import org.apache.log4j.Logger;
-
 import org.codehaus.jackson.map.ObjectMapper;
-
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,14 +52,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.model.*;
+import placebooks.model.AudioItem;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
+import placebooks.model.WebBundleItem;
+import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -212,7 +223,6 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
 					method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
 	public ModelAndView addPlaceBookItemMapping(
 		@RequestParam String key, 
 		@RequestParam String mKey, 
@@ -269,7 +279,6 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/admin/add_placebook_metadata", 
 					method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
 	public ModelAndView addPlaceBookMetadata(@RequestParam String key, 
 											 @RequestParam String mKey, 
 											 @RequestParam String mValue)

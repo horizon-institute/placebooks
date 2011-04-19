@@ -1,22 +1,28 @@
 package placebooks.model;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 
 import org.apache.log4j.Logger;
-
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -26,6 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
+@JsonTypeInfo(include=JsonTypeInfo.As.PROPERTY, use=JsonTypeInfo.Id.CLASS)
 public abstract class PlaceBookItem 
 {
 	@NotPersistent
@@ -37,15 +45,18 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)	
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.UserKeyJSONSerializer.class)	
 	private User owner;
 	
 	@Persistent
 	private Date timestamp;
 
 	@Persistent
+	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)
 	private Geometry geom;
 
 	@Persistent
@@ -121,14 +132,14 @@ public abstract class PlaceBookItem
 		if (this.hasMetadata())
 		{
 			item.appendChild(setToConfig(config,
-										 (Set)this.getMetadata().entrySet(), 
+										 this.getMetadata(), 
 										 "metadata")
 							);
 		}
 		if (this.hasParameters())
 		{
 			item.appendChild(setToConfig(config, 
-										 (Set)this.getParameters().entrySet(), 
+										 this.getParameters(), 
 							 			 "parameters")
 							);
 		}
@@ -137,19 +148,15 @@ public abstract class PlaceBookItem
 	}
 
 
-	private Element setToConfig(Document config, Set s, String name)
+	private Element setToConfig(Document config, Map<String,?> m, String name)
 	{
-		Iterator i = s.iterator();
-		if (i.hasNext())
+		if (!m.isEmpty())
 		{
 			Element sElem = config.createElement(name);
-
-			for ( ; i.hasNext(); )
+			for (Map.Entry<String,?> e: m.entrySet())
 			{
-				Map.Entry e = (Map.Entry)i.next();
-				Element elem = config.createElement(e.getKey().toString());
-				elem.appendChild(
-					config.createTextNode(e.getValue().toString()));
+				Element elem = config.createElement(e.getKey());
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
 			}
 
@@ -241,6 +248,4 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL() { return sourceURL; }
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
-
 }
-

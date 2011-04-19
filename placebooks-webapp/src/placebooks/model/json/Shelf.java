@@ -27,10 +27,8 @@ public class Shelf
 		int i = 0; 
 		for (PlaceBook pb : pbs)
 		{
-			Set s = (Set)pb.getMetadata().entrySet();
-			for (Iterator j = s.iterator(); j.hasNext(); )
+			for (Map.Entry<String, String> e: pb.getMetadata().entrySet())
 			{
-				Map.Entry e = (Map.Entry)j.next();
 				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 			}
 
@@ -46,6 +44,4 @@ public class Shelf
 
 		this.entries = entries;
 	}
-
-
 }
