@@ -20,9 +20,6 @@
   		<fileset dir="${warlib.dir}">
     		<include name="*.jar"/>
   		</fileset>
-		<fileset dir="${lib.dir}">
-			<include name="*.jar"/>
-		</fileset>
 		<fileset dir="${catalina.home}">
 			<include name="*.jar"/>
 		</fileset>
@@ -64,7 +61,8 @@
 			description="Compile classes into web archive dir">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
 			   includeAntRuntime="no">
-			<src path="${src.dir}" />
+			<src path="${src.dir}"/>
+			<exclude name="/placebooks/client/**" />
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath refid="classpath"/>
 		</javac>

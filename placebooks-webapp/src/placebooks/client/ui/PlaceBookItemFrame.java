@@ -1,7 +1,7 @@
 package placebooks.client.ui;
 
-import placebooks.client.PlaceBookEditor;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.resources.Resources;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
 import placebooks.client.ui.widget.MousePanel;
@@ -11,8 +11,9 @@ import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -40,22 +41,18 @@ public class PlaceBookItemFrame extends Composite
 	Panel borderSection;
 
 	@UiField
-	Panel frame;
-
+	MousePanel frame;
+	
 	final DropMenu dropMenu = new DropMenu();
 
-	private boolean drag = false;
-
-	// private int dragOffsetX = 0;
-	// private int dragOffsetY = 0;
-
-	private int panel = 0;
 	private int order = 0;
+	
+	private PlaceBookPanel panel;
 
 	private PlaceBookItem item;
 
 	@UiField
-	Panel widgetPanel;
+	MousePanel widgetPanel;
 
 	public PlaceBookItemFrame(final PlaceBookItem item)
 	{
@@ -64,30 +61,67 @@ public class PlaceBookItemFrame extends Composite
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
-			panel.addStyleName(PlaceBookEditor.RESOURCES.placebookpanel().textitem());
+			panel.setStyleName(Resources.INSTANCE.style().textitem());
 			widgetPanel.add(panel);
 		}
 		else if (item.getClassName().equals("placebooks.model.ImageItem"))
 		{
 			final Image image = new Image(item.getSourceURL());
+			image.setStyleName(Resources.INSTANCE.style().imageitem());
 			widgetPanel.add(image);
 		}
 	}
-
+	
+	ImageResource getDragImage()
+	{
+		if (item.getClassName().equals("placebooks.model.TextItem"))
+		{
+			return Resources.INSTANCE.text();
+		}
+		else if (item.getClassName().equals("placebooks.model.ImageItem"))
+		{
+			return Resources.INSTANCE.picture();
+		}
+		return null;
+	}
+	
 	void addDragStartHandler(final MouseDownHandler handler)
 	{
 		dragSection.addMouseDownHandler(handler);
 	}
+	
+	void addMouseOverHandler(final MouseOverHandler handler)
+	{
+		widgetPanel.addMouseOverHandler(handler);
+	}
 
+	void addMouseOutHandler(final MouseOutHandler handler)
+	{
+		frame.addMouseOutHandler(handler);
+	}
+	
 	int getOrder()
 	{
 		if (item.hasParameter("order")) { return item.getParameter("order"); }
 		return order;
 	}
-
-	int getPanel()
+	
+	PlaceBookPanel getPanel()
 	{
 		return panel;
+	}
+
+	void setPanel(PlaceBookPanel panel)
+	{
+		if(this.panel != null)
+		{
+			this.panel.remove(this);
+		}
+		this.panel = panel;
+		if(panel != null)
+		{
+			panel.add(this);
+		}			
 	}
 
 	@UiHandler("menuButton")
@@ -95,29 +129,26 @@ public class PlaceBookItemFrame extends Composite
 	{
 		GWT.log("Menu click");
 	}
-
-	@UiHandler("frame")
-	void handleMouseOut(final MouseOutEvent event)
-	{
-		menuButton.getElement().getStyle().setOpacity(0);
-		borderSection.getElement().getStyle().setOpacity(0);
-		dragSection.getElement().getStyle().setOpacity(0);
-	}
-
-	@UiHandler("frame")
-	void handleMouseOver(final MouseOverEvent event)
+	
+	void showFrame()
 	{
 		menuButton.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		menuButton.getElement().getStyle().setOpacity(1);
+		menuButton.getElement().getStyle().setZIndex(5);			
 		borderSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
 		borderSection.getElement().getStyle().setOpacity(1);
 		dragSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
 		dragSection.getElement().getStyle().setOpacity(1);
+		dragSection.getElement().getStyle().setZIndex(5);	
 	}
-
-	boolean isDragging()
+	
+	void hideFrame()
 	{
-		return drag;
+		menuButton.getElement().getStyle().setOpacity(0);
+		menuButton.getElement().getStyle().setZIndex(0);
+		borderSection.getElement().getStyle().setOpacity(0);		
+		dragSection.getElement().getStyle().setOpacity(0);
+		dragSection.getElement().getStyle().setZIndex(0);	
 	}
 
 	void setOrder(final int order)
@@ -126,22 +157,26 @@ public class PlaceBookItemFrame extends Composite
 		this.order = order;
 	}
 
-	void setPanel(final int panel)
-	{
-		this.panel = panel;
-	}
-
 	void startDrag(final MouseDownEvent event)
 	{
-		frame.getElement().getStyle().setProperty("boxShadow", "2px 2px 5px #666");
+		frame.addStyleName(Resources.INSTANCE.style().dragShadow());
+		frame.getElement().getStyle().setZIndex(20);
+		menuButton.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
+		menuButton.getElement().getStyle().setOpacity(0.6);
+		borderSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
+		borderSection.getElement().getStyle().setOpacity(0.6);
+		dragSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
+		dragSection.getElement().getStyle().setOpacity(0.6);
+		
+		setPanel(null);
+
 		// dragOffsetX = event.getRelativeX(frame.getElement());
 		// dragOffsetY = event.getRelativeY(frame.getElement());
-		drag = true;
 	}
 
 	void stopDrag()
 	{
-		frame.getElement().getStyle().setProperty("boxShadow", "none");
-		drag = false;
+		frame.removeStyleName(Resources.INSTANCE.style().dragShadow());
+		frame.getElement().getStyle().setZIndex(0);		
 	}
 }

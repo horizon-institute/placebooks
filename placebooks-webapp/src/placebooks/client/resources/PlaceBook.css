@@ -15,7 +15,10 @@
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	user-select: text;	
-		
+}
+
+.imageitem {
+	width: 100%;
 }
 
 .panelleft {
@@ -26,6 +29,18 @@
 .panelright {
 	border-left: 1px dashed #CCC;	
 	right: 5%;
+}
+
+.dragImage {
+	z-index: 20;
+	position: absolute;
+	cursor: move;
+}
+
+.dragShadow {
+	-moz-box-shadow: 3px 3px 4px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 3px 3px 4px rgba(0,0,0,0.5);
+	box-shadow: 3px 3px 6px rgba(0,0,0,0.5);	
 }
 
 .panelcenter {
