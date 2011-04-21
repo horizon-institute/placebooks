@@ -186,16 +186,4 @@ public class EverytrailHelperTest
 		assertEquals("success",response.getStatus());
 		assertEquals(1, response.getTrips().size());
 	}
-
-	@Test
-	public void testImageItemFromEverytrail()
-	{
-		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(logInTestUser());
-		Vector<Node> pictures = picturesResponse.getPictures();
-		
-		User testUser = new User("test user", "placebooks_everytrail_test@hotmail.com", "pass_hash");
-		ImageItem imageItem = EverytrailHelper.imageItemFromEverytrailImage(testUser, pictures.firstElement());
-		assertEquals(imageItem.getImage().getWidth(), 800);
-		assertEquals(imageItem.getImage().getHeight(), 479);
-	}	
 }
