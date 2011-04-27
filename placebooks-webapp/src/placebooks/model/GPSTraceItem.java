@@ -52,6 +52,8 @@ public class GPSTraceItem extends PlaceBookItem
 
 	public void appendConfiguration(Document config, Element root)
 	{
+		getTrace(); // TODO: why does this need to be done??
+
 		Element item = getConfigurationHeader(config);
 		Element traceElem = 
 			(Element)(trace.getElementsByTagName("gpx").item(0));
