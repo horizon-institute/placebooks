@@ -3,7 +3,7 @@ package placebooks.model.json;
 import placebooks.model.PlaceBook;
 
 import java.util.Collection;
-import java.util.*; //TMP
+import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -38,7 +38,8 @@ public class Shelf
 			entries[i].setTitle(pb.getMetadataValue("title"));
 			entries[i].setNumItems(pb.getItems().size());
 			entries[i].setDescription(pb.getMetadataValue("description"));
-			
+			entries[0].setPackagePath(pb.getPackagePath());
+
 			++i;
 		}
 

@@ -41,7 +41,6 @@ public class VideoItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
-
 		try
 		{
 			// Check package dir exists already
@@ -49,6 +48,7 @@ public class VideoItem extends PlaceBookItem
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
 							+ getPlaceBook().getKey();
+			getVideo(); // TODO: work out why I need this here
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{

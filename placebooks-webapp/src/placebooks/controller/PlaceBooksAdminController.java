@@ -459,7 +459,7 @@ public class PlaceBooksAdminController
 										"Error in wget command");
 			}
 
-			wgetCmd.append(" --user-agent=\"");
+			wgetCmd.append(" -U \"");
 			wgetCmd.append(
 				PropertiesSingleton
 					.get(this.getClass().getClassLoader())
@@ -467,11 +467,7 @@ public class PlaceBooksAdminController
 			);
 			wgetCmd.append("\" ");
 
-			String webBundlePath = 
-				PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") 
-				+ wbi.getKey();
+			String webBundlePath = wbi.getWebBundlePath();
 
 			wgetCmd.append("-P " + webBundlePath + " " 
 						   + wbi.getSourceURL().toString());
@@ -709,21 +705,16 @@ public class PlaceBooksAdminController
 									HttpServletResponse res, 
 									@PathVariable("key") String key)
 	{
-		
-		PlaceBook p = PMFSingleton
-							.get()
-							.getPersistenceManager()
-							.getObjectById(PlaceBook.class, key);
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		PlaceBook p = pm.getObjectById(PlaceBook.class, key);
 
 		String out = placeBookToXML(p);
 		
 		if (out != null)
 		{
-			String pkgPath = 
-				PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ p.getKey();
+			String pkgPath = p.getPackagePath();
 			if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 			{
 				try
@@ -744,8 +735,6 @@ public class PlaceBooksAdminController
 					log.error(e.toString());
 				}
 			}
-
-			PMFSingleton.get().getPersistenceManager().close();
 
 			try 
 			{
@@ -770,6 +759,9 @@ public class PlaceBooksAdminController
 					ArrayList<File> files = new ArrayList<File>();
 					getFileListRecursive(new File(pkgPath), files);
 
+					File currentDir = new File(".");
+					log.info("Current working directory is " 
+							 + currentDir.getAbsolutePath());
 
 					byte data[] = new byte[2048];
 					BufferedInputStream bis = null;
@@ -812,11 +804,10 @@ public class PlaceBooksAdminController
 			{
         		log.error(e.toString());
 			}
-			
+			pm.close();
 			return null;
 		}
-		else
-			PMFSingleton.get().getPersistenceManager().close();
+		pm.close();
 
 		return new ModelAndView("message", "text", "Error generating package");
 
