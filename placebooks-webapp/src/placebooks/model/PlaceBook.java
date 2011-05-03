@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.PropertiesSingleton;
+
 import java.util.*;
 
 import javax.jdo.annotations.Extension;
@@ -75,6 +77,14 @@ public class PlaceBook
 	{
 		this(owner, geom);
 		setItems(items);
+	}
+
+	public String getPackagePath()
+	{
+		return PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+					+ getKey();
 	}
 
 	public Element createConfigurationRoot(Document config)

@@ -19,6 +19,9 @@ public class PlaceBookEntry
 	@JsonProperty
 	private String description;
 
+	@JsonProperty
+	private String packagePath;
+
 	public PlaceBookEntry() {}
 
 	public String getKey() { return key; }
@@ -38,4 +41,11 @@ public class PlaceBookEntry
 	{ 
 		this.description = description; 
 	}
+	
+	public String getPackagePath() { return packagePath; }
+	public void setPackagePath(String packagePath) 
+	{ 
+		this.packagePath = packagePath; 
+	}
+
 }

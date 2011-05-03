@@ -61,23 +61,26 @@ public class WebBundleItem extends PlaceBookItem
 		}
 	}
 
+	public String getWebBundlePath()
+	{
+		return PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
+					"") + getKey();
+	}
+
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
 		
 		try
 		{
-			File from = new File(
-							PropertiesSingleton
-								.get(this.getClass().getClassLoader())
-								.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
-									"") + getKey());
+			getWebBundle(); //TODO: why is this needed?
 
-			File to = new File(
-						PropertiesSingleton
-							.get(this.getClass().getClassLoader())
-							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPlaceBook().getKey() + "/" + getKey());
+			File from = new File(getWebBundlePath());
+			File to = new File(getPlaceBook().getPackagePath() 
+							   + "/" + getKey());
+
 			FileUtils.copyDirectory(from, to);
 
 			Element filename = config.createElement("filename");

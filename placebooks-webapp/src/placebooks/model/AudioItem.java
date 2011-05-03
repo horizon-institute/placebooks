@@ -47,6 +47,7 @@ public class AudioItem extends PlaceBookItem
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
 							+ getPlaceBook().getKey();
+			getAudio(); // TODO: work out why I need this here
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
