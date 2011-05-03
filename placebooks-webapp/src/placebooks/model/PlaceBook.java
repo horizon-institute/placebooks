@@ -48,15 +48,15 @@ public class PlaceBook
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	// TODO: Cascading deletes via dependent=true: not sure about this
-	@Persistent(mappedBy="placebook")
-	@javax.jdo.annotations.Element(dependent = "true") 
+	@Persistent(mappedBy = "placebook")
+	@javax.jdo.annotations.Element(dependent = "true")
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
 	@Persistent
 	private Map<String, String> metadata = new HashMap<String, String>();
 
-	@Persistent(dependent="true")
+	@Persistent(mappedBy = "placebook", dependent = "true")
 	private PlaceBookIndex index;
 
 	// Make a new PlaceBook
@@ -67,6 +67,8 @@ public class PlaceBook
 			this.owner.add(this);
 		this.geom = geom;
 		this.timestamp = new Date();
+		index = new PlaceBookIndex();
+		index.setPlaceBook(this);
 
 		log.info("Created new PlaceBook: timestamp=" 
 				 + this.timestamp.toString());
@@ -151,6 +153,7 @@ public class PlaceBook
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
+		index.add(value); // TODO: tokenise
 	}
 
 	public String getMetadataValue(String key)

@@ -57,20 +57,22 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import placebooks.model.AudioItem;
-import placebooks.model.GPSTraceItem;
-import placebooks.model.ImageItem;
-import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
-import placebooks.model.User;
-import placebooks.model.VideoItem;
-import placebooks.model.WebBundleItem;
+import placebooks.model.*;
 import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+
+import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Iterator;
+import java.io.StringReader;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 
 // TODO: general todo is to do file checking to reduce unnecessary file writes, 
@@ -889,14 +891,73 @@ public class PlaceBooksAdminController
 
 		log.info("Deleted all PlaceBooks");
 
-		return new ModelAndView("message", 
-								"text", 
-								"Deleted all PlaceBooks");
+		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 
     }
 
 	
+	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
+	public ModelAndView search(@PathVariable("terms") String terms)
+	{
+		
+		Set<String> search = getIndex(terms, 3);
+		
+		StringBuffer out = new StringBuffer();
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+		Query query = pm.newQuery(PlaceBookIndex.class);
+		query.setFilter("index == indexParam");
+		query.declareParameters("String indexParam");
+		
+		List<PlaceBookIndex> indexes = 
+			(List<PlaceBookIndex>)query.execute(search);
+
+		for (PlaceBookIndex index : indexes)
+		{
+			out.append("key=" + index.getPlaceBook().getKey() + "<br>");
+		}
+
+		pm.close();
+
+		for (Iterator<String> i = search.iterator(); i.hasNext() ; )
+			out.append("keywords=" + i.next() + ",");
+
+		return new ModelAndView("message", "text", "search results:<br>" + 
+								out.toString());
+	}
+
+	
 	// Helper methods below
+	protected Set<String> getIndex(String input, int maxTokens) 
+	{
+		Set<String> returnSet = new HashSet<String>();
+		try 
+		{
+			Analyzer analyzer = new EnglishAnalyzer(
+				org.apache.lucene.util.Version.LUCENE_31);
+			TokenStream tokenStream = analyzer.tokenStream("content", 
+				new StringReader(input));
+		    while (tokenStream.incrementToken() && (returnSet.size() < 
+				   maxTokens)) 
+			{
+				if (tokenStream.hasAttribute(TermAttribute.class)) 
+				{
+			        TermAttribute attr = 
+						tokenStream.getAttribute(TermAttribute.class);
+			        log.debug(attr.term());
+			        returnSet.add(attr.term());
+				}
+    		}
+		}
+		catch (Exception e) 
+		{
+			log.error(e.toString());
+		}
+		
+		return returnSet;
+	}
+
 
 	private static void getFileListRecursive(File path, ArrayList<File> out)
 	{

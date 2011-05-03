@@ -45,7 +45,7 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)	
+	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
