@@ -1,6 +1,10 @@
 package placebooks.controller;
 
+import placebooks.model.*;
+import placebooks.model.json.Shelf;
+
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,8 +18,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+
 import java.net.URL;
+
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -23,14 +33,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -43,8 +57,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,27 +69,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import placebooks.model.*;
-import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Iterator;
-import java.io.StringReader;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 
 // TODO: general todo is to do file checking to reduce unnecessary file writes, 
@@ -897,31 +903,38 @@ public class PlaceBooksAdminController
 
 	
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
 	public ModelAndView search(@PathVariable("terms") String terms)
 	{
+		final long timeStart = System.nanoTime();
+		final long timeEnd;
 		
-		Set<String> search = getIndex(terms, 3);
+		Set<String> search = SearchHelper.getIndex(terms, 5);
 		
 		StringBuffer out = new StringBuffer();
 
 		final PersistenceManager pm = 
 			PMFSingleton.get().getPersistenceManager();
-		Query query = pm.newQuery(PlaceBookIndex.class);
-		query.setFilter("index == indexParam");
-		query.declareParameters("String indexParam");
-		
-		List<PlaceBookIndex> indexes = 
-			(List<PlaceBookIndex>)query.execute(search);
+		Query query = pm.newQuery(PlaceBookSearchIndex.class);
+		List<PlaceBookSearchIndex> indexes = 
+			(List<PlaceBookSearchIndex>)query.execute();
 
-		for (PlaceBookIndex index : indexes)
+		for (PlaceBookSearchIndex index : indexes)
 		{
-			out.append("key=" + index.getPlaceBook().getKey() + "<br>");
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			out.append("key=" + index.getPlaceBook().getKey() 
+					   + ", keywords.size() = " + keywords.size() + "<br>");
 		}
 
 		pm.close();
 
 		for (Iterator<String> i = search.iterator(); i.hasNext() ; )
 			out.append("keywords=" + i.next() + ",");
+		
+		timeEnd = System.nanoTime();
+		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
 
 		return new ModelAndView("message", "text", "search results:<br>" + 
 								out.toString());
@@ -929,39 +942,10 @@ public class PlaceBooksAdminController
 
 	
 	// Helper methods below
-	protected Set<String> getIndex(String input, int maxTokens) 
-	{
-		Set<String> returnSet = new HashSet<String>();
-		try 
-		{
-			Analyzer analyzer = new EnglishAnalyzer(
-				org.apache.lucene.util.Version.LUCENE_31);
-			TokenStream tokenStream = analyzer.tokenStream("content", 
-				new StringReader(input));
-		    while (tokenStream.incrementToken() && (returnSet.size() < 
-				   maxTokens)) 
-			{
-				if (tokenStream.hasAttribute(TermAttribute.class)) 
-				{
-			        TermAttribute attr = 
-						tokenStream.getAttribute(TermAttribute.class);
-			        log.debug(attr.term());
-			        returnSet.add(attr.term());
-				}
-    		}
-		}
-		catch (Exception e) 
-		{
-			log.error(e.toString());
-		}
-		
-		return returnSet;
-	}
 
-
-	private static void getFileListRecursive(File path, ArrayList<File> out)
+	private static void getFileListRecursive(File path, List<File> out)
 	{
-		ArrayList<File> files = 
+		List<File> files = 
 			new ArrayList<File>(Arrays.asList(path.listFiles()));
 
 		for (File file : files)

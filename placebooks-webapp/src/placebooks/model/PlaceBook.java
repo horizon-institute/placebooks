@@ -1,8 +1,16 @@
 package placebooks.model;
 
 import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.SearchHelper;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -16,6 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -24,9 +33,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.vividsolutions.jts.geom.Geometry;
 
 
-@PersistenceCapable(identityType=IdentityType.DATASTORE)
-@Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
-@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@Extension(vendorName = "datanucleus", key = "mysql-engine-type", 
+		   value = "MyISAM")
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, 
+				getterVisibility = Visibility.NONE)
 public class PlaceBook
 {
 	@NotPersistent
@@ -44,7 +55,7 @@ public class PlaceBook
 	private Date timestamp;
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)	
+	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)	
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	// TODO: Cascading deletes via dependent=true: not sure about this
@@ -57,7 +68,7 @@ public class PlaceBook
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@Persistent(mappedBy = "placebook", dependent = "true")
-	private PlaceBookIndex index;
+	private PlaceBookSearchIndex index;
 
 	// Make a new PlaceBook
 	public PlaceBook(User owner, Geometry geom)
@@ -67,7 +78,7 @@ public class PlaceBook
 			this.owner.add(this);
 		this.geom = geom;
 		this.timestamp = new Date();
-		index = new PlaceBookIndex();
+		index = new PlaceBookSearchIndex();
 		index.setPlaceBook(this);
 
 		log.info("Created new PlaceBook: timestamp=" 
@@ -153,7 +164,7 @@ public class PlaceBook
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
-		index.add(value); // TODO: tokenise
+		index.addAll(SearchHelper.getIndex(value));
 	}
 
 	public String getMetadataValue(String key)

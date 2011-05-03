@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 
 @PersistenceCapable
-@Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
+@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 public class TextItem extends PlaceBookItem
 {
 	private String text; 

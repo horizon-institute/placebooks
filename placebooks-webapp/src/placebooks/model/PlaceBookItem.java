@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.SearchHelper;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -19,21 +21,25 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable(identityType=IdentityType.DATASTORE)
-@Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
-@Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
-@Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
-@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
-@JsonTypeInfo(include=JsonTypeInfo.As.PROPERTY, use=JsonTypeInfo.Id.CLASS)
+@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@Inheritance(strategy = InheritanceStrategy.NEW_TABLE)
+@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
+@Extension(vendorName = "datanucleus", key = "mysql-engine-type", 
+		   value = "MyISAM")
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, 
+				getterVisibility = Visibility.NONE)
+@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS)
 public abstract class PlaceBookItem 
 {
 	@NotPersistent
@@ -45,18 +51,19 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)
+	@JsonSerialize(using =
+				   placebooks.model.json.PlaceBookKeyJSONSerializer.class)
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.UserKeyJSONSerializer.class)	
+	@JsonSerialize(using = placebooks.model.json.UserKeyJSONSerializer.class)	
 	private User owner;
 	
 	@Persistent
 	private Date timestamp;
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)
+	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	private Geometry geom;
 
 	@Persistent
@@ -70,6 +77,9 @@ public abstract class PlaceBookItem
 	@Persistent
 	private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
+	@Persistent(mappedBy = "item", dependent = "true")
+	private PlaceBookItemSearchIndex index;
+
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
 	{
@@ -77,6 +87,8 @@ public abstract class PlaceBookItem
 		this.geom = geom;
 		this.timestamp = new Date();
 		this.sourceURL = sourceURL;
+		index = new PlaceBookItemSearchIndex();
+		index.setPlaceBookItem(this);
 		log.info("Created new PlaceBookItem, concrete name: " 
 				 + getEntityName() + ", timestamp=" 
 				 + this.timestamp.toString());
@@ -156,7 +168,9 @@ public abstract class PlaceBookItem
 			for (Map.Entry<String,?> e: m.entrySet())
 			{
 				Element elem = config.createElement(e.getKey());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				elem.appendChild(config.createTextNode(
+									e.getValue().toString())
+				);
 				sElem.appendChild(elem);
 			}
 
@@ -195,6 +209,7 @@ public abstract class PlaceBookItem
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
+		index.addAll(SearchHelper.getIndex(value));
 	}
 
 	public String getMetadataValue(String key)
@@ -234,7 +249,10 @@ public abstract class PlaceBookItem
 
 	public String getKey() { return key; }
 
-	public void setPlaceBook(PlaceBook placebook) { this.placebook = placebook; }
+	public void setPlaceBook(PlaceBook placebook) 
+	{ 
+		this.placebook = placebook; 
+	}
 	public PlaceBook getPlaceBook() { return placebook; }
 
 	public void setOwner(User owner) { this.owner = owner; }
