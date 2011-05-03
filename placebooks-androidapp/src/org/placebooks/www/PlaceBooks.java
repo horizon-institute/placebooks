@@ -5,37 +5,37 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.net.URL;
-import java.net.URLConnection;
-import java.io.BufferedInputStream;
+//import java.net.URLConnection;
+//import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import 	java.net.HttpURLConnection;
-import 	java.io.File;
-import 	android.os.Environment;
+//import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.io.File;
+import android.os.Environment;
 import android.util.Log;
 import java.net.MalformedURLException;
 import java.io.IOException;
 
-
-
+//import android.widget.ImageView;
 import android.widget.Button;
-import android.widget.Toast;
+//import android.widget.Toast;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.widget.ProgressBar;
-
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.widget.TextView;
+//import android.widget.ProgressBar;
+//import android.content.Context;
+//import android.os.Handler;
+//import android.os.Message;
+//import android.widget.TextView;
 import android.os.AsyncTask;
 import android.content.res.Configuration;
 
 
 public class PlaceBooks extends Activity {
+	
+
 	
 	private static String placebooksfolder = new String("/PlaceBooks");
 	private File file;
@@ -52,9 +52,12 @@ public class PlaceBooks extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // load up the layout
         setContentView(R.layout.main);	//push main layout into the content view
-       // statusTextView = (TextView)findViewById(R.id.status);
-      
+        //placebooks logo
+        /*ImageView image = (ImageView) findViewById(R.id.imgLogo);
+        image.setImageResource(R.drawable.placebookslogo);*/
+        
          	    
         //create /placebooks dir on app startup
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
@@ -64,6 +67,18 @@ public class PlaceBooks extends Activity {
         directory.mkdirs();
         }
 
+      //LOG IN BUTTON      
+        Button login = (Button) findViewById(R.id.btnLogin);
+
+        login.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v){
+        		Intent i = new Intent();
+        		i.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
+        		startActivity(i);		
+        	}
+        });
+           
+      
        
         Button button = (Button) findViewById(R.id.Button01);
         button.setOnClickListener(new OnClickListener() {
@@ -78,6 +93,7 @@ public class PlaceBooks extends Activity {
         
        // setListener();  //call the setListner method
 
+        //view my placebook       
         Button buttonR = (Button) findViewById(R.id.Button02);
         buttonR.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
@@ -86,9 +102,9 @@ public class PlaceBooks extends Activity {
         		startActivity(i);		
         	}
         });
-        
-        
-    }
+                
+    }  //end of onCreate
+    
     
     @Override
     public void onConfigurationChanged (Configuration newConfig){
@@ -201,8 +217,7 @@ public class PlaceBooks extends Activity {
                 
                 // location of the downloaded .zip file on the sd card
                 String fileLoc = (Environment.getExternalStorageDirectory() +placebooksfolder + "/" +filename);
-                File sdCard = Environment.getExternalStorageDirectory();
-                String unzipLocation = sdCard.toString()+"/PlaceBooks";//(Environment.getExternalStorageDirectory() +placebooksfolder); 
+                String unzipLocation = Environment.getExternalStorageDirectory() + placebooksfolder + "/unzipped/";
                 
                 Decompress d = new Decompress(fileLoc, unzipLocation); 
                 d.unzip();
@@ -239,5 +254,6 @@ public class PlaceBooks extends Activity {
         }
     }
    
+ 
            
 }

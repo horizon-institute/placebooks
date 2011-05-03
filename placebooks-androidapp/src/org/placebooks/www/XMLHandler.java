@@ -1,6 +1,6 @@
 package org.placebooks.www;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -28,7 +28,6 @@ public class XMLHandler extends DefaultHandler {
 	AudioItem aitem;	
 	StringBuilder url,text,filename;
 
-
 	/*
 	 * fields
 	 */
@@ -46,6 +45,8 @@ public class XMLHandler extends DefaultHandler {
 	 
 	 private boolean in_placebooksAudio = false;
 	 private boolean in_audioFilename = false;
+	 
+	 private boolean in_key = false;
 
 	 public Book getParsedData() {
 		 //return this.books;
@@ -75,8 +76,14 @@ public class XMLHandler extends DefaultHandler {
 	 @Override
 	 public void startElement(String namespaceURI, String localName,
 			 String qName, Attributes atts) throws SAXException {
+		 
+		 if(localName.equals("placebooks.model.PlaceBook")){
+			 this.in_key = true;	
+			 String attr = atts.getValue("key");
+             CurrentBook.setKey(attr);
+		 }
 
-		 if (localName.equals("placebooks.model.TextItem")) {
+		 else if (localName.equals("placebooks.model.TextItem")) {
 			 this.in_placebooksText = true;
 			 titem = new TextItem();
 		 }else if (localName.equals("placebooks.model.ImageItem")) {
@@ -124,6 +131,11 @@ public class XMLHandler extends DefaultHandler {
 	 @Override
 	 public void endElement(String namespaceURI, String localName, String qName)
 	 throws SAXException {
+		 
+		 if (localName.equalsIgnoreCase("placebooks.model.PlaceBook")) {
+			 this.in_key = false;
+		 
+		 }
 
 		 if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {
 			 this.in_placebooksText = false;
@@ -154,7 +166,7 @@ public class XMLHandler extends DefaultHandler {
 				 url = null;
 			 }else if(this.in_placebooksImage){
 				 this.in_imageUrl = false;
-				 imitem.setURL(url.toString());
+				 imitem.setURL(url.toString());		
 				 url = null;
 			 }
 		 }
@@ -210,6 +222,7 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_audioFilename){
 			 filename.append(ch, start, length).toString();
 		 }
+		
 		 
 		 
 	 } //end of void characters
