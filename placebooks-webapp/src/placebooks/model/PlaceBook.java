@@ -68,7 +68,7 @@ public class PlaceBook
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@Persistent(mappedBy = "placebook", dependent = "true")
-	private PlaceBookSearchIndex index;
+	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
 	// Make a new PlaceBook
 	public PlaceBook(User owner, Geometry geom)
@@ -77,8 +77,7 @@ public class PlaceBook
 		if (owner != null)
 			this.owner.add(this);
 		this.geom = geom;
-		this.timestamp = new Date();
-		index = new PlaceBookSearchIndex();
+		this.timestamp = new Date();	
 		index.setPlaceBook(this);
 
 		log.info("Created new PlaceBook: timestamp=" 

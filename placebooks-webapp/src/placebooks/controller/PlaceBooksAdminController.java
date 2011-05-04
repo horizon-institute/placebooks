@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collection;
@@ -821,7 +823,8 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete_placebook/{key}", 
+					method = RequestMethod.GET)
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
@@ -850,15 +853,49 @@ public class PlaceBooksAdminController
 
 		pm.close();
 
-		log.info("Deleted all PlaceBooks");
+		log.info("Deleted PlaceBook");
 
 		return new ModelAndView("message", 
 								"text", 
 								"Deleted PlaceBook: " + key);
+	}
+
+	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
+					method = RequestMethod.GET)
+    public ModelAndView deletePlaceBookItem(@PathVariable("key") String key) 
+	{
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		try 
+		{
+			pm.currentTransaction().begin();
+			pm.newQuery(PlaceBookItem.class, 
+						"key == '" + key + "'").deletePersistentAll();
+			pm.currentTransaction().commit();
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current delete single transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted PlaceBookItem " + key);
+
+		return new ModelAndView("message", 
+								"text", 
+								"Deleted PlaceBookItem: " + key);
 
 
 
 	}
+
 
 	@RequestMapping(value = "/admin/delete/all_placebooks", 
 					method = RequestMethod.GET)
@@ -901,34 +938,80 @@ public class PlaceBooksAdminController
 
     }
 
-	
+
+	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
+	public ModelAndView searchPOST(HttpServletRequest req)
+	{
+		StringBuffer out = new StringBuffer();
+		String[] terms = req.getParameter("terms").split("\\s");
+     	for (int i = 0; i < terms.length; ++i)
+		{
+        	out.append(terms[i]);
+			if (i < terms.length-1)
+				out.append("+");
+		}
+		
+		return searchGET(out.toString());
+	}
+
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")
-	public ModelAndView search(@PathVariable("terms") String terms)
+	public ModelAndView searchGET(@PathVariable("terms") String terms)
 	{
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
 		
 		Set<String> search = SearchHelper.getIndex(terms, 5);
 		
-		StringBuffer out = new StringBuffer();
 
 		final PersistenceManager pm = 
 			PMFSingleton.get().getPersistenceManager();
-		Query query = pm.newQuery(PlaceBookSearchIndex.class);
-		List<PlaceBookSearchIndex> indexes = 
-			(List<PlaceBookSearchIndex>)query.execute();
 
-		for (PlaceBookSearchIndex index : indexes)
+		Query query1 = pm.newQuery(PlaceBookSearchIndex.class);
+		List<PlaceBookSearchIndex> pbIndexes = 
+			(List<PlaceBookSearchIndex>)query1.execute();
+		
+		// Search rationale: ratings are accumulated per PlaceBook for that
+		// PlaceBook plus any PlaceBookItems
+		Map<String, Integer> hits = new HashMap<String, Integer>();
+
+		for (PlaceBookSearchIndex index : pbIndexes)
 		{
 			Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
-			out.append("key=" + index.getPlaceBook().getKey() 
-					   + ", keywords.size() = " + keywords.size() + "<br>");
+			Integer rating = (Integer)hits.get(index.getPlaceBook().getKey());
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(index.getPlaceBook().getKey(), 
+					 new Integer(keywords.size() + rating.intValue())
+			);
+		}
+
+		Query query2 = pm.newQuery(PlaceBookItemSearchIndex.class);
+		List<PlaceBookItemSearchIndex> pbiIndexes = 
+			(List<PlaceBookItemSearchIndex>)query2.execute();
+
+		for (PlaceBookItemSearchIndex index : pbiIndexes)
+		{
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			String key = index.getPlaceBookItem().getPlaceBook().getKey();
+			Integer rating = (Integer)hits.get(key);
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(key, new Integer(keywords.size() + rating.intValue()));
 		}
 
 		pm.close();
+
+		StringBuffer out = new StringBuffer();
+		for (Map.Entry<String, Integer> entry : hits.entrySet())
+		{
+			out.append("key=" + entry.getKey() 
+					   + ", score=" + entry.getValue() + "<br>");
+		}
 
 		for (Iterator<String> i = search.iterator(); i.hasNext() ; )
 			out.append("keywords=" + i.next() + ",");

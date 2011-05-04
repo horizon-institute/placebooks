@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.SearchHelper;
+
 import java.net.URL;
 
 import javax.jdo.annotations.Inheritance;
@@ -24,6 +26,7 @@ public class TextItem extends PlaceBookItem
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;
+		index.addAll(SearchHelper.getIndex(text));
 	}
 
 	public void deleteItemData() { }
@@ -53,6 +56,7 @@ public class TextItem extends PlaceBookItem
 	{
 		this.text = text;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#GetHTML()

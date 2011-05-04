@@ -78,7 +78,7 @@ public abstract class PlaceBookItem
 	private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
 	@Persistent(mappedBy = "item", dependent = "true")
-	private PlaceBookItemSearchIndex index;
+	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
 
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
@@ -87,7 +87,6 @@ public abstract class PlaceBookItem
 		this.geom = geom;
 		this.timestamp = new Date();
 		this.sourceURL = sourceURL;
-		index = new PlaceBookItemSearchIndex();
 		index.setPlaceBookItem(this);
 		log.info("Created new PlaceBookItem, concrete name: " 
 				 + getEntityName() + ", timestamp=" 
@@ -181,31 +180,6 @@ public abstract class PlaceBookItem
 	}
 
 
-	/**
-	 * 'GetHTML' will return a String containing the item's body content in 
-	 * html format, suitable for including in the placebook view. (@TODO with 
-	 * GUI programmer define/document how this will be used in GUI)
-	 * @return String containing the HTML data for the content of the placebook
-	 * item
-	 */
-	public abstract String GetHTML();
-
-	/**
-	 * Along with GetHTML this method is used to generate a string containing
-	 * the CSS styles for the Placebook item, suitable for use in the Placebook
-	 * page header
-	 * @return String of CSS style data
-	 */
-	public abstract String GetCSS();
-	
-	/**
-	 * Along with GetHTML this method is used to generate a string containing
-	 * any required Javascript for the Placebook item
-	 * @return String of Javascript code
-	 */
-	public abstract String GetJavaScript();
-
-
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
@@ -266,4 +240,31 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL() { return sourceURL; }
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
+	
+	
+	
+	/**
+	 * 'GetHTML' will return a String containing the item's body content in 
+	 * html format, suitable for including in the placebook view. (@TODO with 
+	 * GUI programmer define/document how this will be used in GUI)
+	 * @return String containing the HTML data for the content of the placebook
+	 * item
+	 */
+	public abstract String GetHTML();
+
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * the CSS styles for the Placebook item, suitable for use in the Placebook
+	 * page header
+	 * @return String of CSS style data
+	 */
+	public abstract String GetCSS();
+	
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * any required Javascript for the Placebook item
+	 * @return String of Javascript code
+	 */
+	public abstract String GetJavaScript();
+
 }

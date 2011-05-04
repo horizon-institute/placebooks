@@ -15,7 +15,7 @@
 	PlaceBook: ${pb.key}, owner=${pb.owner.email}, timestamp=${pb.timestamp}, 
 	geometry=${pb.geometry}, ??? elements</b>
 	[<a href='../package/${pb.key}'>package</a>] 
-	[<a href='../delete/${pb.key}'>delete</a>] 
+	[<a href='../delete_placebook/${pb.key}'>delete</a>] 
 	[<a href='../shelf/${pb.owner.email}'>shelf for this user</a>]
 	<form action='../add_placebook_metadata' method='POST'>
 		Add metadata:
@@ -79,7 +79,8 @@
 	<c:forEach var="item" items="${pb.items}">
 		<div style='border:1px dotted;padding:5px'>
 		${item.class}: ${item.key}, owner=${item.owner.email}, 
-		timestamp=${item.timestamp}
+		timestamp=${item.timestamp} 
+		[<a href='../delete_placebookitem/${item.key}'>delete</a>]
 		
 		<form action='../add_placebookitem_mapping/metadata' method='POST'>
 			Add metadata:
