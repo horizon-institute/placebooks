@@ -44,7 +44,6 @@ public class Book {
 		public ArrayList<String> getAlTextText(){
 		    return alTextText;  		
 		}
-		
 		public ArrayList<String> getAlTextURL(){
 			return alTextURL;
 		}
@@ -53,11 +52,9 @@ public class Book {
 		public ArrayList<String> getAlImageFilename(){
 		    return alImageFilename;  		
 		}
-		
 		public ArrayList<String> getAlImageURL(){
 		    return alImageURL;  		
 		}		
-		
 		public int getAlImageFilenameSize(){	
 			return alImageFilename.size();	
 		}
@@ -105,85 +102,32 @@ public class Book {
 		}
 		
 		
-	
-	
+		//get the placebook key (ID itself)
+		public String getKey() {
+			return key;
+		}
+		//set the placebook key
+		public void setKey(String key) {
+			this.key = key;
+		}
+		//get the placebook owner name
+		public String getOwner() {
+			return owner;
+		}
+		//set placebook owner name
+		public void setOwner(String owner) {
+			this.owner = owner;
+		}
+		//Return the items in the placebook arraylist
+		public ArrayList<Item> getItems() {
+			return items;
+		}
+		//Add items to the placebook arraylist (arraylist of items of different types)
+		public void setItems(ArrayList<Item> items) {
+			this.items = items;
+		}
+		
 
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-	//Return the items in the placebook arraylist
-	public ArrayList<Item> getItems() {
-		return items;
-	}
-	//Add items to the placebook arraylist (arraylist of items of different types)
-	public void setItems(ArrayList<Item> items) {
-		this.items = items;
-	}
-	
-/*	
-	public String getImageFilename() {
-		return imageFilename;
-	}
-
-	public void setImageFilename(String imageFilename) {
-		this.imageFilename = imageFilename;
-	}
-	
-	public String getImageURL() {
-		return imageURL;
-	}
-
-	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
-	}
-	
-	public String getAudioFilename() {
-		return audioFilename;
-	}
-
-	public void setAudioFilename(String audioFilename) {
-		this.audioFilename = audioFilename;
-	}
-	
-	public String getVideoFilename() {
-		return videoFilename;
-	}
-
-	public void setVideoFilename(String videoFilename) {
-		this.videoFilename = videoFilename;
-	}
-	
-	public String getTextText() {
-		return textText;
-	}
-
-	public void setTextText(String textText) {
-		this.textText = textText;
-	}
-	
-	public String getTextURL() {
-		return textURL;
-	}
-
-	public void setTextURL(String textURL) {
-		this.textURL = textURL;
-	}
-	*/
-	
-	
 	
 	public String toString(){
     
@@ -227,7 +171,9 @@ public class Book {
 		        	  String audioItem = items.get(i).toString();
 			    	  int start = audioItem.indexOf("Filename=");
 			    	  int size = audioItem.length();
-			    	  String audioFilename = audioItem.substring(start+9, size);  
+			    	  String audioFilename = audioItem.substring(start+9, size); 
+			    	  
+			    	  setAlAudioFilename(audioFilename);
 		        	  
 		          }
 		      else if (items.get(i) instanceof TextItem){

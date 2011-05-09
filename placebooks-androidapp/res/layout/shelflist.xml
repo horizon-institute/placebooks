@@ -19,7 +19,8 @@
         android:id="@id/android:empty"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="No data: You have not downloaded any placebooks and do not appear to be online. You need to enable the Internet to access your placebook shelf and then you can download your placebook/s"
+        android:text="No data: You have not downloaded any placebooks and do not appear to be online. You need to enable the Internet to access your placebook shelf and then you can download your placebook/s. Another reason why you are
+        not seeing your shelf might be due to your Internet security settings"
         android:background="#FFFFFF"
         android:textColor="#000000"
         />

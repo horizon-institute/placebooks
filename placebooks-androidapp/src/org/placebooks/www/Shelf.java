@@ -47,7 +47,7 @@ public class Shelf extends ListActivity {
 
 		        // if connected to Internet then get JSON from server else get the cached version from sdcard
 		        //JSONObject json = JSONfunctions.getJSONfromURL("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/stuart@tropic.org.uk");
-		        name = "stuart";	//this is going to change to the variable "name" in the .xml response file from the server
+		        //name = "stuart";	//this is going to change to the variable "name" in the .xml response file from the server
 		        /*
 		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no internet
 		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
@@ -60,7 +60,7 @@ public class Shelf extends ListActivity {
 		        }
 		        else {
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
-			        json = JSONfunctions.getJSONfromSDCard("/sdcard/placebooks/unzipped/" +name+ "/placebook-data/packages/shelf.json");	
+			        json = JSONfunctions.getJSONfromSDCard("/sdcard/placebooks/unzipped/" + "/packages/shelf.json");	
 		        }
 		       
 		        

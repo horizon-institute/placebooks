@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -17,15 +17,6 @@
       android:textStyle="bold"
 	  />
  	
- 	<ImageView 
-		   android:id="@+id/imgLogo"
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:layout_x="-6px"
-           android:layout_y="32px"
-	   />
- 	
- 	
       <EditText
             android:id="@+id/txt_username"
             android:layout_width="250px"
@@ -33,8 +24,7 @@
             android:hint="Username"
             android:singleLine="true"
             android:textSize="18sp"
-            android:layout_x="110px"
-            android:layout_y="182px" />
+             />
       <EditText
             android:id="@+id/txt_password"
             android:layout_width="250px"
@@ -43,35 +33,31 @@
             android:singleLine="true"
             android:textSize="18sp"
             android:password="true"
-            android:layout_x="110px"
-            android:layout_y="256px" />
+             />
       <Button
  			android:id="@+id/btnLogin"
             android:layout_width="100px"
             android:layout_height="wrap_content"
             android:text="Sign In"
-            android:layout_x="110px"
-            android:layout_y="330px"/> 
+            /> 
 
 	  <Button 
 			android:text="Get My PlaceBook"
 			android:id="@+id/Button01"
 			android:layout_width="150px"
 			android:layout_height="wrap_content"
-			android:layout_x="40px"
-            android:layout_y="480px"/> 
+			/> 
 						
 	  <Button 
 			android:text="View My PlaceBook"
 			android:id="@+id/Button02"
 			android:layout_width="150px"
 			android:layout_height="wrap_content"
-			android:layout_x="200px"
-            android:layout_y="480px"/> 
+			/> 
 			
 	  <TextView android:id="@+id/status"
     		android:layout_width="fill_parent" 
    			 android:layout_height="wrap_content" 
    			 />
-</AbsoluteLayout>
+</LinearLayout>
  	
