@@ -8,21 +8,24 @@
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
-	<property name="lib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="warlib.dir" value="${war.dir}/WEB-INF/lib" />
+	<property name="lib.dir" value="lib" />
 	<property name="src.dir" value="src" />
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	
-	<!-- Configure the custom Ant tasks for the Manager application -->
-  	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
-  	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
-  	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
+	<property name="placebooks.props" 
+			  value="${src.dir}/placebooks.properties" />
+	<property name="log4j.props" value="${src.dir}/log4j.properties" />
 
 	<path id="classpath">
-  		<fileset dir="${lib.dir}">
+  		<fileset dir="${warlib.dir}">
     		<include name="*.jar"/>
   		</fileset>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
 		<fileset dir="${catalina.home}">
 			<include name="*.jar"/>
 		</fileset>
@@ -31,15 +34,38 @@
 		<pathelement path="${junit.home}" />
 	</path>
 
+	<path id="classpath.gwt">
+		<path path="${src.dir}"/>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+    </path>
+	
+	<!-- Configure the custom Ant tasks for the Manager application -->
+  	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+		<classpath refid="classpath" />
+	</taskdef>
+  	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
+		<classpath refid="classpath" />
+	</taskdef>
+  	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
+		<classpath refid="classpath" />
+	</taskdef>
+	
 	<path id="classpath.enhance">
 		<path refid="classpath"/>
 		<pathelement path="${classes.dir}" />
     </path>
 
+	<path id="classpath.schematool">
+		<path refid="classpath"/>
+		<pathelement path="${classes.dir}" />
+    </path>
+
+	
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
-		<mkdir dir="${classes.dir}/META-INF" />
 		<mkdir dir="${javadoc.dir}" />
 	</target>
 
@@ -47,12 +73,21 @@
 			description="Compile classes into web archive dir">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
 			   includeAntRuntime="no">
-			<src path="${src.dir}" />
+			<src path="${src.dir}"/>
+			<exclude name="/placebooks/client/**" />
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath refid="classpath"/>
 		</javac>
 	</target>
 
+	<target name="compile-gwt" description="Compile GWT web interface">
+		<java classpathref="classpath.gwt" failonerror="true" fork="true"
+	        classname="com.google.gwt.dev.Compiler"> 
+	        <arg line="-war ${war.dir}"/> 
+	        <arg line="${editor.name}"/> 
+		</java> 
+	</target>
+	
 	<target name="compile-test" depends="compile"
 			description="Compile test classes">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
@@ -64,12 +99,9 @@
 	</target>
 
 	<target name="staging" depends="makedirs" 
-			description="Stage config + META-INF files to classes dir">
-		<copy todir="${classes.dir}/META-INF/">
-			<fileset dir="${src.dir}/META-INF" />
-		</copy>
-		<copy file="${src.dir}/log4j.properties" todir="${classes.dir}" />
-		<copy file="${src.dir}/placebooks.properties" todir="${classes.dir}" />
+			description="Stage configs to classes dir">
+		<copy file="${log4j.props}" todir="${classes.dir}" />
+		<copy file="${placebooks.props}" todir="${classes.dir}" />
 	</target>
 
 	<target name="war" depends="compile,enhance,staging"
@@ -88,8 +120,9 @@
 				<pathelement path="${classes.dir}" />
 			</classpath>
       		<formatter type="brief" usefile="false" />
-      		<test name="placebooks.controller.UserTest" />
-			<test name="placebooks.controller.PlaceBookTests" />
+      		<test name="placebooks.test.UserTest" />
+			<test name="placebooks.test.PlaceBookTests" />
+			<test name="placebooks.test.EverytrailHelperTest" />			
     	</junit>
 	</target>
 
@@ -107,6 +140,37 @@
 		</nucleusenhancer>
 
     </target>
+	
+	<!-- Required for SchemaTool -->
+	<property file="${placebooks.props}" />
+
+	<taskdef name="schematool"
+			 classpathref="classpath.schematool"
+			 classname="org.datanucleus.store.schema.SchemaToolTask" />
+
+	<target name="initschema" depends="enhance,staging">
+
+		<schematool classpathref="classpath.schematool" failonerror="true" 
+					dir="${basedir}/${classes.dir}"
+					verbose="true" mode="create">
+			<jvmarg line="-Dlog4j.configuration=log4j.properties" />
+			<sysproperty key="datanucleus.ConnectionDriverName" 
+						 value="${javax.jdo.option.ConnectionDriverName}"/>
+			<sysproperty key="datanucleus.ConnectionURL" 
+						 value="${javax.jdo.option.ConnectionURL}"/>
+			<sysproperty key="datanucleus.ConnectionUserName" 
+						 value="${javax.jdo.option.ConnectionUserName}"/>
+			<sysproperty key="datanucleus.ConnectionPassword" 
+						 value="${javax.jdo.option.ConnectionPassword}"/>
+			<sysproperty key="datanucleus.Mapping" 
+						 value="${javax.jdo.option.Mapping}"/>
+			<sysproperty key="log4j.configuration" value="${log4j.props}" />
+			<fileset dir="${classes.dir}">
+		        <include name="**/*.class"/>
+		    </fileset>	
+    	</schematool>
+	</target>
+
 
 	<target name="docs" depends="makedirs">
 		<javadoc sourcepath="${src.dir}"
@@ -122,7 +186,7 @@
 		</javadoc>
 	</target>
 
-	<target name="initdb" depends="compile,enhance">
+	<target name="initdb" depends="compile,enhance,staging">
         <java classname="placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />
@@ -153,9 +217,7 @@
   	</target>
 
 	<target name="clean" description="Clean compiled classes">
-		<delete includeemptydirs="true">
-    		<fileset dir="${classes.dir}" includes="**/*" />
-		</delete>
+		<delete dir="${classes.dir}" />
 		<delete file="datanucleus.log"/>
 	</target>
 
@@ -169,8 +231,13 @@
 		</delete>
 	</target>
 
+	<target name="clean-gwt" description="Clean GWT-generated files">
+		<delete dir="${war.dir}/${editor.name}" />
+		<delete dir="${war.dir}/WEB-INF/deploy" />
+	</target>
+
 	<target name="clean-all" description="Clean everything" 
-			depends="clean,clean-dist">
+			depends="clean,clean-dist,clean-gwt">
 	</target>
 
 	<target name="reinstall" description="Uninstalls and reinstalls project"

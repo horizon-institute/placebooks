@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.SearchHelper;
+
 import java.net.URL;
 
 import javax.jdo.annotations.Inheritance;
@@ -15,7 +17,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 
 @PersistenceCapable
-@Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
+@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 public class TextItem extends PlaceBookItem
 {
 	private String text; 
@@ -24,7 +26,10 @@ public class TextItem extends PlaceBookItem
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;
+		index.addAll(SearchHelper.getIndex(text));
 	}
+
+	public void deleteItemData() { }
 
 	public String getEntityName()
 	{
@@ -33,10 +38,10 @@ public class TextItem extends PlaceBookItem
 
 	public void appendConfiguration(Document config, Element root)
 	{
-		log.info("TextItem.appendConfiguration(), text=" + this.text);
+		log.info("TextItem.appendConfiguration(), text=" + this.getText());
 		Element item = getConfigurationHeader(config);
 		Element text = config.createElement("text");
-		text.appendChild(config.createTextNode(this.text));
+		text.appendChild(config.createTextNode(this.getText()));
 		item.appendChild(text);
 		root.appendChild(item);
 	}
@@ -51,6 +56,7 @@ public class TextItem extends PlaceBookItem
 	{
 		this.text = text;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#GetHTML()

@@ -11,6 +11,7 @@ import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
@@ -23,6 +24,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class VideoItem extends PlaceBookItem
 {
 	// Videos are stored on disk, not database
+	@JsonIgnore	
 	private File video; 
 
 	public VideoItem(User owner, Geometry geom, URL sourceURL, File video)
@@ -39,7 +41,6 @@ public class VideoItem extends PlaceBookItem
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
-
 		try
 		{
 			// Check package dir exists already
@@ -47,6 +48,7 @@ public class VideoItem extends PlaceBookItem
 							.get(this.getClass().getClassLoader())
 							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
 							+ getPlaceBook().getKey();
+			getVideo(); // TODO: work out why I need this here
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
@@ -72,6 +74,12 @@ public class VideoItem extends PlaceBookItem
 		}
 
 		root.appendChild(item);
+	}
+
+	public void deleteItemData()
+	{
+		if (!video.delete())
+			log.error("Problem deleting video file " + video.toString());
 	}
 
 	@Persistent

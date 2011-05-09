@@ -1,6 +1,9 @@
 package placebooks.model;
 
+import placebooks.controller.PropertiesSingleton;
+
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -13,10 +16,9 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -25,9 +27,11 @@ import com.vividsolutions.jts.geom.Geometry;
 public class ImageItem extends PlaceBookItem
 {
 	@Persistent
+	@JsonIgnore	
 	private BufferedImage image; 
 
 	@NotPersistent
+	@JsonIgnore
 	private File imageFile;
 	
 	public ImageItem(User owner, Geometry geom, URL sourceURL, 
@@ -36,6 +40,12 @@ public class ImageItem extends PlaceBookItem
 		super(owner, geom, sourceURL);
 		this.image = image;
 		imageFile = null;
+	}
+
+	public void deleteItemData()
+	{
+		if (!imageFile.delete())
+			log.error("Problem deleting image file " + imageFile.toString());
 	}
 
 	public String getEntityName()

@@ -11,6 +11,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.NotPersistent;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
 public class WebBundleItem extends PlaceBookItem
 {
+	@NotPersistent
   	private static final Logger log = 
 		Logger.getLogger(WebBundleItem.class.getName());
 
@@ -47,23 +49,38 @@ public class WebBundleItem extends PlaceBookItem
 		return WebBundleItem.class.getName();
 	}
 
+	public void deleteItemData()
+	{
+		try
+		{
+			FileUtils.deleteDirectory(webBundle);
+		}
+		catch (IOException e)
+		{
+			log.error(e.toString());
+		}
+	}
+
+	public String getWebBundlePath()
+	{
+		return PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
+					"") + getKey();
+	}
+
 	public void appendConfiguration(Document config, Element root)
 	{
 		Element item = getConfigurationHeader(config);
 		
 		try
 		{
-			File from = new File(
-							PropertiesSingleton
-								.get(this.getClass().getClassLoader())
-								.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
-									"") + getKey());
+			getWebBundle(); //TODO: why is this needed?
 
-			File to = new File(
-						PropertiesSingleton
-							.get(this.getClass().getClassLoader())
-							.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-							+ getPlaceBook().getKey() + "/" + getKey());
+			File from = new File(getWebBundlePath());
+			File to = new File(getPlaceBook().getPackagePath() 
+							   + "/" + getKey());
+
 			FileUtils.copyDirectory(from, to);
 
 			Element filename = config.createElement("filename");

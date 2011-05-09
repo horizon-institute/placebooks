@@ -11,11 +11,23 @@
 <body>
 <h1>Administration actions</h1>
 <hr>
-<a href="admin/new/placebook">Make a test PlaceBook</a>
+<form action='admin/add_placebook' method='POST'>
+New empty PlaceBook
+	<input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'>
+	<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
+	<input type="submit" value="New">
+</form>
+
 <br />
-<a href="admin/print/placebooks">List all PlaceBooks</a>
+<a href="admin/debug/print_placebooks">List all PlaceBooks</a>
 <br />
-<a href="admin/delete/all">Delete all PlaceBooks</a>
+<a href="admin/delete/all_placebooks">Delete all PlaceBooks</a>
+
+<br />
+<form action="admin/search" method="POST">
+	Search: <input type="text" name="terms">
+	<input type="submit" value="Search">
+</form>
 
 <br />
 <h1>Everytrail Tests</h1>

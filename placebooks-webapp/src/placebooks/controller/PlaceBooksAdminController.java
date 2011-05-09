@@ -1,17 +1,43 @@
 package placebooks.controller;
 
 import placebooks.model.*;
+import placebooks.model.json.Shelf;
 
-import java.util.*;
-import java.io.*;
 import java.awt.image.BufferedImage;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
+
 import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -30,24 +57,26 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 
 import org.apache.log4j.Logger;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -78,40 +107,227 @@ public class PlaceBooksAdminController
 		return "account";
     }
 
-	@RequestMapping(value = "/admin/placebooks/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
-										  HttpServletResponse res,
-										  @PathVariable("key") String key)
+	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
+	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
+			@RequestParam final String password)
 	{
-		PlaceBook p = PMFSingleton
-							.get()
-							.getPersistenceManager()
-							.getObjectById(PlaceBook.class, key);
+		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+		final User user = new User(name, email, encoder.encodePassword(password, null));
 
+		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
 		try
 		{
-			ObjectMapper mapper = new ObjectMapper();
-			ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, p);
-			sos.flush();
+			manager.currentTransaction().begin();
+			manager.makePersistent(user);
+			manager.currentTransaction().commit();	
 		}
-		catch (IOException e)
+		catch(Exception e)
 		{
-			log.error(e.toString());
+			log.error("Error creating user", e);			
+		}
+		finally
+		{
+			if (manager.currentTransaction().isActive())
+			{
+				manager.currentTransaction().rollback();
+				log.error("Rolling back user creation");
+			}
+			manager.close();
 		}
 
-		PMFSingleton.get().getPersistenceManager().close();
+		return "redirect:/login.html";
+	}
+	
+	// TODO: currently uses startsWith for string search. Is this right??
+	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/admin/shelf/{owner}", 
+					method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
+	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
+										  HttpServletResponse res, 
+										  @PathVariable("owner") String owner)
+	{
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+		final Query q = pm.newQuery(PlaceBook.class);
+		q.setFilter("owner.email.startsWith('" + owner + "')");
+		Collection<PlaceBook> pbs = (Collection<PlaceBook>)q.execute();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		if (!pbs.isEmpty())
+		{
+			Shelf s = new Shelf(pbs);
+			try
+			{
+				ObjectMapper mapper = new ObjectMapper();
+				ServletOutputStream sos = res.getOutputStream();
+				res.setContentType("application/json");
+				mapper.writeValue(sos, s);
+				sos.flush();
+			}
+			catch (IOException e)
+			{
+				log.error(e.toString());
+			}
+		}
+
+		pm.close();
 
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/text/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
+	public ModelAndView addPlaceBook(@RequestParam String owner,
+									 @RequestParam String geometry)
+	{
+		if (owner != null)
+		{
+			Geometry geometry_ = null;
+			try 
+			{
+				geometry_ = new WKTReader().read(geometry);
+			} 
+			catch (ParseException e)
+			{
+				log.error(e.toString());
+			}
+			
+			// If created inside getting the PersistenceManager, some fields are
+			// null. Not sure why... TODO
+			PlaceBook p = new PlaceBook(null, geometry_);
+
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+
+			User owner_ = UserManager.getUser(pm, owner);
+
+			if (owner_ == null)
+			{
+				return new ModelAndView("message", "text", 
+										"User does not exist");
+			}
+	
+			p.setOwner(owner_);		
+
+			try
+			{	
+				pm.currentTransaction().begin();
+				pm.makePersistent(p);
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "PlaceBook added");
+		}
+		else
+			return new ModelAndView("message", "text", "Error in POST");
+	}
+
+
+	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookItemMapping(
+		@RequestParam String key, 
+		@RequestParam String mKey, 
+		@RequestParam String mValue,
+		@PathVariable("type") String type
+	)
+	{
+		if (!type.equals("metadata") && !type.equals("parameter"))
+			return new ModelAndView("message", "text", "Error in type");
+
+		if (key != null && mKey != null && mValue != null)
+		{
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+			
+			try
+			{	
+				pm.currentTransaction().begin();
+				PlaceBookItem p = pm.getObjectById(PlaceBookItem.class, key);
+				if (type.equals("metadata"))
+					p.addMetadataEntry(mKey, mValue);
+				else if (type.equals("parameter"))
+				{
+					int iValue = -1;
+					try
+					{
+						iValue = Integer.parseInt(mValue);
+					}
+					catch (NumberFormatException e)
+					{
+						log.error("Error parsing parameter data value");
+					}
+					
+					p.addParameterEntry(mKey, new Integer(iValue));
+				}
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "Metadata/param added");
+		}
+		else
+			return new ModelAndView("message", "text", "Error in POST");
+	}
+
+
+	@RequestMapping(value = "/admin/add_placebook_metadata", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookMetadata(@RequestParam String key, 
+											 @RequestParam String mKey, 
+											 @RequestParam String mValue)
+	{
+		if (key != null && mKey != null && mValue != null)
+		{
+			final PersistenceManager pm = 
+				PMFSingleton.get().getPersistenceManager();
+			
+			try
+			{	
+				pm.currentTransaction().begin();
+				PlaceBook p = pm.getObjectById(PlaceBook.class, key);
+				p.addMetadataEntry(mKey, mValue);
+				pm.currentTransaction().commit();
+			}
+			finally
+			{
+				if (pm.currentTransaction().isActive())
+				{
+					pm.currentTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+			pm.close();
+
+			return new ModelAndView("message", "text", "Metadata added");
+		}
+		else
+			return new ModelAndView("message", "text", "Error in POST");
+	}
+
+
+	@RequestMapping(value = "/admin/add_item/text", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView uploadText(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
@@ -129,16 +345,12 @@ public class PlaceBooksAdminController
 				{
 					int delim = param.indexOf(".");
 					if (delim == -1)
-					{
-						return new ModelAndView("message", "text", 
-												"Error");
-					}
+						continue;
 
 					String prefix = param.substring(0, delim),
 						   suffix = param.substring(delim + 1, param.length());
 
-					PlaceBook p = 
-						(PlaceBook)pm.getObjectById(PlaceBook.class, suffix);
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
 
 					if (prefix.contentEquals("text"))
 					{
@@ -180,11 +392,13 @@ public class PlaceBooksAdminController
 	}
 
 
-	@RequestMapping(value = "/admin/webbundle/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/webbundle", 
+					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView createWebBundle(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		WebBundleItem wbi = null;
@@ -202,11 +416,7 @@ public class PlaceBooksAdminController
 				{
 					int delim = param.indexOf(".");
 					if (delim == -1)
-					{
-						pm.close();
-						return new ModelAndView("message", "text", 
-												"Error");
-					}
+						continue;
 
 					String prefix = param.substring(0, delim),
 						   suffix = param.substring(delim + 1, param.length());
@@ -215,8 +425,7 @@ public class PlaceBooksAdminController
 					{
 						try
 						{
-							PlaceBook p = 
-								(PlaceBook)pm.getObjectById(PlaceBook.class, 
+							PlaceBook p = pm.getObjectById(PlaceBook.class, 
 															suffix);
 							URL sourceURL = null;
 							if (value.length() > 0)
@@ -260,7 +469,7 @@ public class PlaceBooksAdminController
 										"Error in wget command");
 			}
 
-			wgetCmd.append(" --user-agent=\"");
+			wgetCmd.append(" -U \"");
 			wgetCmd.append(
 				PropertiesSingleton
 					.get(this.getClass().getClassLoader())
@@ -268,11 +477,7 @@ public class PlaceBooksAdminController
 			);
 			wgetCmd.append("\" ");
 
-			String webBundlePath = 
-				PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") 
-				+ wbi.getKey();
+			String webBundlePath = wbi.getWebBundlePath();
 
 			wgetCmd.append("-P " + webBundlePath + " " 
 						   + wbi.getSourceURL().toString());
@@ -336,10 +541,12 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 	
-	@RequestMapping(value = "/admin/upload/*", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/upload", 
+					method = RequestMethod.POST)
 	public ModelAndView uploadFile(HttpServletRequest req)
 	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 		
 		ItemData itemData = new ItemData();
 		PlaceBookItem pbi = null;
@@ -363,16 +570,12 @@ public class PlaceBooksAdminController
 					String field = item.getFieldName();
 					int delim = field.indexOf(".");
 					if (delim == -1)
-					{
-						return new ModelAndView("message", "text", 
-					  			    "Error determining relevant PlaceBook key");
-					}
+						continue;
 
 					String prefix = field.substring(0, delim),
 						   suffix = field.substring(delim + 1, field.length());
 
-					PlaceBook p = (PlaceBook)pm.getObjectById(
-													PlaceBook.class, suffix);
+					PlaceBook p = pm.getObjectById(PlaceBook.class, suffix);
 
 					if (prefix.contentEquals("image"))
 					{
@@ -512,21 +715,16 @@ public class PlaceBooksAdminController
 									HttpServletResponse res, 
 									@PathVariable("key") String key)
 	{
-		
-		PlaceBook p = PMFSingleton
-							.get()
-							.getPersistenceManager()
-							.getObjectById(PlaceBook.class, key);
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		PlaceBook p = pm.getObjectById(PlaceBook.class, key);
 
 		String out = placeBookToXML(p);
 		
 		if (out != null)
 		{
-			String pkgPath = 
-				PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ p.getKey();
+			String pkgPath = p.getPackagePath();
 			if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 			{
 				try
@@ -547,8 +745,6 @@ public class PlaceBooksAdminController
 					log.error(e.toString());
 				}
 			}
-
-			PMFSingleton.get().getPersistenceManager().close();
 
 			try 
 			{
@@ -573,6 +769,9 @@ public class PlaceBooksAdminController
 					ArrayList<File> files = new ArrayList<File>();
 					getFileListRecursive(new File(pkgPath), files);
 
+					File currentDir = new File(".");
+					log.info("Current working directory is " 
+							 + currentDir.getAbsolutePath());
 
 					byte data[] = new byte[2048];
 					BufferedInputStream bis = null;
@@ -615,25 +814,30 @@ public class PlaceBooksAdminController
 			{
         		log.error(e.toString());
 			}
-			
+			pm.close();
 			return null;
 		}
-		else
-			PMFSingleton.get().getPersistenceManager().close();
+		pm.close();
 
 		return new ModelAndView("message", "text", "Error generating package");
 
 	}
 
-	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete_placebook/{key}", 
+					method = RequestMethod.GET)
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
 			pm.currentTransaction().begin();
+/*			PlaceBook p = pm.getObjectById(PlaceBook.class, key);
+			for (PlaceBookItem item : p.getItems())
+				item.deleteItemData();
+*/
 			pm.newQuery(PlaceBook.class, 
 						"key == '" + key + "'").deletePersistentAll();
 			pm.currentTransaction().commit();
@@ -649,25 +853,70 @@ public class PlaceBooksAdminController
 
 		pm.close();
 
-		log.info("Deleted all PlaceBooks");
+		log.info("Deleted PlaceBook");
 
 		return new ModelAndView("message", 
 								"text", 
 								"Deleted PlaceBook: " + key);
+	}
+
+	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
+					method = RequestMethod.GET)
+    public ModelAndView deletePlaceBookItem(@PathVariable("key") String key) 
+	{
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		try 
+		{
+			pm.currentTransaction().begin();
+			pm.newQuery(PlaceBookItem.class, 
+						"key == '" + key + "'").deletePersistentAll();
+			pm.currentTransaction().commit();
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current delete single transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted PlaceBookItem " + key);
+
+		return new ModelAndView("message", 
+								"text", 
+								"Deleted PlaceBookItem: " + key);
 
 
 
 	}
 
-	@RequestMapping(value = "/admin/delete/all", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/admin/delete/all_placebooks", 
+					method = RequestMethod.GET)
     public ModelAndView deleteAllPlaceBook() 
 	{
-			
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
 
 		try 
 		{
 			pm.currentTransaction().begin();
+/*			Query query = pm.newQuery(PlaceBook.class);
+			pbs = (List<PlaceBook>)query.execute();
+			for (PlaceBook pb : pbs)
+			{
+				for (PlaceBookItem item : pb.getItems())
+					item.deleteItemData();
+			}
+*/
+
 			pm.newQuery(PlaceBook.class).deletePersistentAll();
 			pm.newQuery(PlaceBookItem.class).deletePersistentAll();
 			pm.currentTransaction().commit();
@@ -685,18 +934,101 @@ public class PlaceBooksAdminController
 
 		log.info("Deleted all PlaceBooks");
 
-		return new ModelAndView("message", 
-								"text", 
-								"Deleted all PlaceBooks");
+		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 
     }
+
+
+	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
+	public ModelAndView searchPOST(HttpServletRequest req)
+	{
+		StringBuffer out = new StringBuffer();
+		String[] terms = req.getParameter("terms").split("\\s");
+     	for (int i = 0; i < terms.length; ++i)
+		{
+        	out.append(terms[i]);
+			if (i < terms.length-1)
+				out.append("+");
+		}
+		
+		return searchGET(out.toString());
+	}
+
+	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
+	public ModelAndView searchGET(@PathVariable("terms") String terms)
+	{
+		final long timeStart = System.nanoTime();
+		final long timeEnd;
+		
+		Set<String> search = SearchHelper.getIndex(terms, 5);
+		
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		Query query1 = pm.newQuery(PlaceBookSearchIndex.class);
+		List<PlaceBookSearchIndex> pbIndexes = 
+			(List<PlaceBookSearchIndex>)query1.execute();
+		
+		// Search rationale: ratings are accumulated per PlaceBook for that
+		// PlaceBook plus any PlaceBookItems
+		Map<String, Integer> hits = new HashMap<String, Integer>();
+
+		for (PlaceBookSearchIndex index : pbIndexes)
+		{
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			Integer rating = (Integer)hits.get(index.getPlaceBook().getKey());
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(index.getPlaceBook().getKey(), 
+					 new Integer(keywords.size() + rating.intValue())
+			);
+		}
+
+		Query query2 = pm.newQuery(PlaceBookItemSearchIndex.class);
+		List<PlaceBookItemSearchIndex> pbiIndexes = 
+			(List<PlaceBookItemSearchIndex>)query2.execute();
+
+		for (PlaceBookItemSearchIndex index : pbiIndexes)
+		{
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			String key = index.getPlaceBookItem().getPlaceBook().getKey();
+			Integer rating = (Integer)hits.get(key);
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(key, new Integer(keywords.size() + rating.intValue()));
+		}
+
+		pm.close();
+
+		StringBuffer out = new StringBuffer();
+		for (Map.Entry<String, Integer> entry : hits.entrySet())
+		{
+			out.append("key=" + entry.getKey() 
+					   + ", score=" + entry.getValue() + "<br>");
+		}
+
+		for (Iterator<String> i = search.iterator(); i.hasNext() ; )
+			out.append("keywords=" + i.next() + ",");
+		
+		timeEnd = System.nanoTime();
+		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
+
+		return new ModelAndView("message", "text", "search results:<br>" + 
+								out.toString());
+	}
 
 	
 	// Helper methods below
 
-	private static void getFileListRecursive(File path, ArrayList<File> out)
+	private static void getFileListRecursive(File path, List<File> out)
 	{
-		ArrayList<File> files = 
+		List<File> files = 
 			new ArrayList<File>(Arrays.asList(path.listFiles()));
 
 		for (File file : files)
@@ -711,9 +1043,9 @@ public class PlaceBooksAdminController
 	// Helper class for passing around general PlaceBookItem data
 	private static class ItemData
 	{
-		private static Geometry geometry;
-		private static URL sourceURL;
-		private static User owner;
+		private Geometry geometry;
+		private URL sourceURL;
+		private User owner;
 
 		public ItemData() { }
 
@@ -771,21 +1103,9 @@ public class PlaceBooksAdminController
 					DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document config = builder.newDocument();
 
-			Element root = config.createElement(PlaceBook.class.getName());
+			Element root = p.createConfigurationRoot(config);
 			config.appendChild(root);
-			root.setAttribute("key", p.getKey());
-			root.setAttribute("owner", p.getOwner().getKey());
-			
-			Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(
-									p.getTimestamp().toString()));
-			root.appendChild(timestamp);
 
-			Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(
-									p.getGeometry().toText()));
-			root.appendChild(geometry);
-			
 			// Note: ImageItem, VideoItem and AudioItem write their data to a 
 			// package directly as well as creating XML configuration
 			for (PlaceBookItem item : p.getItems())

@@ -4,6 +4,7 @@
 package placebooks.model;
 
 import java.util.Vector;
+import org.w3c.dom.Node;
 
 /**
  * @author pszmp
@@ -13,15 +14,14 @@ import java.util.Vector;
 public class EverytrailPicturesResponse
 {
 	private String status;
-	private Vector<String> pictures;
+	private Vector<Node> pictures;
 	
 	/**
 	 * 
 	 */
-	public EverytrailPicturesResponse(String status, Vector<String> pictures)
+	public EverytrailPicturesResponse(String status, Vector<Node> pictures)
 	{
 		this.status = status;
-		pictures = new Vector<String>();
 		this.pictures = pictures;
 	}
 	
@@ -30,7 +30,7 @@ public class EverytrailPicturesResponse
 		return this.status;
 	}
 	
-	public Vector<String> getPictures()
+	public Vector<Node> getPictures()
 	{
 		return this.pictures;
 	}

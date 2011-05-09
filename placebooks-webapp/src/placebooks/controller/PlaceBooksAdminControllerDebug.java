@@ -1,33 +1,23 @@
 package placebooks.controller;
 
-import placebooks.model.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.io.StringReader;
-import java.net.URL;
-import java.awt.image.BufferedImage;
+import java.util.*;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import org.w3c.dom.Document;
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.User;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -44,64 +34,17 @@ public class PlaceBooksAdminControllerDebug
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
 
-	// Create a new fake PlaceBook for testing
-	@RequestMapping(value = "/admin/new/placebook", method = RequestMethod.GET)
-    public ModelAndView newPlaceBookTest() 
-	{
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
-		pm.currentTransaction().begin();
-
-		Geometry geometry = null;
-		try 
-		{
-			geometry = new WKTReader().read(
-								"POINT(52.5189367988799 -4.04983520507812)");
-		} 
-		catch (ParseException e)
-		{
-			log.error(e.toString());
-		}
-		
-		User owner = UserManager.getUser(pm, "stuart@tropic.org.uk");
-
-		PlaceBook p = new PlaceBook(owner, geometry);
-
-		try
-		{
-			pm.makePersistent(p);
-			pm.currentTransaction().commit();
-		}
-		finally
-		{
-			if (pm.currentTransaction().isActive())
-			{
-				pm.currentTransaction().rollback();
-				log.error("Rolling current persist transaction back");
-			}
-		}
-
-		pm.close();
-
-		return new ModelAndView("message", 
-								"text", 
-								"New PlaceBook created");
-
-	}
-
-
-
-	@RequestMapping(value = "/admin/print/placebooks", 
+	@RequestMapping(value = "/admin/debug/print_placebooks", 
 					method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")	
-	public ModelAndView getPlaceBooks()
+	public ModelAndView printPlaceBooks()
 	{
 
 		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
 		List<PlaceBook> pbs = null;
 		try
 		{
-			Query query = pm.newQuery(PlaceBook.class, 
-									  "owner.email == 'stuart@tropic.org.uk'");
+			Query query = pm.newQuery(PlaceBook.class);
 			pbs = (List<PlaceBook>)query.execute();
 			//query.closeAll();
 		}
@@ -110,66 +53,32 @@ public class PlaceBooksAdminControllerDebug
 			log.error(e.toString());
 		}
 
-		StringBuffer out = new StringBuffer();
+		ModelAndView mav = null;
 		if (pbs != null)
 		{
-			for (PlaceBook pb : pbs)
-			{
-				// TODO: sort of breaking MVC here, I'm aware, needs to be fixed
-				out.append(
-				"<div style='border:2px dashed;padding:5px'><b>PlaceBook: " 
-				+ pb.getKey() + ", owner=" 
-				+ pb.getOwner().getEmail() + ", timestamp=" 
-				+ pb.getTimestamp().toString() + ", " 
-				+ pb.getGeometry().toString() + ", " + pb.getItems().size()
-				+ " elements</b> [<a href='../package/" + pb.getKey() 
-				+ "'>package</a>] [<a href='../delete/" + pb.getKey() 
-				+ "'>delete</a>] [<a href='../placebooks/" + pb.getKey() 
-				+ "'>json</a>]" 
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload video: <input type='file' name='video."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload audio: <input type='file' name='audio."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../webbundle/' method='POST'>Web scrape: <input type='text' name='url."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Scrape'></form>"
-				+ "<form action='../text/' method='POST'>Text: <input type='text' name='text."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload image: <input type='file' name='image."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'><input type='hidden' value='http://www.test.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				+ "<form action='../upload/' method='POST' enctype='multipart/form-data'>Upload GPS trace: <input type='file' name='gpstrace."
-				+ pb.getKey() 
-				+ "'><input type='hidden' value='http://www.everytrail.com' name='sourceurl'><input type='hidden' value='stuart@tropic.org.uk' name='owner'><input type='submit' value='Upload'></form>"
-				);
-
-				for (PlaceBookItem pbi : pb.getItems())
-				{
-
-					out.append("<div style='border:1px dotted;padding:5px'>");
-					out.append(pbi.getEntityName());
-					out.append(": " + pbi.getKey() + ", owner=" 
-							   + pbi.getOwner().getEmail() + ", timestamp=" 
-							   + pbi.getTimestamp().toString());
-
-					out.append("</div>");
-				}
-
-				out.append("</div><br />");
-			}
-
+			mav = new ModelAndView("placebooks");
+			mav.addObject("pbs", pbs);
 		}
 		else
-			out.append("PlaceBook query returned null");
+		{
+			mav = new ModelAndView("message", "text", 
+								   "Error listing PlaceBooks");
+		}
 
-//		ModelAndView mav = new ModelAndView("placebooks", "pbs", out.toString());
+		for (PlaceBook pb : pbs)
+		{
+			Set s = (Set)pb.getMetadata().entrySet();
+			for (Iterator i = s.iterator(); i.hasNext(); )
+			{
+				Map.Entry e = (Map.Entry)i.next();
+				log.info("entry: '" + e.getKey() + "' => '" + e.getValue() 
+						 + "'");
+			}
+		}
 
 		PMFSingleton.get().getPersistenceManager().close();
-
-		return new ModelAndView("message", "text", out.toString());
+	
+		return mav;
 
     }
 
