@@ -1,5 +1,7 @@
 package org.placebooks.www;
 
+import java.util.*;
+
 public class ImageItem extends Item {
 	private String filename;
 	private String URL;
@@ -13,7 +15,7 @@ public class ImageItem extends Item {
 		return URL;
 	}
 	public void setURL(String uRL) {
-		URL = uRL;
+		this.URL = uRL;
 	}
 
 	public void setFilename(String filename) {
@@ -22,8 +24,8 @@ public class ImageItem extends Item {
 
 	@Override
 	public String toString() {
-		//return filename;
+
 		return "\nFilename=" + filename + "\nURL=" + URL;
-		//+ "\ntoString()=" + super.toString();
+		
 	}
 }

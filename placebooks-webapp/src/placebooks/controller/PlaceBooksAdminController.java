@@ -1,6 +1,10 @@
 package placebooks.controller;
 
+import placebooks.model.*;
+import placebooks.model.json.Shelf;
+
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,8 +18,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+
 import java.net.URL;
+
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,14 +37,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -45,8 +61,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,21 +73,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import placebooks.model.AudioItem;
-import placebooks.model.GPSTraceItem;
-import placebooks.model.ImageItem;
-import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
-import placebooks.model.User;
-import placebooks.model.VideoItem;
-import placebooks.model.WebBundleItem;
-import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -967,7 +977,8 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/admin/delete/{key}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete_placebook/{key}", 
+					method = RequestMethod.GET)
     public ModelAndView deletePlaceBook(@PathVariable("key") String key) 
 	{
 
@@ -996,15 +1007,49 @@ public class PlaceBooksAdminController
 
 		pm.close();
 
-		log.info("Deleted all PlaceBooks");
+		log.info("Deleted PlaceBook");
 
 		return new ModelAndView("message", 
 								"text", 
 								"Deleted PlaceBook: " + key);
+	}
+
+	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
+					method = RequestMethod.GET)
+    public ModelAndView deletePlaceBookItem(@PathVariable("key") String key) 
+	{
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		try 
+		{
+			pm.currentTransaction().begin();
+			pm.newQuery(PlaceBookItem.class, 
+						"key == '" + key + "'").deletePersistentAll();
+			pm.currentTransaction().commit();
+		}
+		finally
+		{
+			if (pm.currentTransaction().isActive())
+			{
+				pm.currentTransaction().rollback();
+				log.error("Rolling current delete single transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted PlaceBookItem " + key);
+
+		return new ModelAndView("message", 
+								"text", 
+								"Deleted PlaceBookItem: " + key);
 
 
 
 	}
+
 
 	@RequestMapping(value = "/admin/delete/all_placebooks", 
 					method = RequestMethod.GET)
@@ -1043,18 +1088,101 @@ public class PlaceBooksAdminController
 
 		log.info("Deleted all PlaceBooks");
 
-		return new ModelAndView("message", 
-								"text", 
-								"Deleted all PlaceBooks");
+		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 
     }
+
+
+	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
+	public ModelAndView searchPOST(HttpServletRequest req)
+	{
+		StringBuffer out = new StringBuffer();
+		String[] terms = req.getParameter("terms").split("\\s");
+     	for (int i = 0; i < terms.length; ++i)
+		{
+        	out.append(terms[i]);
+			if (i < terms.length-1)
+				out.append("+");
+		}
+		
+		return searchGET(out.toString());
+	}
+
+	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
+	public ModelAndView searchGET(@PathVariable("terms") String terms)
+	{
+		final long timeStart = System.nanoTime();
+		final long timeEnd;
+		
+		Set<String> search = SearchHelper.getIndex(terms, 5);
+		
+
+		final PersistenceManager pm = 
+			PMFSingleton.get().getPersistenceManager();
+
+		Query query1 = pm.newQuery(PlaceBookSearchIndex.class);
+		List<PlaceBookSearchIndex> pbIndexes = 
+			(List<PlaceBookSearchIndex>)query1.execute();
+		
+		// Search rationale: ratings are accumulated per PlaceBook for that
+		// PlaceBook plus any PlaceBookItems
+		Map<String, Integer> hits = new HashMap<String, Integer>();
+
+		for (PlaceBookSearchIndex index : pbIndexes)
+		{
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			Integer rating = (Integer)hits.get(index.getPlaceBook().getKey());
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(index.getPlaceBook().getKey(), 
+					 new Integer(keywords.size() + rating.intValue())
+			);
+		}
+
+		Query query2 = pm.newQuery(PlaceBookItemSearchIndex.class);
+		List<PlaceBookItemSearchIndex> pbiIndexes = 
+			(List<PlaceBookItemSearchIndex>)query2.execute();
+
+		for (PlaceBookItemSearchIndex index : pbiIndexes)
+		{
+			Set<String> keywords = new HashSet<String>();
+			keywords.addAll(index.getIndex());
+			keywords.retainAll(search);
+			String key = index.getPlaceBookItem().getPlaceBook().getKey();
+			Integer rating = (Integer)hits.get(key);
+			if (rating == null)
+				rating = new Integer(0);
+			hits.put(key, new Integer(keywords.size() + rating.intValue()));
+		}
+
+		pm.close();
+
+		StringBuffer out = new StringBuffer();
+		for (Map.Entry<String, Integer> entry : hits.entrySet())
+		{
+			out.append("key=" + entry.getKey() 
+					   + ", score=" + entry.getValue() + "<br>");
+		}
+
+		for (Iterator<String> i = search.iterator(); i.hasNext() ; )
+			out.append("keywords=" + i.next() + ",");
+		
+		timeEnd = System.nanoTime();
+		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
+
+		return new ModelAndView("message", "text", "search results:<br>" + 
+								out.toString());
+	}
 
 	
 	// Helper methods below
 
-	private static void getFileListRecursive(File path, ArrayList<File> out)
+	private static void getFileListRecursive(File path, List<File> out)
 	{
-		ArrayList<File> files = 
+		List<File> files = 
 			new ArrayList<File>(Arrays.asList(path.listFiles()));
 
 		for (File file : files)

@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import placebooks.controller.SearchHelper;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -72,6 +74,9 @@ public abstract class PlaceBookItem
 	@Persistent
 	private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
+	@Persistent(mappedBy = "item", dependent = "true")
+	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
+
 	// Make a new PlaceBookItem
 	public PlaceBookItem(User owner, Geometry geom, URL sourceURL)
 	{
@@ -79,6 +84,7 @@ public abstract class PlaceBookItem
 		this.geom = geom;
 		this.timestamp = new Date();
 		this.sourceURL = sourceURL;
+		index.setPlaceBookItem(this);
 		log.info("Created new PlaceBookItem, concrete name: " 
 				 + getEntityName() + ", timestamp=" 
 				 + this.timestamp.toString());
@@ -158,7 +164,9 @@ public abstract class PlaceBookItem
 			for (Map.Entry<String,?> e: m.entrySet())
 			{
 				Element elem = config.createElement(e.getKey());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				elem.appendChild(config.createTextNode(
+									e.getValue().toString())
+				);
 				sElem.appendChild(elem);
 			}
 
@@ -169,34 +177,10 @@ public abstract class PlaceBookItem
 	}
 
 
-	/**
-	 * 'GetHTML' will return a String containing the item's body content in 
-	 * html format, suitable for including in the placebook view. (@TODO with 
-	 * GUI programmer define/document how this will be used in GUI)
-	 * @return String containing the HTML data for the content of the placebook
-	 * item
-	 */
-	public abstract String GetHTML();
-
-	/**
-	 * Along with GetHTML this method is used to generate a string containing
-	 * the CSS styles for the Placebook item, suitable for use in the Placebook
-	 * page header
-	 * @return String of CSS style data
-	 */
-	public abstract String GetCSS();
-	
-	/**
-	 * Along with GetHTML this method is used to generate a string containing
-	 * any required Javascript for the Placebook item
-	 * @return String of Javascript code
-	 */
-	public abstract String GetJavaScript();
-
-
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
+		index.addAll(SearchHelper.getIndex(value));
 	}
 
 	public String getMetadataValue(String key)
@@ -236,7 +220,10 @@ public abstract class PlaceBookItem
 
 	public String getKey() { return key; }
 
-	public void setPlaceBook(PlaceBook placebook) { this.placebook = placebook; }
+	public void setPlaceBook(PlaceBook placebook) 
+	{ 
+		this.placebook = placebook; 
+	}
 	public PlaceBook getPlaceBook() { return placebook; }
 
 	public void setOwner(User owner) { this.owner = owner; }
@@ -250,4 +237,31 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL() { return sourceURL; }
 	public void setSourceURL(URL sourceURL) { this.sourceURL = sourceURL; }
+	
+	
+	
+	/**
+	 * 'GetHTML' will return a String containing the item's body content in 
+	 * html format, suitable for including in the placebook view. (@TODO with 
+	 * GUI programmer define/document how this will be used in GUI)
+	 * @return String containing the HTML data for the content of the placebook
+	 * item
+	 */
+	public abstract String GetHTML();
+
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * the CSS styles for the Placebook item, suitable for use in the Placebook
+	 * page header
+	 * @return String of CSS style data
+	 */
+	public abstract String GetCSS();
+	
+	/**
+	 * Along with GetHTML this method is used to generate a string containing
+	 * any required Javascript for the Placebook item
+	 * @return String of Javascript code
+	 */
+	public abstract String GetJavaScript();
+
 }

@@ -2,4 +2,9 @@
 <resources>
     <string name="hello">Hello World, PlaceBooks!</string>
     <string name="app_name">PlaceBooks</string>
+    <string name="run_task">Run</string>
+    <string name="task_working">Working (%1$d)...</string>
+    <string name="task_starting">Starting...</string>
+    <string name="task_cancelled">Task is cancelled by user</string>
+    <string name="task_completed">Task is completed with result (%1$s)</string>
 </resources>

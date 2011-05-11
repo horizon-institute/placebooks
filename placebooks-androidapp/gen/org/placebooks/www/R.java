@@ -11,25 +11,37 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
+        public static final int eject=0x7f020000;
+        public static final int icon=0x7f020001;
+        public static final int pause=0x7f020002;
+        public static final int placebookslogo=0x7f020003;
+        public static final int play=0x7f020004;
+        public static final int stop=0x7f020005;
     }
     public static final class id {
-        public static final int Button01=0x7f050000;
-        public static final int Button02=0x7f050001;
-        public static final int LinearLayout02=0x7f050003;
-        public static final int ScrollView01=0x7f050002;
-        public static final int pngview=0x7f050005;
-        public static final int txtPage1=0x7f050007;
-        public static final int txtText1=0x7f050006;
-        public static final int txtTitle=0x7f050004;
+        public static final int Button01=0x7f050004;
+        public static final int Button02=0x7f050005;
+        public static final int btnLogin=0x7f050003;
+        public static final int item_subtitle=0x7f050008;
+        public static final int item_title=0x7f050007;
+        public static final int status=0x7f050006;
+        public static final int txtPlacebooks=0x7f050000;
+        public static final int txt_password=0x7f050002;
+        public static final int txt_username=0x7f050001;
     }
     public static final class layout {
         public static final int main=0x7f030000;
-        public static final int page2=0x7f030001;
-        public static final int reader=0x7f030002;
+        public static final int reader=0x7f030001;
+        public static final int shelf=0x7f030002;
+        public static final int shelflist=0x7f030003;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
         public static final int hello=0x7f040000;
+        public static final int run_task=0x7f040002;
+        public static final int task_cancelled=0x7f040005;
+        public static final int task_completed=0x7f040006;
+        public static final int task_starting=0x7f040004;
+        public static final int task_working=0x7f040003;
     }
 }

@@ -15,6 +15,9 @@
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
+	<property name="placebooks.props" 
+			  value="${src.dir}/placebooks.properties" />
+	<property name="log4j.props" value="${src.dir}/log4j.properties" />
 
 	<path id="classpath">
   		<fileset dir="${warlib.dir}">
@@ -53,6 +56,12 @@
 		<path refid="classpath"/>
 		<pathelement path="${classes.dir}" />
     </path>
+
+	<path id="classpath.schematool">
+		<path refid="classpath"/>
+		<pathelement path="${classes.dir}" />
+    </path>
+
 	
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
@@ -91,8 +100,8 @@
 
 	<target name="staging" depends="makedirs" 
 			description="Stage configs to classes dir">
-		<copy file="${src.dir}/log4j.properties" todir="${classes.dir}" />
-		<copy file="${src.dir}/placebooks.properties" todir="${classes.dir}" />
+		<copy file="${log4j.props}" todir="${classes.dir}" />
+		<copy file="${placebooks.props}" todir="${classes.dir}" />
 	</target>
 
 	<target name="war" depends="compile,enhance,staging"
@@ -131,6 +140,37 @@
 		</nucleusenhancer>
 
     </target>
+	
+	<!-- Required for SchemaTool -->
+	<property file="${placebooks.props}" />
+
+	<taskdef name="schematool"
+			 classpathref="classpath.schematool"
+			 classname="org.datanucleus.store.schema.SchemaToolTask" />
+
+	<target name="initschema" depends="enhance,staging">
+
+		<schematool classpathref="classpath.schematool" failonerror="true" 
+					dir="${basedir}/${classes.dir}"
+					verbose="true" mode="create">
+			<jvmarg line="-Dlog4j.configuration=log4j.properties" />
+			<sysproperty key="datanucleus.ConnectionDriverName" 
+						 value="${javax.jdo.option.ConnectionDriverName}"/>
+			<sysproperty key="datanucleus.ConnectionURL" 
+						 value="${javax.jdo.option.ConnectionURL}"/>
+			<sysproperty key="datanucleus.ConnectionUserName" 
+						 value="${javax.jdo.option.ConnectionUserName}"/>
+			<sysproperty key="datanucleus.ConnectionPassword" 
+						 value="${javax.jdo.option.ConnectionPassword}"/>
+			<sysproperty key="datanucleus.Mapping" 
+						 value="${javax.jdo.option.Mapping}"/>
+			<sysproperty key="log4j.configuration" value="${log4j.props}" />
+			<fileset dir="${classes.dir}">
+		        <include name="**/*.class"/>
+		    </fileset>	
+    	</schematool>
+	</target>
+
 
 	<target name="docs" depends="makedirs">
 		<javadoc sourcepath="${src.dir}"
@@ -146,7 +186,7 @@
 		</javadoc>
 	</target>
 
-	<target name="initdb" depends="compile,enhance">
+	<target name="initdb" depends="compile,enhance,staging">
         <java classname="placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />

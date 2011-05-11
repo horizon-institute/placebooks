@@ -6,6 +6,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.SearchHelper;
+
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -58,8 +69,8 @@ public class PlaceBook
 	@Persistent
 	private Map<String, String> metadata = new HashMap<String, String>();
 
-	@Persistent(dependent="true")
-	private PlaceBookIndex index;
+	@Persistent(mappedBy = "placebook", dependent = "true")
+	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
 	// Make a new PlaceBook
 	public PlaceBook(User owner, Geometry geom)
@@ -69,6 +80,7 @@ public class PlaceBook
 			this.owner.add(this);
 		this.geom = geom;
 		this.timestamp = new Date();
+		index.setPlaceBook(this);
 
 		log.info("Created new PlaceBook: timestamp=" 
 				 + this.timestamp.toString());
@@ -150,6 +162,7 @@ public class PlaceBook
 	public void addMetadataEntry(String key, String value)
 	{
 		metadata.put(key, value);
+		index.addAll(SearchHelper.getIndex(value));
 	}
 
 	public String getMetadataValue(String key)

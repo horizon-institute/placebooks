@@ -24,6 +24,12 @@ New empty PlaceBook
 <a href="admin/delete/all_placebooks">Delete all PlaceBooks</a>
 
 <br />
+<form action="admin/search" method="POST">
+	Search: <input type="text" name="terms">
+	<input type="submit" value="Search">
+</form>
+
+<br />
 <h1>Everytrail Tests</h1>
 <div>
 <form action='admin/test/everytrail/login' method='POST'>
