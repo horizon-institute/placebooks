@@ -10,7 +10,6 @@ import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.NotPersistent;
@@ -21,14 +20,16 @@ import javax.jdo.annotations.PrimaryKey;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable(identityType=IdentityType.DATASTORE)
+@PersistenceCapable
 @Inheritance(strategy=InheritanceStrategy.NEW_TABLE)
 @Discriminator(strategy=DiscriminatorStrategy.CLASS_NAME)
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
@@ -45,11 +46,11 @@ public abstract class PlaceBookItem
 	private String key;
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.PlaceBookKeyJSONSerializer.class)	
+	@JsonIgnore
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
 	@Persistent
-	@JsonSerialize(using=placebooks.model.json.UserKeyJSONSerializer.class)	
+	@JsonIgnore
 	private User owner;
 	
 	@Persistent
@@ -57,6 +58,7 @@ public abstract class PlaceBookItem
 
 	@Persistent
 	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)
+	@JsonDeserialize(using=placebooks.model.json.GeometryJSONDeserializer.class)	
 	private Geometry geom;
 
 	@Persistent

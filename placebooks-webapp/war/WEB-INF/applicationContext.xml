@@ -23,7 +23,8 @@
 	
 	<security:http auto-config="true" use-expressions="true">
 		<security:form-login login-page="/login.html" /> 
-		<security:intercept-url pattern="/placebooks/a/account" access="isAuthenticated()" />	
+		<security:intercept-url pattern="/placebooks/a/account" access="isAuthenticated()" />
+		<security:intercept-url pattern="/editor.html" access="isAuthenticated()" />		
         <security:intercept-url pattern="/**" access="permitAll" />	
 	</security:http>
 </beans>

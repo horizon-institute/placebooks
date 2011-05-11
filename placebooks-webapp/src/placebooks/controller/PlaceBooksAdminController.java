@@ -18,7 +18,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -130,6 +132,152 @@ public class PlaceBooksAdminController
 	
 	// TODO: currently uses startsWith for string search. Is this right??
 	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/shelf", 
+					method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
+	public ModelAndView getPlaceBooksJSON(HttpServletRequest req, 
+										  HttpServletResponse res)
+	{
+		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		final User user = UserManager.getCurrentUser(manager);		
+		final Query q = manager.newQuery(PlaceBook.class);	
+		q.setFilter("owner.key.equals('" + user.getKey() + "')");
+	
+		Collection<PlaceBook> pbs = (Collection<PlaceBook>)q.execute();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		log.info("User " + user.getName());
+		try
+		{
+			Shelf shelf = new Shelf(user, pbs);			
+			ObjectMapper mapper = new ObjectMapper();
+			log.info("Shelf: " + mapper.writeValueAsString(shelf));			
+			ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, shelf);
+			sos.flush();
+		}
+		catch (Exception e)
+		{
+			log.error(e.toString());
+		}
+
+		manager.close();
+
+		return null;
+	}
+	
+	// TODO: currently uses startsWith for string search. Is this right??
+	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/placebook/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView getPlaceBookJSON(HttpServletRequest req, 
+										  HttpServletResponse res, @PathVariable("key") String key)
+	{
+		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		try
+		{
+		PlaceBook placebook = null;
+		if(key.equals("new"))
+		{
+			// Create new placebook
+			placebook = new PlaceBook(UserManager.getCurrentUser(manager), null);
+			
+			manager.makePersistent(placebook);
+		}
+		else
+		{
+			placebook = manager.getObjectById(PlaceBook.class, key);
+			manager.retrieve(placebook);
+		}
+
+		if (placebook != null)
+		{
+			try
+			{
+				ObjectMapper mapper = new ObjectMapper();
+				ServletOutputStream sos = res.getOutputStream();
+				res.setContentType("application/json");
+				mapper.writeValue(sos, placebook);
+				log.info("Placebook: " + mapper.writeValueAsString(placebook));
+				sos.flush();
+			}
+			catch (IOException e)
+			{
+				log.error(e.toString());
+			}
+		}
+		}
+		catch(Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
+	public ModelAndView savePlaceBookJSON(HttpServletRequest req, HttpServletResponse res, @RequestParam("placebook") String json)
+	{
+		log.info("saveplacebook");
+		ObjectMapper mapper = new ObjectMapper();
+		final PersistenceManager manager = PMFSingleton.getPersistenceManager();	
+		manager.currentTransaction().begin();
+		try
+		{
+			log.info(json);			
+			
+			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+			
+			final PlaceBook dbPlacebook = manager.getObjectById(PlaceBook.class, placebook.getKey());	
+	
+			log.info(mapper.writeValueAsString(placebook));
+			
+			for(Entry<String, String> entry: placebook.getMetadata().entrySet())
+			{
+				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+			}
+
+			dbPlacebook.setItems(Collections.EMPTY_LIST);
+			for(PlaceBookItem item: placebook.getItems())
+			{
+				log.info("Adding Item: " + mapper.writeValueAsString(item));
+				item.setOwner(dbPlacebook.getOwner());
+				dbPlacebook.addItem(item);
+				manager.makePersistent(item);
+				log.info("Adding Item: " + mapper.writeValueAsString(item));				
+			}			
+	
+			dbPlacebook.setGeometry(placebook.getGeometry());
+
+			manager.makePersistent(dbPlacebook);
+			
+			manager.currentTransaction().commit();
+			
+		}
+		catch(Throwable e)
+		{
+			log.warn(e.getMessage(), e);
+		}		
+		finally
+		{
+			if(manager.currentTransaction().isActive())
+			{
+				manager.currentTransaction().rollback();
+			}
+			manager.close();
+		}
+	
+		return null;
+	}
+	
+	
+	// TODO: currently uses startsWith for string search. Is this right??
+	// owner.key query on key value for User works without startsWith
 	@RequestMapping(value = "/admin/shelf/{owner}", 
 					method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")
@@ -142,10 +290,16 @@ public class PlaceBooksAdminController
 		final Query q = pm.newQuery(PlaceBook.class);
 		q.setFilter("owner.email.startsWith('" + owner + "')");
 		Collection<PlaceBook> pbs = (Collection<PlaceBook>)q.execute();
+		
+		final Query uq = pm.newQuery(User.class);
+		q.setFilter("email.startsWith('" + owner + "')");
+
+		User user = (User) uq.execute();
+		
 		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
 		if (!pbs.isEmpty())
 		{
-			Shelf s = new Shelf(pbs);
+			Shelf s = new Shelf(user, pbs);
 			try
 			{
 				ObjectMapper mapper = new ObjectMapper();

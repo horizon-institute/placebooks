@@ -19,14 +19,16 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native String getMetadata(String name) /*-{ return this.metadata[name]; }-*/;
 
 	public final native int getParameter(String name) /*-{ return this.parameters[name]; }-*/;
+	
+	public final native void setParameter(String name, int value) /*-{ this.parameters[name] = value; }-*/;	
 
-	public final native String getPlaceBookKey() /*-{ return this.placebook; }-*/;
+	//public final native String getPlaceBookKey() /*-{ return this.placebook; }-*/;
 
 	public final native String getSourceURL() /*-{ return this.sourceURL; }-*/;
 
 	public final native String getText() /*-{ return this.text; }-*/;
 
-	public final native String getUserKey() /*-{ return this.owner; }-*/;
+	//public final native String getUserKey() /*-{ return this.owner; }-*/;
 
 	public final native boolean hasParameter(String name) /*-{ return name in this.parameters; }-*/;
 

@@ -27,6 +27,7 @@ public class User
 	@Persistent
 	private String email;
 
+	@JsonIgnore
 	@Persistent
 	private String passwordHash;
 

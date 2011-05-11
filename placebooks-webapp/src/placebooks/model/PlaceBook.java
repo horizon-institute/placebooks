@@ -1,37 +1,38 @@
 package placebooks.model;
 
-import placebooks.controller.PropertiesSingleton;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-
-@PersistenceCapable(identityType=IdentityType.DATASTORE)
+@PersistenceCapable
 @Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
-@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE)
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class PlaceBook
 {
 	@NotPersistent
-	protected static final Logger log = 
-		Logger.getLogger(PlaceBook.class.getName());
+	protected static final Logger log = Logger.getLogger(PlaceBook.class.getName());
 
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
@@ -45,6 +46,7 @@ public class PlaceBook
 
 	@Persistent
 	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)	
+	@JsonDeserialize(using=placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	// TODO: Cascading deletes via dependent=true: not sure about this
@@ -104,14 +106,12 @@ public class PlaceBook
 								this.getGeometry().toText()));
 		root.appendChild(geometry);
 
-		Iterator i = ((Set)this.getMetadata().entrySet()).iterator();
-		if (i.hasNext())
+		if (!metadata.isEmpty())
 		{
 			Element sElem = config.createElement("metadata");
 
-			for ( ; i.hasNext(); )
+			for (Map.Entry<String, String> e: metadata.entrySet())
 			{
-				Map.Entry e = (Map.Entry)i.next();
 				Element elem = config.createElement(e.getKey().toString());
 				elem.appendChild(
 					config.createTextNode(e.getValue().toString()));
@@ -130,7 +130,6 @@ public class PlaceBook
 		this.items.addAll(items);
 	}
 
-	@JsonIgnore
 	public List<PlaceBookItem> getItems()
 	{
 		return Collections.unmodifiableList(items);

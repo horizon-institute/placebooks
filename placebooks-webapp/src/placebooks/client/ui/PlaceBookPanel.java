@@ -88,7 +88,7 @@ public class PlaceBookPanel extends SimplePanel
 
 		int order = 0;
 		int height = getElement().getOffsetTop() - offsetY;
-		final int y = mousey + offsetY;
+		final int y = mousey;
 		for (final PlaceBookItemFrame item : items)
 		{
 			if (newItem != null && y > height && y < height + item.getElement().getClientHeight() - offsetY)

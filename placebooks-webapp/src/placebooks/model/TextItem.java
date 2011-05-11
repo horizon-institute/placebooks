@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class TextItem extends PlaceBookItem
 {
 	private String text; 
-
+	
 	public TextItem(User owner, Geometry geom, URL sourceURL, String text)
 	{
 		super(owner, geom, sourceURL);

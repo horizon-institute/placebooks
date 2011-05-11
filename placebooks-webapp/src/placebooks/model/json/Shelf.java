@@ -1,14 +1,15 @@
 package placebooks.model.json;
 
-import placebooks.model.PlaceBook;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import org.apache.log4j.Logger;
+import placebooks.model.PlaceBook;
+import placebooks.model.User;
 
 
 public class Shelf
@@ -17,14 +18,16 @@ public class Shelf
   	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
-	private PlaceBookEntry[] entries;
+	private User user;
 
-	public Shelf(Collection<PlaceBook> pbs) 
+	@JsonProperty
+	private Collection<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+
+	public Shelf(User user, Collection<PlaceBook> pbs) 
 	{
 		log.info("Creating JSON Shelf...");
-		PlaceBookEntry[] entries = new PlaceBookEntry[pbs.size()];
+		this.user = user;		
 
-		int i = 0; 
 		for (PlaceBook pb : pbs)
 		{
 			for (Map.Entry<String, String> e: pb.getMetadata().entrySet())
@@ -32,17 +35,15 @@ public class Shelf
 				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 			}
 
-			entries[i] = new PlaceBookEntry();
-			entries[i].setKey(pb.getKey());
-			entries[i].setOwner(pb.getOwner().getEmail());
-			entries[i].setTitle(pb.getMetadataValue("title"));
-			entries[i].setNumItems(pb.getItems().size());
-			entries[i].setDescription(pb.getMetadataValue("description"));
-			entries[0].setPackagePath(pb.getPackagePath());
-
-			++i;
+			PlaceBookEntry entry = new PlaceBookEntry();
+			entry.setKey(pb.getKey());
+			entry.setOwner(pb.getOwner().getEmail());
+			entry.setTitle(pb.getMetadataValue("title"));
+			entry.setNumItems(pb.getItems().size());
+			entry.setDescription(pb.getMetadataValue("description"));
+			entry.setPackagePath(pb.getPackagePath());
+			
+			entries.add(entry);
 		}
-
-		this.entries = entries;
 	}
 }

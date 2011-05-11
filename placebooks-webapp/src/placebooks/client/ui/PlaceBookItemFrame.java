@@ -7,6 +7,7 @@ import placebooks.client.ui.widget.EditablePanel;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -44,8 +45,6 @@ public class PlaceBookItemFrame extends Composite
 	MousePanel frame;
 	
 	final DropMenu dropMenu = new DropMenu();
-
-	private int order = 0;
 	
 	private PlaceBookPanel panel;
 
@@ -103,7 +102,7 @@ public class PlaceBookItemFrame extends Composite
 	int getOrder()
 	{
 		if (item.hasParameter("order")) { return item.getParameter("order"); }
-		return order;
+		return 0;
 	}
 	
 	PlaceBookPanel getPanel()
@@ -120,6 +119,7 @@ public class PlaceBookItemFrame extends Composite
 		this.panel = panel;
 		if(panel != null)
 		{
+			item.setParameter("panel", panel.getIndex());			
 			panel.add(this);
 		}			
 	}
@@ -132,6 +132,7 @@ public class PlaceBookItemFrame extends Composite
 	
 	void showFrame()
 	{
+		frame.getElement().getStyle().setZIndex(5);
 		menuButton.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		menuButton.getElement().getStyle().setOpacity(1);
 		menuButton.getElement().getStyle().setZIndex(5);			
@@ -139,22 +140,25 @@ public class PlaceBookItemFrame extends Composite
 		borderSection.getElement().getStyle().setOpacity(1);
 		dragSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);		
 		dragSection.getElement().getStyle().setOpacity(1);
-		dragSection.getElement().getStyle().setZIndex(5);	
+		dragSection.getElement().getStyle().setZIndex(5);
+		dragSection.getElement().getStyle().setCursor(Cursor.MOVE);
 	}
 	
 	void hideFrame()
 	{
+		frame.getElement().getStyle().setZIndex(0);		
 		menuButton.getElement().getStyle().setOpacity(0);
 		menuButton.getElement().getStyle().setZIndex(0);
 		borderSection.getElement().getStyle().setOpacity(0);		
 		dragSection.getElement().getStyle().setOpacity(0);
-		dragSection.getElement().getStyle().setZIndex(0);	
+		dragSection.getElement().getStyle().setZIndex(0);
+		dragSection.getElement().getStyle().setCursor(Cursor.DEFAULT);		
 	}
 
 	void setOrder(final int order)
 	{
 		GWT.log("Order: " + order);
-		this.order = order;
+		item.setParameter("order", order);
 	}
 
 	void startDrag(final MouseDownEvent event)
