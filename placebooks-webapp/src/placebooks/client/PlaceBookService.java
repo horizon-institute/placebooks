@@ -22,7 +22,13 @@ public class PlaceBookService
 
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/saveplacebook", RequestBuilder.POST, "placebook=" + new JSONObject(placebook).toString(), callback);
+		serverRequest(getHostURL() + "placebooks/a/saveplacebook", RequestBuilder.POST, "placebook="
+				+ new JSONObject(placebook).toString(), callback);
+	}
+	
+	public static void getPaletteItems(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/palette", callback);
 	}
 
 	private static String getHostURL()
@@ -35,12 +41,13 @@ public class PlaceBookService
 		return url;
 	}
 
-	private static void serverRequest(final String url, RequestBuilder.Method method, String data, final RequestCallback callback)
+	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
+			final RequestCallback callback)
 	{
 		GWT.log(url);
 		GWT.log(data);
 		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));
-		if(data != null)
+		if (data != null)
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		}
@@ -53,7 +60,7 @@ public class PlaceBookService
 			GWT.log(e.getMessage(), e);
 		}
 	}
-	
+
 	private static void serverRequest(final String url, final RequestCallback callback)
 	{
 		serverRequest(url, RequestBuilder.GET, null, callback);

@@ -1,93 +1,86 @@
 package placebooks.model;
 
-import placebooks.controller.PropertiesSingleton;
-
-import java.io.*;
-
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.NotPersistent;
-
-import org.apache.log4j.Logger;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
-
-import org.w3c.dom.Element;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable
-@Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
+@Entity
 public class WebBundleItem extends PlaceBookItem
 {
-	@NotPersistent
-  	private static final Logger log = 
-		Logger.getLogger(WebBundleItem.class.getName());
+	public static class WebPreview
+	{
+		private BufferedImage headerImage;
+		private String headerText;
 
+		public WebPreview(final String htmlPage, final BufferedImage headerImage)
+		{
+			// Select headerText from htmlPage TODO
+			this.headerText = "";
+			this.headerImage = headerImage;
+		}
 
-	@Persistent
+		public BufferedImage getHeaderImage()
+		{
+			return headerImage;
+		}
+
+		public String getHeaderText()
+		{
+			return headerText;
+		}
+
+	}
+
+	private static final Logger log = Logger.getLogger(WebBundleItem.class.getName());
+
+	@Transient
 	private BufferedImage thumbnail;
 
 	private File webBundle;
 
-	public WebBundleItem(User owner, Geometry geom, URL sourceURL, 
-						 File webBundle)
+	public WebBundleItem(final User owner, final Geometry geom, final URL sourceURL, final File webBundle)
 	{
 		super(owner, geom, sourceURL);
 		this.webBundle = webBundle;
 		thumbnail = null;
 	}
 
-	public String getEntityName()
+	WebBundleItem()
 	{
-		return WebBundleItem.class.getName();
 	}
 
-	public void deleteItemData()
+	@Override
+	public void appendConfiguration(final Document config, final Element root)
 	{
+		final Element item = getConfigurationHeader(config);
+
 		try
 		{
-			FileUtils.deleteDirectory(webBundle);
-		}
-		catch (IOException e)
-		{
-			log.error(e.toString());
-		}
-	}
+			getWebBundle(); // TODO: why is this needed?
 
-	public String getWebBundlePath()
-	{
-		return PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE,
-					"") + getKey();
-	}
-
-	public void appendConfiguration(Document config, Element root)
-	{
-		Element item = getConfigurationHeader(config);
-		
-		try
-		{
-			getWebBundle(); //TODO: why is this needed?
-
-			File from = new File(getWebBundlePath());
-			File to = new File(getPlaceBook().getPackagePath() 
-							   + "/" + getKey());
+			final File from = new File(getWebBundlePath());
+			final File to = new File(getPlaceBook().getPackagePath() + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);
 
-			Element filename = config.createElement("filename");
+			final Element filename = config.createElement("filename");
 			filename.appendChild(config.createTextNode(webBundle.getName()));
 			item.appendChild(filename);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			log.error(e.toString());
 		}
@@ -95,7 +88,62 @@ public class WebBundleItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
-	// A thumbnail preview image of the webpage - rendered somehow and stored 
+	@Override
+	public void deleteItemData()
+	{
+		try
+		{
+			FileUtils.deleteDirectory(webBundle);
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see placebooks.model.PlaceBookItem#GetCSS()
+	 */
+	@Override
+	public String GetCSS()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	@Override
+	public String getEntityName()
+	{
+		return WebBundleItem.class.getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see placebooks.model.PlaceBookItem#GetHTML()
+	 */
+	@Override
+	public String GetHTML()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
+	 */
+	@Override
+	public String GetJavaScript()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	// A thumbnail preview image of the webpage - rendered somehow and stored
 	// here
 	public BufferedImage getPreview()
 	{
@@ -106,71 +154,30 @@ public class WebBundleItem extends PlaceBookItem
 		return thumbnail;
 	}
 
-	// An alternative preview - a FaceBook style header text plus image drawn 
+	public String getWebBundle()
+	{
+		return webBundle.toString();
+	}
+
+	public String getWebBundlePath()
+	{
+		return PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
+	}
+
+	// An alternative preview - a FaceBook style header text plus image drawn
 	// from the webpage in question
 	public WebPreview getWebPreview()
 	{
 		return null;
 	}
 
-	public static class WebPreview
-	{
-		private String headerText;
-		private BufferedImage headerImage;
-
-		public WebPreview(String htmlPage, BufferedImage headerImage)
-		{
-			// Select headerText from htmlPage TODO
-			this.headerText = "";
-			this.headerImage = headerImage;
-		}
-
-		public String getHeaderText() { return headerText; }
-		public BufferedImage getHeaderImage() { return headerImage; }
-
-	}
-
-	@Persistent
-	public String getWebBundle()
-	{
-		return webBundle.toString();
-	}
-	@Persistent
-	public void setWebBundle(String filepath)
+	public void setWebBundle(final String filepath)
 	{
 		if (filepath != null)
+		{
 			webBundle = new File(filepath);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#GetHTML()
-	 */
-	@Override
-	public String GetHTML()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#GetCSS()
-	 */
-	@Override
-	public String GetCSS()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
-	 */
-	@Override
-	public String GetJavaScript()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
-	
 }

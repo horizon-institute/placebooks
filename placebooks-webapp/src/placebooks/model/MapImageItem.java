@@ -1,30 +1,28 @@
 package placebooks.model;
 
 import java.awt.image.BufferedImage;
-
 import java.net.URL;
 
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.PersistenceCapable;
+import javax.persistence.Entity;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable
-@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
+@Entity
 public class MapImageItem extends ImageItem
 {
-	public MapImageItem(User owner, Geometry geom, URL sourceURL, 
-					    BufferedImage image)
+	public MapImageItem(final User owner, final Geometry geom, final URL sourceURL, final BufferedImage image)
 	{
 		super(owner, geom, sourceURL, image);
 	}
 
-	
+	MapImageItem()
+	{
+	}
+
+	@Override
 	public String getEntityName()
 	{
 		return MapImageItem.class.getName();
 	}
 
 }
-

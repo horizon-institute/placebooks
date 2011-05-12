@@ -1,10 +1,12 @@
 package placebooks.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
 public class PlaceBookItem extends JavaScriptObject
 {
 	public static final native PlaceBookItem parse(final String json) /*-{ return eval('(' + json + ')'); }-*/;
+	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{ return eval('(' + json + ')'); }-*/;	
 
 	protected PlaceBookItem()
 	{
@@ -14,24 +16,21 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native String getGeometry() /*-{ return this.geom; }-*/;
 
-	public final native String getKey() /*-{ return this.key; }-*/;
+	public final native String getKey() /*-{ return this.id; }-*/;
 
 	public final native String getMetadata(String name) /*-{ return this.metadata[name]; }-*/;
 
 	public final native int getParameter(String name) /*-{ return this.parameters[name]; }-*/;
-	
-	public final native void setParameter(String name, int value) /*-{ this.parameters[name] = value; }-*/;	
-
-	//public final native String getPlaceBookKey() /*-{ return this.placebook; }-*/;
 
 	public final native String getSourceURL() /*-{ return this.sourceURL; }-*/;
 
 	public final native String getText() /*-{ return this.text; }-*/;
-
-	//public final native String getUserKey() /*-{ return this.owner; }-*/;
+	
+	public final native void setText(String newText) /*-{ this.text = newText; }-*/; 
 
 	public final native boolean hasParameter(String name) /*-{ return name in this.parameters; }-*/;
+	
+	public final native boolean hasMetadata(String name) /*-{ return name in this.metadata; }-*/;	
 
-	// @Persistent
-	// private Date timestamp;
+	public final native void setParameter(String name, int value) /*-{ this.parameters[name] = value; }-*/;
 }

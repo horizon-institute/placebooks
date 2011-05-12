@@ -3,48 +3,45 @@ package placebooks.model;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.Join;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.PersistenceModifier;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Unique;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import static javax.persistence.CascadeType.ALL;
 
-@PersistenceCapable
+@Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class User
 {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
-	private String key;
-
-	@Unique
-	@Persistent
+	@Column(unique = true)
 	private String email;
 
-	@JsonIgnore
-	@Persistent
-	private String passwordHash;
+	@ManyToMany
+	private Collection<User> friends = new HashSet<User>();
 
-	@Persistent
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private String id;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", cascade = ALL)
+	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
+
 	private String name;
 
 	@JsonIgnore
-	@Persistent(persistenceModifier = PersistenceModifier.PERSISTENT, mappedBy = "owner")
-	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
+	private String passwordHash;
 
 	@JsonIgnore
-	@Persistent(persistenceModifier = PersistenceModifier.PERSISTENT, mappedBy = "user")
-	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
-
-	@Persistent
-	@Join
-	private Collection<User> friends = new HashSet<User>();
+	@OneToMany(mappedBy = "owner")
+	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
 	public User(final String name, final String email, final String passwordHash)
 	{
@@ -85,7 +82,7 @@ public class User
 
 	public String getKey()
 	{
-		return key;
+		return id;
 	}
 
 	public LoginDetails getLoginDetails(final String service)

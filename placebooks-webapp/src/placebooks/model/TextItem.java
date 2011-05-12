@@ -1,79 +1,52 @@
 package placebooks.model;
 
-import placebooks.controller.SearchHelper;
-
 import java.net.URL;
 
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.Column;
+import javax.persistence.Entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import placebooks.controller.SearchHelper;
+
 import com.vividsolutions.jts.geom.Geometry;
 
-
-@PersistenceCapable
-@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
+@Entity
 public class TextItem extends PlaceBookItem
 {
-	private String text; 
-	
-	public TextItem(User owner, Geometry geom, URL sourceURL, String text)
+	private String text;
+
+	public TextItem(final User owner, final Geometry geom, final URL sourceURL, final String text)
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;
 		index.addAll(SearchHelper.getIndex(text));
 	}
 
-	public void deleteItemData() { }
-
-	public String getEntityName()
+	TextItem()
 	{
-		return TextItem.class.getName();
+		super();
 	}
 
-	public void appendConfiguration(Document config, Element root)
+	@Override
+	public void appendConfiguration(final Document config, final Element root)
 	{
 		log.info("TextItem.appendConfiguration(), text=" + this.getText());
-		Element item = getConfigurationHeader(config);
-		Element text = config.createElement("text");
+		final Element item = getConfigurationHeader(config);
+		final Element text = config.createElement("text");
 		text.appendChild(config.createTextNode(this.getText()));
 		item.appendChild(text);
 		root.appendChild(item);
 	}
 
-	@Persistent
-	@Column(jdbcType = "CLOB")
-	public String getText()
-	{
-		return text;
-	}
-	public void setText(String text)
-	{
-		this.text = text;
-	}
-
-	/* (non-Javadoc)
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#GetHTML()
-	 */
 	@Override
-	public String GetHTML()
+	public void deleteItemData()
 	{
-		StringBuilder output = new StringBuilder();
-		output.append("<div class='placebook-item-text' id='");
-		output.append(this.getPlaceBook().getKey());
-		output.append("'>");
-		output.append(this.text);
-		output.append("'</div>");
-		return output.toString();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#GetCSS()
 	 */
 	@Override
@@ -83,7 +56,32 @@ public class TextItem extends PlaceBookItem
 		return "";
 	}
 
-	/* (non-Javadoc)
+	@Override
+	public String getEntityName()
+	{
+		return TextItem.class.getName();
+	}
+
+	/*
+	 * (non-Javadoc) /* (non-Javadoc)
+	 * 
+	 * @see placebooks.model.PlaceBookItem#GetHTML()
+	 */
+	@Override
+	public String GetHTML()
+	{
+		final StringBuilder output = new StringBuilder();
+		output.append("<div class='placebook-item-text' id='");
+		output.append(this.getPlaceBook().getKey());
+		output.append("'>");
+		output.append(this.text);
+		output.append("'</div>");
+		return output.toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
 	 */
 	@Override
@@ -91,5 +89,15 @@ public class TextItem extends PlaceBookItem
 	{
 		// TODO Auto-generated method stub
 		return "";
+	}
+
+	public String getText()
+	{
+		return text;
+	}
+
+	public void setText(final String text)
+	{
+		this.text = text;
 	}
 }

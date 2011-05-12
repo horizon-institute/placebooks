@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookPanel extends SimplePanel
 {
+	private final static int offsetY = 20;
+
 	private final List<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
 
 	private int panelIndex;
-	
-	private final static int offsetY = 20;
 
 	public PlaceBookPanel(final int index, final int columns)
 	{
@@ -75,7 +75,7 @@ public class PlaceBookPanel extends SimplePanel
 		reflow(null, 0, false);
 	}
 
-	void reflow(final PlaceBookItemFrame newItem, final int mousey, boolean finished)
+	void reflow(final PlaceBookItemFrame newItem, final int mousey, final boolean finished)
 	{
 		Collections.sort(items, new Comparator<PlaceBookItemFrame>()
 		{
@@ -110,13 +110,13 @@ public class PlaceBookPanel extends SimplePanel
 		}
 	}
 
-	private void layoutItem(PlaceBookItemFrame item, int height, int order, boolean finished)
+	private void layoutItem(final PlaceBookItemFrame item, final int height, final int order, final boolean finished)
 	{
 		item.getElement().getStyle().setWidth(30, Unit.PCT);
 		item.getElement().getStyle().setLeft(panelIndex * 30 + 5, Unit.PCT);
 		item.getElement().getStyle().setTop(height, Unit.PX);
-		
-		if(finished)
+
+		if (finished)
 		{
 			item.setOrder(order);
 		}

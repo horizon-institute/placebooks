@@ -6,6 +6,7 @@ import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -22,22 +23,22 @@ public class PaletteItem extends Composite
 	private static PaletteItemUiBinder uiBinder = GWT.create(PaletteItemUiBinder.class);
 
 	@UiField
+	Image image;
+
+	@UiField
 	MousePanel panel;
 
 	@UiField
 	Label text;
-
-	@UiField
-	Image image;
-
-	private PlaceBookItem item;
 	
-	public PaletteItem(final String json, final String text)
+	private final PlaceBookItem item;
+
+	public PaletteItem(PlaceBookItem placeBookItem)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		this.text.setText(text);
-		item = PlaceBookItem.parse(json);
-		
+		this.text.setText(placeBookItem.getMetadata("title"));
+		item = placeBookItem;
+
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			image.setResource(Resources.INSTANCE.text());
@@ -47,14 +48,15 @@ public class PaletteItem extends Composite
 			image.setResource(Resources.INSTANCE.picture());
 		}
 	}
-	
-	PlaceBookItem getPlaceBookItem()
-	{
-		return item;
-	}
 
 	void addDragStartHandler(final MouseDownHandler handler)
 	{
 		panel.addMouseDownHandler(handler);
+	}
+	
+	PlaceBookItem createItem()
+	{
+		// TODO is there a better way to clone item?
+		return PlaceBookItem.parse(new JSONObject(item).toString());
 	}
 }

@@ -5,16 +5,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.widget.EditablePanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -26,15 +28,11 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
@@ -61,54 +59,30 @@ public class PlaceBookCanvas extends Composite
 	Image dragImage;
 
 	@UiField
-	Panel palette;
-
-	@UiField
 	Panel loadingPanel;
 
 	@UiField
-	Panel savingPanel;
-	
-	private PlaceBookPanel dragPanel = null;
+	Panel palette;
+
+	// @UiField
+	// Panel savingPanel;
+
+	@UiField
+	EditablePanel title;
 
 	private PlaceBookItemFrame dragItem = null;
+
+	private PlaceBookPanel dragPanel = null;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PaletteItem> paletteItems = new ArrayList<PaletteItem>();
 
-	private PlaceBook placebook;
-	
-	private static final int saveDelay = 2000;
-
-	private Timer saveTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			GWT.log("Timer run");
-			//savingPanel.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
-			PlaceBookService.savePlaceBook(placebook, new RequestCallback()
-			{	
-				@Override
-				public void onResponseReceived(Request request, Response response)
-				{
-					GWT.log("Response Code: " + response.getStatusCode());
-					GWT.log(response.getText());		
-					//savingPanel.getElement().getStyle().setDisplay(Display.NONE);					
-				}
-				
-				@Override
-				public void onError(Request arg0, Throwable arg1)
-				{
-					// TODO Auto-generated method stub
-					
-				}
-			});			
-		}
-	};
-	
 	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
+
+	private PlaceBook placebook;
+
+	private SaveTimer saveTimer = new SaveTimer();
 
 	public PlaceBookCanvas()
 	{
@@ -117,9 +91,11 @@ public class PlaceBookCanvas extends Composite
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
 			@Override
-			public void onPreviewNativeEvent(NativePreviewEvent event)
+			public void onPreviewNativeEvent(final NativePreviewEvent event)
 			{
-				if ((event.getTypeInt() == Event.ONMOUSEDOWN || event.getTypeInt() == Event.ONMOUSEMOVE) && event.getNativeEvent().getButton() == NativeEvent.BUTTON_LEFT && event.getNativeEvent().getEventTarget().toString().startsWith("<img"))
+				if ((event.getTypeInt() == Event.ONMOUSEDOWN || event.getTypeInt() == Event.ONMOUSEMOVE)
+						&& event.getNativeEvent().getButton() == NativeEvent.BUTTON_LEFT
+						&& event.getNativeEvent().getEventTarget().toString().startsWith("<img"))
 				{
 					event.getNativeEvent().preventDefault();
 				}
@@ -133,13 +109,6 @@ public class PlaceBookCanvas extends Composite
 			canvas.add(panel);
 		}
 
-		add(new PaletteItem(
-				"{\"@class\":\"placebooks.model.TextItem\",\"sourceURL\":\"http://www.google.com\",\"metadata\":{},\"parameters\":{},\"text\":\"New Text Block\"}",
-				"New Text"));
-		add(new PaletteItem(
-				"{\"@class\":\"placebooks.model.ImageItem\",\"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{},\"parameters\":{}}",
-				"New Image"));
-
 		Window.addResizeHandler(new ResizeHandler()
 		{
 			@Override
@@ -148,13 +117,6 @@ public class PlaceBookCanvas extends Composite
 				reflow();
 			}
 		});
-	}
-	
-	private void markChanged()
-	{
-		saveTimer.cancel();
-		saveTimer.schedule(saveDelay);
-		GWT.log("Timer started");		
 	}
 
 	public void reflow()
@@ -168,22 +130,39 @@ public class PlaceBookCanvas extends Composite
 	public void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
+		saveTimer.setPlaceBook(placebook);
 		items.clear();
 
 		for (int index = 0; index < placebook.getItems().length(); index++)
 		{
 			final PlaceBookItem item = placebook.getItems().get(index);
-			final PlaceBookItemFrame frame = new PlaceBookItemFrame(item);
+			final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
 			add(frame);
-			frame.setPanel(panels.get(0));
+			if (item.hasParameter("panel"))
+			{
+				frame.setPanel(panels.get(item.getParameter("panel")));
+			}
+			else
+			{
+				frame.setPanel(panels.get(0));
+			}
 		}
-		loadingPanel.setVisible(false);		
-	}
 
-	@UiHandler("backPanel")
-	void handleMouseMove(final MouseMoveEvent event)
-	{
-		handleDrag(event, false);
+		if (placebook.hasMetadata("title"))
+		{
+			title.getElement().setInnerText(placebook.getMetadata("title"));
+		}
+		else
+		{
+			title.getElement().setInnerText("No Title");
+		}
+
+		for (PlaceBookPanel panel : panels)
+		{
+			panel.reflow();
+		}
+
+		loadingPanel.setVisible(false);
 	}
 
 	void handleDrag(final MouseEvent<?> event, final boolean finished)
@@ -209,10 +188,10 @@ public class PlaceBookCanvas extends Composite
 					panel.reflow(dragItem, y, finished);
 					if (finished)
 					{
-						dragItem.setPanel(panel);				
+						dragItem.setPanel(panel);
 						dragItem.stopDrag();
 						dragItem = null;
-						markChanged();						
+						saveTimer.markChanged();
 					}
 					return;
 				}
@@ -222,8 +201,9 @@ public class PlaceBookCanvas extends Composite
 			{
 				items.remove(dragItem);
 				canvas.remove(dragItem);
+				placebook.removeItem(dragItem.getItem());
 				dragImage.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-				if(isInWidget(dragItem, x, y))
+				if (isInWidget(dragItem, x, y))
 				{
 					dragItem.showFrame();
 				}
@@ -232,7 +212,7 @@ public class PlaceBookCanvas extends Composite
 					dragItem.hideFrame();
 				}
 				dragItem = null;
-				markChanged();
+				saveTimer.markChanged();
 			}
 			else
 			{
@@ -243,14 +223,18 @@ public class PlaceBookCanvas extends Composite
 			}
 		}
 	}
-	
-	private boolean isInWidget(Widget widget,final int x, final int y)
+
+	@UiHandler("title")
+	void handleTitleEdit(final KeyUpEvent event)
 	{
-		final int left = widget.getElement().getOffsetLeft();
-		final int width = widget.getElement().getOffsetWidth();
-		final int top = widget.getElement().getOffsetTop();
-		final int height = widget.getElement().getOffsetHeight();
-		return left < x && x < (left + width) && top < y && y < (top + height);
+		placebook.setMetadata("title", title.getElement().getInnerText());
+		saveTimer.markChanged();
+	}
+
+	@UiHandler("backPanel")
+	void handleMouseMove(final MouseMoveEvent event)
+	{
+		handleDrag(event, false);
 	}
 
 	@UiHandler("backPanel")
@@ -268,9 +252,9 @@ public class PlaceBookCanvas extends Composite
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				final PlaceBookItemFrame frame = new PlaceBookItemFrame(item.getPlaceBookItem());
+				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
 				add(frame);
-				placebook.getItems().push(item.getPlaceBookItem());
+				placebook.getItems().push(frame.getItem());
 				startDrag(frame, event);
 			}
 		});
@@ -293,7 +277,7 @@ public class PlaceBookCanvas extends Composite
 		item.addMouseOverHandler(new MouseOverHandler()
 		{
 			@Override
-			public void onMouseOver(MouseOverEvent event)
+			public void onMouseOver(final MouseOverEvent event)
 			{
 				if (dragItem == null)
 				{
@@ -305,7 +289,7 @@ public class PlaceBookCanvas extends Composite
 		item.addMouseOutHandler(new MouseOutHandler()
 		{
 			@Override
-			public void onMouseOut(MouseOutEvent event)
+			public void onMouseOut(final MouseOutEvent event)
 			{
 				if (dragItem == null)
 				{
@@ -315,13 +299,19 @@ public class PlaceBookCanvas extends Composite
 		});
 	}
 
+	private boolean isInWidget(final Widget widget, final int x, final int y)
+	{
+		final int left = widget.getElement().getOffsetLeft();
+		final int width = widget.getElement().getOffsetWidth();
+		final int top = widget.getElement().getOffsetTop();
+		final int height = widget.getElement().getOffsetHeight();
+		return left < x && x < (left + width) && top < y && y < (top + height);
+	}
+
 	private void startDrag(final PlaceBookItemFrame itemFrame, final MouseDownEvent event)
 	{
 		GWT.log("Start drag");
-		if(dragItem != null)
-		{
-			return;
-		}
+		if (dragItem != null) { return; }
 
 		dragItem = itemFrame;
 		dragItem.startDrag(event);
@@ -329,5 +319,17 @@ public class PlaceBookCanvas extends Composite
 		dragImage.setStyleName(Resources.INSTANCE.style().dragImage());
 
 		handleDrag(event, false);
+	}
+
+	public void setPalette(JsArray<PlaceBookItem> items)
+	{
+		palette.clear();
+		add(new PaletteItem(PlaceBookItem.parse("{\"@class\":\"placebooks.model.TextItem\",\"sourceURL\":\"http://www.google.com\",\"metadata\":{\"title\":\"Text Item\"},\"parameters\":{},\"text\":\"New Text Block\"}")));
+		add(new PaletteItem(PlaceBookItem.parse("{\"@class\":\"placebooks.model.ImageItem\",\"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Item Item\"},\"parameters\":{}}")));
+
+		for(int index = 0; index < items.length(); index++)
+		{
+			add(new PaletteItem(items.get(index)));
+		}
 	}
 }

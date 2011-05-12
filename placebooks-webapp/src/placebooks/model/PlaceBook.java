@@ -1,132 +1,133 @@
 package placebooks.model;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.TemporalType.TIMESTAMP;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import placebooks.controller.PropertiesSingleton;
-import placebooks.controller.SearchHelper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-
-import javax.jdo.annotations.Extension;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-@PersistenceCapable
-@Extension(vendorName="datanucleus", key="mysql-engine-type", value="MyISAM")
-@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
+@Entity
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class PlaceBook
 {
-	@NotPersistent
 	protected static final Logger log = Logger.getLogger(PlaceBook.class.getName());
 
-	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
-	private String key;
-
-	@Persistent
-	private User owner;
-	
-	@Persistent
-	private Date timestamp;
-
-	@Persistent
-	@JsonSerialize(using=placebooks.model.json.GeometryJSONSerializer.class)	
-	@JsonDeserialize(using=placebooks.model.json.GeometryJSONDeserializer.class)
+	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
+	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom; // Pertaining to the PlaceBook
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private String id;
+
+	@OneToOne(cascade = ALL, mappedBy = "placebook")
+	@JsonIgnore
+	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
+
 	// TODO: Cascading deletes via dependent=true: not sure about this
-	@Persistent(mappedBy="placebook")
-	@javax.jdo.annotations.Element(dependent = "true") 
+	@OneToMany(mappedBy = "placebook", cascade = ALL)
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@Persistent
+	@ElementCollection
 	private Map<String, String> metadata = new HashMap<String, String>();
 
-	@Persistent(mappedBy = "placebook", dependent = "true")
-	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
+	@ManyToOne
+	private User owner;
+
+	@Temporal(TIMESTAMP)
+	private Date timestamp;
 
 	// Make a new PlaceBook
-	public PlaceBook(User owner, Geometry geom)
+	public PlaceBook(final User owner, final Geometry geom)
 	{
 		this.owner = owner;
 		if (owner != null)
+		{
 			this.owner.add(this);
+		}
 		this.geom = geom;
 		this.timestamp = new Date();
 		index.setPlaceBook(this);
 
-		log.info("Created new PlaceBook: timestamp=" 
-				 + this.timestamp.toString());
+		log.info("Created new PlaceBook: timestamp=" + this.timestamp.toString());
 
 	}
-	
-	public PlaceBook(User owner, Geometry geom, List<PlaceBookItem> items)
+
+	public PlaceBook(final User owner, final Geometry geom, final List<PlaceBookItem> items)
 	{
 		this(owner, geom);
 		setItems(items);
 	}
 
-	public String getPackagePath()
+	PlaceBook()
 	{
-		return PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ getKey();
+		index.setPlaceBook(this);		
 	}
 
-	public Element createConfigurationRoot(Document config)
+	public void addItem(final PlaceBookItem item)
+	{
+		items.add(item);
+		item.setPlaceBook(this);
+	}
+
+	public void addMetadataEntry(final String key, final String value)
+	{
+		metadata.put(key, value);
+		index.addAll(SearchHelper.getIndex(value));
+	}
+
+	public Element createConfigurationRoot(final Document config)
 	{
 		log.info("PlaceBook.appendConfiguration(), key=" + this.getKey());
-		Element root = config.createElement(PlaceBook.class.getName());
+		final Element root = config.createElement(PlaceBook.class.getName());
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
-		
-		Element timestamp = config.createElement("timestamp");
-		timestamp.appendChild(config.createTextNode(
-								this.getTimestamp().toString()));
+
+		final Element timestamp = config.createElement("timestamp");
+		timestamp.appendChild(config.createTextNode(this.getTimestamp().toString()));
 		root.appendChild(timestamp);
 
-		Element geometry = config.createElement("geometry");
-		geometry.appendChild(config.createTextNode(
-								this.getGeometry().toText()));
+		final Element geometry = config.createElement("geometry");
+		geometry.appendChild(config.createTextNode(this.getGeometry().toText()));
 		root.appendChild(geometry);
 
 		if (!metadata.isEmpty())
 		{
-			Element sElem = config.createElement("metadata");
+			final Element sElem = config.createElement("metadata");
 
-			for (Map.Entry<String, String> e: metadata.entrySet())
+			for (final Map.Entry<String, String> e : metadata.entrySet())
 			{
-				Element elem = config.createElement(e.getKey().toString());
-				elem.appendChild(
-					config.createTextNode(e.getValue().toString()));
+				final Element elem = config.createElement(e.getKey().toString());
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
 			}
 
@@ -136,10 +137,9 @@ public class PlaceBook
 		return root;
 	}
 
-	public void setItems(List<PlaceBookItem> items)
+	public Geometry getGeometry()
 	{
-		this.items.clear();
-		this.items.addAll(items);
+		return geom;
 	}
 
 	public List<PlaceBookItem> getItems()
@@ -147,27 +147,9 @@ public class PlaceBook
 		return Collections.unmodifiableList(items);
 	}
 
-	public void addItem(PlaceBookItem item) 
+	public String getKey()
 	{
-  		items.add(item);
-  		item.setPlaceBook(this);
-	}
-
-	public boolean removeItem(PlaceBookItem item)
-	{
-		item.setPlaceBook(null);
-		return items.remove(item);
-	}
-	
-	public void addMetadataEntry(String key, String value)
-	{
-		metadata.put(key, value);
-		index.addAll(SearchHelper.getIndex(value));
-	}
-
-	public String getMetadataValue(String key)
-	{
-		return metadata.get(key);
+		return id;
 	}
 
 	public Map<String, String> getMetadata()
@@ -175,19 +157,56 @@ public class PlaceBook
 		return Collections.unmodifiableMap(metadata);
 	}
 
+	public String getMetadataValue(final String key)
+	{
+		return metadata.get(key);
+	}
+
+	public User getOwner()
+	{
+		return owner;
+	}
+
+	public String getPackagePath()
+	{
+		return PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_PKG, "")
+				+ getKey();
+	}
+
+	public Date getTimestamp()
+	{
+		return timestamp;
+	}
+
 	public boolean hasMetadata()
 	{
 		return (!metadata.isEmpty());
 	}
 
-	public String getKey() { return key; }
+	public boolean removeItem(final PlaceBookItem item)
+	{
+		item.setPlaceBook(null);
+		return items.remove(item);
+	}
 
-	public void setOwner(User owner) { this.owner = owner; }
-	public User getOwner() { return owner; }
+	public void setGeometry(final Geometry geom)
+	{
+		this.geom = geom;
+	}
 
-	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
-	public Date getTimestamp() { return timestamp; }
+	public void setItems(final List<PlaceBookItem> items)
+	{
+		this.items.clear();
+		this.items.addAll(items);
+	}
 
-	public void setGeometry(Geometry geom) { this.geom = geom; }
-	public Geometry getGeometry() { return geom; }
+	public void setOwner(final User owner)
+	{
+		this.owner = owner;
+	}
+
+	public void setTimestamp(final Date timestamp)
+	{
+		this.timestamp = timestamp;
+	}
 }

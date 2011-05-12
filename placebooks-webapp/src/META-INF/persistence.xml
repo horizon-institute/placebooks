@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<persistence-unit name="placebooks">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>	
+		<properties>
+			<property name="javax.persistence.jdbc.password" value="r4nd0m" />
+			<property name="javax.persistence.jdbc.user" value="root" />
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/placebooks" />
+			<property name="eclipselink.logging.level" value="INFO" />
+		</properties>
+	</persistence-unit>
+</persistence>

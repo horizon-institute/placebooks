@@ -1,49 +1,50 @@
 package placebooks.model;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.Extension;
-import javax.jdo.annotations.Inheritance;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.Discriminator;
-import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
-@Inheritance(strategy = InheritanceStrategy.NEW_TABLE)
-@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-@Extension(vendorName = "datanucleus", key = "mysql-engine-type", 
-		   value = "MyISAM")
+@Entity
 public class SearchIndex
 {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
-	private String key;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private String id;
 
-	@Persistent
+	@Column(name = "searchindex")
+	@ElementCollection
 	private Set<String> index = new HashSet<String>();
 
-	public SearchIndex() { }
-
-	public Set<String> getIndex() 
-	{ 
-		return Collections.unmodifiableSet(index); 
+	public SearchIndex()
+	{
 	}
-	public void setIndex(Set<String> index)
-	{ 
+
+	public void add(final String element)
+	{
+		index.add(element);
+	}
+
+	public void addAll(final Set<String> elements)
+	{
+		index.addAll(elements);
+	}
+
+	public Set<String> getIndex()
+	{
+		return Collections.unmodifiableSet(index);
+	}
+
+	public void setIndex(final Set<String> index)
+	{
 		this.index.clear();
 		this.index.addAll(index);
 	}
 
-	public void add(String element) { index.add(element); }
-
-	public void addAll(Set<String> elements) { index.addAll(elements); }
-
 }
-

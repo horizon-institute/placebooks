@@ -52,17 +52,6 @@
 		<classpath refid="classpath" />
 	</taskdef>
 	
-	<path id="classpath.enhance">
-		<path refid="classpath"/>
-		<pathelement path="${classes.dir}" />
-    </path>
-
-	<path id="classpath.schematool">
-		<path refid="classpath"/>
-		<pathelement path="${classes.dir}" />
-    </path>
-
-	
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
@@ -104,7 +93,7 @@
 		<copy file="${placebooks.props}" todir="${classes.dir}" />
 	</target>
 
-	<target name="war" depends="compile,enhance,staging"
+	<target name="war" depends="compile,staging"
 			description="Create the web archive file">
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">
@@ -112,7 +101,7 @@
 		</jar>
 	</target>
 
-	<target name="test" depends="compile-test,enhance,staging" 
+	<target name="test" depends="compile-test,staging" 
 			description="JUnit testing">
 		<junit fork="yes" haltonfailure="yes" showoutput="yes">
 			<classpath>
@@ -125,52 +114,6 @@
 			<test name="placebooks.test.EverytrailHelperTest" />			
     	</junit>
 	</target>
-
-	<taskdef name="nucleusenhancer"
-             classpathref="classpath.enhance"
-             classname="org.datanucleus.enhancer.tools.EnhancerTask" />
-
-	<target name="enhance" depends="compile">
- 
-        <nucleusenhancer classpathref="classpath.enhance" 
-						 dir="${basedir}/${classes.dir}" 
-						 checkonly="false" filesuffixes="class" 
-						 failonerror="true" verbose="true">
-			<jvmarg line="-Dlog4j.configuration=log4j.properties" />
-		</nucleusenhancer>
-
-    </target>
-	
-	<!-- Required for SchemaTool -->
-	<property file="${placebooks.props}" />
-
-	<taskdef name="schematool"
-			 classpathref="classpath.schematool"
-			 classname="org.datanucleus.store.schema.SchemaToolTask" />
-
-	<target name="initschema" depends="enhance,staging">
-
-		<schematool classpathref="classpath.schematool" failonerror="true" 
-					dir="${basedir}/${classes.dir}"
-					verbose="true" mode="create">
-			<jvmarg line="-Dlog4j.configuration=log4j.properties" />
-			<sysproperty key="datanucleus.ConnectionDriverName" 
-						 value="${javax.jdo.option.ConnectionDriverName}"/>
-			<sysproperty key="datanucleus.ConnectionURL" 
-						 value="${javax.jdo.option.ConnectionURL}"/>
-			<sysproperty key="datanucleus.ConnectionUserName" 
-						 value="${javax.jdo.option.ConnectionUserName}"/>
-			<sysproperty key="datanucleus.ConnectionPassword" 
-						 value="${javax.jdo.option.ConnectionPassword}"/>
-			<sysproperty key="datanucleus.Mapping" 
-						 value="${javax.jdo.option.Mapping}"/>
-			<sysproperty key="log4j.configuration" value="${log4j.props}" />
-			<fileset dir="${classes.dir}">
-		        <include name="**/*.class"/>
-		    </fileset>	
-    	</schematool>
-	</target>
-
 
 	<target name="docs" depends="makedirs">
 		<javadoc sourcepath="${src.dir}"
@@ -186,7 +129,7 @@
 		</javadoc>
 	</target>
 
-	<target name="initdb" depends="compile,enhance,staging">
+	<target name="initdb" depends="compile,staging">
         <java classname="placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />
@@ -207,7 +150,6 @@
 	    <undeploy url="${manager.url}" username="${manager.username}"
 		          password="${manager.password}" path="/${basepackage.name}"/>
   	</target>
-
 
  	<target name="reload" depends="war"
    			description="Reload application on servlet container">

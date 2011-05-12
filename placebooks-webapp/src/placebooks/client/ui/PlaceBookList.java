@@ -15,22 +15,6 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PlaceBookList extends CellList<PlaceBookEntry>
 {
-	private static final PlaceBookEntry newPlaceBook;
-	
-	private static final ProvidesKey<PlaceBookEntry> placebookKeyProvider = new ProvidesKey<PlaceBookEntry>()
-	{
-		@Override
-		public Object getKey(PlaceBookEntry entry)
-		{
-			return entry.getKey();
-		}
-	};
-	
-	static 
-	{
-		newPlaceBook = PlaceBookEntry.parse("{\"key\": \"new\", \"title\": \"New PlaceBook\", \"description\": \"Start a new placebook\"}");
-	}
-	
 	static class PlaceBookCell extends AbstractCell<PlaceBookEntry>
 	{
 		public PlaceBookCell()
@@ -43,11 +27,12 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			// Value can be null, so do a null check..
 			if (value == null) { return; }
 
-			sb.appendHtmlConstant("<div style=\"" + placebooks.client.resources.Resources.INSTANCE.style().panel() + "\">");
+			sb.appendHtmlConstant("<div style=\"" + placebooks.client.resources.Resources.INSTANCE.style().panel()
+					+ "\">");
 
 			// Add the name and address.
 			sb.appendHtmlConstant("<div>");
-			if(value.getTitle() == null)
+			if (value.getTitle() == null)
 			{
 				sb.appendEscaped("No Title");
 			}
@@ -56,8 +41,8 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 				sb.appendEscaped(value.getTitle());
 			}
 			sb.appendHtmlConstant("</div>");
-			sb.appendHtmlConstant("<div>");			
-			if(value.getDescription() == null)
+			sb.appendHtmlConstant("<div>");
+			if (value.getDescription() == null)
 			{
 				sb.appendEscaped("No Description");
 			}
@@ -69,33 +54,51 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			sb.appendHtmlConstant("</div>");
 		}
 	}
-	
+
+	private static final PlaceBookEntry newPlaceBook;
+
+	private static final ProvidesKey<PlaceBookEntry> placebookKeyProvider = new ProvidesKey<PlaceBookEntry>()
+	{
+		@Override
+		public Object getKey(final PlaceBookEntry entry)
+		{
+			return entry.getKey();
+		}
+	};
+
+	static
+	{
+		newPlaceBook = PlaceBookEntry
+				.parse("{\"key\": \"new\", \"title\": \"New PlaceBook\", \"description\": \"Start a new placebook\"}");
+	}
+
 	public PlaceBookList()
 	{
 		super(new PlaceBookCell(), placebookKeyProvider);
-//	    cellList.setPageSize(30);
-//	    cellList.setKeyboardPagingPolicy(KeyboardPagingPolicy.INCREASE_RANGE);
-	    setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+		// cellList.setPageSize(30);
+		// cellList.setKeyboardPagingPolicy(KeyboardPagingPolicy.INCREASE_RANGE);
+		setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 	}
-	
-	public void addSelectionHandler(SelectionChangeEvent.Handler handler)
+
+	public void addSelectionHandler(final SelectionChangeEvent.Handler handler)
 	{
-	    final SingleSelectionModel<PlaceBookEntry> selectionModel = new SingleSelectionModel<PlaceBookEntry>(placebookKeyProvider);
-	    setSelectionModel(selectionModel);
-	    selectionModel.addSelectionChangeHandler(handler);			
+		final SingleSelectionModel<PlaceBookEntry> selectionModel = new SingleSelectionModel<PlaceBookEntry>(
+				placebookKeyProvider);
+		setSelectionModel(selectionModel);
+		selectionModel.addSelectionChangeHandler(handler);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public PlaceBookEntry getSelection()
 	{
-		 return ((SingleSelectionModel<PlaceBookEntry>)getSelectionModel()).getSelectedObject();		
+		return ((SingleSelectionModel<PlaceBookEntry>) getSelectionModel()).getSelectedObject();
 	}
-	
-	public void setShelf(Shelf shelf)
+
+	public void setShelf(final Shelf shelf)
 	{
-		List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+		final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 		entries.add(newPlaceBook);
-		for(int index = 0; index < shelf.getEntries().length(); index++)
+		for (int index = 0; index < shelf.getEntries().length(); index++)
 		{
 			entries.add(shelf.getEntries().get(index));
 		}

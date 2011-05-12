@@ -4,7 +4,7 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 0px;
+			top: 40px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
@@ -59,9 +59,22 @@
 			border-radius: 5px;
 			margin-top: 100px;
 			padding: 10px 20px;
-			display: none;
+			display: inline-block;
 		}
 
+		.titleBar {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 120px;
+			height: 40px;
+		}
+		
+		.titleLabel {
+			line-height: 40px;
+			height: 40px;
+			display: inline-block;
+		}
 		
 		.loadingLabel {
 			color: white;
@@ -74,8 +87,10 @@
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
-		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
+		<!--<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>-->		
 		<g:Image ui:field="dragImage" />	
+		<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
+		</p:MousePanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">

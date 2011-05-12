@@ -14,14 +14,14 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryJSONDeserializer extends JsonDeserializer<Geometry>
 {
 	@Override
-	public Geometry deserialize(JsonParser parser, DeserializationContext context) throws IOException,
+	public Geometry deserialize(final JsonParser parser, final DeserializationContext context) throws IOException,
 			JsonProcessingException
 	{
 		try
 		{
 			return new WKTReader().read(parser.getText());
 		}
-		catch (ParseException e)
+		catch (final ParseException e)
 		{
 			throw new IOException("Parse Error", e);
 		}

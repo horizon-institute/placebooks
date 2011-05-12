@@ -3,17 +3,12 @@ package placebooks.test;
 import java.util.Collections;
 import java.util.Map.Entry;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.persistence.EntityManager;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
-import placebooks.controller.PMFSingleton;
+import placebooks.controller.EMFSingleton;
 import placebooks.controller.UserManager;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
@@ -133,41 +128,44 @@ public class JSONTests
 	public void savePlaceBookJSON() throws Exception
 	{
 		ObjectMapper mapper = new ObjectMapper();
-		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
+			final User owner = UserManager.getUser(manager, "ktg@cs.nott.ac.uk");
+			final Geometry geometry = new WKTReader().read("POINT(52.5189367988799 -4.04983520507812)");
+			
+			PlaceBook dbPlacebook = new PlaceBook(owner, geometry);
+			manager.persist(dbPlacebook);
 
-			manager.currentTransaction().begin();
-			final PlaceBook placebook = mapper.readValue("{\"key\":\"808180862fdee382012fdee3823d0000\", \"owner\":{\"key\":\"808180862fdee365012fdee365ac0000\", \"email\":\"ktg@cs.nott.ac.uk\", \"name\":\"Kevin Glover\", \"friends\":[]}, \"timestamp\":null, \"geom\":null, \"items\":[{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":1}},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"}], \"metadata\":{}, \"index\":null}", PlaceBook.class);
-			
-			final PlaceBook dbPlacebook = manager.getObjectById(PlaceBook.class, placebook.getKey());	
-			
-			for(Entry<String, String> entry: placebook.getMetadata().entrySet())
+			manager.getTransaction().begin();
+			final PlaceBook jsonPlacebook = mapper.readValue("{\"id\":\"" + dbPlacebook.getKey() + "\", \"owner\":{\"id\":\"808180862fdee365012fdee365ac0000\", \"email\":\"ktg@cs.nott.ac.uk\", \"name\":\"Kevin Glover\", \"friends\":[]}, \"timestamp\":null, \"geom\":null, \"items\":[{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":1}},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"}], \"metadata\":{}, \"index\":null}", PlaceBook.class);
+						
+			for(Entry<String, String> entry: jsonPlacebook.getMetadata().entrySet())
 			{
 				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 			}
 
 			dbPlacebook.setItems(Collections.EMPTY_LIST);
-			for(PlaceBookItem item: placebook.getItems())
+			for(PlaceBookItem item: jsonPlacebook.getItems())
 			{
 				item.setOwner(dbPlacebook.getOwner());
 				item.setPlaceBook(dbPlacebook);
-				manager.makePersistent(item);							
+				manager.persist(item);							
 				dbPlacebook.addItem(item);
 			}			
 	
-			dbPlacebook.setGeometry(placebook.getGeometry());
+			dbPlacebook.setGeometry(jsonPlacebook.getGeometry());
 
-			manager.makePersistent(dbPlacebook);
+			manager.persist(dbPlacebook);
 			
-			manager.currentTransaction().commit();
+			manager.getTransaction().commit();
 			
 		}
 		finally
 		{
-			if(manager.currentTransaction().isActive())
+			if(manager.getTransaction().isActive())
 			{
-				manager.currentTransaction().rollback();
+				manager.getTransaction().rollback();
 			}
 			manager.close();
 		}

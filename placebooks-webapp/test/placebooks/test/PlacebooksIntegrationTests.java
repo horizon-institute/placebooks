@@ -3,33 +3,32 @@
  */
 package placebooks.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Vector;
 
-import javax.jdo.PersistenceManager;
+import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mortbay.log.Log;
 import org.w3c.dom.Node;
 
-import com.google.gdata.data.youtube.VideoFeed;
-
-import placebooks.model.User;
+import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
-import placebooks.controller.PMFSingleton;
 import placebooks.controller.UserManager;
 import placebooks.controller.YouTubeHelper;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.utils.*;
+import placebooks.utils.InitializeDatabase;
+
+import com.google.gdata.data.youtube.VideoFeed;
 
 /**
  * @author pszmp
@@ -40,7 +39,7 @@ public class PlacebooksIntegrationTests
 	private static final Logger log = 
 		Logger.getLogger(PlacebooksIntegrationTests.class.getName());
 
-	final PersistenceManager pm = PMFSingleton.getPersistenceManager();
+	final EntityManager pm = EMFSingleton.getEntityManager();
 	
 	/**
 	 * @throws java.lang.Exception

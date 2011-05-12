@@ -1,9 +1,7 @@
 package placebooks.controller;
 
-import java.util.Collection;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +10,7 @@ import placebooks.model.User;
 
 public class UserManager
 {
-	public static User getCurrentUser(final PersistenceManager manager)
+	public static User getCurrentUser(final EntityManager manager)
 	{
 		final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails)
@@ -23,14 +21,10 @@ public class UserManager
 		return null;
 	}
 
-	public static User getUser(final PersistenceManager manager, final String email)
+	public static User getUser(final EntityManager manager, final String email)
 	{
-		final Query query = manager.newQuery(User.class, "email == \"" + email.toLowerCase() + "\"");
-		final Object result = query.execute();
-		@SuppressWarnings("unchecked")
-		final Collection<User> users = (Collection<User>) result;
-		if (!users.isEmpty()) { return users.iterator().next(); }
-
-		return null;
+		final TypedQuery<User> query = manager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
+		query.setParameter("email", email);
+		return query.getSingleResult();
 	}
 }

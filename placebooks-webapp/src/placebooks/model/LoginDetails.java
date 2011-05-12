@@ -1,33 +1,31 @@
 package placebooks.model;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
-@PersistenceCapable(detachable="true")
+@Entity
 public class LoginDetails
 {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.UUIDHEX)
-	private String key;
-	
-	@Persistent
-	private User user;
-	
-	@Persistent
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private String id;
+
 	private String password;
-	
-	@Persistent
-	private String userid;
-	
-	@Persistent
-	private String username;
-	
-	@Persistent
+
 	private String service;
 
-	public LoginDetails(final User user, final String service, final String userid, final String username, final String password)
+	@ManyToOne
+	private User user;
+
+	private String userid;
+
+	private String username;
+
+	public LoginDetails(final User user, final String service, final String userid, final String username,
+			final String password)
 	{
 		this.user = user;
 		this.userid = userid;
@@ -35,10 +33,19 @@ public class LoginDetails
 		this.username = username;
 		this.password = password;
 	}
-	
+
+	LoginDetails()
+	{
+	}
+
 	public String getPassword()
 	{
 		return password;
+	}
+
+	public String getService()
+	{
+		return service;
 	}
 
 	public String getUserID()
@@ -49,10 +56,5 @@ public class LoginDetails
 	public String getUsername()
 	{
 		return username;
-	}
-
-	public String getService()
-	{
-		return service;
 	}
 }
