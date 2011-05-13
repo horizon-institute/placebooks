@@ -38,6 +38,16 @@ public class LoginDetails
 	{
 	}
 
+	public String getID()
+	{
+		return id;
+	}
+	
+	public User getUser()
+	{
+		return user;
+	}
+	
 	public String getPassword()
 	{
 		return password;

@@ -76,6 +76,7 @@ import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
 import placebooks.model.json.Shelf;
+import placebooks.utils.InitializeDatabase;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -750,6 +751,15 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
+	// TODO: currently uses startsWith for string search. Is this right??
+	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
+	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		InitializeDatabase.main(null);
+		return null;
+	}
+	
 	
 	// TODO: currently uses startsWith for string search. Is this right??
 	// owner.key query on key value for User works without startsWith

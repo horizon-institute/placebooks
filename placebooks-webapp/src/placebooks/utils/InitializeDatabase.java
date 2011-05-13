@@ -18,7 +18,6 @@ public class InitializeDatabase
 		final EntityManager manager = EMFSingleton.getTestEntityManager();
 
 		manager.getTransaction().begin();
-		manager.createQuery("DELETE FROM User", User.class).executeUpdate();
 
 		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
 

@@ -1,7 +1,6 @@
 package placebooks.test;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
@@ -144,7 +143,6 @@ public class PersistenceTests
 				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 			}
 
-			dbPlacebook.setItems(Collections.EMPTY_LIST);
 			for(PlaceBookItem item: jsonPlacebook.getItems())
 			{
 				item.setOwner(dbPlacebook.getOwner());

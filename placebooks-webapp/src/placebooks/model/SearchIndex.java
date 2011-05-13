@@ -26,6 +26,11 @@ public class SearchIndex
 	{
 	}
 
+	public String getID()
+	{
+		return id;
+	}
+	
 	public void add(final String element)
 	{
 		index.add(element);

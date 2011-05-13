@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import placebooks.model.PlaceBook;
@@ -13,7 +12,6 @@ import placebooks.model.User;
 
 public class Shelf
 {
-	@JsonIgnore
 	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
@@ -44,5 +42,10 @@ public class Shelf
 
 			entries.add(entry);
 		}
+	}
+	
+	public User getUser()
+	{
+		return user;
 	}
 }
