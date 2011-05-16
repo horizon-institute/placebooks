@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.PlaceBook;
+import placebooks.utils.InitializeDatabase;
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
 // in here.
@@ -68,6 +70,41 @@ public class PlaceBooksAdminControllerDebug
 		return mav;
 
 	}
+	
+	@RequestMapping(value = "/admin/delete/all_placebooks", method = RequestMethod.GET)
+	public ModelAndView deleteAllPlaceBook()
+	{
+
+		final EntityManager pm = EMFSingleton.getEntityManager();
+
+		try
+		{
+			pm.getTransaction().begin();
+			/*
+			 * Query query = pm.newQuery(PlaceBook.class); pbs = (List<PlaceBook>)query.execute();
+			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
+			 * item.deleteItemData(); }
+			 */
+
+			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
+			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted all PlaceBooks");
+
+		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
+	}
 
 	@RequestMapping(value = "/admin/test/everytrail/login", method = RequestMethod.POST)
 	public ModelAndView testEverytrailLogin(final HttpServletRequest req)
@@ -79,6 +116,13 @@ public class PlaceBooksAdminControllerDebug
 				+ response.getValue() + "<br/>");
 	}
 
+	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
+	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		InitializeDatabase.main(null);
+		return null;
+	}
+	
 	@RequestMapping(value = "/admin/test/everytrail/pictures", method = RequestMethod.POST)
 	public ModelAndView testEverytrailPictures(final HttpServletRequest req)
 	{

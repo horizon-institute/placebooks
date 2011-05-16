@@ -14,8 +14,8 @@
 	   http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
 	   
 	<bean id="userDetailsService" class="placebooks.controller.PlaceBooksUserDetailsService" />
-	
-	<security:authentication-manager>
+
+	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider user-service-ref='userDetailsService'>
 			<security:password-encoder hash="md5"/>		
 		</security:authentication-provider>

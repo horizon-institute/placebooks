@@ -53,6 +53,7 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +77,6 @@ import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
 import placebooks.model.json.Shelf;
-import placebooks.utils.InitializeDatabase;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -542,40 +542,16 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 
-	@RequestMapping(value = "/admin/delete/all_placebooks", method = RequestMethod.GET)
-	public ModelAndView deleteAllPlaceBook()
+	@RequestMapping(value = "/currentUser")
+	public void currentUserJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
 
-		final EntityManager pm = EMFSingleton.getEntityManager();
+		final User currentUser = UserManager.getCurrentUser(entityManager);
 
-		try
+		if (currentUser == null)
 		{
-			pm.getTransaction().begin();
-			/*
-			 * Query query = pm.newQuery(PlaceBook.class); pbs = (List<PlaceBook>)query.execute();
-			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
-			 * item.deleteItemData(); }
-			 */
-
-			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
-			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
-			pm.getTransaction().commit();
 		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
-		}
-
-		pm.close();
-
-		log.info("Deleted all PlaceBooks");
-
-		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
-
 	}
 
 	@RequestMapping(value = "/admin/delete_placebook/{key}", method = RequestMethod.GET)
@@ -637,28 +613,44 @@ public class PlaceBooksAdminController
 
 	}
 
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
+	@RequestMapping(value = "/palette", method = RequestMethod.GET)
+	public void getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+		final TypedQuery<PlaceBookItem> q = manager
+				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
+								PlaceBookItem.class);
+		q.setParameter("owner", user);
+
+		final Collection<PlaceBookItem> pbs = q.getResultList();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		log.info("User " + user.getName());
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			log.info("Shelf: " + mapper.writeValueAsString(pbs));
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, pbs);
+			sos.flush();
+		}
+		catch (final Exception e)
+		{
+			log.error(e.toString());
+		}
+
+		manager.close();
+	}
+
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
+	public void getPlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
-			PlaceBook placebook = null;
-			if (key.equals("new"))
-			{
-				// Create new placebook
-				placebook = new PlaceBook(UserManager.getCurrentUser(manager), null);
-
-				manager.persist(placebook);
-			}
-			else
-			{
-				placebook = manager.find(PlaceBook.class, key);
-			}
-
+			final PlaceBook placebook = manager.find(PlaceBook.class, key);
 			if (placebook != null)
 			{
 				try
@@ -684,12 +676,10 @@ public class PlaceBooksAdminController
 		{
 			manager.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
@@ -716,53 +706,8 @@ public class PlaceBooksAdminController
 		}
 
 		manager.close();
-
-		return null;
 	}
 
-	@RequestMapping(value = "/palette", method = RequestMethod.GET)
-	public ModelAndView getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
-															PlaceBookItem.class);
-		q.setParameter("owner", user);
-
-		final Collection<PlaceBookItem> pbs = q.getResultList();
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		log.info("User " + user.getName());
-		try
-		{
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(pbs));
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, pbs);
-			sos.flush();
-		}
-		catch (final Exception e)
-		{
-			log.error(e.toString());
-		}
-
-		manager.close();
-
-		return null;
-	}
-
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
-	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
-	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		InitializeDatabase.main(null);
-		return null;
-	}
-	
-	
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
 	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("owner") final String owner)
@@ -905,8 +850,43 @@ public class PlaceBooksAdminController
 
 	}
 
-	
-	
+	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
+	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		res.setContentType("application/json");
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(entityManager);
+		if (user == null)
+		{
+			try
+			{
+				final ObjectMapper mapper = new ObjectMapper();
+				final ServletOutputStream sos = res.getOutputStream();
+				mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION).toString());
+				sos.flush();
+			}
+			catch (final IOException e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
+		else
+		{
+			try
+			{
+				final ObjectMapper mapper = new ObjectMapper();
+				final ServletOutputStream sos = res.getOutputStream();
+				mapper.writeValue(sos, user);
+				log.info("User: " + mapper.writeValueAsString(user));
+				sos.flush();
+			}
+			catch (final IOException e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
 	public ModelAndView savePlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
@@ -923,12 +903,12 @@ public class PlaceBooksAdminController
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 
 			PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-			if(dbPlacebook == null)
+			if (dbPlacebook == null)
 			{
 				dbPlacebook = placebook;
 			}
 			log.info(mapper.writeValueAsString(placebook));
-	
+
 			for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 			{
 				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
@@ -945,11 +925,11 @@ public class PlaceBooksAdminController
 			dbPlacebook.setGeometry(placebook.getGeometry());
 
 			manager.merge(dbPlacebook);
-			
+
 			log.info("Added PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
-			
+
 			manager.getTransaction().commit();
-			
+
 		}
 		catch (final Throwable e)
 		{
