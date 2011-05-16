@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
@@ -24,17 +25,44 @@ public class PersistenceTests
 	private static String testName = "Testy McTesterson";
 	private static String testEmail = "testy@mctesterson.co.uk";
 	
-	@Test
-	public void newUserTest() throws Exception
+	@Before
+	public void clearTestUser()
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
-			final Md5PasswordEncoder encoder = new Md5PasswordEncoder();			
-			User user = new User(testName, testEmail, encoder.encodePassword("test", null));
+			User user = UserManager.getUser(manager, testEmail);
+			if(user != null)
+			{
+				manager.getTransaction().begin();
+				manager.remove(user);
+				manager.getTransaction().commit();				
+			}
+		}
+		catch(Exception e)
+		{
+			
+		}		
+		finally
+		{
+			if(manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}
+			manager.close();
+		}
+	}
 	
+	@Test
+	public void newUserTest() throws Exception
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();					
+		User user = new User(testName, testEmail, encoder.encodePassword("test", null));		
+		try
+		{
 			manager.getTransaction().begin();
-			manager.persist(user);
+			manager.merge(user);
 			manager.getTransaction().commit();
 			
 			assert user.getKey() != null;

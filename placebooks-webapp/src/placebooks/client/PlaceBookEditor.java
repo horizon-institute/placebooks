@@ -23,6 +23,8 @@ public class PlaceBookEditor implements EntryPoint
 
 	private final PlaceBookList list = new PlaceBookList();
 
+	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
+	
 	@Override
 	public void onModuleLoad()
 	{
@@ -38,26 +40,33 @@ public class PlaceBookEditor implements EntryPoint
 				list.setVisible(false);
 				canvas.setVisible(true);
 
-				PlaceBookService.getPlaceBook(entry.getKey(), new RequestCallback()
+				if(entry.getKey().equals("new"))
 				{
-					@Override
-					public void onError(final Request request, final Throwable throwable)
+					canvas.setPlaceBook(PlaceBook.parse(newPlaceBook));
+				}
+				else
+				{
+					PlaceBookService.getPlaceBook(entry.getKey(), new RequestCallback()
 					{
-						GWT.log("Error with " + request.toString() + " " + throwable.toString());
-					}
-
-					@Override
-					public void onResponseReceived(final Request request, final Response response)
-					{
-						GWT.log("Response Code: " + response.getStatusCode());
-						GWT.log(response.getText());
-						if (response.getStatusCode() == 200)
+						@Override
+						public void onError(final Request request, final Throwable throwable)
 						{
-							final PlaceBook placebook = PlaceBook.parse(response.getText());
-							canvas.setPlaceBook(placebook);
+							GWT.log("Error with " + request.toString() + " " + throwable.toString());
 						}
-					}
-				});
+	
+						@Override
+						public void onResponseReceived(final Request request, final Response response)
+						{
+							GWT.log("Response Code: " + response.getStatusCode());
+							GWT.log(response.getText());
+							if (response.getStatusCode() == 200)
+							{
+								final PlaceBook placebook = PlaceBook.parse(response.getText());
+								canvas.setPlaceBook(placebook);
+							}
+						}
+					});
+				}
 			}
 		});
 		canvas.setVisible(false);

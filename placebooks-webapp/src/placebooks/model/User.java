@@ -40,7 +40,7 @@ public class User
 	private String passwordHash;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = ALL)
 	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
 	public User(final String name, final String email, final String passwordHash)

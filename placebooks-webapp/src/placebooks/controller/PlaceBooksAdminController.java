@@ -542,15 +542,52 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 
-	@RequestMapping(value = "/currentUser")
-	public void currentUserJSON(final HttpServletRequest req, final HttpServletResponse res)
+	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
+	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
 	{
+		res.setContentType("application/json");
 		final EntityManager entityManager = EMFSingleton.getEntityManager();
-
-		final User currentUser = UserManager.getCurrentUser(entityManager);
-
-		if (currentUser == null)
+		try
 		{
+			final User user = UserManager.getCurrentUser(entityManager);
+			if (user == null)
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
+							.toString());
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+			else
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, user);
+					log.info("User: " + mapper.writeValueAsString(user));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		finally
+		{
+			if (entityManager.getTransaction().isActive())
+			{
+				entityManager.getTransaction().rollback();
+			}
+			entityManager.close();
 		}
 	}
 
@@ -614,7 +651,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
-	public void getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
@@ -644,8 +681,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public void getPlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	public void getPlaceBookJSON(final HttpServletResponse res, @PathVariable("key") final String key)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
@@ -679,7 +715,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public void getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getPlaceBooksJSON(final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
@@ -709,8 +745,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("owner") final String owner)
+	public void getPlaceBooksJSON(final HttpServletResponse res, @PathVariable("owner") final String owner)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
@@ -741,13 +776,10 @@ public class PlaceBooksAdminController
 		}
 
 		pm.close();
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	public ModelAndView makePackage(final HttpServletResponse res, @PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
@@ -850,83 +882,73 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
-	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
+	private boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
 	{
-		res.setContentType("application/json");
-		final EntityManager entityManager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(entityManager);
-		if (user == null)
+		for(final PlaceBookItem item: items)
 		{
-			try
+			if(findItem.getKey().equals(item.getKey()))
 			{
-				final ObjectMapper mapper = new ObjectMapper();
-				final ServletOutputStream sos = res.getOutputStream();
-				mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION).toString());
-				sos.flush();
-			}
-			catch (final IOException e)
-			{
-				log.error(e.getMessage(), e);
+				return true;
 			}
 		}
-		else
-		{
-			try
-			{
-				final ObjectMapper mapper = new ObjectMapper();
-				final ServletOutputStream sos = res.getOutputStream();
-				mapper.writeValue(sos, user);
-				log.info("User: " + mapper.writeValueAsString(user));
-				sos.flush();
-			}
-			catch (final IOException e)
-			{
-				log.error(e.getMessage(), e);
-			}
-		}
+		return false;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
-	public ModelAndView savePlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@RequestParam("placebook") final String json)
+	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
-		log.info("saveplacebook");
+		log.info("Save Placebook: " + json);
 		final ObjectMapper mapper = new ObjectMapper();
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		manager.getTransaction().begin();
 		try
 		{
-			log.info(json);
-
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-
-			PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-			if (dbPlacebook == null)
+			
+			if(placebook.getKey() != null)
 			{
-				dbPlacebook = placebook;
+				PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+				if(dbPlacebook != null)
+				{
+					for(final PlaceBookItem item: dbPlacebook.getItems())
+					{
+						if(!containsItem(item, placebook.getItems()))
+						{
+							manager.remove(item);
+						}
+					}
+					
+					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+					{
+						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+					}
+					
+					dbPlacebook.setItems(Collections.EMPTY_LIST);
+					for (final PlaceBookItem item : placebook.getItems())
+					{
+						item.setOwner(dbPlacebook.getOwner());
+						dbPlacebook.addItem(item);
+					}
+					
+					dbPlacebook.setGeometry(placebook.getGeometry());
+					
+					manager.merge(dbPlacebook);					
+					log.info("Updated PlaceBook: " + mapper.writeValueAsString(dbPlacebook));					
+				}
+				else
+				{
+					placebook.setOwner(UserManager.getCurrentUser(manager));
+					manager.persist(placebook);
+					log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));					
+				}
 			}
-			log.info(mapper.writeValueAsString(placebook));
-
-			for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+			else
 			{
-				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+				placebook.setOwner(UserManager.getCurrentUser(manager));
+				manager.persist(placebook);
+				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));				
 			}
-
-			dbPlacebook.setItems(Collections.EMPTY_LIST);
-			for (final PlaceBookItem item : placebook.getItems())
-			{
-				item.setOwner(dbPlacebook.getOwner());
-				dbPlacebook.addItem(item);
-				log.info("Added Item: " + mapper.writeValueAsString(item));
-			}
-
-			dbPlacebook.setGeometry(placebook.getGeometry());
-
-			manager.merge(dbPlacebook);
-
-			log.info("Added PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
 
 			manager.getTransaction().commit();
 
@@ -943,8 +965,6 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
-
-		return null;
 	}
 
 	// Helper methods below
@@ -1257,5 +1277,4 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "TextItem added");
 	}
-
 }

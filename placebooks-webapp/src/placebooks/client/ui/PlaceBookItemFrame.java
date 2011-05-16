@@ -68,7 +68,7 @@ public class PlaceBookItemFrame extends Composite
 				@Override
 				public void onKeyUp(KeyUpEvent event)
 				{
-					item.setText(panel.getElement().getInnerText());
+					item.setText(panel.getElement().getInnerHTML());
 					timer.markChanged();
 				}
 			});
