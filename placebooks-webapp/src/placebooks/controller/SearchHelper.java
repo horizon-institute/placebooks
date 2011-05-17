@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public final class SearchHelper
 {
@@ -33,11 +33,11 @@ public final class SearchHelper
 					break;
 				}
 
-				if (tokenStream.hasAttribute(TermAttribute.class))
+				if (tokenStream.hasAttribute(CharTermAttribute.class))
 				{
-					final TermAttribute attr = tokenStream.getAttribute(TermAttribute.class);
-					log.debug(attr.term());
-					returnSet.add(attr.term());
+					final CharTermAttribute attr = tokenStream.getAttribute(CharTermAttribute.class);
+					log.debug(attr.toString());
+					returnSet.add(attr.toString());
 				}
 			}
 		}
