@@ -54,9 +54,6 @@ public class PlaceBooks extends Activity {
         super.onCreate(savedInstanceState);
         // load up the layout
         setContentView(R.layout.main);	//push main layout into the content view
-        //placebooks logo
-        /*ImageView image = (ImageView) findViewById(R.id.imgLogo);
-        image.setImageResource(R.drawable.placebookslogo);*/
         
          	    
         //create /placebooks dir on app startup

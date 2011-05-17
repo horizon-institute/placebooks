@@ -9,12 +9,7 @@ public class Book {
 	
 	private String key;
 	private String owner;
-	//private String imageFilename;
-	//private String imageURL;
-	//private String audioFilename;
-	//private String videoFilename;
-	//private String textText;
-	//private String textURL;
+	//metadata needed for the placebook
 	// need to have a private String uName (e.g stuart) so I know what the folder name is going to be unless the package structure is changed
 	
 	private ArrayList <String> alTextText = new ArrayList <String>();

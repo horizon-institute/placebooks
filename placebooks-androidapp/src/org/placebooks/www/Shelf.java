@@ -54,7 +54,7 @@ public class Shelf extends ListActivity {
 		        */
 		         
 		        if (isOnline()){
-		          	json = JSONfunctions.getJSONfromURL("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/stuart@tropic.org.uk");
+		          	json = JSONfunctions.getJSONfromURL("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/stuart@tropic.org.uk");		// replace stuarts email with the email address that the user enters
 		          	
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
 		        }
