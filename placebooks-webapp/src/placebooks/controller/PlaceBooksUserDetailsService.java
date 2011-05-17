@@ -2,7 +2,7 @@ package placebooks.controller;
 
 import java.util.Collections;
 
-import javax.jdo.PersistenceManager;
+import javax.persistence.EntityManager;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +16,7 @@ public class PlaceBooksUserDetailsService implements UserDetailsService
 	@Override
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException, DataAccessException
 	{
-		final PersistenceManager manager = PMFSingleton.getPersistenceManager();
+		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
 			final User user = UserManager.getUser(manager, email);

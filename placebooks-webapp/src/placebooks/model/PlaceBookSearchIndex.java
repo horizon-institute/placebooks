@@ -1,25 +1,24 @@
 package placebooks.model;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.Inheritance;
+import javax.persistence.Entity;
 
-@PersistenceCapable
-@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
+@Entity
 public class PlaceBookSearchIndex extends SearchIndex
 {
-	@Persistent
 	private PlaceBook placebook;
 
-	public PlaceBookSearchIndex() { super(); }
-
-	public PlaceBook getPlaceBook() { return placebook; }
-
-	public void setPlaceBook(PlaceBook placebook) 
-	{ 
-		this.placebook = placebook; 
+	public PlaceBookSearchIndex()
+	{
+		super();
 	}
 
-}
+	public PlaceBook getPlaceBook()
+	{
+		return placebook;
+	}
 
+	public void setPlaceBook(final PlaceBook placebook)
+	{
+		this.placebook = placebook;
+	}
+}

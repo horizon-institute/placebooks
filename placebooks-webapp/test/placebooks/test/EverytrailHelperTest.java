@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -21,8 +20,6 @@ import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
-import placebooks.model.ImageItem;
-import placebooks.model.User;
 
 /**
  * @author pszmp

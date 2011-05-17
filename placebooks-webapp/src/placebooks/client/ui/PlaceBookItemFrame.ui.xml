@@ -33,7 +33,6 @@
 			background-color: #669;
 			-webkit-transition: opacity .5s linear;
 			transition: opacity .5s linear;
-			cursor: move;
 			visibility: hidden;		
 			min-height: 10px;	
 		}

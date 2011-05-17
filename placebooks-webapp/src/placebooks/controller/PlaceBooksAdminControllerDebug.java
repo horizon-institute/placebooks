@@ -1,10 +1,12 @@
 package placebooks.controller;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -16,12 +18,7 @@ import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.User;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import placebooks.utils.InitializeDatabase;
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
 // in here.
@@ -30,25 +27,21 @@ import com.vividsolutions.jts.io.WKTReader;
 public class PlaceBooksAdminControllerDebug
 {
 
-	private static final Logger log = 
-		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
+	private static final Logger log = Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
-
-	@RequestMapping(value = "/admin/debug/print_placebooks", 
-					method = RequestMethod.GET)
-	@SuppressWarnings("unchecked")	
+	@RequestMapping(value = "/admin/debug/print_placebooks", method = RequestMethod.GET)
 	public ModelAndView printPlaceBooks()
 	{
 
-		PersistenceManager pm = PMFSingleton.get().getPersistenceManager();
+		final EntityManager pm = EMFSingleton.getEntityManager();
 		List<PlaceBook> pbs = null;
 		try
 		{
-			Query query = pm.newQuery(PlaceBook.class);
-			pbs = (List<PlaceBook>)query.execute();
-			//query.closeAll();
+			final TypedQuery<PlaceBook> query = pm.createQuery("SELECT p FROM PlaceBook p", PlaceBook.class);
+			pbs = query.getResultList();
+			// query.closeAll();
 		}
-		catch (ClassCastException e)
+		catch (final ClassCastException e)
 		{
 			log.error(e.toString());
 		}
@@ -61,78 +54,119 @@ public class PlaceBooksAdminControllerDebug
 		}
 		else
 		{
-			mav = new ModelAndView("message", "text", 
-								   "Error listing PlaceBooks");
+			mav = new ModelAndView("message", "text", "Error listing PlaceBooks");
 		}
 
-		for (PlaceBook pb : pbs)
+		for (final PlaceBook pb : pbs)
 		{
-			Set s = (Set)pb.getMetadata().entrySet();
-			for (Iterator i = s.iterator(); i.hasNext(); )
+			for (final Entry<String, String> e : pb.getMetadata().entrySet())
 			{
-				Map.Entry e = (Map.Entry)i.next();
-				log.info("entry: '" + e.getKey() + "' => '" + e.getValue() 
-						 + "'");
+				log.info("entry: '" + e.getKey() + "' => '" + e.getValue() + "'");
 			}
 		}
 
-		PMFSingleton.get().getPersistenceManager().close();
-	
+		pm.close();
+
 		return mav;
 
-    }
-
-
-	@RequestMapping(value = "/admin/test/everytrail/login", method = RequestMethod.POST)
-    public ModelAndView testEverytrailLogin(HttpServletRequest req) 
+	}
+	
+	@RequestMapping(value = "/admin/delete/all_placebooks", method = RequestMethod.GET)
+	public ModelAndView deleteAllPlaceBook()
 	{
-		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
-		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
-		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: " + response.getValue() + "<br/>");
+
+		final EntityManager pm = EMFSingleton.getEntityManager();
+
+		try
+		{
+			pm.getTransaction().begin();
+			/*
+			 * Query query = pm.newQuery(PlaceBook.class); pbs = (List<PlaceBook>)query.execute();
+			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
+			 * item.deleteItemData(); }
+			 */
+
+			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
+			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+
+		pm.close();
+
+		log.info("Deleted all PlaceBooks");
+
+		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 	}
 
+	@RequestMapping(value = "/admin/test/everytrail/login", method = RequestMethod.POST)
+	public ModelAndView testEverytrailLogin(final HttpServletRequest req)
+	{
+		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
+		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+																			req.getParameter("password"));
+		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: "
+				+ response.getValue() + "<br/>");
+	}
+
+	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
+	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		InitializeDatabase.main(null);
+		return null;
+	}
+	
 	@RequestMapping(value = "/admin/test/everytrail/pictures", method = RequestMethod.POST)
-   public ModelAndView testEverytrailPictures(HttpServletRequest req) 
+	public ModelAndView testEverytrailPictures(final HttpServletRequest req)
 	{
 		ModelAndView returnView;
-		
-		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+
+		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+																			req.getParameter("password"));
 		log.debug("logged in");
-		if(response.getStatus().equals("success"))
+		if (response.getStatus().equals("success"))
 		{
-			EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(response.getValue());
+			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(response.getValue());
 			log.debug(picturesResponse.getStatus());
-			returnView = new ModelAndView("message", "text", "Logged in and got picutre list: <br /><pre>" + picturesResponse.getStatus() + "</pre><br/>");
+			returnView = new ModelAndView("message", "text", "Logged in and got picutre list: <br /><pre>"
+					+ picturesResponse.getStatus() + "</pre><br/>");
 		}
 		else
 		{
-			return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br />Log in value: " + response.getValue() + "<br/>");
+			return new ModelAndView("message", "text", "Log in status: " + response.getStatus()
+					+ "<br />Log in value: " + response.getValue() + "<br/>");
 		}
 		return returnView;
 	}
 
 	@RequestMapping(value = "/admin/test/everytrail/trips", method = RequestMethod.POST)
-   public ModelAndView testEverytrailTrips(HttpServletRequest req) 
+	public ModelAndView testEverytrailTrips(final HttpServletRequest req)
 	{
 		ModelAndView returnView;
-		
-		EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"), req.getParameter("password"));
+
+		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+																			req.getParameter("password"));
 		log.debug("logged in");
-		if(response.getStatus().equals("success"))
+		if (response.getStatus().equals("success"))
 		{
-			EverytrailTripsResponse tripsResponse = EverytrailHelper.Trips(response.getValue());
+			final EverytrailTripsResponse tripsResponse = EverytrailHelper.Trips(response.getValue());
 			log.debug(tripsResponse.getStatus());
-			returnView = new ModelAndView("message", "text", "Logged in and got trip list: <br /><pre>" + tripsResponse.getStatus() + "</pre><br/>");
+			returnView = new ModelAndView("message", "text", "Logged in and got trip list: <br /><pre>"
+					+ tripsResponse.getStatus() + "</pre><br/>");
 		}
 		else
 		{
-			return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: " + response.getValue() + "<br/>");
+			return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: "
+					+ response.getValue() + "<br/>");
 		}
 		return returnView;
 	}
-	
-
 
 }
-
-

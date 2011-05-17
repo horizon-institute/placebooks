@@ -5,47 +5,85 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class PlaceBookEntry
 {
 	@JsonProperty
+	private String description;
+
+	@JsonProperty
 	private String key;
-
-	@JsonProperty
-	private String owner;
-
-	@JsonProperty
-	private String title;
 
 	@JsonProperty
 	private int numItems;
 
 	@JsonProperty
-	private String description;
+	private String owner;
 
 	@JsonProperty
 	private String packagePath;
 
-	public PlaceBookEntry() {}
+	@JsonProperty
+	private String title;
 
-	public String getKey() { return key; }
-	public void setKey(String key) { this.key = key; }
-	
-	public String getOwner() { return owner; }
-	public void setOwner(String owner) { this.owner = owner; }
-
-	public String getTitle() { return title; }
-	public void setTitle(String title) { this.title = title; }
-
-	public int getNumItems() { return numItems; }
-	public void setNumItems(int numItems) { this.numItems = numItems; }
-
-	public String getDescription() { return description; }
-	public void setDescription(String description)
-	{ 
-		this.description = description; 
+	public PlaceBookEntry()
+	{
 	}
-	
-	public String getPackagePath() { return packagePath; }
-	public void setPackagePath(String packagePath) 
-	{ 
-		this.packagePath = packagePath; 
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public String getKey()
+	{
+		return key;
+	}
+
+	public int getNumItems()
+	{
+		return numItems;
+	}
+
+	public String getOwner()
+	{
+		return owner;
+	}
+
+	public String getPackagePath()
+	{
+		return packagePath;
+	}
+
+	public String getTitle()
+	{
+		return title;
+	}
+
+	public void setDescription(final String description)
+	{
+		this.description = description;
+	}
+
+	public void setKey(final String key)
+	{
+		this.key = key;
+	}
+
+	public void setNumItems(final int numItems)
+	{
+		this.numItems = numItems;
+	}
+
+	public void setOwner(final String owner)
+	{
+		this.owner = owner;
+	}
+
+	public void setPackagePath(final String packagePath)
+	{
+		this.packagePath = packagePath;
+	}
+
+	public void setTitle(final String title)
+	{
+		this.title = title;
 	}
 
 }

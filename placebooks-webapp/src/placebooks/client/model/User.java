@@ -7,4 +7,5 @@ public class User extends JavaScriptObject
 	protected User()
 	{
 	}
+
 }

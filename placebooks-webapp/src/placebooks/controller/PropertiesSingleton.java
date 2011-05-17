@@ -1,58 +1,56 @@
 package placebooks.controller;
 
-import org.apache.log4j.Logger;
-
-import java.io.InputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.util.Properties;
 
-public final class PropertiesSingleton 
-{
-	// TODO: enum
-	public static final String PROPERTIES_FILENAME = "placebooks.properties";
+import org.apache.log4j.Logger;
 
-	public static final String IDEN_VIDEO = "videoitem.dir";
+public final class PropertiesSingleton
+{
+	public static final String EVERYTRAIL_API_PASSWORD = "everytrail.api_password";
+
+	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";
 	public static final String IDEN_AUDIO = "audioitem.dir";
-	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
-	
+	public static final String IDEN_CONFIG = "config.name";
+
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
-	
-	public static final String IDEN_CONFIG = "config.name";
-	public static final String IDEN_WGET = "webbundleitem.wget";
+
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
-	
-	public static final String PROXY_ACTIVE = "proxy.active";	
-	public static final String PROXY_HOST = "proxy.host";	
-	public static final String PROXY_PORT = "proxy.port";	
-	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";	
-	public static final String EVERYTRAIL_API_PASSWORD = 
-		"everytrail.api_password";	
+	public static final String IDEN_VIDEO = "videoitem.dir";
+	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
-   	private static final Logger log = 
-		Logger.getLogger(PropertiesSingleton.class.getName());
+	public static final String IDEN_WGET = "webbundleitem.wget";
+	// TODO: enum
+	public static final String PROPERTIES_FILENAME = "placebooks.properties";
+	public static final String PROXY_ACTIVE = "proxy.active";
+	public static final String PROXY_HOST = "proxy.host";
+	public static final String PROXY_PORT = "proxy.port";
 
-    private static final Properties properties = new Properties();
+	private static final Logger log = Logger.getLogger(PropertiesSingleton.class.getName());
 
-    private PropertiesSingleton() {}
+	private static final Properties properties = new Properties();
 
-    public static Properties get(ClassLoader cl)
+	public static Properties get(final ClassLoader cl)
 	{
-		InputStream in = cl.getResourceAsStream(PROPERTIES_FILENAME);
- 		try
+		final InputStream in = cl.getResourceAsStream(PROPERTIES_FILENAME);
+		try
 		{
 			properties.load(in);
 			in.close();
 			log.info("Loaded properties");
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
-			log.error("Error in loading properties from " 
-				      + PROPERTIES_FILENAME);
+			log.error("Error in loading properties from " + PROPERTIES_FILENAME);
 			log.error(e.toString());
 		}
 
-        return properties;
-    }
+		return properties;
+	}
+
+	private PropertiesSingleton()
+	{
+	}
 }

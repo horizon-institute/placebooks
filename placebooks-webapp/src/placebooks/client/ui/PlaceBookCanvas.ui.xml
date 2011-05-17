@@ -4,12 +4,12 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 0px;
+			top: 30px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
 			margin-right: 120px;
-			background-color: #BBD;		
+			background: #BBD;		
 			box-shadow: 2px 2px 2px #333;
 			-webkit-user-select: none;
 			-moz-user-select: none;
@@ -29,9 +29,68 @@
 			-moz-user-select: none;
 			user-select: none;	
 		}
+		
+		.loadingPanel {
+			position: absolute;
+			text-align: center;
+			top: 0px;
+			right: 0px;
+			bottom: 0px;
+			left: 0px;
+			z-index: 20;
+			background: rgba(0,0,0,0.4);	
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;	
+		}
+		
+		.loading {
+			background: #555;
+			border: 1px solid #333;
+			border-radius: 5px;
+			margin-top: 100px;
+			padding: 10px 20px;
+			display: inline-block;
+		}
+
+		.savingPanel {
+			background: #555;
+			border: 1px solid #333;
+			border-radius: 5px;
+			margin-top: 100px;
+			padding: 10px 20px;
+			display: inline-block;
+		}
+
+		.titleBar {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 120px;
+			height: 30px;
+		}
+		
+		.titleLabel {
+			line-height: 40px;
+			height: 40px;
+			display: inline-block;
+		}
+		
+		.loadingLabel {
+			color: white;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 25px;
+			padding-left: 15px;
+			vertical-align: top;
+		}
 	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
+		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
+		<!--<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>-->		
 		<g:Image ui:field="dragImage" />	
+		<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
+		</p:MousePanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">

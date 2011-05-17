@@ -27,9 +27,7 @@
 
 	<servlet>
     	<servlet-name>dispatcher</servlet-name>
-    	<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
+    	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     	<load-on-startup>1</load-on-startup>
 		<init-param>
 	      <param-name>trimSpaces</param-name>
