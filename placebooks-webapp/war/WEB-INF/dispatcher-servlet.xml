@@ -5,6 +5,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="useDefaultSuffixPattern" value="false"/>
+	</bean>
+
 	<!--  View resolver -->
 	<bean id="viewResolver"
 	 class="org.springframework.web.servlet.view.InternalResourceViewResolver">

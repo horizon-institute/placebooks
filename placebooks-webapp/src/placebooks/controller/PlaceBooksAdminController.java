@@ -30,11 +30,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.NoResultException;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,8 +54,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,8 +66,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -90,6 +99,70 @@ import com.vividsolutions.jts.io.WKTReader;
 @Controller
 public class PlaceBooksAdminController
 {
+
+		@RequestMapping(value = "/shelf", method = RequestMethod.GET)
+	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+		final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
+															PlaceBook.class);
+		q.setParameter("owner", user);
+
+		final Collection<PlaceBook> pbs = q.getResultList();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		log.info("User " + user.getName());
+		try
+		{
+			final Shelf shelf = new Shelf(user, pbs);
+			final ObjectMapper mapper = new ObjectMapper();
+			log.info("Shelf: " + mapper.writeValueAsString(shelf));
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, shelf);
+			sos.flush();
+		}
+		catch (final Exception e)
+		{
+			log.error(e.toString());
+		}
+
+		manager.close();
+
+		return null;
+	}
+
+	@RequestMapping(value = "/palette", method = RequestMethod.GET)
+	public ModelAndView getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+		final TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
+															PlaceBookItem.class);
+		q.setParameter("owner", user);
+
+		final Collection<PlaceBookItem> pbs = q.getResultList();
+		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		log.info("User " + user.getName());
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			log.info("Shelf: " + mapper.writeValueAsString(pbs));
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, pbs);
+			sos.flush();
+		}
+		catch (final Exception e)
+		{
+			log.error(e.toString());
+		}
+
+		manager.close();
+
+		return null;
+	}
+
 	// Helper class for passing around general PlaceBookItem data
 	private static class ItemData
 	{
@@ -637,11 +710,10 @@ public class PlaceBooksAdminController
 
 	}
 
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, 
+										 final HttpServletResponse res,
+					@PathVariable("key") final String key)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
@@ -650,8 +722,8 @@ public class PlaceBooksAdminController
 			if (key.equals("new"))
 			{
 				// Create new placebook
-				placebook = new PlaceBook(UserManager.getCurrentUser(manager), null);
-
+				placebook = new PlaceBook(UserManager.getCurrentUser(manager), 
+										  null);
 				manager.persist(placebook);
 			}
 			else
@@ -667,7 +739,8 @@ public class PlaceBooksAdminController
 					final ServletOutputStream sos = res.getOutputStream();
 					res.setContentType("application/json");
 					mapper.writeValue(sos, placebook);
-					log.info("Placebook: " + mapper.writeValueAsString(placebook));
+					log.info("Placebook: " + 
+						mapper.writeValueAsString(placebook));
 					sos.flush();
 				}
 				catch (final IOException e)
@@ -688,114 +761,67 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-															PlaceBook.class);
-		q.setParameter("owner", user);
 
-		final Collection<PlaceBook> pbs = q.getResultList();
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		log.info("User " + user.getName());
-		try
-		{
-			final Shelf shelf = new Shelf(user, pbs);
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(shelf));
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, shelf);
-			sos.flush();
-		}
-		catch (final Exception e)
-		{
-			log.error(e.toString());
-		}
-
-		manager.close();
-
-		return null;
-	}
-
-	@RequestMapping(value = "/palette", method = RequestMethod.GET)
-	public ModelAndView getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
-															PlaceBookItem.class);
-		q.setParameter("owner", user);
-
-		final Collection<PlaceBookItem> pbs = q.getResultList();
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		log.info("User " + user.getName());
-		try
-		{
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(pbs));
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, pbs);
-			sos.flush();
-		}
-		catch (final Exception e)
-		{
-			log.error(e.toString());
-		}
-
-		manager.close();
-
-		return null;
-	}
-
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
 	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
-	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
+	public ModelAndView reset(final HttpServletRequest req, 
+							  final HttpServletResponse res)
 	{
 		InitializeDatabase.main(null);
 		return null;
 	}
 	
 	
-	// TODO: currently uses startsWith for string search. Is this right??
-	// owner.key query on key value for User works without startsWith
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
+										  final HttpServletResponse res,
+				   @PathVariable("owner") final String owner)
 	{
+		if (owner.trim().isEmpty())
+			return null;
+
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
-		uq.setParameter("email", owner);
-		final User user = uq.getSingleResult();
-
-		final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-														PlaceBook.class);
-		q.setParameter("user", user);
-		final Collection<PlaceBook> pbs = q.getResultList();
-
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		if (!pbs.isEmpty())
+		final TypedQuery<User> uq = 
+			pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", 
+						   User.class);
+		uq.setParameter("email", owner.trim());
+		try
 		{
-			final Shelf s = new Shelf(user, pbs);
-			try
-			{
-				final ObjectMapper mapper = new ObjectMapper();
-				final ServletOutputStream sos = res.getOutputStream();
-				res.setContentType("application/json");
-				mapper.writeValue(sos, s);
-				sos.flush();
-			}
-			catch (final IOException e)
-			{
-				log.error(e.toString());
-			}
-		}
+			final User user = uq.getSingleResult();
 
-		pm.close();
+			final TypedQuery<PlaceBook> q = 
+				pm.createQuery(
+					"SELECT p FROM PlaceBook p WHERE p.owner = :user",
+					PlaceBook.class
+				);
+
+			q.setParameter("user", user);
+			final Collection<PlaceBook> pbs = q.getResultList();
+
+			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+			if (!pbs.isEmpty())
+			{
+				final Shelf s = new Shelf(user, pbs);
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, s);
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+
+			pm.close();
+
+		}
+		catch (NoResultException e)
+		{
+			log.error(e.toString());
+		}
 
 		return null;
 	}
@@ -975,66 +1001,20 @@ public class PlaceBooksAdminController
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
 
-		final Set<String> search = SearchHelper.getIndex(terms, 5);
-
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		final TypedQuery<PlaceBookSearchIndex> query1 = pm.createQuery(	"SELECT p FROM PlaceBookSearchIndex p",
-																		PlaceBookSearchIndex.class);
-		final List<PlaceBookSearchIndex> pbIndexes = query1.getResultList();
-
-		// Search rationale: ratings are accumulated per PlaceBook for that
-		// PlaceBook plus any PlaceBookItems
-		final Map<String, Integer> hits = new HashMap<String, Integer>();
-
-		for (final PlaceBookSearchIndex index : pbIndexes)
-		{
-			final Set<String> keywords = new HashSet<String>();
-			keywords.addAll(index.getIndex());
-			keywords.retainAll(search);
-			Integer rating = hits.get(index.getPlaceBook().getKey());
-			if (rating == null)
-			{
-				rating = new Integer(0);
-			}
-			hits.put(index.getPlaceBook().getKey(), new Integer(keywords.size() + rating.intValue()));
-		}
-
-		final TypedQuery<PlaceBookItemSearchIndex> query2 = pm.createQuery(	"SELECT p FROM PlaceBookItemSearchIndex p",
-																			PlaceBookItemSearchIndex.class);
-		final List<PlaceBookItemSearchIndex> pbiIndexes = query2.getResultList();
-
-		for (final PlaceBookItemSearchIndex index : pbiIndexes)
-		{
-			final Set<String> keywords = new HashSet<String>();
-			keywords.addAll(index.getIndex());
-			keywords.retainAll(search);
-			final String key = index.getPlaceBookItem().getPlaceBook().getKey();
-			Integer rating = hits.get(key);
-			if (rating == null)
-			{
-				rating = new Integer(0);
-			}
-			hits.put(key, new Integer(keywords.size() + rating.intValue()));
-		}
-
-		pm.close();
 
 		final StringBuffer out = new StringBuffer();
-		for (final Map.Entry<String, Integer> entry : hits.entrySet())
+		for (final Map.Entry<PlaceBook, Integer> entry : 
+			 PlaceBooksAdminHelper.search(terms))
 		{
-			out.append("key=" + entry.getKey() + ", score=" + entry.getValue() + "<br>");
-		}
-
-		for (final String string : search)
-		{
-			out.append("keywords=" + string + ",");
+			out.append("key=" + entry.getKey().getKey() + ", score=" 
+					   + entry.getValue() + "<br>");
 		}
 
 		timeEnd = System.nanoTime();
 		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
 
-		return new ModelAndView("message", "text", "search results:<br>" + out.toString());
+		return new ModelAndView("message", "text", "search results:<br>" 
+								+ out.toString());
 	}
 
 	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)

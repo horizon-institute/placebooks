@@ -4,6 +4,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.net.URL;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,12 +20,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -33,14 +36,17 @@ import placebooks.controller.SearchHelper;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, 
+				getterVisibility = Visibility.NONE)
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS)
 public abstract class PlaceBookItem
 {
-	protected static final Logger log = Logger.getLogger(PlaceBookItem.class.getName());
+	protected static final Logger log = 
+		Logger.getLogger(PlaceBookItem.class.getName());
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
-	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
+	@JsonDeserialize(using = 
+						placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom;
 
 	@Id
@@ -66,7 +72,8 @@ public abstract class PlaceBookItem
 	@ManyToOne
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
-	private String sourceURL; // The original internet resource string if it exists
+	private String sourceURL; // The original internet resource string if it 
+							  // exists
 
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
@@ -77,15 +84,20 @@ public abstract class PlaceBookItem
 	}
 
 	// Make a new PlaceBookItem
-	public PlaceBookItem(final User owner, final Geometry geom, final URL sourceURL)
+	public PlaceBookItem(final User owner, final Geometry geom, 
+						 final URL sourceURL)
 	{
 		this.owner = owner;
 		this.geom = geom;
 		this.timestamp = new Date();
-		this.sourceURL = sourceURL.toExternalForm();
+		if (sourceURL != null)
+			this.sourceURL = sourceURL.toExternalForm();
+		else
+			this.sourceURL = null;
+
 		index.setPlaceBookItem(this);
-		log.info("Created new PlaceBookItem, concrete name: " + getEntityName() + ", timestamp="
-				+ this.timestamp.toString());
+		log.info("Created new PlaceBookItem, concrete name: " + getEntityName()
+				 + ", timestamp=" + this.timestamp.toString());
 	}
 
 	public void addMetadataEntry(final String key, final String value)
@@ -112,42 +124,12 @@ public abstract class PlaceBookItem
 	 */
 	public abstract void deleteItemData();
 
-	/**
-	 * Along with GetHTML this method is used to generate a string containing the CSS styles for the
-	 * Placebook item, suitable for use in the Placebook page header
-	 * 
-	 * @return String of CSS style data
-	 */
-	public abstract String GetCSS();
-
-	/**
-	 * Provide the concrete entity name for this class, for XML mapping
-	 * 
-	 * @return
-	 */
 	public abstract String getEntityName();
 
 	public Geometry getGeometry()
 	{
 		return geom;
 	}
-
-	/**
-	 * 'GetHTML' will return a String containing the item's body content in html format, suitable
-	 * for including in the placebook view. (@TODO with GUI programmer define/document how this will
-	 * be used in GUI)
-	 * 
-	 * @return String containing the HTML data for the content of the placebook item
-	 */
-	public abstract String GetHTML();
-
-	/**
-	 * Along with GetHTML this method is used to generate a string containing any required
-	 * Javascript for the Placebook item
-	 * 
-	 * @return String of Javascript code
-	 */
-	public abstract String GetJavaScript();
 
 	public String getKey()
 	{
@@ -228,7 +210,10 @@ public abstract class PlaceBookItem
 
 	public void setSourceURL(final URL sourceURL)
 	{
-		this.sourceURL = sourceURL.toExternalForm();
+		if (sourceURL != null)
+			this.sourceURL = sourceURL.toExternalForm();
+		else
+			this.sourceURL = null;
 	}
 
 	public void setTimestamp(final Date timestamp)
@@ -265,24 +250,28 @@ public abstract class PlaceBookItem
 		if (getSourceURL() != null)
 		{
 			final Element url = config.createElement("url");
-			url.appendChild(config.createTextNode(getSourceURL().toExternalForm()));
+			url.appendChild(config.createTextNode(
+				getSourceURL().toExternalForm()));
 			item.appendChild(url);
 		}
 
 		// Write metadata and parameters
 		if (this.hasMetadata())
 		{
-			item.appendChild(setToConfig(config, this.getMetadata(), "metadata"));
+			item.appendChild(setToConfig(config, this.getMetadata(), 
+							 "metadata"));
 		}
 		if (this.hasParameters())
 		{
-			item.appendChild(setToConfig(config, this.getParameters(), "parameters"));
+			item.appendChild(setToConfig(config, this.getParameters(), 
+							 "parameters"));
 		}
 
 		return item;
 	}
 
-	private Element setToConfig(final Document config, final Map<String, ?> m, final String name)
+	private Element setToConfig(final Document config, final Map<String, ?> m, 
+							    final String name)
 	{
 		if (!m.isEmpty())
 		{
@@ -290,7 +279,9 @@ public abstract class PlaceBookItem
 			for (final Map.Entry<String, ?> e : m.entrySet())
 			{
 				final Element elem = config.createElement(e.getKey());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				elem.appendChild(
+					config.createTextNode(e.getValue().toString())
+				);
 				sElem.appendChild(elem);
 			}
 

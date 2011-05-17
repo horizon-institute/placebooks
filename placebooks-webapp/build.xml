@@ -58,6 +58,15 @@
 		<mkdir dir="${javadoc.dir}" />
 	</target>
 
+	<target name="staging" depends="makedirs" 
+			description="Stage configs to classes dir">
+		<copy file="${log4j.props}" todir="${classes.dir}" />
+		<copy file="${placebooks.props}" todir="${classes.dir}" />
+		<copy todir="${classes.dir}/META-INF">
+			<fileset dir="${src.dir}/META-INF" />
+		</copy>
+	</target>
+
 	<target name="compile" depends="makedirs"
 			description="Compile classes into web archive dir">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
@@ -86,13 +95,7 @@
 			<classpath refid="classpath"/>
 		</javac>
 	</target>
-
-	<target name="staging" depends="makedirs" 
-			description="Stage configs to classes dir">
-		<copy file="${log4j.props}" todir="${classes.dir}" />
-		<copy file="${placebooks.props}" todir="${classes.dir}" />
-	</target>
-
+	
 	<target name="war" depends="compile,staging"
 			description="Create the web archive file">
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 

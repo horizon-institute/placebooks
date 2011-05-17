@@ -22,13 +22,13 @@ public final class PropertiesSingleton
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
 	public static final String IDEN_WGET = "webbundleitem.wget";
-	// TODO: enum
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
 	public static final String PROXY_ACTIVE = "proxy.active";
 	public static final String PROXY_HOST = "proxy.host";
 	public static final String PROXY_PORT = "proxy.port";
 
-	private static final Logger log = Logger.getLogger(PropertiesSingleton.class.getName());
+	private static final Logger log = 
+		Logger.getLogger(PropertiesSingleton.class.getName());
 
 	private static final Properties properties = new Properties();
 
@@ -43,7 +43,8 @@ public final class PropertiesSingleton
 		}
 		catch (final IOException e)
 		{
-			log.error("Error in loading properties from " + PROPERTIES_FILENAME);
+			log.error("Error in loading properties from " 
+					  + PROPERTIES_FILENAME);
 			log.error(e.toString());
 		}
 

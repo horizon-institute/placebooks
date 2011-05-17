@@ -86,46 +86,10 @@ public class AudioItem extends PlaceBookItem
 		return audio.toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetCSS()
-	 */
-	@Override
-	public String GetCSS()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
 	@Override
 	public String getEntityName()
 	{
 		return AudioItem.class.getName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetHTML()
-	 */
-	@Override
-	public String GetHTML()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
-	 */
-	@Override
-	public String GetJavaScript()
-	{
-		// TODO Auto-generated method stub
-		return "";
 	}
 
 	public void setAudio(final String filepath)

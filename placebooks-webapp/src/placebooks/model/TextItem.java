@@ -44,51 +44,10 @@ public class TextItem extends PlaceBookItem
 	{
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetCSS()
-	 */
-	@Override
-	public String GetCSS()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
 	@Override
 	public String getEntityName()
 	{
 		return TextItem.class.getName();
-	}
-
-	/*
-	 * (non-Javadoc) /* (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetHTML()
-	 */
-	@Override
-	public String GetHTML()
-	{
-		final StringBuilder output = new StringBuilder();
-		output.append("<div class='placebook-item-text' id='");
-		output.append(this.getPlaceBook().getKey());
-		output.append("'>");
-		output.append(this.text);
-		output.append("'</div>");
-		return output.toString();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
-	 */
-	@Override
-	public String GetJavaScript()
-	{
-		// TODO Auto-generated method stub
-		return "";
 	}
 
 	public String getText()

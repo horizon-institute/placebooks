@@ -76,39 +76,10 @@ public class ImageItem extends PlaceBookItem
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetCSS()
-	 */
-	@Override
-	public String GetCSS()
-	{
-		// TODO Auto-generated method stub
-		return "";
-	}
-
 	@Override
 	public String getEntityName()
 	{
 		return ImageItem.class.getName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetHTML()
-	 */
-	@Override
-	public String GetHTML()
-	{
-		final StringBuilder output = new StringBuilder();
-		output.append("<img src='");
-		output.append(imageFile.getPath());
-		output.append("' class='placebook-item-image' id='");
-		output.append(this.getPlaceBook().getKey());
-		output.append("' />");
-		return output.toString();
 	}
 
 	public BufferedImage getImage()
@@ -119,18 +90,6 @@ public class ImageItem extends PlaceBookItem
 	public File getImagePath()
 	{
 		return imageFile;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#GetJavaScript()
-	 */
-	@Override
-	public String GetJavaScript()
-	{
-		// TODO Auto-generated method stub
-		return "";
 	}
 
 	public void setImage(final BufferedImage image)

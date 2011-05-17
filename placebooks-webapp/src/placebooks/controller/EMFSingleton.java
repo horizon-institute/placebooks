@@ -9,7 +9,8 @@ import javax.persistence.Persistence;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
- * Singleton wrapper class with a static instance for the PersistenceManagerFactory class.
+ * Singleton wrapper class with a static instance for the 
+ * PersistenceManagerFactory class.
  */
 public final class EMFSingleton
 {
@@ -19,18 +20,23 @@ public final class EMFSingleton
 	{
 		if (emFactory == null)
 		{
-			final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
-			emFactory = Persistence.createEntityManagerFactory("placebooks", properties);
+			final Properties properties = 
+				PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
+			emFactory = Persistence.createEntityManagerFactory("placebooks", 
+															   properties);
 		}
 		return emFactory.createEntityManager();
 	}
 
 	public static EntityManager getTestEntityManager()
 	{
-		final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
-		properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
+		final Properties properties = 
+			PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
+		properties.put(PersistenceUnitProperties.DDL_GENERATION, 
+					   PersistenceUnitProperties.DROP_AND_CREATE);
 
-		final EntityManagerFactory factory = Persistence.createEntityManagerFactory("placebooks", properties);
+		final EntityManagerFactory factory = 
+			Persistence.createEntityManagerFactory("placebooks", properties);
 		return factory.createEntityManager();
 	}
 
