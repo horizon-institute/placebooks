@@ -2,6 +2,7 @@ package org.placebooks.www;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,17 @@ import android.widget.Toast;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.content.Context;
+import android.widget.TextView;
+import android.widget.LinearLayout;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import org.apache.http.util.ByteArrayBuffer;
+import java.io.IOException;
+
 
 
 
@@ -35,8 +47,8 @@ public class Shelf extends ListActivity {
 	private String name;
 	private JSONObject json;
     protected ListView mListView;
-
-  
+    private String username;
+    
 	
 	 @Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -44,23 +56,48 @@ public class Shelf extends ListActivity {
 		        setContentView(R.layout.shelflist);	//push shelf list layout into the content view
 		
 		        ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-
-		        // if connected to Internet then get JSON from server else get the cached version from sdcard
-		        //JSONObject json = JSONfunctions.getJSONfromURL("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/stuart@tropic.org.uk");
-		        //name = "stuart";	//this is going to change to the variable "name" in the .xml response file from the server
+		        
 		        /*
-		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no internet
+		         * get the extras (username) out of the new intent
+		         * retrieve the username.
+		         */
+		        Intent intent = getIntent();
+		        if(intent != null) username = intent.getStringExtra("username");
+		        	        
+		        		       
+		        /*
+		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
 		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
-		        */
-		         
+		        */       
 		        if (isOnline()){
-		          	json = JSONfunctions.getJSONfromURL("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/stuart@tropic.org.uk");		// replace stuarts email with the email address that the user enters
-		          	
+		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username + "/";
+		          	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+		          										  
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
+		          	DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+		          	
+		          	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+			        TextView tv = new TextView(this);
+			        tv.setText("reading the shelf from the Internet. Also updating the cached shelf.");	
+			        ll.addView(tv);
+		          	
+		        }
+		        else if (!isOnline()) {		//do a check if there is a shelf file on the sdcard
+		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
+			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/packages/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+			        TextView tv = new TextView(this);
+			        tv.setText("reading the cached shelf because cannot connect to Internet at this time.");
+			        ll.addView(tv);
+			        
+			        
 		        }
 		        else {
-		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
-			        json = JSONfunctions.getJSONfromSDCard("/sdcard/placebooks/unzipped/" + "/packages/shelf.json");	
+		        	// either no internet, no placebook shelf stored on the sd card, no books can be accessed
+		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+		        	TextView tv = new TextView(this);
+		        	tv.setText("No data: You have not downloaded any placebooks and do not appear to be online. You need to enable the Internet to access your placebook shelf and then you can download your placebook/s. Another reason why you are not seeing your shelf might be due to your Internet security settings");
+		        	ll.addView(tv);
 		        }
 		       
 		        
@@ -100,6 +137,9 @@ public class Shelf extends ListActivity {
 		        
 	 } //end of onCreate
 	 
+	 /*
+	  * Check for an Internet connection and return true if there is Internet
+	  */
 	 public boolean isOnline() {
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -107,6 +147,62 @@ public class Shelf extends ListActivity {
 		        return true;
 		    }
 		    return false;
+		}
+	 
+	 /*
+	  * Method for downloading the shelf JSON file to the SDCard for caching.
+	  * Used for the initial download and also caching.
+	  */
+	 public void DownloadFromUrl(String DownloadUrl, String fileName) {
+
+		   try {
+		           //File root = android.os.Environment.getExternalStorageDirectory();               
+
+		           //File dir = new File (root.getAbsolutePath() + "/xmls");
+		           File SDCardRoot = Environment.getExternalStorageDirectory();
+		           File dir = new File(SDCardRoot + "/placebooks/unzipped/packages/"); //SDCardRoot/PlaceBooks/unzipped/packages
+		           if(dir.exists()==false) {
+		                dir.mkdirs();
+		           }
+
+		           URL url = new URL(DownloadUrl); //you can write here any link
+		           File file = new File(dir, fileName);
+
+		           long startTime = System.currentTimeMillis();
+		           Log.d("DownloadManager", "download begining");
+		           Log.d("DownloadManager", "download url:" + url);
+		           Log.d("DownloadManager", "downloaded file name:" + fileName);
+
+		           /* Open a connection to that URL. */
+		           URLConnection ucon = url.openConnection();
+
+		           /*
+		            * Define InputStreams to read from the URLConnection.
+		            */
+		           InputStream is = ucon.getInputStream();
+		           BufferedInputStream bis = new BufferedInputStream(is);
+
+		           /*
+		            * Read bytes to the Buffer until there is nothing more to read(-1).
+		            */
+		           ByteArrayBuffer baf = new ByteArrayBuffer(5000);
+		           int current = 0;
+		           while ((current = bis.read()) != -1) {
+		              baf.append((byte) current);
+		           }
+
+
+		           /* Convert the Bytes read to a String. */
+		           FileOutputStream fos = new FileOutputStream(file);
+		           fos.write(baf.toByteArray());
+		           fos.flush();
+		           fos.close();
+		           Log.d("DownloadManager", "download ready in" + ((System.currentTimeMillis() - startTime) / 1000) + " sec");
+
+		   } catch (IOException e) {
+		       Log.d("DownloadManager", "Error: " + e);
+		   }
+
 		}
 	
 

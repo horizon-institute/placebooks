@@ -1,12 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/linearLayout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@android:color/white"
     >	
 
+	<TextView android:id="@+id/txtShelf"
+  	  android:text="PlaceBooks Shelf"
+	  android:layout_width="fill_parent" 
+      android:layout_height="50px" 
+      android:gravity="center_horizontal"      
+	  android:textColor="#000000"
+      android:textSize="14.5sp"
+      android:textStyle="bold"
+	  />
+
     <ListView
-	 	android:id="@id/android:list"
+	 	android:id="@+id/android:list"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_weight="1"
@@ -16,13 +29,13 @@
 	 	/>
 
     <TextView
-        android:id="@id/android:empty"
+        android:id="@+id/android:empty"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="No data: You have not downloaded any placebooks and do not appear to be online. You need to enable the Internet to access your placebook shelf and then you can download your placebook/s. Another reason why you are
-        not seeing your shelf might be due to your Internet security settings"
         android:background="#FFFFFF"
         android:textColor="#000000"
-        />
+     />
+          
+        
 
 </LinearLayout>
