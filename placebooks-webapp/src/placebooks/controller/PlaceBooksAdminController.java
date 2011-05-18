@@ -1,22 +1,20 @@
 package placebooks.controller;
 
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.StringWriter;
+
 import java.net.URL;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -26,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -38,16 +34,6 @@ import javax.persistence.NoResultException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -69,6 +55,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -99,8 +89,10 @@ import com.vividsolutions.jts.io.WKTReader;
 @Controller
 public class PlaceBooksAdminController
 {
+	private static final Logger log = 
+		Logger.getLogger(PlaceBooksAdminController.class.getName());
 
-		@RequestMapping(value = "/shelf", method = RequestMethod.GET)
+	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
 	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
@@ -163,158 +155,106 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	// Helper class for passing around general PlaceBookItem data
-	private static class ItemData
-	{
-		private Geometry geometry;
-		private User owner;
-		private URL sourceURL;
-
-		public ItemData()
-		{
-		}
-
-		public Geometry getGeometry()
-		{
-			return geometry;
-		}
-
-		public User getOwner()
-		{
-			return owner;
-		}
-
-		public URL getSourceURL()
-		{
-			return sourceURL;
-		}
-
-		public void setGeometry(final Geometry geometry)
-		{
-			this.geometry = geometry;
-		}
-
-		public void setOwner(final User owner)
-		{
-			this.owner = owner;
-		}
-
-		public void setSourceURL(final URL sourceURL)
-		{
-			this.sourceURL = sourceURL;
-		}
-	}
-
-	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
-
-	private static void getFileListRecursive(final File path, final List<File> out)
-	{
-		final List<File> files = new ArrayList<File>(Arrays.asList(path.listFiles()));
-
-		for (final File file : files)
-		{
-			if (file.isDirectory())
-			{
-				getFileListRecursive(file, out);
-			}
-			else
-			{
-				out.add(file);
-			}
-		}
-	}
-
-	private static String placeBookToXML(final PlaceBook p)
-	{
-		StringWriter out = null;
-
-		try
-		{
-
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			final Document config = builder.newDocument();
-
-			final Element root = p.createConfigurationRoot(config);
-			config.appendChild(root);
-
-			// Note: ImageItem, VideoItem and AudioItem write their data to a
-			// package directly as well as creating XML configuration
-			for (final PlaceBookItem item : p.getItems())
-			{
-				item.appendConfiguration(config, root);
-			}
-
-			final TransformerFactory tf = TransformerFactory.newInstance();
-			final Transformer t = tf.newTransformer();
-			final DOMSource source = new DOMSource(config);
-
-			out = new StringWriter();
-			final StreamResult result = new StreamResult(out);
-			t.transform(source, result);
-
-			return out.getBuffer().toString();
-		}
-		catch (final ParserConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final TransformerConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final TransformerException e)
-		{
-			log.error(e.toString());
-		}
-
-		return null;
-	}
-
-	// Assumes currently open EntityManager
-	private static boolean processItemData(final ItemData i, final EntityManager pm, final String field,
-			final String value)
-	{
-		if (field.equals("owner"))
-		{
-			i.setOwner(UserManager.getUser(pm, value));
-		}
-		else if (field.equals("sourceurl"))
-		{
-			try
-			{
-				i.setSourceURL(new URL(value));
-			}
-			catch (final java.net.MalformedURLException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else if (field.equals("geometry"))
-		{
-			try
-			{
-				i.setGeometry(new WKTReader().read(value));
-			}
-			catch (final ParseException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else
-		{
-			return false;
-		}
-		return true;
-	}
-
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()
 	{
 		return "account";
 	}
 
+	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
+	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
+			@RequestParam final String password)
+	{
+		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+		final User user = new User(name, email, encoder.encodePassword(password, null));
+
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			manager.getTransaction().begin();
+			manager.persist(user);
+			manager.getTransaction().commit();
+		}
+		catch (final Exception e)
+		{
+			log.error("Error creating user", e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling back user creation");
+			}
+			manager.close();
+		}
+
+		return "redirect:/login.html";
+	}
+
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
+	public ModelAndView savePlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
+			@RequestParam("placebook") final String json)
+	{
+		log.info("saveplacebook");
+		final ObjectMapper mapper = new ObjectMapper();
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		manager.getTransaction().begin();
+		try
+		{
+			log.info(json);
+
+			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+
+			PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+			if(dbPlacebook == null)
+			{
+				dbPlacebook = placebook;
+			}
+			log.info(mapper.writeValueAsString(placebook));
+	
+			for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+			{
+				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+			}
+
+			dbPlacebook.setItems(Collections.EMPTY_LIST);
+			for (final PlaceBookItem item : placebook.getItems())
+			{
+				item.setOwner(dbPlacebook.getOwner());
+				dbPlacebook.addItem(item);
+				log.info("Added Item: " + mapper.writeValueAsString(item));
+			}
+
+			dbPlacebook.setGeometry(placebook.getGeometry());
+
+			manager.merge(dbPlacebook);
+			
+			log.info("Added PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
+			
+			manager.getTransaction().commit();
+			
+		}
+		catch (final Throwable e)
+		{
+			log.warn(e.getMessage(), e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}
+			manager.close();
+		}
+
+		return null;
+	}
+
 	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
-	public ModelAndView addPlaceBook(@RequestParam final String owner, @RequestParam final String geometry)
+	public ModelAndView addPlaceBook(@RequestParam final String owner, 
+									 @RequestParam final String geometry)
 	{
 		if (owner != null)
 		{
@@ -336,7 +276,11 @@ public class PlaceBooksAdminController
 
 			final User owner_ = UserManager.getUser(pm, owner);
 
-			if (owner_ == null) { return new ModelAndView("message", "text", "User does not exist"); }
+			if (owner_ == null) 
+			{ 
+				return new ModelAndView("message", "text", 
+										"User does not exist"); 
+			}
 
 			p.setOwner(owner_);
 
@@ -364,12 +308,15 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", method = RequestMethod.POST)
-	public ModelAndView addPlaceBookItemMapping(@RequestParam final String key, @RequestParam final String mKey,
-			@RequestParam final String mValue, @PathVariable("type") final String type)
+	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookItemMapping(
+		@RequestParam final String key, @RequestParam final String mKey,
+		@RequestParam final String mValue, 
+		@PathVariable("type") final String type)
 	{
-		if (!type.equals("metadata") && !type.equals("parameter")) { return new ModelAndView("message", "text",
-				"Error in type"); }
+		if (!type.equals("metadata") && !type.equals("parameter"))
+			return new ModelAndView("message", "text", "Error in type");
 
 		if (key != null && mKey != null && mValue != null)
 		{
@@ -417,9 +364,11 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/admin/add_placebook_metadata", method = RequestMethod.POST)
-	public ModelAndView addPlaceBookMetadata(@RequestParam final String key, @RequestParam final String mKey,
-			@RequestParam final String mValue)
+	@RequestMapping(value = "/admin/add_placebook_metadata", 
+					method = RequestMethod.POST)
+	public ModelAndView addPlaceBookMetadata(@RequestParam final String key, 
+											 @RequestParam final String mKey,
+								 			 @RequestParam final String mValue)
 	{
 		if (key != null && mKey != null && mValue != null)
 		{
@@ -456,38 +405,8 @@ public class PlaceBooksAdminController
 		return "admin";
 	}
 
-	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
-	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
-			@RequestParam final String password)
-	{
-		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-		final User user = new User(name, email, encoder.encodePassword(password, null));
-
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			manager.getTransaction().begin();
-			manager.persist(user);
-			manager.getTransaction().commit();
-		}
-		catch (final Exception e)
-		{
-			log.error("Error creating user", e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-				log.error("Rolling back user creation");
-			}
-			manager.close();
-		}
-
-		return "redirect:/login.html";
-	}
-
-	@RequestMapping(value = "/admin/add_item/webbundle", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/webbundle", 
+					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public ModelAndView createWebBundle(final HttpServletRequest req)
 	{
@@ -500,7 +419,8 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 
-			for (final Enumeration<String> params = req.getParameterNames(); params.hasMoreElements();)
+			for (final Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
@@ -512,20 +432,23 @@ public class PlaceBooksAdminController
 						continue;
 					}
 
-					final String prefix = param.substring(0, delim), suffix = param
-							.substring(delim + 1, param.length());
+					final String prefix = param.substring(0, delim), 
+								 suffix = param.substring(delim + 1, 
+								 						  param.length());
 
 					if (prefix.contentEquals("url"))
 					{
 						try
 						{
-							final PlaceBook p = pm.find(PlaceBook.class, suffix);
+							final PlaceBook p = pm.find(PlaceBook.class, 
+														suffix);
 							URL sourceURL = null;
 							if (value.length() > 0)
 							{
 								sourceURL = new URL(value);
 							}
-							wbi = new WebBundleItem(null, null, sourceURL, new File(""));
+							wbi = new WebBundleItem(null, null, sourceURL, 
+													new File(""));
 							p.addItem(wbi);
 						}
 						catch (final java.net.MalformedURLException e)
@@ -543,61 +466,14 @@ public class PlaceBooksAdminController
 				wbi.setGeometry(itemData.getGeometry());
 			}
 
-			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || wbi.getOwner() == null))) { return new ModelAndView(
-					"message", "text", "Error setting data elements"); }
-
-			final StringBuffer wgetCmd = new StringBuffer();
-			wgetCmd.append(PropertiesSingleton.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_WGET, ""));
-
-			if (wgetCmd.equals("")) { return new ModelAndView("message", "text", "Error in wget command"); }
-
-			wgetCmd.append(" -U \"");
-			wgetCmd.append(PropertiesSingleton.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_USER_AGENT, ""));
-			wgetCmd.append("\" ");
-
-			final String webBundlePath = wbi.getWebBundlePath();
-
-			wgetCmd.append("-P " + webBundlePath + " " + wbi.getSourceURL().toString());
-
-			log.info("wgetCmd=" + wgetCmd.toString());
-
-			if (new File(webBundlePath).exists() || new File(webBundlePath).mkdirs())
-			{
-				try
-				{
-					final Process p = Runtime.getRuntime().exec(wgetCmd.toString());
-
-					final BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-					String line = "";
-					while ((line = stderr.readLine()) != null)
-					{
-						log.error("[wget output] " + line);
-					}
-					log.info("Waiting for process...");
-					try
-					{
-						p.waitFor();
-					}
-					catch (final InterruptedException e)
-					{
-						log.error(e.toString());
-					}
-					log.info("... Process ended");
-
-					final String urlStr = wbi.getSourceURL().toString();
-					final int protocol = urlStr.indexOf("://");
-					wbi.setWebBundle(webBundlePath + "/" + urlStr.substring(protocol + 3, urlStr.length()));
-					log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
-
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
+			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
+				wbi.getOwner() == null))) 
+			{ 
+				return new ModelAndView(
+					"message", "text", "Error setting data elements"); 
 			}
+
+			PlaceBooksAdminHelper.scrape(wbi);
 
 			pm.getTransaction().commit();
 		}
@@ -615,7 +491,8 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 
-	@RequestMapping(value = "/admin/delete/all_placebooks", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete/all_placebooks", 
+					method = RequestMethod.GET)
 	public ModelAndView deleteAllPlaceBook()
 	{
 
@@ -651,7 +528,8 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/admin/delete_placebook/{key}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/delete_placebook/{key}", 
+					method = RequestMethod.GET)
 	public ModelAndView deletePlaceBook(@PathVariable("key") final String key)
 	{
 
@@ -680,8 +558,10 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
 	}
 
-	@RequestMapping(value = "/admin/delete_placebookitem/{key}", method = RequestMethod.GET)
-	public ModelAndView deletePlaceBookItem(@PathVariable("key") final String key)
+	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView deletePlaceBookItem(@PathVariable("key") 
+											final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -706,7 +586,8 @@ public class PlaceBooksAdminController
 
 		log.info("Deleted PlaceBookItem " + key);
 
-		return new ModelAndView("message", "text", "Deleted PlaceBookItem: " + key);
+		return new ModelAndView("message", "text", "Deleted PlaceBookItem: " 
+								+ key);
 
 	}
 
@@ -827,174 +708,55 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	public ModelAndView makePackage(final HttpServletRequest req, 
+									final HttpServletResponse res,
+		  	   @PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
 		final PlaceBook p = pm.find(PlaceBook.class, key);
-
-		final String out = placeBookToXML(p);
-
-		if (out != null)
+		final File zipFile = PlaceBooksAdminHelper.makePackage(p);
+		if (zipFile == null)
 		{
-			final String pkgPath = p.getPackagePath();
-			if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
+			return new ModelAndView("message", "text", 
+									"Making and compressing package");
+		}
+			
+		try 
+		{
+			// Serve up file from disk
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final FileInputStream fis = new FileInputStream(zipFile);
+			final BufferedInputStream bis = new BufferedInputStream(fis);
+
+			final byte data[] = new byte[2048];
+			int i;
+			while ((i = bis.read(data, 0, 2048)) != -1)
 			{
-				try
-				{
-					final FileWriter fw = new FileWriter(new File(pkgPath
-							+ "/"
-							+ PropertiesSingleton.get(this.getClass().getClassLoader())
-									.getProperty(PropertiesSingleton.IDEN_CONFIG, "")));
-
-					fw.write(out);
-					fw.close();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
+				bos.write(data, 0, i);
 			}
+			fis.close();
 
-			try
-			{
-				final String pkgZPath = PropertiesSingleton.get(this.getClass().getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/zip");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" 
+						  + p.getKey() + ".zip\"");
+			sos.write(bos.toByteArray());
+			sos.flush();
 
-				final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
-
-				// Compress package path
-				if (new File(pkgZPath).exists() || new File(pkgZPath).mkdirs())
-				{
-
-					final ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
-							zipFile)));
-					zos.setMethod(ZipOutputStream.DEFLATED);
-
-					final ArrayList<File> files = new ArrayList<File>();
-					getFileListRecursive(new File(pkgPath), files);
-
-					final File currentDir = new File(".");
-					log.info("Current working directory is " + currentDir.getAbsolutePath());
-
-					final byte data[] = new byte[2048];
-					BufferedInputStream bis = null;
-					for (final File file : files)
-					{
-						log.info("Adding file to archive: " + file.getPath());
-						final FileInputStream fis = new FileInputStream(file);
-						bis = new BufferedInputStream(fis, 2048);
-						zos.putNextEntry(new ZipEntry(file.getPath()));
-
-						int j;
-						while ((j = bis.read(data, 0, 2048)) != -1)
-						{
-							zos.write(data, 0, j);
-						}
-						bis.close();
-					}
-
-					zos.close();
-				}
-
-				// Serve up file from disk
-				final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				final FileInputStream fis = new FileInputStream(zipFile);
-				final BufferedInputStream bis = new BufferedInputStream(fis);
-
-				final byte data[] = new byte[2048];
-				int i;
-				while ((i = bis.read(data, 0, 2048)) != -1)
-				{
-					bos.write(data, 0, i);
-				}
-				fis.close();
-
-				final ServletOutputStream sos = res.getOutputStream();
-				res.setContentType("application/zip");
-				res.setHeader("Content-Disposition", "attachment; filename=\"" + p.getKey() + ".zip\"");
-				sos.write(bos.toByteArray());
-				sos.flush();
-
-			}
-			catch (final IOException e)
-			{
-				log.error(e.toString());
-			}
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
 			pm.close();
-			return null;
+			return new ModelAndView("message", "text", "Error sending package");
 		}
+
 		pm.close();
-
-		return new ModelAndView("message", "text", "Error generating package");
-
-	}
-
-	
-	
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
-	public ModelAndView savePlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@RequestParam("placebook") final String json)
-	{
-		log.info("saveplacebook");
-		final ObjectMapper mapper = new ObjectMapper();
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		manager.getTransaction().begin();
-		try
-		{
-			log.info(json);
-
-			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-
-			PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-			if(dbPlacebook == null)
-			{
-				dbPlacebook = placebook;
-			}
-			log.info(mapper.writeValueAsString(placebook));
-	
-			for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
-			{
-				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
-			}
-
-			dbPlacebook.setItems(Collections.EMPTY_LIST);
-			for (final PlaceBookItem item : placebook.getItems())
-			{
-				item.setOwner(dbPlacebook.getOwner());
-				dbPlacebook.addItem(item);
-				log.info("Added Item: " + mapper.writeValueAsString(item));
-			}
-
-			dbPlacebook.setGeometry(placebook.getGeometry());
-
-			manager.merge(dbPlacebook);
-			
-			log.info("Added PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
-			
-			manager.getTransaction().commit();
-			
-		}
-		catch (final Throwable e)
-		{
-			log.warn(e.getMessage(), e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-			}
-			manager.close();
-		}
-
 		return null;
 	}
 
-	// Helper methods below
-
+	
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
 	public ModelAndView searchGET(@PathVariable("terms") final String terms)
 	{
@@ -1257,5 +1019,90 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "TextItem added");
 	}
+
+
+	
+
+	
+	// Helper class for passing around general PlaceBookItem data
+	private static class ItemData
+	{
+		private Geometry geometry;
+		private User owner;
+		private URL sourceURL;
+
+		public ItemData()
+		{
+		}
+
+		public Geometry getGeometry()
+		{
+			return geometry;
+		}
+
+		public User getOwner()
+		{
+			return owner;
+		}
+
+		public URL getSourceURL()
+		{
+			return sourceURL;
+		}
+
+		public void setGeometry(final Geometry geometry)
+		{
+			this.geometry = geometry;
+		}
+
+		public void setOwner(final User owner)
+		{
+			this.owner = owner;
+		}
+
+		public void setSourceURL(final URL sourceURL)
+		{
+			this.sourceURL = sourceURL;
+		}
+	}
+
+
+	// Assumes currently open EntityManager
+	private static boolean processItemData(final ItemData i, final EntityManager pm, final String field,
+			final String value)
+	{
+		if (field.equals("owner"))
+		{
+			i.setOwner(UserManager.getUser(pm, value));
+		}
+		else if (field.equals("sourceurl"))
+		{
+			try
+			{
+				i.setSourceURL(new URL(value));
+			}
+			catch (final java.net.MalformedURLException e)
+			{
+				log.error(e.toString());
+			}
+		}
+		else if (field.equals("geometry"))
+		{
+			try
+			{
+				i.setGeometry(new WKTReader().read(value));
+			}
+			catch (final ParseException e)
+			{
+				log.error(e.toString());
+			}
+		}
+		else
+		{
+			return false;
+		}
+		return true;
+	}
+
 
 }

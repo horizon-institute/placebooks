@@ -1,6 +1,8 @@
 package placebooks.controller;
 
 import placebooks.model.PlaceBook;
+import placebooks.model.WebBundleItem;
+import placebooks.model.PlaceBookItem;
 import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.PlaceBookItemSearchIndex;
 
@@ -9,12 +11,207 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import java.io.IOException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.EntityManager;
 
+import org.apache.log4j.Logger;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+
 public final class PlaceBooksAdminHelper
 {
+	private static final Logger log = 
+		Logger.getLogger(PlaceBooksAdminHelper.class.getName());
+
+	public static final boolean scrape(WebBundleItem wbi)
+	{
+
+		final StringBuffer wgetCmd = new StringBuffer();
+		wgetCmd.append(PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_WGET, ""));
+
+		if (wgetCmd.equals(""))
+			return false;
+
+		wgetCmd.append(" -U \"");
+		wgetCmd.append(PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_USER_AGENT, ""));
+		wgetCmd.append("\" ");
+
+		final String webBundlePath = wbi.getWebBundlePath();
+
+		wgetCmd.append("-P " + webBundlePath + " " + 
+					   wbi.getSourceURL().toString());
+
+		log.info("wgetCmd=" + wgetCmd.toString());
+
+		if (new File(webBundlePath).exists() || 
+			new File(webBundlePath).mkdirs())
+		{
+			try
+			{
+				final Process p = Runtime.getRuntime().exec(wgetCmd.toString());
+
+				final BufferedReader stderr = 
+					new BufferedReader(	
+						new InputStreamReader(p.getErrorStream())
+					);
+
+				String line = "";
+				while ((line = stderr.readLine()) != null)
+					log.error("[wget output] " + line);
+				
+				log.info("Waiting for process...");
+				try
+				{
+					p.waitFor();
+				}
+				catch (final InterruptedException e)
+				{
+					log.error(e.toString());
+				}
+				log.info("... Process ended");
+
+				final String urlStr = wbi.getSourceURL().toString();
+				final int protocol = urlStr.indexOf("://");
+				wbi.setWebBundle(
+					webBundlePath + "/" 
+					+ urlStr.substring(protocol + 3, urlStr.length())
+				);
+				log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
+
+			}
+			catch (final IOException e)
+			{
+				log.error(e.toString());
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public static final File makePackage(PlaceBook p )
+	{
+		final String out = placeBookToXML(p);
+
+		if (out == null)
+			return null;
+		
+		final String pkgPath = p.getPackagePath();
+		if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
+		{
+			try
+			{
+				final FileWriter fw = new FileWriter(new File(pkgPath
+					+ "/"
+					+ PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_CONFIG, "")));
+				fw.write(out);
+				fw.close();
+			}
+			catch (final IOException e)
+			{
+				log.error(e.toString());
+				return null;
+			}
+		}
+
+		final String pkgZPath = 
+			PropertiesSingleton
+				.get(PlaceBooksAdminHelper.class.getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+
+		final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
+
+		try 
+		{
+			// Compress package path
+			if (new File(pkgZPath).exists() || new File(pkgZPath).mkdirs())
+			{
+
+				final ZipOutputStream zos = 
+					new ZipOutputStream(
+						new BufferedOutputStream(
+							new FileOutputStream(zipFile))
+					);
+				zos.setMethod(ZipOutputStream.DEFLATED);
+
+				final ArrayList<File> files = new ArrayList<File>();
+				getFileListRecursive(new File(pkgPath), files);
+
+				final File currentDir = new File(".");
+				log.info("Current working directory is " 
+						 + currentDir.getAbsolutePath());
+
+				final byte data[] = new byte[2048];
+				BufferedInputStream bis = null;
+				for (final File file : files)
+				{
+					log.info("Adding file to archive: " + file.getPath());
+					final FileInputStream fis = new FileInputStream(file);
+					bis = new BufferedInputStream(fis, 2048);
+					zos.putNextEntry(new ZipEntry(file.getPath()));
+
+					int j;
+					while ((j = bis.read(data, 0, 2048)) != -1)
+					{
+						zos.write(data, 0, j);
+					}
+					bis.close();
+				}
+
+				zos.close();
+			}
+			else
+			{
+				log.error("Package path doesn't exist or can't be created");
+				return null;
+			}
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+			return null;
+		}
+	
+		return zipFile;
+	}
 
 	public static final Set<Map.Entry<PlaceBook, Integer>> search(String terms)
 	{
@@ -69,6 +266,72 @@ public final class PlaceBooksAdminHelper
 		pm.close();
 
 		return hits.entrySet();
+	}
+
+	private static String placeBookToXML(final PlaceBook p)
+	{
+		StringWriter out = null;
+
+		try
+		{
+
+			final DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final Document config = builder.newDocument();
+
+			final Element root = p.createConfigurationRoot(config);
+			config.appendChild(root);
+
+			// Note: ImageItem, VideoItem and AudioItem write their data to a
+			// package directly as well as creating XML configuration
+			for (final PlaceBookItem item : p.getItems())
+			{
+				item.appendConfiguration(config, root);
+			}
+
+			final TransformerFactory tf = TransformerFactory.newInstance();
+			final Transformer t = tf.newTransformer();
+			final DOMSource source = new DOMSource(config);
+
+			out = new StringWriter();
+			final StreamResult result = new StreamResult(out);
+			t.transform(source, result);
+
+			return out.getBuffer().toString();
+		}
+		catch (final ParserConfigurationException e)
+		{
+			log.error(e.toString());
+		}
+		catch (final TransformerConfigurationException e)
+		{
+			log.error(e.toString());
+		}
+		catch (final TransformerException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+	}
+
+	private static void getFileListRecursive(final File path, 
+											 final List<File> out)
+	{
+		final List<File> files = 
+			new ArrayList<File>(Arrays.asList(path.listFiles()));
+
+		for (final File file : files)
+		{
+			if (file.isDirectory())
+			{
+				getFileListRecursive(file, out);
+			}
+			else
+			{
+				out.add(file);
+			}
+		}
 	}
 
 }
