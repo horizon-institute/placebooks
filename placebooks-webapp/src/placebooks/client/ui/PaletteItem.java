@@ -47,6 +47,10 @@ public class PaletteItem extends Composite
 		{
 			image.setResource(Resources.INSTANCE.picture());
 		}
+		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		{
+			image.setResource(Resources.INSTANCE.movies());
+		}		
 	}
 
 	void addDragStartHandler(final MouseDownHandler handler)

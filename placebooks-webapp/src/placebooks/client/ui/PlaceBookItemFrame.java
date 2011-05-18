@@ -1,9 +1,13 @@
 package placebooks.client.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
+import placebooks.client.ui.widget.MenuItem;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
@@ -16,11 +20,13 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.media.client.Video;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -40,8 +46,6 @@ public class PlaceBookItemFrame extends Composite
 	@UiField
 	MousePanel dragSection;
 
-	final DropMenu dropMenu = new DropMenu();
-
 	@UiField
 	MousePanel frame;
 
@@ -54,11 +58,22 @@ public class PlaceBookItemFrame extends Composite
 	private PlaceBookItem item;
 	
 	private PlaceBookPanel panel;
+	
+	private DropMenu dropMenu;
+	
+	private final List<MenuItem> menuItems = new ArrayList<MenuItem>();
 
 	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookItem item)
 	{
 		this.item = item;
 		initWidget(uiBinder.createAndBindUi(this));
+		menuItems.add(new MenuItem("Delete")
+		{
+			public void run()
+			{
+				// TODO
+			}
+		});
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
@@ -79,7 +94,40 @@ public class PlaceBookItemFrame extends Composite
 			final Image image = new Image(item.getSourceURL());
 			image.setStyleName(Resources.INSTANCE.style().imageitem());
 			widgetPanel.add(image);
+			menuItems.add(new MenuItem("Set URL")
+			{
+				public void run()
+				{
+					
+				}
+			});
 		}
+		else if(item.getClassName().equals("placebooks.model.VideoItem"))
+		{
+			final Video video = Video.createIfSupported();
+			video.setStyleName(Resources.INSTANCE.style().imageitem());			
+			video.setSrc(item.getSourceURL());
+			video.setControls(true);
+			if(video != null)
+			{
+				widgetPanel.add(video);
+			}
+		}
+		else if(item.getClassName().equals("placebooks.model.GPSTraceItem"))
+		{
+			
+		}
+		else if(item.getClassName().equals("placebooks.model.WebBundleItem"))
+		{
+			final Frame frame = new Frame(item.getSourceURL());
+			frame.setStyleName(Resources.INSTANCE.style().imageitem());
+			widgetPanel.add(frame);
+		}
+	}
+	
+	void setDropMenu(final DropMenu dropMenu)
+	{
+		this.dropMenu = dropMenu;
 	}
 
 	public PlaceBookItemFrame(SaveTimer timer, PaletteItem item)
@@ -109,11 +157,11 @@ public class PlaceBookItemFrame extends Composite
 	
 	ImageResource getDragImage()
 	{
-		if (item.getClassName().equals("placebooks.model.TextItem"))
-		{
-			return Resources.INSTANCE.text();
-		}
+		if (item.getClassName().equals("placebooks.model.TextItem")) { return Resources.INSTANCE.text(); }
 		else if (item.getClassName().equals("placebooks.model.ImageItem")) { return Resources.INSTANCE.picture(); }
+		else if (item.getClassName().equals("placebooks.model.VideoItem")) { return Resources.INSTANCE.movies(); }
+		else if (item.getClassName().equals("placebooks.model.GPSTraceItem")) { return Resources.INSTANCE.map(); }
+		else if (item.getClassName().equals("placebooks.model.WebBundleItem")) { return Resources.INSTANCE.web_page(); }		
 		return null;
 	}
 
@@ -131,15 +179,21 @@ public class PlaceBookItemFrame extends Composite
 	@UiHandler("menuButton")
 	void handleMenuClick(final ClickEvent event)
 	{
-		GWT.log("Menu click");
+		int x = menuButton.getElement().getAbsoluteLeft();
+		int y = menuButton.getElement().getAbsoluteTop() + menuButton.getElement().getClientHeight();
+		dropMenu.show(menuItems, x, y);
+		event.stopPropagation();
 	}
 
 	void hideFrame()
 	{
 		frame.getElement().getStyle().setZIndex(0);
+		menuButton.getElement().getStyle().setVisibility(Visibility.HIDDEN);		
 		menuButton.getElement().getStyle().setOpacity(0);
 		menuButton.getElement().getStyle().setZIndex(0);
+		borderSection.getElement().getStyle().setVisibility(Visibility.HIDDEN);		
 		borderSection.getElement().getStyle().setOpacity(0);
+		dragSection.getElement().getStyle().setVisibility(Visibility.HIDDEN);		
 		dragSection.getElement().getStyle().setOpacity(0);
 		dragSection.getElement().getStyle().setZIndex(0);
 		dragSection.getElement().getStyle().setCursor(Cursor.DEFAULT);

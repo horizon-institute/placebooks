@@ -186,6 +186,10 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL()
 	{
+		if(sourceURL == null)
+		{
+			return null;
+		}
 		try
 		{
 			return new URL(sourceURL);

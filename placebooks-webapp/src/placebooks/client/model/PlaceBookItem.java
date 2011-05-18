@@ -33,4 +33,6 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native boolean hasMetadata(String name) /*-{ return name in this.metadata; }-*/;	
 
 	public final native void setParameter(String name, int value) /*-{ this.parameters[name] = value; }-*/;
+	
+	public final native void setKey(String key)  /*-{ this.id = key; }-*/;
 }

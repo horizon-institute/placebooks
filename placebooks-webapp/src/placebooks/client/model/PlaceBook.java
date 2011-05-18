@@ -24,7 +24,7 @@ public class PlaceBook extends JavaScriptObject
 	public final native void setMetadata(String name, String value) /*-{ this.metadata[name] = value; }-*/;
 	
 	public final native boolean hasMetadata(String name) /*-{ return name in this.metadata; }-*/;
-	
+
 	public final native void removeItem(PlaceBookItem item) /*-{
 		var idx = this.items.indexOf(item);
 		if (idx != -1)
@@ -32,6 +32,8 @@ public class PlaceBook extends JavaScriptObject
 			this.items.splice(idx, 1);
 		}
 	}-*/;
+
+	public final native void setKey(String text) /*-{ this.id = text; }-*/;
 
 	// @Persistent
 	// private Date timestamp;

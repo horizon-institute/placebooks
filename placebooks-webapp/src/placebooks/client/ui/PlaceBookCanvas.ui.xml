@@ -30,6 +30,15 @@
 			user-select: none;	
 		}
 		
+		.dropMenu {
+			position: absolute;
+			opacity: 0;
+			z-index: 30;
+			border: 1px solid #779;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+		}
+		
 		.loadingPanel {
 			position: absolute;
 			text-align: center;
@@ -89,6 +98,7 @@
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
 		<!--<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>-->		
 		<g:Image ui:field="dragImage" />	
+		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
 		<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
 		</p:MousePanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">

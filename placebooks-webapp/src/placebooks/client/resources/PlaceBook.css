@@ -21,6 +21,22 @@
 	width: 100%;
 }
 
+img {
+	-webkit-user-drag: none;
+	user-drag: none;
+}
+
+.menuItem {
+	padding: 1px 8px;
+	background: #889;
+	border: 1px solid #889;
+}
+
+.menuItem:HOVER {
+	background: #99A;
+	border: 1px solid #AAB;	
+}
+
 .panelleft {
 	border-right: 0px;
 	left: 5%;

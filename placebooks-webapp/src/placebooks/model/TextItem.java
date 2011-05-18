@@ -3,6 +3,7 @@ package placebooks.model;
 import java.net.URL;
 
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,6 +15,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class TextItem extends PlaceBookItem
 {
+	@Lob
 	private String text;
 
 	public TextItem(final User owner, final Geometry geom, final URL sourceURL, final String text)
