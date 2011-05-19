@@ -48,8 +48,8 @@ public class PlaceBook
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
-	@OneToOne(cascade = ALL, mappedBy = "placebook")
 	@JsonIgnore
+	@OneToOne(cascade = ALL, mappedBy = "placebook")
 	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
 	// TODO: Cascading deletes: not sure about this

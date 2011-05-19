@@ -14,7 +14,7 @@
 .textitem {
 	-webkit-user-select: text;
 	-moz-user-select: text;
-	user-select: text;	
+	user-select: text;
 }
 
 .imageitem {
@@ -34,7 +34,7 @@ img {
 
 .menuItem:HOVER {
 	background: #99A;
-	border: 1px solid #AAB;	
+	border: 1px solid #AAB;
 }
 
 .panelleft {
@@ -43,7 +43,7 @@ img {
 }
 
 .panelright {
-	border-left: 1px dashed #CCC;	
+	border-left: 1px dashed #CCC;
 	right: 5%;
 }
 
@@ -54,14 +54,28 @@ img {
 }
 
 .dragShadow {
-	-moz-box-shadow: 3px 3px 4px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 3px 3px 4px rgba(0,0,0,0.5);
-	box-shadow: 3px 3px 6px rgba(0,0,0,0.5);	
+	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
+	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
 }
 
 .panelcenter {
 	border-right: 0px;
 	border-left: 1px dashed #CCC;
 	left: 35%;
-	right: 35%;	
+	right: 35%;
+}
+
+.glassPanel {
+	background: #000;
+	opacity: 0.5;
+	z-index: 45;
+}
+
+.popupPanel {
+	border: 1px solid #447;
+	border-radius: 5px;
+	padding: 3px 5px;
+	z-index: 50;
+	background-color: #669;
 }

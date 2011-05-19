@@ -45,11 +45,11 @@ public class PlaceBookService
 			final RequestCallback callback)
 	{
 		GWT.log(url);
-		GWT.log(data);
 		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));
 		if (data != null)
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			GWT.log(data);			
 		}
 		try
 		{

@@ -926,30 +926,47 @@ public class PlaceBooksAdminController
 				if (dbPlacebook != null)
 				{
 					// Remove any items that are no longer used
+					Map<String, PlaceBookItemSearchIndex> indices = new HashMap<String, PlaceBookItemSearchIndex>();
 					for (final PlaceBookItem item : dbPlacebook.getItems())
 					{
 						if (!containsItem(item, placebook.getItems()))
 						{
 							manager.remove(item);
 						}
+						else
+						{
+							indices.put(item.getKey(), item.getSearchIndex());
+						}
+					}
+
+					dbPlacebook.setItems(Collections.EMPTY_LIST);
+					for (final PlaceBookItem item : placebook.getItems())
+					{
+						if(item.getKey() != null)
+						{
+							item.getSearchIndex().setID(indices.get(item.getKey()).getID());
+						}
+						
+						for(Entry<String, String> metadataItem: item.getMetadata().entrySet())
+						{
+							item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+						}
+						
+						item.setOwner(dbPlacebook.getOwner());
+						
+						if(item.getTimestamp() == null)
+						{
+							item.setTimestamp(new Date());
+						}
+						
+						dbPlacebook.addItem(item);
 					}
 
 					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 					{
 						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 					}
-
-					dbPlacebook.setItems(Collections.EMPTY_LIST);
-					for (final PlaceBookItem item : placebook.getItems())
-					{
-						item.setOwner(dbPlacebook.getOwner());
-						dbPlacebook.addItem(item);
-						if(item.getTimestamp() == null)
-						{
-							item.setTimestamp(new Date());
-						}
-					}
-
+					
 					dbPlacebook.setGeometry(placebook.getGeometry());
 
 					manager.merge(dbPlacebook);

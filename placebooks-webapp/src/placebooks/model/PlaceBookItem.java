@@ -304,4 +304,8 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
+	public PlaceBookItemSearchIndex getSearchIndex()
+	{
+		return index;
+	}
 }
