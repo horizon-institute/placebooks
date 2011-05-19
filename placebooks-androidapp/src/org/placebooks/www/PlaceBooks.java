@@ -1,6 +1,7 @@
 package org.placebooks.www;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -31,6 +32,12 @@ import android.app.ProgressDialog;
 //import android.widget.TextView;
 import android.os.AsyncTask;
 import android.content.res.Configuration;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.app.AlertDialog;
+
 
 
 public class PlaceBooks extends Activity {
@@ -46,7 +53,12 @@ public class PlaceBooks extends Activity {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     private ProgressDialog mProgressDialog;
     private String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
- 
+    private String key; 	//placebook key
+    private EditText etUsername;
+    private EditText etPassword;
+    private Button btnLogin;
+    private String username; 
+	private String password;    
 		
     /** Called when the activity is first created. */
     @Override
@@ -54,12 +66,21 @@ public class PlaceBooks extends Activity {
         super.onCreate(savedInstanceState);
         // load up the layout
         setContentView(R.layout.main);	//push main layout into the content view
-        //placebooks logo
-        /*ImageView image = (ImageView) findViewById(R.id.imgLogo);
-        image.setImageResource(R.drawable.placebookslogo);*/
         
-         	    
-        //create /placebooks dir on app startup
+        //check if an SDCard exists.
+        if (!isSdPresent()){
+       
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        	builder.setTitle("No SD Card!");
+        	builder.setMessage("There is no sd card mounted to this device! You need an sd card for this app!");
+        	builder.setPositiveButton("OK", null);
+        	AlertDialog dialog = builder.show();
+
+        }
+        
+        
+        
+        //create /placebooks directory on app startup
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             Log.d("MyApp", "No SDCARD");
         } else {
@@ -67,39 +88,98 @@ public class PlaceBooks extends Activity {
         directory.mkdirs();
         }
 
-      //LOG IN BUTTON      
-        Button login = (Button) findViewById(R.id.btnLogin);
+        //set the 'login' button and 'username and password' textfields    
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        etUsername = (EditText) findViewById(R.id.txt_username);
+        etPassword = (EditText) findViewById(R.id.txt_password);
+        LinearLayout ll = (LinearLayout)findViewById(R.id.linearlayout);
+       
 
-        login.setOnClickListener(new OnClickListener() {
+        
+        /*
+         * Sign in button pressed (action listener for button)
+         */
+        btnLogin.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
-        		Intent i = new Intent();
-        		i.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
-        		startActivity(i);		
+        		
+        				// Check Login	
+        		         username = etUsername.getText().toString();
+        		        // password = etPassword.getText().toString();
+        		      
+        		         
+        		        if(username.length() > 0){
+        		
+        		        	//login successful - take user to their bookshelf
+        		        	Intent intent = new Intent();
+        	        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
+        	        		intent.putExtra("username", username);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
+        	        		startActivity(intent);		
+        		
+        		        } else{
+        		        	
+        		        	//login failed - displays a naff message telling them a username must be entered
+        		        	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
+        		        	builder.setTitle("Username not entered!");
+        		        	builder.setMessage("Please enter a username!");
+        		        	builder.setPositiveButton("OK", null);
+        		        	AlertDialog dialog = builder.show();
+        		        }     		       	
+        		
         	}
         });
            
       
-       
+        /*
+         * Download a placebook button
+         */
         Button button = (Button) findViewById(R.id.Button01);
         button.setOnClickListener(new OnClickListener() {
         	           	           public void onClick(View v) {
    	           	        	   
-        	           	        	 //call the download method passing it the url to the placebooks package
-        	           	        	//String savedFilePath = Download("http://cs.swan.ac.uk/~csmarkd/package.zip");
-        	                        startDownload();
+        	           	        	//check to see if there is an sd card mounted to download to   
+        	           	        	if (!isSdPresent()){
+        	           	             
+	        	           	         	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
+	        	           	         	builder.setTitle("No SD Card!");
+	        	           	         	builder.setMessage("There is no sd card mounted to this device! You must mount an sd card to the device to download your placebooks!");
+	        	           	         	builder.setPositiveButton("OK", null);
+	        	           	         	AlertDialog dialog = builder.show();
+
+        	           	        	}  
+        	           	        	else{
+        	           	        		//if the sd card is mounted then start downloading the placebook to the sd card
+        	           	        		startDownload();
+        	           	        	}
     	   
         	           	           }
         	           	         });
         
        // setListener();  //call the setListner method
 
-        //view my placebook       
+        /*
+         * View my placebook button       
+         */
         Button buttonR = (Button) findViewById(R.id.Button02);
         buttonR.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
-        		Intent i = new Intent();
-        		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
-        		startActivity(i);		
+        		
+        		//check to see if there is an sd card mounted  
+   	        	if (!isSdPresent()){
+   	             
+       	         	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
+       	         	builder.setTitle("No SD Card!");
+       	         	builder.setMessage("There is no sd card mounted to this device! You must mount an sd card to the device!");
+       	         	builder.setPositiveButton("OK", null);
+       	         	AlertDialog dialog = builder.show();
+
+   	        	}  
+   	        	else{
+   	        		// There is an sd card mounted so read the placebook from the sd card and display it by calling the Reader Class
+	        		Intent i = new Intent();
+	        		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
+	        		startActivity(i);	
+   	        	
+   	        	}
         	}
         });
                 
@@ -116,7 +196,7 @@ public class PlaceBooks extends Activity {
     	/**
     	 * This needs to be changed to placebooks server depending on the user account that is being accessed.
     	 */
-        String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
+        String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + key;
         new DownloadFileAsync().execute(url);
         
     }
@@ -254,6 +334,14 @@ public class PlaceBooks extends Activity {
         }
     }
    
+	   /*
+	    * A method that checks if an SDCard is present on the mobile device
+	    */  
+	   public static boolean isSdPresent() {
+		   
+		   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+		   
+	   }
  
            
 }
