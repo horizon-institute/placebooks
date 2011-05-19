@@ -10,6 +10,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.File;
+
+import org.apache.commons.io.IOUtils;
+
+import javax.imageio.ImageIO;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,6 +41,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.controller.SearchHelper;
+import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -289,6 +299,31 @@ public abstract class PlaceBookItem
 		}
 
 		return null;
+	}
+
+	protected void writeDataToDisk(File dataFile) throws IOException
+	{
+		// Check package dir exists already
+		final String path = 
+			PropertiesSingleton
+				.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+					+ getPlaceBook().getKey();
+
+		if (new File(path).exists() || new File(path).mkdirs())
+		{
+
+			final FileInputStream fis = new FileInputStream(dataFile);
+			final File to = new File(path + "/" + dataFile.getName());
+
+			log.info("Copying file, from=" + dataFile.toString() 
+					 + ", to=" + to.toString());
+
+			final FileOutputStream fos = new FileOutputStream(to);
+			IOUtils.copy(fis, fos);
+			fis.close();
+			fos.close();
+		}
 	}
 
 }

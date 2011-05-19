@@ -8,17 +8,17 @@ import org.apache.log4j.Logger;
 
 public final class PropertiesSingleton
 {
-	public static final String EVERYTRAIL_API_PASSWORD = "everytrail.api_password";
+	public static final String EVERYTRAIL_API_PASSWORD 
+		= "everytrail.api_password";
 
 	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";
-	public static final String IDEN_AUDIO = "audioitem.dir";
 	public static final String IDEN_CONFIG = "config.name";
 
+	public static final String IDEN_MEDIA = "media.dir";
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
 
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
-	public static final String IDEN_VIDEO = "videoitem.dir";
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
 	public static final String IDEN_WGET = "webbundleitem.wget";

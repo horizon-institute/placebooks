@@ -1,7 +1,5 @@
 package placebooks.controller;
 
-import java.awt.image.BufferedImage;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,8 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -118,8 +122,10 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-
-		manager.close();
+		finally
+		{
+			manager.close();
+		}
 
 		return null;
 	}
@@ -149,8 +155,10 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-
-		manager.close();
+		finally
+		{
+			manager.close();
+		}
 
 		return null;
 	}
@@ -297,8 +305,8 @@ public class PlaceBooksAdminController
 					pm.getTransaction().rollback();
 					log.error("Rolling current persist transaction back");
 				}
+				pm.close();
 			}
-			pm.close();
 
 			return new ModelAndView("message", "text", "PlaceBook added");
 		}
@@ -353,8 +361,8 @@ public class PlaceBooksAdminController
 					pm.getTransaction().rollback();
 					log.error("Rolling current persist transaction back");
 				}
+				pm.close();
 			}
-			pm.close();
 
 			return new ModelAndView("message", "text", "Metadata/param added");
 		}
@@ -388,9 +396,9 @@ public class PlaceBooksAdminController
 					pm.getTransaction().rollback();
 					log.error("Rolling current persist transaction back");
 				}
-			}
-			pm.close();
 
+				pm.close();
+			}
 			return new ModelAndView("message", "text", "Metadata added");
 		}
 		else
@@ -426,15 +434,9 @@ public class PlaceBooksAdminController
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					final int delim = param.indexOf(".");
-					if (delim == -1)
-					{
+					String prefix = null, suffix = null;
+					if (!getExtension(prefix, suffix, param))
 						continue;
-					}
-
-					final String prefix = param.substring(0, delim), 
-								 suffix = param.substring(delim + 1, 
-								 						  param.length());
 
 					if (prefix.contentEquals("url"))
 					{
@@ -484,9 +486,9 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current persist transaction back");
 			}
-		}
 
-		pm.close();
+			pm.close();
+		}
 
 		return new ModelAndView("message", "text", "Scraped");
 	}
@@ -518,9 +520,9 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current delete all transaction back");
 			}
-		}
 
-		pm.close();
+			pm.close();
+		}
 
 		log.info("Deleted all PlaceBooks");
 
@@ -549,15 +551,16 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current delete single transaction back");
 			}
-		}
 
-		pm.close();
+			pm.close();
+		}
 
 		log.info("Deleted PlaceBook");
 
 		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
 	}
 
+	// TODO: this is now broken. Why?
 	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
 					method = RequestMethod.GET)
 	public ModelAndView deletePlaceBookItem(@PathVariable("key") 
@@ -580,9 +583,8 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current delete single transaction back");
 			}
+			pm.close();
 		}
-
-		pm.close();
 
 		log.info("Deleted PlaceBookItem " + key);
 
@@ -696,12 +698,14 @@ public class PlaceBooksAdminController
 				}
 			}
 
-			pm.close();
-
 		}
 		catch (NoResultException e)
 		{
 			log.error(e.toString());
+		}
+		finally
+		{
+			pm.close();
 		}
 
 		return null;
@@ -748,11 +752,13 @@ public class PlaceBooksAdminController
 		catch (final IOException e)
 		{
 			log.error(e.toString());
-			pm.close();
 			return new ModelAndView("message", "text", "Error sending package");
 		}
+		finally
+		{
+			pm.close();
+		}
 
-		pm.close();
 		return null;
 	}
 
@@ -796,7 +802,8 @@ public class PlaceBooksAdminController
 		return searchGET(out.toString());
 	}
 
-	@RequestMapping(value = "/admin/add_item/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/add_item/upload", 
+					method = RequestMethod.POST)
 	public ModelAndView uploadFile(final HttpServletRequest req)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -808,48 +815,36 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 
-			final FileItemIterator i = new ServletFileUpload().getItemIterator(req);
+			final FileItemIterator i = 
+				new ServletFileUpload().getItemIterator(req);
 			while (i.hasNext())
 			{
 				final FileItemStream item = i.next();
 				if (item.isFormField())
 				{
-					processItemData(itemData, pm, item.getFieldName(), Streams.asString(item.openStream()));
+					processItemData(itemData, pm, item.getFieldName(), 
+									Streams.asString(item.openStream()));
 				}
 				else
 				{
 					String property = null;
-					final String field = item.getFieldName();
-					final int delim = field.indexOf(".");
-					if (delim == -1)
-					{
+				
+					String prefix = null, suffix = null;
+					if (!getExtension(prefix, suffix, item.getFieldName()))
 						continue;
-					}
-
-					final String prefix = field.substring(0, delim), suffix = field
-							.substring(delim + 1, field.length());
 
 					final PlaceBook p = pm.find(PlaceBook.class, suffix);
 
-					if (prefix.contentEquals("image"))
-					{
-						pbi = new ImageItem(null, null, null, null);
-						p.addItem(pbi);
-
-						final InputStream input = item.openStream();
-						final BufferedImage b = ImageIO.read(input);
-						input.close();
-						((ImageItem) pbi).setImage(b);
-
-						continue;
-					}
-					else if (prefix.contentEquals("gpstrace"))
+					if (prefix.contentEquals("gpstrace"))
 					{
 						Document gpxDoc = null;
 						// StringReader reader = new StringReader(value);
 						final InputStream reader = item.openStream();
 						final InputSource source = new InputSource(reader);
-						final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+						final DocumentBuilder builder = 
+							DocumentBuilderFactory
+								.newInstance()
+								.newDocumentBuilder();
 						gpxDoc = builder.parse(source);
 						reader.close();
 						pbi = new GPSTraceItem(null, null, null, gpxDoc);
@@ -857,45 +852,61 @@ public class PlaceBooksAdminController
 
 						continue;
 					}
-					else if (prefix.contentEquals("video"))
+					else if (!prefix.contentEquals("video") &&
+							 !prefix.contentEquals("audio") && 
+							 !prefix.contentEquals("image"))
 					{
-						property = PropertiesSingleton.IDEN_VIDEO;
-					}
-					else if (prefix.contentEquals("audio"))
-					{
-						property = PropertiesSingleton.IDEN_AUDIO;
-					}
-					else
-					{
-						return new ModelAndView("message", "text", "Unsupported file type");
+						throw new Exception("Unsupported file type");
 					}
 
-					final String path = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(property,
-																												"");
+					final String path = 
+						PropertiesSingleton
+							.get(this.getClass().getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
-					if (!new File(path).exists() && !new File(path).mkdirs()) { return new ModelAndView("message",
-							"text", "Failed to write file"); }
+					if (!new File(path).exists() && !new File(path).mkdirs()) 
+					{
+						throw new Exception("Failed to write file"); 
+					}
 
 					File file = null;
 
 					final int extIdx = item.getName().lastIndexOf(".");
-					final String ext = item.getName().substring(extIdx + 1, item.getName().length());
+					final String ext = 
+						item.getName().substring(extIdx + 1, 
+												 item.getName().length());
 
-					if (property.equals(PropertiesSingleton.IDEN_VIDEO))
+					if (prefix.contentEquals("video"))
 					{
 						pbi = new VideoItem(null, null, null, new File(""));
 						p.addItem(pbi);
-						((VideoItem) pbi).setVideo(path + "/" + pbi.getKey() + "." + ext);
+						pm.getTransaction().commit();
+						pm.getTransaction().begin();
+						((VideoItem) pbi).setVideo(path + "/" + pbi.getKey() 
+												   + "." + ext);
 
 						file = new File(((VideoItem) pbi).getVideo());
 					}
-					else if (property.equals(PropertiesSingleton.IDEN_AUDIO))
+					else if (prefix.contentEquals("audio"))
 					{
 						pbi = new AudioItem(null, null, null, new File(""));
 						p.addItem(pbi);
-						((AudioItem) pbi).setAudio(path + "/" + pbi.getKey() + "." + ext);
+						pm.getTransaction().commit();
+						pm.getTransaction().begin();
+						((AudioItem) pbi).setAudio(path + "/" + pbi.getKey() 
+												   + "." + ext);
 
 						file = new File(((AudioItem) pbi).getAudio());
+					}
+					else if (prefix.contentEquals("image"))
+					{
+						pbi = new ImageItem(null, null, null, new File(""));
+						p.addItem(pbi);
+						pm.getTransaction().commit();
+						pm.getTransaction().begin();
+						((ImageItem)pbi).setImage(path + "/" + pbi.getKey()
+												  + "." + ext);
+						file = new File(((ImageItem)pbi).getImage());
 					}
 
 					final InputStream input = item.openStream();
@@ -908,14 +919,17 @@ public class PlaceBooksAdminController
 					output.close();
 					input.close();
 
-					log.info("Wrote " + prefix + " file " + file.getAbsolutePath());
+					log.info("Wrote " + prefix + " file " 
+							 + file.getAbsolutePath());
 
 				}
 
 			}
 
-			if (pbi == null || itemData.getOwner() == null) { return new ModelAndView("message", "text",
-					"Error setting data elements"); }
+			if (pbi == null || itemData.getOwner() == null) 
+			{ 
+				throw new Exception("Error setting data elements"); 
+			}
 
 			pbi.setOwner(itemData.getOwner());
 			pbi.setSourceURL(itemData.getSourceURL());
@@ -939,6 +953,10 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
+		catch (final Exception e)
+		{
+			log.error(e.toString());
+		}
 		finally
 		{
 			if (pm.getTransaction().isActive())
@@ -946,9 +964,9 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current persist transaction back");
 			}
-		}
 
-		pm.close();
+			pm.close();
+		}
 
 		return new ModelAndView("message", "text", "Done");
 	}
@@ -966,20 +984,16 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 
-			for (final Enumeration<String> params = req.getParameterNames(); params.hasMoreElements();)
+			for (final Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					final int delim = param.indexOf(".");
-					if (delim == -1)
-					{
+					String prefix = null, suffix = null;
+					if (!getExtension(prefix, suffix, param))
 						continue;
-					}
-
-					final String prefix = param.substring(0, delim), suffix = param
-							.substring(delim + 1, param.length());
 
 					final PlaceBook p = pm.find(PlaceBook.class, suffix);
 
@@ -997,8 +1011,12 @@ public class PlaceBooksAdminController
 
 			}
 
-			if ((pbi != null && ((TextItem) pbi).getText() == null) || pbi == null || itemData.getOwner() == null) { return new ModelAndView(
-					"message", "text", "Error setting data elements"); }
+			if ((pbi != null && ((TextItem) pbi).getText() == null) || 
+				pbi == null || itemData.getOwner() == null) 
+			{ 
+				return new ModelAndView(
+					"message", "text", "Error setting data elements"); 
+			}
 
 			pbi.setOwner(itemData.getOwner());
 			pbi.setGeometry(itemData.getGeometry());
@@ -1013,15 +1031,137 @@ public class PlaceBooksAdminController
 				pm.getTransaction().rollback();
 				log.error("Rolling current persist transaction back");
 			}
+			pm.close();
 		}
-
-		pm.close();
 
 		return new ModelAndView("message", "text", "TextItem added");
 	}
 
 
-	
+	@RequestMapping(value = "/admin/serve/imageitem/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView serveImageItem(final HttpServletRequest req, 
+								   	   final HttpServletResponse res,
+								   	   @PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		try
+		{
+			final ImageItem i = em.find(ImageItem.class, key);
+
+			if (i != null && i.getImage() != null)
+			{
+				try
+				{
+					File image = new File(i.getImage());
+					ImageInputStream iis = 
+						ImageIO.createImageInputStream(image);
+					Iterator<ImageReader> readers = 
+						ImageIO.getImageReaders(iis);
+					String fmt = "png";
+					while (readers.hasNext()) 
+					{
+						ImageReader read = readers.next();
+						fmt = read.getFormatName();
+						System.out.println("*** format name = " + fmt);
+					}
+
+					OutputStream out = res.getOutputStream();
+					ImageIO.write(ImageIO.read(image), fmt, out);
+					out.close();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/serve/videoitem/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView serveVideoItem(final HttpServletRequest req, 
+								   	   final HttpServletResponse res,
+								   	   @PathVariable("key") final String key)
+	{
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/serve/audioitem/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView serveAudioItem(final HttpServletRequest req, 
+								   	   final HttpServletResponse res,
+								   	   @PathVariable("key") final String key)
+	{	
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		try
+		{
+			final AudioItem a = em.find(AudioItem.class, key);
+
+			if (a != null && a.getAudio() != null)
+			{
+				try
+				{
+					File audio = new File(a.getAudio());
+					
+					final ByteArrayOutputStream bos = 
+						new ByteArrayOutputStream();
+					final FileInputStream fis = new FileInputStream(audio);
+					final BufferedInputStream bis = 
+						new BufferedInputStream(fis);
+
+					final byte data[] = new byte[2048];
+					int i;
+					while ((i = bis.read(data, 0, 2048)) != -1)
+					{
+						bos.write(data, 0, i);
+					}
+					fis.close();
+
+					String prefix = null, suffix = null;
+					if (getExtension(prefix, suffix, a.getAudio()))
+					{
+						final ServletOutputStream sos = res.getOutputStream();
+						res.setContentType("audio/" + suffix);
+						res.addHeader("Content-Disposition", 
+									  "attachment; filename=" 
+									  + audio.getName());
+						
+						sos.write(bos.toByteArray());
+						sos.flush();
+					}
+					else
+						throw new Exception("Error getting file suffix");
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		return null;
+	}
 
 	
 	// Helper class for passing around general PlaceBookItem data
@@ -1068,8 +1208,10 @@ public class PlaceBooksAdminController
 
 
 	// Assumes currently open EntityManager
-	private static boolean processItemData(final ItemData i, final EntityManager pm, final String field,
-			final String value)
+	private static boolean processItemData(final ItemData i, 
+										   final EntityManager pm, 
+										   final String field,
+										   final String value)
 	{
 		if (field.equals("owner"))
 		{
@@ -1104,5 +1246,17 @@ public class PlaceBooksAdminController
 		return true;
 	}
 
+	private boolean getExtension(String prefix, String suffix, 
+								 final String field)
+	{
+		final int delim = field.indexOf(".");
+		if (delim == -1)
+			return false;
+
+		prefix = field.substring(0, delim);
+		suffix = field.substring(delim + 1, field.length());
+
+		return true;
+	}
 
 }
