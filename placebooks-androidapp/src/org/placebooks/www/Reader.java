@@ -46,12 +46,23 @@ import android.widget.Gallery;
 import android.provider.MediaStore;
 import android.view.View.OnClickListener; 
 import android.view.Gravity;
-//import android.widget.Toast;
-//import android.content.Intent;
+import android.widget.Toast;
+import android.content.Intent;
+import android.view.MotionEvent;
+import android.view.View.OnTouchListener;
+import android.widget.ViewFlipper;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.animation.Animation.AnimationListener;
+
+
 
 
 //Implement a Listener (added the interface to the base class)
 public class Reader extends Activity {
+	
 	
 	//TextView to display error if placebook doesn't display properly	
 	private TextView orgXmlTxt;		
@@ -60,6 +71,22 @@ public class Reader extends Activity {
 	private ScrollView sv;		//scroll view that wraps the linear layout
 	private LinearLayout ll;	//main linear layout
 	private LinearLayout ll2;	//linear layout for the audio buttons (play/pause/stop)
+	private LinearLayout ll3;
+	private LinearLayout llAudio;
+	private ViewFlipper flipper;
+	//swipe gesture constants
+	private static final int SWIPE_MIN_DISTANCE = 120;
+	private static final int SWIPE_MAX_OFF_PATH = 250;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+	private GestureDetector gestureDetector; 
+	private Animation slideLeftIn;
+	private Animation slideLeftOut;
+	private Animation slideRightIn;
+	private Animation slideRightOut;
+	private ScrollView sv2;
+	private ScrollView sv3;
+	View.OnTouchListener gestureListener;
+
 	
 	//Variables for placebook key (the id of the book) and the User's Name (unsure if it is staying)
 	private String pbkey;	//this is the placebook key that defines the ID for each placebook. The contents of each placebook is stored in the folder "key" e.g folder /1234567/contents in here
@@ -82,26 +109,49 @@ public class Reader extends Activity {
 	private ArrayList <ImageButton> ibAudioPause = new ArrayList<ImageButton>();
 	private ArrayList <ImageButton> ibAudioStop = new ArrayList<ImageButton>();
 	
+	
 
 	 		 @Override
 	     	 public void onCreate(Bundle savedInstanceState) {
 			        super.onCreate(savedInstanceState);	//icicle
 			        getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		
+			        setContentView(R.layout.reader);
+			        flipper=(ViewFlipper)findViewById(R.id.flipper); 
+			        sv = (ScrollView)findViewById(R.id.scroller);
+			        ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        
-			        sv = new ScrollView(this);
-					ll = new LinearLayout(this);
-					 // WEIGHT = 1f, GRAVITY = center
-					ll.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT,1));	
-					ll.setOrientation(LinearLayout.VERTICAL);
-					sv.setBackgroundColor(0xFFFFFFFF);
-					ll.setGravity(android.view.Gravity.CENTER);
-					sv.addView(ll);
-								
+			        
+			        sv2 = (ScrollView)findViewById(R.id.scroller2);
+			        ll2 = (LinearLayout)findViewById(R.id.linearLayout2);
+			        sv3 = (ScrollView)findViewById(R.id.scroller3);	          
+			        ll3 = (LinearLayout)findViewById(R.id.linearLayout3);
+			        gestureDetector = new GestureDetector(new MyGestureDetector());
+			        
+			        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
+			        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
+			        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
+			        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
+
+			        
+			      /*
+			       * This was completely dynamic without using any xml file for the view. Now I am using
+			       * an xml file view for a template and adding dynamic content to that file.  
+				        sv = new ScrollView(this);
+						ll = new LinearLayout(this);
+						 // WEIGHT = 1f, GRAVITY = center
+						ll.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT,1));	
+						ll.setOrientation(LinearLayout.VERTICAL);
+						sv.setBackgroundColor(0xFFFFFFFF);
+						ll.setGravity(android.view.Gravity.CENTER);
+						sv.addView(ll);
+					*
+					*/	
+			        
 					//uName = "stuart"; 	//need to GET user name...how is this known? - case sensitive?
 					//pbkey = "pack123";
-				
-					this.setContentView(sv);
+
+					//this.setContentView(sv);
 				
 					      	       	        
 			        try {
@@ -120,6 +170,39 @@ public class Reader extends Activity {
 					} catch (Exception e) {
 						orgXmlTxt.setText(e.getMessage());
 					} 
+					
+								
+					//set up action listeners for the scroll views
+					sv.setOnTouchListener(new View.OnTouchListener() {
+						@Override
+			            public boolean onTouch(View v, MotionEvent event) {
+			                if (gestureDetector.onTouchEvent(event)) {
+			                    return true;
+			                }
+			                return false;
+			            }
+			        });
+					
+					sv2.setOnTouchListener(new View.OnTouchListener() {
+						@Override
+			            public boolean onTouch(View v, MotionEvent event) {
+			                if (gestureDetector.onTouchEvent(event)) {
+			                    return true;
+			                }
+			                return false;
+			            }
+			        });
+					
+					sv3.setOnTouchListener(new View.OnTouchListener() {
+						@Override
+			            public boolean onTouch(View v, MotionEvent event) {
+			                if (gestureDetector.onTouchEvent(event)) {
+			                    return true;
+			                }
+			                return false;
+			            }
+			        });
+
 					
 			
 	 		 } //end of onCreate() Method
@@ -181,12 +264,12 @@ public class Reader extends Activity {
 					//assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
 					ibThumb.get(i).setImageBitmap(thumb);
 					ibThumb.get(i).setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-					ll.addView(ibThumb.get(i)); 
+					ll3.addView(ibThumb.get(i)); 
 					
 					TextView tv = new TextView(this);
 					tv.setText("Video file: " + alVideoFilename.get(i));
 					tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-					ll.addView(tv);
+					ll3.addView(tv);
 					
 					
 					/*
@@ -270,26 +353,26 @@ public class Reader extends Activity {
 		    	 ibAudioPause.get(i).setImageResource(R.drawable.pause);
 	
 		    	 
-				 ll2 = new LinearLayout(this);	//create a new linear layout for the Audio buttons (play/pause/stop)
-				 ll2.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)); 	// this wraps the new linear layout to the original and centres it
+				 llAudio = new LinearLayout(this);	//create a new linear layout for the Audio buttons (play/pause/stop)
+				 llAudio.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)); 	// this wraps the new linear layout to the original and centres it
 		    	 
 		    	 //assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
 		    	 ibAudioPlay.get(i).setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		    	 ll2.addView(ibAudioPlay.get(i)); 
+		    	 llAudio.addView(ibAudioPlay.get(i)); 
 		    	 
 		    	 ibAudioPause.get(i).setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		    	 ll2.addView(ibAudioPause.get(i));
+		    	 llAudio.addView(ibAudioPause.get(i));
 		    	 
 		    	 ibAudioStop.get(i).setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		    	 ll2.addView(ibAudioStop.get(i));
+		    	 llAudio.addView(ibAudioStop.get(i));
 		    	 
-		    	 ll.addView(ll2);	//add the audio linear layout to the main linear layout
+		    	 ll2.addView(llAudio);	//add the audio linear layout to the main linear layout
 
 		    	 
 		    	 TextView tv = new TextView(this);
 				 tv.setText("Audio File: " + alAudioFilename.get(i));
 				 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				 ll.addView(tv);
+				 ll2.addView(tv);
 		    		
 				 
 						/*
@@ -520,9 +603,59 @@ public class Reader extends Activity {
 				return inLine.toString();    
 				
 			}
-	        
 			
-}
+			/*
+			 *  Extends SimpleOnGestureListener for implementing my own handling on swipe/fling action
+			 */
+			 class MyGestureDetector extends SimpleOnGestureListener {
+			        @Override
+			        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			            try {
+			                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+			                    return false;
+			                // right to left swipe
+			                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+			                	flipper.setInAnimation(slideLeftIn);
+			                    flipper.setOutAnimation(slideLeftOut);
+			                	flipper.showNext();
+			                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+			                	flipper.setInAnimation(slideRightIn);
+			                    flipper.setOutAnimation(slideRightOut);
+			                	flipper.showPrevious();
+			                }
+			            } catch (Exception e) {
+			                // nothing
+			            }
+			            return false;
+			        }
+			    }
+
+			 
+			 public boolean canFlipRight() {
+					// TODO Auto-generated method stub
+					return true;
+				}
+			 
+			 public boolean canFlipLeft() {
+					// TODO Auto-generated method stub
+					return true;
+				}
+			 
+		//important. makes sure that in the activity, it is catching the gesture event by overriding the onTouch() method	 
+			 @Override
+			 public boolean onTouchEvent(MotionEvent event) {
+			 if (gestureDetector.onTouchEvent(event))
+			 return true;
+			 else
+			 return false;
+			 }
+
+
+			 
+	
+			
+} //end of class
+
 
 
 	 

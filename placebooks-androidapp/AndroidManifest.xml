@@ -6,14 +6,16 @@
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:name=".PlaceBooks"
                   android:label="@string/app_name"
-                  android:configChanges="orientation">
+                  android:configChanges="orientation"
+                  android:windowSoftInputMode="stateHidden"
+                  >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-    
+
 <activity android:name=".Reader"></activity>
 <activity android:name=".Shelf"></activity>
 

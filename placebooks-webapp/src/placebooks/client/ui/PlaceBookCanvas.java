@@ -8,6 +8,7 @@ import java.util.List;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
 
 import com.google.gwt.core.client.GWT;
@@ -16,6 +17,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -57,6 +59,9 @@ public class PlaceBookCanvas extends Composite
 
 	@UiField
 	Image dragImage;
+
+	@UiField
+	DropMenu dropMenu;
 
 	@UiField
 	Panel loadingPanel;
@@ -127,6 +132,28 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
+	public void setPalette(final JsArray<PlaceBookItem> items)
+	{
+		palette.clear();
+		add(new PaletteItem(
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Text Item\"},\"parameters\":{},\"text\":\"New Text Block\"}")));
+		add(new PaletteItem(
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.ImageItem\",\"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Image Item\"},\"parameters\":{}}")));
+		add(new PaletteItem(
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video Item\"},\"parameters\":{}}")));
+		add(new PaletteItem(
+		    				PlaceBookItem
+		    						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));
+		
+		for (int index = 0; index < items.length(); index++)
+		{
+			add(new PaletteItem(items.get(index)));
+		}
+	}
+
 	public void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
@@ -157,12 +184,18 @@ public class PlaceBookCanvas extends Composite
 			title.getElement().setInnerText("No Title");
 		}
 
-		for (PlaceBookPanel panel : panels)
+		for (final PlaceBookPanel panel : panels)
 		{
 			panel.reflow();
 		}
 
 		loadingPanel.setVisible(false);
+	}
+
+	@UiHandler("backPanel")
+	void handleClick(final ClickEvent event)
+	{
+		dropMenu.hide();
 	}
 
 	void handleDrag(final MouseEvent<?> event, final boolean finished)
@@ -224,13 +257,6 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
-	@UiHandler("title")
-	void handleTitleEdit(final KeyUpEvent event)
-	{
-		placebook.setMetadata("title", title.getElement().getInnerText());
-		saveTimer.markChanged();
-	}
-
 	@UiHandler("backPanel")
 	void handleMouseMove(final MouseMoveEvent event)
 	{
@@ -241,6 +267,13 @@ public class PlaceBookCanvas extends Composite
 	void handleMouseUp(final MouseUpEvent event)
 	{
 		handleDrag(event, true);
+	}
+
+	@UiHandler("title")
+	void handleTitleEdit(final KeyUpEvent event)
+	{
+		placebook.setMetadata("title", title.getElement().getInnerText());
+		saveTimer.markChanged();
 	}
 
 	private void add(final PaletteItem item)
@@ -264,6 +297,7 @@ public class PlaceBookCanvas extends Composite
 	{
 		items.add(item);
 		canvas.add(item);
+		item.setDropMenu(dropMenu);
 
 		item.addDragStartHandler(new MouseDownHandler()
 		{
@@ -319,17 +353,5 @@ public class PlaceBookCanvas extends Composite
 		dragImage.setStyleName(Resources.INSTANCE.style().dragImage());
 
 		handleDrag(event, false);
-	}
-
-	public void setPalette(JsArray<PlaceBookItem> items)
-	{
-		palette.clear();
-		add(new PaletteItem(PlaceBookItem.parse("{\"@class\":\"placebooks.model.TextItem\",\"sourceURL\":\"http://www.google.com\",\"metadata\":{\"title\":\"Text Item\"},\"parameters\":{},\"text\":\"New Text Block\"}")));
-		add(new PaletteItem(PlaceBookItem.parse("{\"@class\":\"placebooks.model.ImageItem\",\"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Item Item\"},\"parameters\":{}}")));
-
-		for(int index = 0; index < items.length(); index++)
-		{
-			add(new PaletteItem(items.get(index)));
-		}
 	}
 }

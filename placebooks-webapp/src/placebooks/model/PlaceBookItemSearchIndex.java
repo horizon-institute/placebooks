@@ -1,10 +1,12 @@
 package placebooks.model;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 public class PlaceBookItemSearchIndex extends SearchIndex
 {
+	@OneToOne
 	private PlaceBookItem item;
 
 	public PlaceBookItemSearchIndex()

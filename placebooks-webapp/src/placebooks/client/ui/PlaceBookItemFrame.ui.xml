@@ -17,8 +17,8 @@
 			background-color: #669;
 			padding: 2px;
 			opacity: 0;
-			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
 			visibility: hidden;
 		}
 		
@@ -31,8 +31,8 @@
 			border: 1px solid #447;
 			opacity: 0;			
 			background-color: #669;
-			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
 			visibility: hidden;		
 			min-height: 10px;	
 		}
@@ -45,8 +45,8 @@
 			right: 0px;
 			border: 2px solid #447;
 			opacity: 0;			
-			-webkit-transition: opacity .5s linear;
-			transition: opacity .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
 			visibility: hidden;			
 		}
 		

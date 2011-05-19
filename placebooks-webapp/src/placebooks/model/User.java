@@ -1,5 +1,7 @@
 package placebooks.model;
 
+import static javax.persistence.CascadeType.ALL;
+
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -14,7 +16,6 @@ import javax.persistence.OneToMany;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -23,6 +24,7 @@ public class User
 	@Column(unique = true)
 	private String email;
 
+	@JsonIgnore
 	@ManyToMany
 	private Collection<User> friends = new HashSet<User>();
 
@@ -40,7 +42,7 @@ public class User
 	private String passwordHash;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = ALL)
 	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
 	public User(final String name, final String email, final String passwordHash)

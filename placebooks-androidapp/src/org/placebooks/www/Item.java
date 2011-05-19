@@ -32,6 +32,9 @@ public class Item {
 		this.geometry = g;
 	}
 	
+	//String getMetadata()
+	//String setMetadata(String name)
+	
 	
 	
 	/*

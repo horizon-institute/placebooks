@@ -5,8 +5,11 @@
 	<inherits name="com.google.gwt.resources.Resources" />
 	<inherits name="com.google.gwt.json.JSON" /> 
 	<inherits name="com.google.gwt.http.HTTP" />	
-	
+
+	<script src="http://www.openlayers.org/api/OpenLayers.js" />	
+	<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" />
+
 	<source path="client" />
-	
+
 	<entry-point class="placebooks.client.PlaceBookEditor" />
 </module>

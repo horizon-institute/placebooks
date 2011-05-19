@@ -48,11 +48,11 @@ public class PlaceBook
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
-	@OneToOne(cascade = ALL, mappedBy = "placebook")
 	@JsonIgnore
+	@OneToOne(cascade = ALL, mappedBy = "placebook")
 	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
-	// TODO: Cascading deletes via dependent=true: not sure about this
+	// TODO: Cascading deletes: not sure about this
 	@OneToMany(mappedBy = "placebook", cascade = ALL)
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
@@ -65,6 +65,9 @@ public class PlaceBook
 
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
+	
+	//@JsonIgnore
+	//private Permissions readPermissions;
 
 	// Make a new PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
@@ -209,4 +212,9 @@ public class PlaceBook
 	{
 		this.timestamp = timestamp;
 	}
+	
+	//public boolean canRead(final User user)
+	//{
+	//	return readPermissions.canAccess(owner, user);
+	//}
 }

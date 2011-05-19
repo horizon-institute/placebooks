@@ -47,7 +47,16 @@ public class PaletteItem extends Composite
 		{
 			image.setResource(Resources.INSTANCE.picture());
 		}
-	}
+		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		{
+			image.setResource(Resources.INSTANCE.movies());
+		}
+		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
+		{
+			image.setResource(Resources.INSTANCE.map());
+		}
+		else if (item.getClassName().equals("placebooks.model.WebBundleItem")) { image.setResource(Resources.INSTANCE.web_page()); }		
+	}	
 
 	void addDragStartHandler(final MouseDownHandler handler)
 	{
