@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +53,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -552,18 +554,7 @@ public class PlaceBooksAdminController
 			final User user = UserManager.getCurrentUser(entityManager);
 			if (user == null)
 			{
-				try
-				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
-							.toString());
-					sos.flush();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.getMessage(), e);
-				}
+
 			}
 			else
 			{
@@ -692,6 +683,7 @@ public class PlaceBooksAdminController
 				try
 				{
 					final ObjectMapper mapper = new ObjectMapper();
+					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);					
 					final ServletOutputStream sos = res.getOutputStream();
 					res.setContentType("application/json");
 					mapper.writeValue(sos, placebook);
@@ -715,42 +707,69 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public void getPlaceBooksJSON(final HttpServletResponse res)
+	public void getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-															PlaceBook.class);
-		q.setParameter("owner", user);
-
-		final Collection<PlaceBook> pbs = q.getResultList();
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		log.info("User " + user.getName());
 		try
 		{
-			final Shelf shelf = new Shelf(user, pbs);
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(shelf));
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, shelf);
-			sos.flush();
-		}
-		catch (final Exception e)
-		{
-			log.error(e.toString());
-		}
+			final User user = UserManager.getCurrentUser(manager);
+			if (user != null)
+			{
+				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
+																	PlaceBook.class);
+				q.setParameter("owner", user);
 
-		manager.close();
+				final Collection<PlaceBook> pbs = q.getResultList();
+				log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+				log.info("User " + user.getName());
+				try
+				{
+					final Shelf shelf = new Shelf(user, pbs);
+					final ObjectMapper mapper = new ObjectMapper();
+					log.info("Shelf: " + mapper.writeValueAsString(shelf));
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, shelf);
+					sos.flush();
+				}
+				catch (final Exception e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
+							.toString());
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		finally
+		{
+			manager.close();
+		}
 	}
 
+	// TODO Currently the spring framework seems to be ignoring anything after the last fullstop
+	// in a url. Maybe it thinks it is a file extension? Anyway, since an email will always have
+	// a fullstop in it, then that part of the email address will be cut off. The simple work
+	// around is to add a forward slash (/) to the end of the url, which stops spring from
+	// thinking that it is a file extension.
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
 	public void getPlaceBooksJSON(final HttpServletResponse res, @PathVariable("owner") final String owner)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
-		uq.setParameter("email", owner);
-		final User user = uq.getSingleResult();
+		System.out.println(owner);
+		final User user = UserManager.getUser(pm, owner);
 
 		final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
 														PlaceBook.class);
@@ -758,21 +777,18 @@ public class PlaceBooksAdminController
 		final Collection<PlaceBook> pbs = q.getResultList();
 
 		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		if (!pbs.isEmpty())
+		final Shelf s = new Shelf(user, pbs);
+		try
 		{
-			final Shelf s = new Shelf(user, pbs);
-			try
-			{
-				final ObjectMapper mapper = new ObjectMapper();
-				final ServletOutputStream sos = res.getOutputStream();
-				res.setContentType("application/json");
-				mapper.writeValue(sos, s);
-				sos.flush();
-			}
-			catch (final IOException e)
-			{
-				log.error(e.toString());
-			}
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
 		}
 
 		pm.close();
@@ -884,57 +900,77 @@ public class PlaceBooksAdminController
 
 	private boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
 	{
-		for(final PlaceBookItem item: items)
+		for (final PlaceBookItem item : items)
 		{
-			if(findItem.getKey().equals(item.getKey()))
-			{
-				return true;
-			}
+			if (findItem.getKey().equals(item.getKey())) { return true; }
 		}
 		return false;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
 	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
 		log.info("Save Placebook: " + json);
 		final ObjectMapper mapper = new ObjectMapper();
-		final EntityManager manager = EMFSingleton.getEntityManager();
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);		
+		final EntityManager manager = EMFSingleton.getEntityManager();				
 		manager.getTransaction().begin();
 		try
 		{
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			
-			if(placebook.getKey() != null)
+			if (placebook.getKey() != null)
 			{
-				PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-				if(dbPlacebook != null)
+				final PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+				if (dbPlacebook != null)
 				{
-					for(final PlaceBookItem item: dbPlacebook.getItems())
+					// Remove any items that are no longer used
+					Map<String, PlaceBookItemSearchIndex> indices = new HashMap<String, PlaceBookItemSearchIndex>();
+					for (final PlaceBookItem item : dbPlacebook.getItems())
 					{
-						if(!containsItem(item, placebook.getItems()))
+						if (!containsItem(item, placebook.getItems()))
 						{
 							manager.remove(item);
 						}
+						else
+						{
+							indices.put(item.getKey(), item.getSearchIndex());
+						}
 					}
-					
+
+					dbPlacebook.setItems(Collections.EMPTY_LIST);
+					for (final PlaceBookItem item : placebook.getItems())
+					{
+						if(item.getKey() != null)
+						{
+							item.getSearchIndex().setID(indices.get(item.getKey()).getID());
+						}
+						
+						for(Entry<String, String> metadataItem: item.getMetadata().entrySet())
+						{
+							item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+						}
+						
+						item.setOwner(dbPlacebook.getOwner());
+						
+						if(item.getTimestamp() == null)
+						{
+							item.setTimestamp(new Date());
+						}
+						
+						dbPlacebook.addItem(item);
+					}
+
 					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 					{
 						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 					}
 					
-					dbPlacebook.setItems(Collections.EMPTY_LIST);
-					for (final PlaceBookItem item : placebook.getItems())
-					{
-						item.setOwner(dbPlacebook.getOwner());
-						dbPlacebook.addItem(item);
-					}
-					
 					dbPlacebook.setGeometry(placebook.getGeometry());
-					
-					manager.merge(dbPlacebook);					
-					log.info("Updated PlaceBook: " + mapper.writeValueAsString(dbPlacebook));					
+
+					manager.merge(dbPlacebook);
+					log.info("Updated PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
 				}
 				else
 				{
@@ -947,11 +983,16 @@ public class PlaceBooksAdminController
 			{
 				placebook.setOwner(UserManager.getCurrentUser(manager));
 				manager.persist(placebook);
-				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));				
+				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));
 			}
 
 			manager.getTransaction().commit();
-
+			
+			res.setContentType("application/json");				
+			final ServletOutputStream sos = res.getOutputStream();
+			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());			
+			mapper.writeValue(sos, resultPlacebook);
+			sos.flush();			
 		}
 		catch (final Throwable e)
 		{

@@ -186,6 +186,10 @@ public abstract class PlaceBookItem
 
 	public URL getSourceURL()
 	{
+		if(sourceURL == null)
+		{
+			return null;
+		}
 		try
 		{
 			return new URL(sourceURL);
@@ -300,4 +304,8 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
+	public PlaceBookItemSearchIndex getSearchIndex()
+	{
+		return index;
+	}
 }
