@@ -298,7 +298,7 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
-	protected void writeDataToDisk(File dataFile) throws IOException
+	protected void copyDataToPackage(File dataFile) throws IOException
 	{
 		// Check package dir exists already
 		final String path = 

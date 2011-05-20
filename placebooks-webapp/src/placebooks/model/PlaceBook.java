@@ -81,11 +81,13 @@ public class PlaceBook
 		this.timestamp = new Date();
 		index.setPlaceBook(this);
 
-		log.info("Created new PlaceBook: timestamp=" + this.timestamp.toString());
+		log.info("Created new PlaceBook: timestamp=" 
+				 + this.timestamp.toString());
 
 	}
 
-	public PlaceBook(final User owner, final Geometry geom, final List<PlaceBookItem> items)
+	public PlaceBook(final User owner, final Geometry geom, 
+					 final List<PlaceBookItem> items)
 	{
 		this(owner, geom);
 		setItems(items);
@@ -116,11 +118,15 @@ public class PlaceBook
 		root.setAttribute("owner", this.getOwner().getKey());
 
 		final Element timestamp = config.createElement("timestamp");
-		timestamp.appendChild(config.createTextNode(this.getTimestamp().toString()));
+		timestamp.appendChild(
+			config.createTextNode(this.getTimestamp().toString())
+		);
 		root.appendChild(timestamp);
 
 		final Element geometry = config.createElement("geometry");
-		geometry.appendChild(config.createTextNode(this.getGeometry().toText()));
+		geometry.appendChild(
+			config.createTextNode(this.getGeometry().toText())
+		);
 		root.appendChild(geometry);
 
 		if (!metadata.isEmpty())
@@ -129,7 +135,8 @@ public class PlaceBook
 
 			for (final Map.Entry<String, String> e : metadata.entrySet())
 			{
-				final Element elem = config.createElement(e.getKey().toString());
+				final Element elem = 	
+					config.createElement(e.getKey().toString());
 				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
 			}
@@ -172,8 +179,9 @@ public class PlaceBook
 
 	public String getPackagePath()
 	{
-		return PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_PKG, "")
-				+ getKey();
+		return PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + getKey();
 	}
 
 	public Date getTimestamp()

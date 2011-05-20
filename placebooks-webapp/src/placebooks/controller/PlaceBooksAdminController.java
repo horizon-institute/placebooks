@@ -708,6 +708,7 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 			final PlaceBookItem item = pm.find(PlaceBookItem.class, key);
+			item.getPlaceBook().removeItem(item);
 			pm.remove(item);
 			pm.getTransaction().commit();
 		}
@@ -774,7 +775,7 @@ public class PlaceBooksAdminController
 			}
 
 		}
-		catch (NoResultException e)
+		catch (final NoResultException e)
 		{
 			log.error(e.toString());
 		}
@@ -898,26 +899,7 @@ public class PlaceBooksAdminController
 		
 		final String url = item.getSourceURL().toExternalForm();
 		
-		final int extIdx = url.lastIndexOf(".");		
-		final String ext = url.substring(extIdx + 1, 
-									 url.length());
-		
-		File file = new File(path + "/" + item.getKey()
-		  + "." + ext);
-		
-		final InputStream input = item.getSourceURL().openStream();
-		final OutputStream output = new FileOutputStream(file);
-		int byte_;
-		while ((byte_ = input.read()) != -1)
-		{
-			output.write(byte_);
-		}
-		output.close();
-		input.close();		
-		
-		log.info("Wrote file " + file.getAbsolutePath());
-		
-		item.setPath(file.getAbsolutePath());
+		item.writeDataToDisk(url, item.getSourceURL().openStream());
 	}
 	
 	private void getGPSFromURL(final GPSTraceItem item) throws Exception
