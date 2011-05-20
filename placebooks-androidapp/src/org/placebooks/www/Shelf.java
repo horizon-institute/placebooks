@@ -76,7 +76,7 @@ public class Shelf extends ListActivity {
 		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
 		        */       
 		        if (isOnline()){
-		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username + "/";
+		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
 		          	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 		          										  
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
@@ -235,7 +235,7 @@ public class Shelf extends ListActivity {
 	        for (int i=0; i < lv.getChildCount(); i++) 
 	       {
 	        	
-	            //lvItems.getChildAt(i).setBackgroundColor(Color.BLUE); 
+//	            lvItems.getChildAt(i).setBackgroundColor(Color.BLUE); 
 	        	
 	        	/*LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 		        TextView tv = new TextView(this);
@@ -251,12 +251,12 @@ public class Shelf extends ListActivity {
 	         
 //	        TextView child = (TextView)vwParentRow.getChildAt(0);
 //	        Button btnChild = (Button)vwParentRow.getChildAt(1);
-	      //  btnChild.setText(child.getText());
+//	        btnChild.setText(child.getText());
 //	        btnChild.setText("I've been clicked!");
 	        
 	        //int c = Color.CYAN;
 	        
-	        //vwParentRow.setBackgroundColor(c); 
+//	        vwParentRow.setBackgroundColor(c); 
 //	        vwParentRow.refreshDrawableState();      
 		// Toast.makeText(getApplicationContext(), "OK button clicked", Toast.LENGTH_LONG).show();
 
