@@ -2,8 +2,6 @@ package placebooks.model;
 
 import java.net.URL;
 
-import java.io.File;
-
 import javax.persistence.Entity;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -12,7 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class MapImageItem extends ImageItem
 {
 	public MapImageItem(final User owner, final Geometry geom, 
-						final URL sourceURL, final File image)
+						final URL sourceURL, final String image)
 	{
 		super(owner, geom, sourceURL, image);
 	}

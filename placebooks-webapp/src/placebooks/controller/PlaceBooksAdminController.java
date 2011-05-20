@@ -382,7 +382,7 @@ public class PlaceBooksAdminController
 				if(item instanceof MediaItem)
 				{
 					MediaItem mediaItem = (MediaItem)item;
-					if(mediaItem.getFile() == null || !mediaItem.getFile().exists())
+					if(mediaItem.getPath() == null || !new File(mediaItem.getPath()).exists())
 					{
 						try
 						{
@@ -994,7 +994,7 @@ public class PlaceBooksAdminController
 
 					if (prefix.contentEquals("video"))
 					{
-						pbi = new VideoItem(null, null, null, new File(""));
+						pbi = new VideoItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
@@ -1005,7 +1005,7 @@ public class PlaceBooksAdminController
 					}
 					else if (prefix.contentEquals("audio"))
 					{
-						pbi = new AudioItem(null, null, null, new File(""));
+						pbi = new AudioItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
@@ -1016,7 +1016,7 @@ public class PlaceBooksAdminController
 					}
 					else if (prefix.contentEquals("image"))
 					{
-						pbi = new ImageItem(null, null, null, new File(""));
+						pbi = new ImageItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();

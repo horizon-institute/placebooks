@@ -183,6 +183,6 @@ public class ItemFactory
 		{
 			log.info("Can't get location of video...");
 		}
-		return new VideoItem(owner, geom, sourceUrl, videoFile);
+		return new VideoItem(owner, geom, sourceUrl, videoFile.getAbsolutePath());
 	}
 }

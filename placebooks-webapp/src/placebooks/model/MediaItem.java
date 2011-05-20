@@ -23,15 +23,15 @@ import com.vividsolutions.jts.geom.Geometry;
 public abstract class MediaItem extends PlaceBookItem
 {
 	@JsonIgnore
-	protected File file;
+	protected String path;
 
 	MediaItem()
 	{
 	}
 
-	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final File file)
+	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final String file)
 	{
-		this.file = file;
+		this.path = file;
 	}
 
 	@Override
@@ -41,9 +41,9 @@ public abstract class MediaItem extends PlaceBookItem
 
 		try
 		{
-			copyDataToPackage(file);
+			copyDataToPackage();
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(file.getName()));
+			filename.appendChild(config.createTextNode(new File(path).getName()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -57,28 +57,23 @@ public abstract class MediaItem extends PlaceBookItem
 	@Override
 	public void deleteItemData()
 	{
-		if (!file.delete())
+		if (!new File(path).delete())
 		{
-			log.error("Problem deleting file " + file.toString());
+			log.error("Problem deleting file " + path);
 		}
-	}
-
-	public File getFile()
-	{
-		return file;
 	}
 
 	public String getPath()
 	{
-		return file.toString();
+		return path;
 	}
 
 	public void setPath(final String filepath)
 	{
-		this.file = new File(filepath);
+		this.path = filepath;
 	}
 
-	protected void copyDataToPackage(File dataFile) throws IOException
+	protected void copyDataToPackage() throws IOException
 	{
 		// Check package dir exists already
 		final String path = 
@@ -89,7 +84,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 		if (new File(path).exists() || new File(path).mkdirs())
 		{
-
+			final File dataFile = new File(path);
 			final FileInputStream fis = new FileInputStream(dataFile);
 			final File to = new File(path + "/" + dataFile.getName());
 
@@ -113,9 +108,9 @@ public abstract class MediaItem extends PlaceBookItem
 		final int extIdx = name.lastIndexOf(".");
 		final String ext = name.substring(extIdx + 1, name.length());
 
-		setPath(path + "/" + getKey() + "." + ext);
-
-		final OutputStream output = new FileOutputStream(file);
+		String filePath = path + "/" + getKey() + "." + ext;
+		
+		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;
 		while ((byte_ = input.read()) != -1)
 		{
@@ -124,6 +119,8 @@ public abstract class MediaItem extends PlaceBookItem
 		output.close();
 		input.close();
 
-		log.info("Wrote " + name + " file " + file.getAbsolutePath());
+		setPath(filePath);
+		
+		log.info("Wrote " + name + " file " + path);
 	}
 }

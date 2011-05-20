@@ -1,6 +1,5 @@
 package placebooks.model;
 
-import java.io.File;
 import java.net.URL;
 
 import javax.persistence.Entity;
@@ -11,7 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class ImageItem extends MediaItem
 {
 	public ImageItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final File image)
+					 final String image)
 	{
 		super(owner, geom, sourceURL, image);
 	}
