@@ -18,6 +18,10 @@ public class PlaceBook extends JavaScriptObject
 	}-*/;
 
 	public final native JsArray<PlaceBookItem> getItems() /*-{
+		if(!('items' in this))
+		{
+			this.items = new Array();
+		}
 		return this.items;
 	}-*/;
 

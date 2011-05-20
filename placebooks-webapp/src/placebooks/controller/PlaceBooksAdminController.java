@@ -397,8 +397,7 @@ public class PlaceBooksAdminController
 				else if(item instanceof GPSTraceItem)
 				{
 					GPSTraceItem gpsItem = (GPSTraceItem)item;
-					log.info(gpsItem.getTrace());
-					if(gpsItem.getTrace() == null)
+					if(gpsItem.getTrace() == null || gpsItem.getTrace().trim().equals(""))
 					{
 						try
 						{
@@ -897,9 +896,6 @@ public class PlaceBooksAdminController
 		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
 		System.getProperties().put( "proxyPort", "3128" );
 		
-		log.info("Upload gps from url " + item.getSourceURL());
-		
-
 		final InputStreamReader reader = new InputStreamReader(item.getSourceURL().openStream());
 		final StringWriter writer = new StringWriter();
 		int data;
@@ -909,7 +905,9 @@ public class PlaceBooksAdminController
 		}
 		reader.close();
 		writer.close();
-			
+		
+		log.info("Got gps from url " + item.getSourceURL());
+		
 		item.setTrace(writer.toString());
 	}	
 	
