@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This is the view for each row in the shelf. It should really be called "ShelfItem" because it defines the layout of each book item.  -->
+
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
@@ -7,8 +9,7 @@
   android:background="@android:color/white"
   android:padding="7dp">
   
-<!--    <ScrollView android:id="@+id/ScrollView02"
-	android:layout_width="fill_parent" android:layout_height="fill_parent">-->
+ 
 		<TextView  
 	android:id="@+id/item_title"
     android:layout_width="fill_parent" 
@@ -25,6 +26,15 @@
     android:padding="2dp"
     android:textSize="13dp"
      android:textColor="#000000"
+     />
+     
+    
+     <Button
+        android:id="@+id/btn_download"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+        android:text="@string/download" 
+        android:onClick="myClickHandler"
      />
 
 </LinearLayout>
