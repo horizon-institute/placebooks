@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import java.net.URL;
 
@@ -1141,6 +1142,42 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "TextItem added");
 	}
 
+
+	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", 
+					method = RequestMethod.GET)
+	public ModelAndView serveGPSTraceItem(final HttpServletRequest req, 
+								   	      final HttpServletResponse res,
+								   	      @PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		try
+		{
+			final GPSTraceItem g = em.find(GPSTraceItem.class, key);
+
+			if (g != null)
+			{
+				final String trace = g.getTrace();
+				
+				res.setContentType("text/xml");
+				final PrintWriter p = res.getWriter();
+				p.print(trace);
+				p.close();
+			}
+			else
+				throw new Exception("GPSTrace is null");
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		return null;
+	}
 
 	@RequestMapping(value = "/admin/serve/imageitem/{key}", 
 					method = RequestMethod.GET)
