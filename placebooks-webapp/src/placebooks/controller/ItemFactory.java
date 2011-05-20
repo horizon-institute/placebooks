@@ -3,7 +3,6 @@
  */
 package placebooks.controller;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,8 +11,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-
-import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
@@ -47,7 +44,6 @@ public class ItemFactory
 		final NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
 		String picture_id = "";
 		Geometry geom = null;
-		BufferedImage image = null;
 
 		for (int attributeIndex = 0; attributeIndex < pictureAttributes.getLength(); attributeIndex++)
 		{

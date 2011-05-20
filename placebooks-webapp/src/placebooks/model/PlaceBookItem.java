@@ -3,10 +3,6 @@ package placebooks.model;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -22,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
@@ -33,7 +28,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;

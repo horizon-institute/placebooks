@@ -19,16 +19,11 @@ import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.UserManager;
-import placebooks.controller.YouTubeHelper;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
-import placebooks.model.VideoItem;
-import placebooks.utils.InitializeDatabase;
-
-import com.google.gdata.data.youtube.VideoFeed;
 
 /**
  * @author pszmp
