@@ -35,6 +35,7 @@
 	    android:layout_height="wrap_content"
         android:text="@string/download" 
         android:onClick="myClickHandler"
+        android:clickable="true"
      />
 
 </LinearLayout>
