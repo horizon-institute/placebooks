@@ -7,50 +7,39 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-
 import java.net.URL;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.NoResultException;
-
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import org.apache.log4j.Logger;
-
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -59,14 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -75,14 +57,11 @@ import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
-import placebooks.model.PlaceBookItemSearchIndex;
-import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
 import placebooks.model.json.Shelf;
-import placebooks.utils.InitializeDatabase;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -321,7 +300,7 @@ public class PlaceBooksAdminController
 				if (dbPlacebook != null)
 				{
 					// Remove any items that are no longer used
-					Map<String, PlaceBookItemSearchIndex> indices = new HashMap<String, PlaceBookItemSearchIndex>();
+					Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();
 					for (final PlaceBookItem item : dbPlacebook.getItems())
 					{
 						if (!containsItem(item, placebook.getItems()))
@@ -330,19 +309,24 @@ public class PlaceBooksAdminController
 						}
 						else
 						{
-							indices.put(item.getKey(), item.getSearchIndex());
+							oldItems.put(item.getKey(), item);
 						}
 					}
 
 					dbPlacebook.setItems(Collections.EMPTY_LIST);
-					for (final PlaceBookItem item : placebook.getItems())
+					for (final PlaceBookItem newItem : placebook.getItems())
 					{
+						log.info(newItem.getKey());
+						PlaceBookItem item = newItem;
 						if(item.getKey() != null)
 						{
-							item.getSearchIndex().setID(indices.get(item.getKey()).getID());
+							if(oldItems.containsKey(item.getKey()))
+							{
+								item = oldItems.get(item.getKey());
+							}
 						}
 
-						for(Entry<String, String> metadataItem: item.getMetadata().entrySet())
+						for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
 						{
 							item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
 						}
@@ -375,7 +359,7 @@ public class PlaceBooksAdminController
 				}
 			}
 			else
-			{
+			{		
 				placebook.setOwner(UserManager.getCurrentUser(manager));
 				manager.persist(placebook);
 				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));
@@ -383,6 +367,28 @@ public class PlaceBooksAdminController
 
 			manager.getTransaction().commit();
 
+			manager.getTransaction().begin();			
+			for(PlaceBookItem item: placebook.getItems())
+			{
+				if(item instanceof ImageItem)
+				{
+					ImageItem imageItem = (ImageItem)item;
+					if(imageItem.getFile() == null || !imageItem.getFile().exists())
+					{
+						try
+						{
+							File file = uploadFromURL(item);
+							((ImageItem)item).setImage(file.toString());
+						}
+						catch(Exception e)
+						{
+							log.info(e.getMessage(), e);
+						}						
+					}
+				}	
+			}
+			manager.getTransaction().commit();			
+			
 			res.setContentType("application/json");				
 			final ServletOutputStream sos = res.getOutputStream();
 			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());			
@@ -555,57 +561,6 @@ public class PlaceBooksAdminController
 	public String adminPage()
 	{
 		return "admin";
-	}
-
-	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, 
-										 final HttpServletResponse res,
-					@PathVariable("key") final String key)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			PlaceBook placebook = null;
-			if (key.equals("new"))
-			{
-				// Create new placebook
-				placebook = new PlaceBook(UserManager.getCurrentUser(manager), 
-										  null);
-				manager.persist(placebook);
-			}
-			else
-			{
-				placebook = manager.find(PlaceBook.class, key);
-			}
-
-			if (placebook != null)
-			{
-				try
-				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, placebook);
-					log.info("Placebook: " + 
-						mapper.writeValueAsString(placebook));
-					sos.flush();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			manager.close();
-		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/add_item/webbundle", 
@@ -902,6 +857,49 @@ public class PlaceBooksAdminController
 		return searchGET(out.toString());
 	}
 
+	private File uploadFromURL(final PlaceBookItem item) throws Exception
+	{
+		System.getProperties().put( "proxySet", "true" );
+		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
+		System.getProperties().put( "proxyPort", "3128" );
+		
+		log.info("Upload from url " + item.getSourceURL());
+		final String path = 
+			PropertiesSingleton
+				.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+
+		log.info("Upload to " + path);
+		
+		if (!new File(path).exists() && !new File(path).mkdirs()) 
+		{
+			throw new Exception("Failed to write file"); 
+		}
+		
+		final String url = item.getSourceURL().toExternalForm();
+		
+		final int extIdx = url.lastIndexOf(".");		
+		final String ext = url.substring(extIdx + 1, 
+									 url.length());
+		
+		File file = new File(path + "/" + item.getKey()
+		  + "." + ext);
+		
+		final InputStream input = item.getSourceURL().openStream();
+		final OutputStream output = new FileOutputStream(file);
+		int byte_;
+		while ((byte_ = input.read()) != -1)
+		{
+			output.write(byte_);
+		}
+		output.close();
+		input.close();		
+		
+		log.info("Wrote file " + file.getAbsolutePath());
+		
+		return file;
+	}
+	
 	@RequestMapping(value = "/admin/add_item/upload", 
 					method = RequestMethod.POST)
 	public ModelAndView uploadFile(final HttpServletRequest req)

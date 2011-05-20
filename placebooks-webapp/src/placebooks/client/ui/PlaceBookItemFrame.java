@@ -151,7 +151,7 @@ public class PlaceBookItemFrame extends Composite
 		}
 		else if (item.getClassName().equals("placebooks.model.ImageItem"))
 		{
-			final Image image = new Image(item.getSourceURL());
+			final Image image = new Image();
 			image.setStyleName(Resources.INSTANCE.style().imageitem());
 			image.addLoadHandler(new LoadHandler()
 			{
@@ -194,6 +194,7 @@ public class PlaceBookItemFrame extends Composite
 			widgetPanel.add(frame);
 			menuItems.add(setItemSourceURL);
 		}
+		updateItemWidget();
 	}
 	
 	private void updateItemWidget()
@@ -205,7 +206,16 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.ImageItem"))
 		{
 			final Image image = (Image)widgetPanel.getWidget(0);
-			image.setUrl(item.getSourceURL());
+			if(item.getKey() == null)
+			{
+				image.setUrl(item.getSourceURL());				
+			}
+			else
+			{
+				GWT.log(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey());				
+				image.setUrl(item.getSourceURL());				
+				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey());
+			}
 		}
 		else if (item.getClassName().equals("placebooks.model.VideoItem"))
 		{
