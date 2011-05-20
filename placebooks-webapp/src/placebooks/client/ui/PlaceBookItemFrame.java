@@ -183,6 +183,8 @@ public class PlaceBookItemFrame extends Composite
 		{
 			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
 			panel.setHeight("500px");
+			panel.setURL(item.getSourceURL());
+			menuItems.add(setItemSourceURL);			
 			widgetPanel.add(panel);
 		}
 		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
