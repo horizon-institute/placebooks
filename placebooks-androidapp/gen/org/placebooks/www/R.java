@@ -58,6 +58,7 @@ public final class R {
         public static final int Button01=0x7f060005;
         public static final int Button02=0x7f060006;
         public static final int btnLogin=0x7f060004;
+        public static final int btn_download=0x7f060014;
         public static final int flipper=0x7f060009;
         public static final int item_subtitle=0x7f060013;
         public static final int item_title=0x7f060012;
@@ -73,7 +74,7 @@ public final class R {
         public static final int text2=0x7f06000e;
         public static final int text3=0x7f060011;
         public static final int txtPlacebooks=0x7f060001;
-        public static final int txtShelf=0x7f060014;
+        public static final int txtShelf=0x7f060015;
         public static final int txt_password=0x7f060003;
         public static final int txt_username=0x7f060002;
     }
@@ -85,6 +86,7 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050001;
+        public static final int download=0x7f050007;
         public static final int hello=0x7f050000;
         public static final int run_task=0x7f050002;
         public static final int task_cancelled=0x7f050005;

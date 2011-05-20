@@ -38,6 +38,8 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import org.apache.http.util.ByteArrayBuffer;
 import java.io.IOException;
+import android.widget.Button;
+import android.view.View.OnClickListener; 
 
 
 
@@ -46,8 +48,12 @@ public class Shelf extends ListActivity {
 	
 	private String name;
 	private JSONObject json;
-    protected ListView mListView;
+//    protected ListView mListView;
     private String username;
+    private ArrayList<Button> download;
+    private ArrayList<Button> view;
+    ListView lv;
+    private ArrayList<Integer> pbkey = new ArrayList<Integer>();
     
 	
 	 @Override
@@ -109,10 +115,13 @@ public class Shelf extends ListActivity {
 						HashMap<String, String> map = new HashMap<String, String>();	
 						JSONObject e = entries.getJSONObject(i);
 						
+						pbkey.add(e.getInt("key"));	// store the placebook keys in the arraylist	
 						map.put("id",  String.valueOf(i));
 			        	map.put("title", "Title:" + e.getString("title"));
 			        	map.put("description", "Description: " +  e.getString("description"));
-			        	mylist.add(map);			
+			        	mylist.add(map);
+			        	
+			        				        	
 					}		
 		        }catch(JSONException e)        {
 		        	 Log.e("log_tag", "Error parsing data "+e.toString());
@@ -124,8 +133,11 @@ public class Shelf extends ListActivity {
 		        
 		        setListAdapter(adapter);
 		        
-		        final ListView lv = getListView();
+		        
+		      /*  final ListView lv = getListView();
 		        lv.setTextFilterEnabled(true);	
+		        
+		        //action listener for each row
 		        lv.setOnItemClickListener(new OnItemClickListener() {
 		        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {        		
 		        		@SuppressWarnings("unchecked")
@@ -133,7 +145,12 @@ public class Shelf extends ListActivity {
 		        		Toast.makeText(Shelf.this, o.get("title") + "' was clicked.", Toast.LENGTH_SHORT).show(); 
 
 					}
-				});        
+				});    
+		       */
+		       
+		        
+		   
+		        
 		        
 	 } //end of onCreate
 	 
@@ -204,6 +221,50 @@ public class Shelf extends ListActivity {
 		   }
 
 		}
+	 
+
+	 public void myClickHandler(View v) 
+	    {
+	          
+	        //reset all the listView items background colours 
+	        //before we set the clicked one..
+
+	        lv = getListView();
+		    lv.setTextFilterEnabled(true);
+    
+	        for (int i=0; i < lv.getChildCount(); i++) 
+	       {
+	        	
+	            //lvItems.getChildAt(i).setBackgroundColor(Color.BLUE); 
+	        	
+	        	/*LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+		        TextView tv = new TextView(this);
+		        tv.setText("keys are: " + pbkey.get(i));	
+		        ll.addView(tv);
+	        	*/
+	        
+	       }
+	        
+	        
+	        //get the row the clicked button is in
+//	        LinearLayout vwParentRow = (LinearLayout)v.getParent();
+	         
+//	        TextView child = (TextView)vwParentRow.getChildAt(0);
+//	        Button btnChild = (Button)vwParentRow.getChildAt(1);
+	      //  btnChild.setText(child.getText());
+//	        btnChild.setText("I've been clicked!");
+	        
+	        //int c = Color.CYAN;
+	        
+	        //vwParentRow.setBackgroundColor(c); 
+//	        vwParentRow.refreshDrawableState();      
+		// Toast.makeText(getApplicationContext(), "OK button clicked", Toast.LENGTH_LONG).show();
+
+		}
+	 
+	
+	 
+	
 	
 
 }
