@@ -40,7 +40,7 @@ public class ItemFactory
 {
 	private static final Logger log = Logger.getLogger(ItemFactory.class.getName());
 
-	public static ImageItem toImageItem(final User testUser, final Node everytrailPicture)
+	public static void toImageItem(final User testUser, final Node everytrailPicture, ImageItem imageItem)
 	{
 		//ImageItem imageItem = null;
 		URL sourceUrl = null;
@@ -57,8 +57,7 @@ public class ItemFactory
 			}
 		}
 
-		final ImageItem imageItem = new ImageItem(testUser, null, null, null);
-
+		
 		final NodeList pictureProperties = everytrailPicture.getChildNodes();
 		for (int propertyIndex = 0; propertyIndex < pictureProperties.getLength(); propertyIndex++)
 		{
@@ -135,7 +134,6 @@ public class ItemFactory
 		imageItem.setSourceURL(sourceUrl);
 			//= new ImageItem(testUser, geom, sourceUrl, image);
 		imageItem.addMetadataEntry("picture_id", picture_id);
-		return imageItem;
 	}
 
 	public static VideoItem toVideoItem(final User owner, final VideoEntry youtubeVideo)

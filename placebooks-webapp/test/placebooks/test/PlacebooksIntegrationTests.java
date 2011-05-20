@@ -84,7 +84,7 @@ public class PlacebooksIntegrationTests
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 		
 		Vector<Node> pictures = picturesResponse.getPictures();
-		ImageItem imageItem = ItemFactory.toImageItem(testUser, pictures.firstElement());
+		
 		//assertEquals(800, imageItem.getImage().getWidth());
 		//assertEquals(479, imageItem.getImage().getHeight());
 		
@@ -92,7 +92,11 @@ public class PlacebooksIntegrationTests
 		try
 		{
 			pm.getTransaction().begin();
+			ImageItem imageItem = new ImageItem(testUser, null, null, null);
 			pm.persist(imageItem);
+			pm.getTransaction().commit();
+			pm.getTransaction().begin();
+			ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
 			pm.getTransaction().commit();
 		}
 		finally
