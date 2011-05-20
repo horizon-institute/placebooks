@@ -7,8 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +58,7 @@ import org.xml.sax.SAXException;
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
+import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
@@ -324,6 +327,15 @@ public class PlaceBooksAdminController
 							if(oldItems.containsKey(item.getKey()))
 							{
 								item = oldItems.get(item.getKey());
+								
+								if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
+								{
+									item.setSourceURL(newItem.getSourceURL());
+									if(item instanceof ImageItem)
+									{
+										
+									}
+								}
 							}
 						}
 
@@ -371,22 +383,29 @@ public class PlaceBooksAdminController
 			manager.getTransaction().begin();			
 			for(PlaceBookItem item: placebook.getItems())
 			{
-				if(item instanceof ImageItem)
+				if(item instanceof MediaItem)
 				{
-					ImageItem imageItem = (ImageItem)item;
-					if(imageItem.getFile() == null || !imageItem.getFile().exists())
+					MediaItem mediaItem = (MediaItem)item;
+					if(mediaItem.getFile() == null || !mediaItem.getFile().exists())
 					{
 						try
 						{
-							File file = uploadFromURL(item);
-							((ImageItem)item).setImage(file.toString());
+							getMediaFromURL(mediaItem);
 						}
 						catch(Exception e)
 						{
 							log.info(e.getMessage(), e);
 						}						
 					}
-				}	
+				}
+				else if(item instanceof GPSTraceItem)
+				{
+					GPSTraceItem gpsItem = (GPSTraceItem)item;
+					if(gpsItem.getTrace() == null)
+					{
+						getGPSFromURL(gpsItem);
+					}
+				}
 			}
 			manager.getTransaction().commit();			
 			
@@ -858,7 +877,7 @@ public class PlaceBooksAdminController
 		return searchGET(out.toString());
 	}
 
-	private File uploadFromURL(final PlaceBookItem item) throws Exception
+	private void getMediaFromURL(final MediaItem item) throws Exception
 	{
 		System.getProperties().put( "proxySet", "true" );
 		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
@@ -898,8 +917,30 @@ public class PlaceBooksAdminController
 		
 		log.info("Wrote file " + file.getAbsolutePath());
 		
-		return file;
+		item.setPath(file.getAbsolutePath());
 	}
+	
+	private void getGPSFromURL(final GPSTraceItem item) throws Exception
+	{
+		System.getProperties().put( "proxySet", "true" );
+		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
+		System.getProperties().put( "proxyPort", "3128" );
+		
+		log.info("Upload gps from url " + item.getSourceURL());
+		
+
+		final InputStreamReader reader = new InputStreamReader(item.getSourceURL().openStream());
+		final StringWriter writer = new StringWriter();
+		int data;
+		while((data = reader.read()) != -1)
+		{
+			writer.write(data);
+		}
+		reader.close();
+		writer.close();
+		
+		item.setTrace(writer.toString());
+	}	
 	
 	@RequestMapping(value = "/admin/add_item/upload", 
 					method = RequestMethod.POST)
@@ -926,7 +967,7 @@ public class PlaceBooksAdminController
 				}
 				else
 				{
-					String property = null;
+					//String property = null;
 				
 					String[] split = getExtension(item.getFieldName());
 					if (split == null)
@@ -983,10 +1024,10 @@ public class PlaceBooksAdminController
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
-						((VideoItem) pbi).setVideo(path + "/" + pbi.getKey() 
+						((VideoItem) pbi).setPath(path + "/" + pbi.getKey() 
 												   + "." + ext);
 
-						file = new File(((VideoItem) pbi).getVideo());
+						file = new File(((VideoItem) pbi).getPath());
 					}
 					else if (prefix.contentEquals("audio"))
 					{
@@ -994,10 +1035,10 @@ public class PlaceBooksAdminController
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
-						((AudioItem) pbi).setAudio(path + "/" + pbi.getKey() 
+						((AudioItem) pbi).setPath(path + "/" + pbi.getKey() 
 												   + "." + ext);
 
-						file = new File(((AudioItem) pbi).getAudio());
+						file = new File(((AudioItem) pbi).getPath());
 					}
 					else if (prefix.contentEquals("image"))
 					{
@@ -1005,9 +1046,9 @@ public class PlaceBooksAdminController
 						p.addItem(pbi);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
-						((ImageItem)pbi).setImage(path + "/" + pbi.getKey()
+						((ImageItem)pbi).setPath(path + "/" + pbi.getKey()
 												  + "." + ext);
-						file = new File(((ImageItem)pbi).getImage());
+						file = new File(((ImageItem)pbi).getPath());
 					}
 
 					final InputStream input = item.openStream();
@@ -1189,11 +1230,11 @@ public class PlaceBooksAdminController
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
 
-			if (i != null && i.getImage() != null)
+			if (i != null && i.getPath() != null)
 			{
 				try
 				{
-					File image = new File(i.getImage());
+					File image = new File(i.getPath());
 					ImageInputStream iis = 
 						ImageIO.createImageInputStream(image);
 					Iterator<ImageReader> readers = 
@@ -1249,11 +1290,11 @@ public class PlaceBooksAdminController
 		{
 			final AudioItem a = em.find(AudioItem.class, key);
 
-			if (a != null && a.getAudio() != null)
+			if (a != null && a.getPath() != null)
 			{
 				try
 				{
-					File audio = new File(a.getAudio());
+					File audio = new File(a.getPath());
 					
 					final ByteArrayOutputStream bos = 
 						new ByteArrayOutputStream();
@@ -1269,7 +1310,7 @@ public class PlaceBooksAdminController
 					}
 					fis.close();
 
-					String[] split = getExtension(a.getAudio());
+					String[] split = getExtension(a.getPath());
 					if (split != null)
 					{
 						final ServletOutputStream sos = res.getOutputStream();

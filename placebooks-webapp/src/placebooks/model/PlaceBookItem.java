@@ -3,21 +3,15 @@ package placebooks.model;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.File;
-
-import org.apache.commons.io.IOUtils;
-
-import javax.imageio.ImageIO;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -28,20 +22,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import placebooks.controller.SearchHelper;
 import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
