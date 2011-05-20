@@ -31,8 +31,6 @@ import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -51,8 +49,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import placebooks.model.AudioItem;
@@ -401,9 +397,17 @@ public class PlaceBooksAdminController
 				else if(item instanceof GPSTraceItem)
 				{
 					GPSTraceItem gpsItem = (GPSTraceItem)item;
+					log.info(gpsItem.getTrace());
 					if(gpsItem.getTrace() == null)
 					{
-						getGPSFromURL(gpsItem);
+						try
+						{
+							getGPSFromURL(gpsItem);
+						}
+						catch(Exception e)
+						{
+							log.info(e.getMessage(), e);
+						}
 					}
 				}
 			}
@@ -884,22 +888,7 @@ public class PlaceBooksAdminController
 		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
 		System.getProperties().put( "proxyPort", "3128" );
 		
-		log.info("Upload from url " + item.getSourceURL());
-		final String path = 
-			PropertiesSingleton
-				.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
-		log.info("Upload to " + path);
-		
-		if (!new File(path).exists() && !new File(path).mkdirs()) 
-		{
-			throw new Exception("Failed to write file"); 
-		}
-		
-		final String url = item.getSourceURL().toExternalForm();
-		
-		item.writeDataToDisk(url, item.getSourceURL().openStream());
+		item.writeDataToDisk(item.getSourceURL().toExternalForm(), item.getSourceURL().openStream());
 	}
 	
 	private void getGPSFromURL(final GPSTraceItem item) throws Exception
@@ -920,7 +909,7 @@ public class PlaceBooksAdminController
 		}
 		reader.close();
 		writer.close();
-		
+			
 		item.setTrace(writer.toString());
 	}	
 	
@@ -961,17 +950,16 @@ public class PlaceBooksAdminController
 
 					if (prefix.contentEquals("gpstrace"))
 					{
-						Document gpxDoc = null;
-						// StringReader reader = new StringReader(value);
-						final InputStream reader = item.openStream();
-						final InputSource source = new InputSource(reader);
-						final DocumentBuilder builder = 
-							DocumentBuilderFactory
-								.newInstance()
-								.newDocumentBuilder();
-						gpxDoc = builder.parse(source);
+						final InputStreamReader reader = new InputStreamReader(item.openStream());
+						final StringWriter writer = new StringWriter();
+						int data;
+						while((data = reader.read()) != -1)
+						{
+							writer.write(data);
+						}
 						reader.close();
-						pbi = new GPSTraceItem(null, null, null, gpxDoc);
+						writer.close();
+						pbi = new GPSTraceItem(null, null, null, writer.toString());
 						p.addItem(pbi);
 
 						continue;

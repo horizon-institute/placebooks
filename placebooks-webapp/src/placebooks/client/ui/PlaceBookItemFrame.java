@@ -212,8 +212,6 @@ public class PlaceBookItemFrame extends Composite
 			}
 			else
 			{
-				GWT.log(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey());				
-				image.setUrl(item.getSourceURL());				
 				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey());
 			}
 		}
@@ -224,7 +222,15 @@ public class PlaceBookItemFrame extends Composite
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
-
+			final MapPanel mapPanel = (MapPanel)widgetPanel.getWidget(0);
+			if(item.getKey() == null)
+			{
+				mapPanel.setURL(item.getSourceURL());				
+			}
+			else
+			{
+				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey());
+			}
 		}
 		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
 		{
