@@ -146,7 +146,10 @@ public class PlaceBookCanvas extends Composite
 						.parse("{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video Item\"},\"parameters\":{}}")));
 		add(new PaletteItem(
 		    				PlaceBookItem
-		    						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));
+		    						.parse("{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Bundle\"},\"parameters\":{}}")));		
+		add(new PaletteItem(
+		    				PlaceBookItem
+		    						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));		
 		
 		for (int index = 0; index < items.length(); index++)
 		{

@@ -72,6 +72,11 @@ public class ImageItem extends PlaceBookItem
 		return ImageItem.class.getName();
 	}
 
+	public File getFile()
+	{
+		return image;
+	}
+	
 	public String getImage()
 	{
 		return image.toString();
