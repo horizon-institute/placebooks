@@ -18,7 +18,8 @@ public class TextItem extends PlaceBookItem
 	@Lob
 	private String text;
 
-	public TextItem(final User owner, final Geometry geom, final URL sourceURL, final String text)
+	public TextItem(final User owner, final Geometry geom, final URL sourceURL,
+					final String text)
 	{
 		super(owner, geom, sourceURL);
 		this.text = text;

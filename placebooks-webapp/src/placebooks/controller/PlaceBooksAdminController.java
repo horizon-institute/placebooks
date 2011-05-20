@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -45,11 +46,13 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 
-import org.apache.log4j.Logger;
-
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import org.apache.log4j.Logger;
+
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,47 +99,14 @@ public class PlaceBooksAdminController
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminController.class.getName());
 
-	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-															PlaceBook.class);
-		q.setParameter("owner", user);
-
-		final Collection<PlaceBook> pbs = q.getResultList();
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
-		log.info("User " + user.getName());
-		try
-		{
-			final Shelf shelf = new Shelf(user, pbs);
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(shelf));
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, shelf);
-			sos.flush();
-		}
-		catch (final Exception e)
-		{
-			log.error(e.toString());
-		}
-		finally
-		{
-			manager.close();
-		}
-
-		return null;
-	}
-
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
-	public ModelAndView getPaletteItemsJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
-		final TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
-															PlaceBookItem.class);
+		final TypedQuery<PlaceBookItem> q = manager
+				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
+								PlaceBookItem.class);
 		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
@@ -155,12 +125,96 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
+
+		manager.close();
+	}
+
+	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
+	public void getPlaceBookJSON(final HttpServletResponse res, @PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final PlaceBook placebook = manager.find(PlaceBook.class, key);
+			if (placebook != null)
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);					
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, placebook);
+					log.info("Placebook: " + mapper.writeValueAsString(placebook));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
 		finally
 		{
 			manager.close();
 		}
+	}
 
-		return null;
+	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
+	public void getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final User user = UserManager.getCurrentUser(manager);
+			if (user != null)
+			{
+				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
+																	PlaceBook.class);
+				q.setParameter("owner", user);
+
+				final Collection<PlaceBook> pbs = q.getResultList();
+				log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+				log.info("User " + user.getName());
+				try
+				{
+					final Shelf shelf = new Shelf(user, pbs);
+					final ObjectMapper mapper = new ObjectMapper();
+					log.info("Shelf: " + mapper.writeValueAsString(shelf));
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, shelf);
+					sos.flush();
+				}
+				catch (final Exception e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
+							.toString());
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		finally
+		{
+			manager.close();
+		}
 	}
 
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
@@ -200,49 +254,140 @@ public class PlaceBooksAdminController
 		return "redirect:/login.html";
 	}
 
+	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
+	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		res.setContentType("application/json");
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		try
+		{
+			final User user = UserManager.getCurrentUser(entityManager);
+			if (user == null)
+			{
+
+			}
+			else
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, user);
+					log.info("User: " + mapper.writeValueAsString(user));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		finally
+		{
+			if (entityManager.getTransaction().isActive())
+			{
+				entityManager.getTransaction().rollback();
+			}
+			entityManager.close();
+		}
+	}
+	
+
+	private boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
+	{
+		for (final PlaceBookItem item : items)
+		{
+			if (findItem.getKey().equals(item.getKey())) { return true; }
+		}
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
-	public ModelAndView savePlaceBookJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@RequestParam("placebook") final String json)
+	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
-		log.info("saveplacebook");
+		log.info("Save Placebook: " + json);
 		final ObjectMapper mapper = new ObjectMapper();
-		final EntityManager manager = EMFSingleton.getEntityManager();
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);		
+		final EntityManager manager = EMFSingleton.getEntityManager();				
 		manager.getTransaction().begin();
 		try
 		{
-			log.info(json);
-
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 
-			PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-			if(dbPlacebook == null)
+			if (placebook.getKey() != null)
 			{
-				dbPlacebook = placebook;
+				final PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+				if (dbPlacebook != null)
+				{
+					// Remove any items that are no longer used
+					Map<String, PlaceBookItemSearchIndex> indices = new HashMap<String, PlaceBookItemSearchIndex>();
+					for (final PlaceBookItem item : dbPlacebook.getItems())
+					{
+						if (!containsItem(item, placebook.getItems()))
+						{
+							manager.remove(item);
+						}
+						else
+						{
+							indices.put(item.getKey(), item.getSearchIndex());
+						}
+					}
+
+					dbPlacebook.setItems(Collections.EMPTY_LIST);
+					for (final PlaceBookItem item : placebook.getItems())
+					{
+						if(item.getKey() != null)
+						{
+							item.getSearchIndex().setID(indices.get(item.getKey()).getID());
+						}
+
+						for(Entry<String, String> metadataItem: item.getMetadata().entrySet())
+						{
+							item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+						}
+
+						item.setOwner(dbPlacebook.getOwner());
+
+						if(item.getTimestamp() == null)
+						{
+							item.setTimestamp(new Date());
+						}
+
+						dbPlacebook.addItem(item);
+					}
+
+					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+					{
+						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+					}
+
+					dbPlacebook.setGeometry(placebook.getGeometry());
+
+					manager.merge(dbPlacebook);
+					log.info("Updated PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
+				}
+				else
+				{
+					placebook.setOwner(UserManager.getCurrentUser(manager));
+					manager.persist(placebook);
+					log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));					
+				}
 			}
-			log.info(mapper.writeValueAsString(placebook));
-	
-			for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+			else
 			{
-				dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+				placebook.setOwner(UserManager.getCurrentUser(manager));
+				manager.persist(placebook);
+				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));
 			}
 
-			dbPlacebook.setItems(Collections.EMPTY_LIST);
-			for (final PlaceBookItem item : placebook.getItems())
-			{
-				item.setOwner(dbPlacebook.getOwner());
-				dbPlacebook.addItem(item);
-				log.info("Added Item: " + mapper.writeValueAsString(item));
-			}
-
-			dbPlacebook.setGeometry(placebook.getGeometry());
-
-			manager.merge(dbPlacebook);
-			
-			log.info("Added PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
-			
 			manager.getTransaction().commit();
-			
+
+			res.setContentType("application/json");				
+			final ServletOutputStream sos = res.getOutputStream();
+			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());			
+			mapper.writeValue(sos, resultPlacebook);
+			sos.flush();			
 		}
 		catch (final Throwable e)
 		{
@@ -256,9 +401,8 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
-
-		return null;
 	}
+
 
 	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
 	public ModelAndView addPlaceBook(@RequestParam final String owner, 
@@ -413,6 +557,57 @@ public class PlaceBooksAdminController
 		return "admin";
 	}
 
+	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
+	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, 
+										 final HttpServletResponse res,
+					@PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			PlaceBook placebook = null;
+			if (key.equals("new"))
+			{
+				// Create new placebook
+				placebook = new PlaceBook(UserManager.getCurrentUser(manager), 
+										  null);
+				manager.persist(placebook);
+			}
+			else
+			{
+				placebook = manager.find(PlaceBook.class, key);
+			}
+
+			if (placebook != null)
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, placebook);
+					log.info("Placebook: " + 
+						mapper.writeValueAsString(placebook));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
+
+		return null;
+	}
+
 	@RequestMapping(value = "/admin/add_item/webbundle", 
 					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
@@ -434,9 +629,11 @@ public class PlaceBooksAdminController
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					String prefix = null, suffix = null;
-					if (!getExtension(prefix, suffix, param))
+					String[] split = getExtension(param);
+					if (split == null)
 						continue;
+
+					String prefix = split[0], suffix = split[1];
 
 					if (prefix.contentEquals("url"))
 					{
@@ -493,42 +690,6 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Scraped");
 	}
 
-	@RequestMapping(value = "/admin/delete/all_placebooks", 
-					method = RequestMethod.GET)
-	public ModelAndView deleteAllPlaceBook()
-	{
-
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		try
-		{
-			pm.getTransaction().begin();
-			/*
-			 * Query query = pm.newQuery(PlaceBook.class); pbs = (List<PlaceBook>)query.execute();
-			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
-			 * item.deleteItemData(); }
-			 */
-
-			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
-			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
-
-			pm.close();
-		}
-
-		log.info("Deleted all PlaceBooks");
-
-		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
-
-	}
 
 	@RequestMapping(value = "/admin/delete_placebook/{key}", 
 					method = RequestMethod.GET)
@@ -560,7 +721,6 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
 	}
 
-	// TODO: this is now broken. Why?
 	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
 					method = RequestMethod.GET)
 	public ModelAndView deletePlaceBookItem(@PathVariable("key") 
@@ -591,66 +751,6 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Deleted PlaceBookItem: " 
 								+ key);
 
-	}
-
-	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBookJSON(final HttpServletRequest req, 
-										 final HttpServletResponse res,
-					@PathVariable("key") final String key)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			PlaceBook placebook = null;
-			if (key.equals("new"))
-			{
-				// Create new placebook
-				placebook = new PlaceBook(UserManager.getCurrentUser(manager), 
-										  null);
-				manager.persist(placebook);
-			}
-			else
-			{
-				placebook = manager.find(PlaceBook.class, key);
-			}
-
-			if (placebook != null)
-			{
-				try
-				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, placebook);
-					log.info("Placebook: " + 
-						mapper.writeValueAsString(placebook));
-					sos.flush();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			manager.close();
-		}
-
-		return null;
-	}
-
-
-	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
-	public ModelAndView reset(final HttpServletRequest req, 
-							  final HttpServletResponse res)
-	{
-		InitializeDatabase.main(null);
-		return null;
 	}
 	
 	
@@ -829,9 +929,11 @@ public class PlaceBooksAdminController
 				{
 					String property = null;
 				
-					String prefix = null, suffix = null;
-					if (!getExtension(prefix, suffix, item.getFieldName()))
+					String[] split = getExtension(item.getFieldName());
+					if (split == null)
 						continue;
+
+					String prefix = split[0], suffix = split[1];
 
 					final PlaceBook p = pm.find(PlaceBook.class, suffix);
 
@@ -991,9 +1093,11 @@ public class PlaceBooksAdminController
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					String prefix = null, suffix = null;
-					if (!getExtension(prefix, suffix, param))
+					String[] split = getExtension(param);
+					if (split == null)
 						continue;
+
+					String prefix = split[0], suffix = split[1];
 
 					final PlaceBook p = pm.find(PlaceBook.class, suffix);
 
@@ -1130,11 +1234,11 @@ public class PlaceBooksAdminController
 					}
 					fis.close();
 
-					String prefix = null, suffix = null;
-					if (getExtension(prefix, suffix, a.getAudio()))
+					String[] split = getExtension(a.getAudio());
+					if (split != null)
 					{
 						final ServletOutputStream sos = res.getOutputStream();
-						res.setContentType("audio/" + suffix);
+						res.setContentType("audio/" + split[1]);
 						res.addHeader("Content-Disposition", 
 									  "attachment; filename=" 
 									  + audio.getName());
@@ -1246,17 +1350,17 @@ public class PlaceBooksAdminController
 		return true;
 	}
 
-	private boolean getExtension(String prefix, String suffix, 
-								 final String field)
+	private String[] getExtension(final String field)
 	{
 		final int delim = field.indexOf(".");
 		if (delim == -1)
-			return false;
+			return null;
 
-		prefix = field.substring(0, delim);
-		suffix = field.substring(delim + 1, field.length());
+		String[] out = new String[2];
+		out[0] = field.substring(0, delim);
+		out[1] = field.substring(delim + 1, field.length());
 
-		return true;
+		return out;
 	}
 
 }
