@@ -84,21 +84,41 @@ public class PlaceBooksAdminController
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
 		final TypedQuery<PlaceBookItem> q = manager
-				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook IS NULL",
+				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
 							PlaceBookItem.class);
-		//q.setParameter("owner", user);
+		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
 		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
 		log.info("User " + user.getName());
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			log.info("Shelf: " + mapper.writeValueAsString(pbs));
 			final ServletOutputStream sos = res.getOutputStream();
+			final ObjectMapper mapper = new ObjectMapper();			
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+
+			sos.print("[");
+			boolean comma = false;
+			for(PlaceBookItem item: pbs)
+			{
+				if(comma)
+				{
+					sos.print(",");
+				}
+				else
+				{
+					comma = true;
+				}
+				sos.print(mapper.writeValueAsString(item));
+			}
+			sos.print("]");
+
+			//mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);		
+
 			res.setContentType("application/json");
-			mapper.writeValue(sos, pbs);
+			log.info("Palette Items: " + mapper.writeValueAsString(pbs));			
 			sos.flush();
+			sos.close();
 		}
 		catch (final Exception e)
 		{
