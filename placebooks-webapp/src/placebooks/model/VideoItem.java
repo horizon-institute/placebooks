@@ -37,7 +37,7 @@ public class VideoItem extends PlaceBookItem
 		final Element item = getConfigurationHeader(config);
 		try
 		{
-			writeDataToDisk(video);
+			copyDataToPackage(video);
 			final Element filename = config.createElement("filename");
 			filename.appendChild(config.createTextNode(video.getName()));
 			item.appendChild(filename);

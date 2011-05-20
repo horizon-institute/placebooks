@@ -734,6 +734,7 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 			final PlaceBookItem item = pm.find(PlaceBookItem.class, key);
+			item.getPlaceBook().removeItem(item);
 			pm.remove(item);
 			pm.getTransaction().commit();
 		}
@@ -800,7 +801,7 @@ public class PlaceBooksAdminController
 			}
 
 		}
-		catch (NoResultException e)
+		catch (final NoResultException e)
 		{
 			log.error(e.toString());
 		}

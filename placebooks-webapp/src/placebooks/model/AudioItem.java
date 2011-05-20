@@ -39,7 +39,7 @@ public class AudioItem extends PlaceBookItem
 
 		try
 		{
-			writeDataToDisk(audio);
+			copyDataToPackage(audio);
 			final Element filename = config.createElement("filename");
 			filename.appendChild(config.createTextNode(audio.getName()));
 			item.appendChild(filename);

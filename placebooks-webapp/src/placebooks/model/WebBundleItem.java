@@ -69,10 +69,9 @@ public class WebBundleItem extends PlaceBookItem
 
 		try
 		{
-			getWebBundle(); // TODO: why is this needed?
-
 			final File from = new File(getWebBundlePath());
-			final File to = new File(getPlaceBook().getPackagePath() + "/" + getKey());
+			final File to = new File(getPlaceBook().getPackagePath() 
+									 + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);
 

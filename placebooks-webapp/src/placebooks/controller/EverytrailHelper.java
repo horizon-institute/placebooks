@@ -127,9 +127,18 @@ public class EverytrailHelper
 					}
 
 					// Get the response
-					final BufferedImage bi = ImageIO.read(conn.getInputStream());
-					imageItem.setImage(bi);
-					log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");
+//					final BufferedImage bi = ImageIO.read(conn.getInputStream());
+//					imageItem.setImage(bi);
+//					log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");
+					
+					try
+					{
+						imageItem.writeDataToDisk("blah.jpg", conn.getInputStream());
+					}
+					catch (final Throwable e)
+					{
+						log.error(e.getMessage(), e);
+					}
 				}
 				catch (final MalformedURLException ex)
 				{

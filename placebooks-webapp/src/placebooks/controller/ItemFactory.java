@@ -42,7 +42,7 @@ public class ItemFactory
 
 	public static ImageItem toImageItem(final User testUser, final Node everytrailPicture)
 	{
-		ImageItem imageItem = null;
+		//ImageItem imageItem = null;
 		URL sourceUrl = null;
 		final NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
 		String picture_id = "";
@@ -56,6 +56,9 @@ public class ItemFactory
 				picture_id = pictureAttributes.item(attributeIndex).getNodeValue();
 			}
 		}
+
+		final ImageItem imageItem = new ImageItem(testUser, null, null, null);
+
 		final NodeList pictureProperties = everytrailPicture.getChildNodes();
 		for (int propertyIndex = 0; propertyIndex < pictureProperties.getLength(); propertyIndex++)
 		{
@@ -70,9 +73,20 @@ public class ItemFactory
 					final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
 
 					// Get the response
-					final BufferedImage bi = ImageIO.read(conn.getInputStream());
-					image = bi;
-					log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");
+					//final BufferedImage bi = ImageIO.read(conn.getInputStream());
+					//image = bi;
+					//log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");
+
+					try
+					{
+						imageItem.writeDataToDisk("blah.jpg", conn.getInputStream());
+					}
+					catch (final Throwable e)
+					{
+						log.error(e.getMessage(), e);
+					}
+
+
 				}
 				catch (final MalformedURLException ex)
 				{
@@ -116,7 +130,10 @@ public class ItemFactory
 				}
 			}
 		}
-		imageItem = new ImageItem(testUser, geom, sourceUrl, image);
+		imageItem.setOwner(testUser);
+		imageItem.setGeometry(geom);
+		imageItem.setSourceURL(sourceUrl);
+			//= new ImageItem(testUser, geom, sourceUrl, image);
 		imageItem.addMetadataEntry("picture_id", picture_id);
 		return imageItem;
 	}
