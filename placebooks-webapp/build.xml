@@ -115,7 +115,8 @@
       		<test name="placebooks.test.UserTest" />
 			<test name="placebooks.test.PlaceBookTests" />
 			<test name="placebooks.test.PersistenceTests" />			
-			<test name="placebooks.test.EverytrailHelperTest" />			
+			<test name="placebooks.test.EverytrailHelperTest" />
+			<test name="placebooks.test.PlacebooksIntegrationTests" />
     	</junit>
 	</target>
 

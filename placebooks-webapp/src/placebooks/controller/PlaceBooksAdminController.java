@@ -84,9 +84,9 @@ public class PlaceBooksAdminController
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
 		final TypedQuery<PlaceBookItem> q = manager
-				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner= :owner AND p.placebook IS NULL",
-								PlaceBookItem.class);
-		q.setParameter("owner", user);
+				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook IS NULL",
+							PlaceBookItem.class);
+		//q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
 		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
@@ -625,8 +625,10 @@ public class PlaceBooksAdminController
 								sourceURL = new URL(value);
 							}
 							wbi = new WebBundleItem(null, null, sourceURL, 
-													new File(""));
+													null);
 							p.addItem(wbi);
+							pm.getTransaction().commit();
+							pm.getTransaction().begin();
 						}
 						catch (final java.net.MalformedURLException e)
 						{
@@ -641,18 +643,22 @@ public class PlaceBooksAdminController
 			{
 				wbi.setOwner(itemData.getOwner());
 				wbi.setGeometry(itemData.getGeometry());
+				wbi.setWebBundle(wbi.getWebBundlePath());
 			}
 
 			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
 				wbi.getOwner() == null))) 
 			{ 
-				return new ModelAndView(
-					"message", "text", "Error setting data elements"); 
+				throw new Exception("Error setting data elements"); 
 			}
 
 			PlaceBooksAdminHelper.scrape(wbi);
 
 			pm.getTransaction().commit();
+		}
+		catch (final Throwable e)
+		{
+			log.warn(e.getMessage(), e);
 		}
 		finally
 		{

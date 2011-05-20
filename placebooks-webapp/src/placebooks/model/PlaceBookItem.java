@@ -298,31 +298,6 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
-	protected void copyDataToPackage(File dataFile) throws IOException
-	{
-		// Check package dir exists already
-		final String path = 
-			PropertiesSingleton
-				.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ getPlaceBook().getKey();
-
-		if (new File(path).exists() || new File(path).mkdirs())
-		{
-
-			final FileInputStream fis = new FileInputStream(dataFile);
-			final File to = new File(path + "/" + dataFile.getName());
-
-			log.info("Copying file, from=" + dataFile.toString() 
-					 + ", to=" + to.toString());
-
-			final FileOutputStream fos = new FileOutputStream(to);
-			IOUtils.copy(fis, fos);
-			fis.close();
-			fos.close();
-		}
-	}
-
 	public PlaceBookItemSearchIndex getSearchIndex()
 	{
 		return index;

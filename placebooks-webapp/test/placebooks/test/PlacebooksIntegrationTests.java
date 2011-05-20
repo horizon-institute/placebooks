@@ -48,7 +48,7 @@ public class PlacebooksIntegrationTests
 	public void setUp() throws Exception
 	{
 		// Populate the database with test data
-		InitializeDatabase.main(null);		
+		//InitializeDatabase.main(null);		
 	}
 
 	/**
@@ -84,12 +84,33 @@ public class PlacebooksIntegrationTests
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 		
 		Vector<Node> pictures = picturesResponse.getPictures();
-		ImageItem imageItem = ItemFactory.toImageItem(testUser, pictures.firstElement());
+		
 		//assertEquals(800, imageItem.getImage().getWidth());
 		//assertEquals(479, imageItem.getImage().getHeight());
+		
+		final EntityManager pm = EMFSingleton.getEntityManager();				
+		try
+		{
+			pm.getTransaction().begin();
+			ImageItem imageItem = new ImageItem(testUser, null, null, null);
+			pm.persist(imageItem);
+			pm.getTransaction().commit();
+			pm.getTransaction().begin();
+			ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+			pm.close();
+		}
 	}
 
-	@Test
+/*	@Test
 	public void testToVideoItemFromYouTube()
 	{
 		User testUser = UserManager.getUser(pm, "placebooks.test@gmail.com");
@@ -100,5 +121,5 @@ public class PlacebooksIntegrationTests
 		VideoItem videoItem = ItemFactory.toVideoItem(testUser, feed.getEntries().get(0));
 		log.debug(videoItem.getSourceURL());
 		//assertEquals(800, videoItem.getSourceURL());	
+	}*/
 	}
-}

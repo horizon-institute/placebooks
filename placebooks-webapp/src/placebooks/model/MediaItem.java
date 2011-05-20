@@ -1,6 +1,7 @@
 package placebooks.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,7 @@ import java.net.URL;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -76,6 +78,31 @@ public abstract class MediaItem extends PlaceBookItem
 		this.file = new File(filepath);
 	}
 
+	protected void copyDataToPackage(File dataFile) throws IOException
+	{
+		// Check package dir exists already
+		final String path = 
+			PropertiesSingleton
+				.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+					+ getPlaceBook().getKey();
+
+		if (new File(path).exists() || new File(path).mkdirs())
+		{
+
+			final FileInputStream fis = new FileInputStream(dataFile);
+			final File to = new File(path + "/" + dataFile.getName());
+
+			log.info("Copying file, from=" + dataFile.toString() 
+					 + ", to=" + to.toString());
+
+			final FileOutputStream fos = new FileOutputStream(to);
+			IOUtils.copy(fis, fos);
+			fis.close();
+			fos.close();
+		}
+	}
+	
 	public void writeDataToDisk(String name, InputStream input) throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())

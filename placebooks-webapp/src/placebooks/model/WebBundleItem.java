@@ -25,7 +25,8 @@ public class WebBundleItem extends PlaceBookItem
 		private BufferedImage headerImage;
 		private String headerText;
 
-		public WebPreview(final String htmlPage, final BufferedImage headerImage)
+		public WebPreview(final String htmlPage, 
+						  final BufferedImage headerImage)
 		{
 			// Select headerText from htmlPage TODO
 			this.headerText = "";
@@ -44,14 +45,16 @@ public class WebBundleItem extends PlaceBookItem
 
 	}
 
-	private static final Logger log = Logger.getLogger(WebBundleItem.class.getName());
+	private static final Logger log = 	
+		Logger.getLogger(WebBundleItem.class.getName());
 
 	@Transient
 	private BufferedImage thumbnail;
 
 	private File webBundle;
 
-	public WebBundleItem(final User owner, final Geometry geom, final URL sourceURL, final File webBundle)
+	public WebBundleItem(final User owner, final Geometry geom, 
+						 final URL sourceURL, final File webBundle)
 	{
 		super(owner, geom, sourceURL);
 		this.webBundle = webBundle;
