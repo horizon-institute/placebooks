@@ -121,6 +121,6 @@ public abstract class MediaItem extends PlaceBookItem
 
 		setPath(filePath);
 		
-		log.info("Wrote " + name + " file " + path);
+		log.info("Wrote " + name + " file " + filePath);
 	}
 }
