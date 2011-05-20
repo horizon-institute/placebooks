@@ -7,4 +7,6 @@
     <string name="task_starting">Starting...</string>
     <string name="task_cancelled">Task is cancelled by user</string>
     <string name="task_completed">Task is completed with result (%1$s)</string>
+    <string name="download">Download</string>
+    
 </resources>

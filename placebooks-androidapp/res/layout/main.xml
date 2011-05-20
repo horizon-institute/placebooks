@@ -4,6 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true"
+    android:fadingEdgeLength="6px"
    >
     <LinearLayout
     android:id="@+id/linearlayout"
