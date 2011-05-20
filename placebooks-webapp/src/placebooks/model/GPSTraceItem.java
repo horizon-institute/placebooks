@@ -31,7 +31,8 @@ public class GPSTraceItem extends PlaceBookItem
 	@JsonIgnore
 	private Document trace;
 
-	public GPSTraceItem(final User owner, final Geometry geom, final URL sourceURL, final Document trace)
+	public GPSTraceItem(final User owner, final Geometry geom, 
+						final URL sourceURL, final Document trace)
 	{
 		super(owner, geom, sourceURL);
 		this.trace = trace;
@@ -44,10 +45,9 @@ public class GPSTraceItem extends PlaceBookItem
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
-		getTrace(); // TODO: why does this need to be done??
-
 		final Element item = getConfigurationHeader(config);
-		final Element traceElem = (Element) (trace.getElementsByTagName("gpx").item(0));
+		final Element traceElem = 
+			(Element)(trace.getElementsByTagName("gpx").item(0));
 		final Node traceNode = config.importNode(traceElem, true);
 		item.appendChild(traceNode);
 		root.appendChild(item);
@@ -99,7 +99,8 @@ public class GPSTraceItem extends PlaceBookItem
 		{
 			final StringReader reader = new StringReader(trace);
 			final InputSource source = new InputSource(reader);
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			this.trace = builder.parse(source);
 			reader.close();
 		}
