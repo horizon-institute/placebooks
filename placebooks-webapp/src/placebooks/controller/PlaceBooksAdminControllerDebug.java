@@ -1,6 +1,9 @@
 package placebooks.controller;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
@@ -13,11 +16,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.Node;
 
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
 import placebooks.model.PlaceBook;
+import placebooks.model.User;
 import placebooks.utils.InitializeDatabase;
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
@@ -69,6 +76,45 @@ public class PlaceBooksAdminControllerDebug
 
 		return mav;
 
+	}
+	
+	@RequestMapping(value = "/admin/everytrail")
+	public void testToImageItemFromEverytrail()
+	{
+		EntityManager entityManager = EMFSingleton.getEntityManager();
+		User testUser = UserManager.getUser(entityManager, "everytrail_test@live.co.uk");
+		LoginDetails details = testUser.getLoginDetails("Everytrail");		
+		
+		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		assertEquals("success", loginResponse.getStatus());
+		assertEquals(details.getUserID(), loginResponse.getValue());
+		
+		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
+		
+		Vector<Node> pictures = picturesResponse.getPictures();
+		
+		//assertEquals(800, imageItem.getImage().getWidth());
+		//assertEquals(479, imageItem.getImage().getHeight());
+					
+		try
+		{
+			entityManager.getTransaction().begin();
+			ImageItem imageItem = new ImageItem(testUser, null, null, null);
+			entityManager.persist(imageItem);
+			entityManager.getTransaction().commit();
+			entityManager.getTransaction().begin();
+			ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
+			entityManager.getTransaction().commit();
+		}
+		finally
+		{
+			if (entityManager.getTransaction().isActive())
+			{
+				entityManager.getTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+			entityManager.close();
+		}
 	}
 	
 	@RequestMapping(value = "/admin/delete/all_placebooks", method = RequestMethod.GET)
