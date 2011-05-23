@@ -29,7 +29,8 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 	}
 
-	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final String file)
+	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
+					 final String file)
 	{
 		this.path = file;
 	}
@@ -43,7 +44,9 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			copyDataToPackage();
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(new File(path).getName()));
+			filename.appendChild(
+				config.createTextNode(new File(path).getName())
+			);
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -98,14 +101,19 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 	}
 	
-	public void writeDataToDisk(String name, InputStream input) throws IOException
+	public void writeDataToDisk(String name, InputStream input) 
+		throws IOException
 	{
-		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+		final String path = PropertiesSingleton
+							.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 		if(getKey() == null) { throw new IOException("Key is null"); }
 		
-		if (!new File(path).exists() && !new File(path).mkdirs()) { throw new IOException("Failed to write file"); }
+		if (!new File(path).exists() && !new File(path).mkdirs()) 
+		{
+			throw new IOException("Failed to write file"); 
+		}
 
 		final int extIdx = name.lastIndexOf(".");
 		final String ext = name.substring(extIdx + 1, name.length());

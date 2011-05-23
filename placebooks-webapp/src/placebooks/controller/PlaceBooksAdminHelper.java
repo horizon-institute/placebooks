@@ -334,4 +334,18 @@ public final class PlaceBooksAdminHelper
 		}
 	}
 
+
+	public static final String[] getExtension(final String field)
+	{
+		final int delim = field.indexOf(".");
+		if (delim == -1)
+			return null;
+
+		String[] out = new String[2];
+		out[0] = field.substring(0, delim);
+		out[1] = field.substring(delim + 1, field.length());
+
+		return out;
+	}
+
 }

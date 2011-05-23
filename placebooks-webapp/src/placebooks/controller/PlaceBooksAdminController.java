@@ -646,7 +646,7 @@ public class PlaceBooksAdminController
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					String[] split = getExtension(param);
+					String[] split = PlaceBooksAdminHelper.getExtension(param);
 					if (split == null)
 						continue;
 
@@ -953,7 +953,8 @@ public class PlaceBooksAdminController
 				{
 					//String property = null;
 				
-					String[] split = getExtension(item.getFieldName());
+					String[] split = 
+						PlaceBooksAdminHelper.getExtension(item.getFieldName());
 					if (split == null)
 						continue;
 
@@ -963,7 +964,8 @@ public class PlaceBooksAdminController
 
 					if (prefix.contentEquals("gpstrace"))
 					{
-						final InputStreamReader reader = new InputStreamReader(item.openStream());
+						final InputStreamReader reader = 
+							new InputStreamReader(item.openStream());
 						final StringWriter writer = new StringWriter();
 						int data;
 						while((data = reader.read()) != -1)
@@ -972,7 +974,8 @@ public class PlaceBooksAdminController
 						}
 						reader.close();
 						writer.close();
-						pbi = new GPSTraceItem(null, null, null, writer.toString());
+						pbi = new GPSTraceItem(null, null, null, 
+											   writer.toString());
 						p.addItem(pbi);
 
 						continue;
@@ -1116,7 +1119,7 @@ public class PlaceBooksAdminController
 				final String value = req.getParameterValues(param)[0];
 				if (!processItemData(itemData, pm, param, value))
 				{
-					String[] split = getExtension(param);
+					String[] split = PlaceBooksAdminHelper.getExtension(param);
 					if (split == null)
 						continue;
 
@@ -1253,67 +1256,26 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/serve/videoitem/{key}", 
+	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
 					method = RequestMethod.GET)
-	public ModelAndView serveVideoItem(final HttpServletRequest req, 
-								   	   final HttpServletResponse res,
-								   	   @PathVariable("key") final String key)
+	public ModelAndView streamMediaItem(final HttpServletRequest req, 
+								   	    final HttpServletResponse res,
+									    @PathVariable("type") final String type,
+								   	    @PathVariable("key") final String key)
 	{
-		return null;
-	}
-
-	@RequestMapping(value = "/admin/serve/audioitem/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView serveAudioItem(final HttpServletRequest req, 
-								   	   final HttpServletResponse res,
-								   	   @PathVariable("key") final String key)
-	{	
+		String path = null;
 		final EntityManager em = EMFSingleton.getEntityManager();
 
 		try
 		{
-			final AudioItem a = em.find(AudioItem.class, key);
+			final MediaItem m = em.find(MediaItem.class, key);
 
-			if (a != null && a.getPath() != null)
+			if (m != null && m.getPath() != null)
 			{
-				try
-				{
-					File audio = new File(a.getPath());
-					
-					final ByteArrayOutputStream bos = 
-						new ByteArrayOutputStream();
-					final FileInputStream fis = new FileInputStream(audio);
-					final BufferedInputStream bis = 
-						new BufferedInputStream(fis);
-
-					final byte data[] = new byte[2048];
-					int i;
-					while ((i = bis.read(data, 0, 2048)) != -1)
-					{
-						bos.write(data, 0, i);
-					}
-					fis.close();
-
-					String[] split = getExtension(a.getPath());
-					if (split != null)
-					{
-						final ServletOutputStream sos = res.getOutputStream();
-						res.setContentType("audio/" + split[1]);
-						res.addHeader("Content-Disposition", 
-									  "attachment; filename=" 
-									  + audio.getName());
-						
-						sos.write(bos.toByteArray());
-						sos.flush();
-					}
-					else
-						throw new Exception("Error getting file suffix");
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
+				path = m.getPath();
 			}
+			else
+				throw new Exception("Error getting media file, invalid key");
 		}
 		catch (final Throwable e)
 		{
@@ -1324,8 +1286,53 @@ public class PlaceBooksAdminController
 			em.close();
 		}
 
+		if (path == null)
+			return null;
+
+		try
+		{
+			String type_ = null;
+			if (type.trim().equalsIgnoreCase("video"))
+				type_ = "video";
+			else if (type.trim().equalsIgnoreCase("audio"))
+				type_ = "audio";
+			else
+				throw new Exception("Unrecognised media item type");
+
+			final File file = new File(path);
+
+			final String[] split = PlaceBooksAdminHelper.getExtension(path);
+			if (split == null)
+				throw new Exception("Error getting file suffix");
+
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType(type_ + "/" + split[1]);
+			//res.setContentLength();
+			res.addHeader("Content-Disposition", 
+						  "attachment; filename=" + file.getName());
+
+			final FileInputStream fis = new FileInputStream(file);
+			final BufferedInputStream bis = 
+				new BufferedInputStream(fis);
+
+			final byte data[] = new byte[2048];
+			int i;
+			while ((i = bis.read(data, 0, 2048)) != -1)
+			{
+				sos.write(data, 0, i);
+			}
+			sos.flush();
+			fis.close();
+
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		
 		return null;
 	}
+	
 
 	
 	// Helper class for passing around general PlaceBookItem data
@@ -1410,17 +1417,5 @@ public class PlaceBooksAdminController
 		return true;
 	}
 
-	private String[] getExtension(final String field)
-	{
-		final int delim = field.indexOf(".");
-		if (delim == -1)
-			return null;
-
-		String[] out = new String[2];
-		out[0] = field.substring(0, delim);
-		out[1] = field.substring(delim + 1, field.length());
-
-		return out;
-	}
 
 }
