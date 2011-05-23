@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -21,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -300,6 +302,33 @@ public class PlaceBooksAdminController
 		}
 		return false;
 	}
+	
+	private PlaceBook get(EntityManager manager, String key)
+	{
+		try
+		{
+			if (key != null)
+			{
+				return manager.find(PlaceBook.class, key);
+			}
+		}
+		catch(Exception e)
+		{
+			log.warn(e.getMessage(), e);
+		}
+		return null;
+	}
+	
+	private void setProxy()
+	{
+		Properties properties = PropertiesSingleton.get(getClass().getClassLoader());
+		if(new Boolean(properties.getProperty(PropertiesSingleton.PROXY_ACTIVE, "false")))
+		{
+			System.getProperties().put( "proxySet", "true" );
+			System.getProperties().put( "proxyHost", properties.getProperty(PropertiesSingleton.PROXY_HOST));
+			System.getProperties().put( "proxyPort", properties.getProperty(PropertiesSingleton.PROXY_PORT) );					
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
@@ -313,128 +342,115 @@ public class PlaceBooksAdminController
 		try
 		{
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-
-			if (placebook.getKey() != null)
+			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
+			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
+			if (dbPlacebook != null)
 			{
-				final PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-				if (dbPlacebook != null)
+				// Remove any items that are no longer used
+				final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();
+				for (final PlaceBookItem item : dbPlacebook.getItems())
 				{
-					// Remove any items that are no longer used
-					Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();
-					for (final PlaceBookItem item : dbPlacebook.getItems())
+					if (!containsItem(item, placebook.getItems()))
 					{
-						if (!containsItem(item, placebook.getItems()))
-						{
-							manager.remove(item);
-						}
-						else
-						{
-							oldItems.put(item.getKey(), item);
-						}
+						manager.remove(item);
 					}
-
-					dbPlacebook.setItems(Collections.EMPTY_LIST);
-					for (final PlaceBookItem newItem : placebook.getItems())
+					else
 					{
-						log.info(newItem.getKey());
-						PlaceBookItem item = newItem;
-						if(item.getKey() != null)
+						oldItems.put(item.getKey(), item);
+					}
+				}
+
+				dbPlacebook.setItems(Collections.EMPTY_LIST);
+				for (final PlaceBookItem newItem : placebook.getItems())
+				{
+					// Update existing item if possible
+					PlaceBookItem item = newItem;
+					if(item.getKey() != null)
+					{
+						if(oldItems.containsKey(item.getKey()))
 						{
-							if(oldItems.containsKey(item.getKey()))
+							item = oldItems.get(item.getKey());
+							
+							if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
 							{
-								item = oldItems.get(item.getKey());
-								
-								if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-								{
-									item.setSourceURL(newItem.getSourceURL());
-									if(item instanceof ImageItem)
-									{
-										
-									}
-								}
-							}
+								item.setSourceURL(newItem.getSourceURL());
+								updateItems.add(item);
+							}							
 						}
-
-						for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
-						{
-							item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
-						}
-
-						item.setOwner(dbPlacebook.getOwner());
-
-						if(item.getTimestamp() == null)
-						{
-							item.setTimestamp(new Date());
-						}
-
-						dbPlacebook.addItem(item);
 					}
-
-					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+					else
 					{
-						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+						updateItems.add(item);
 					}
 
-					dbPlacebook.setGeometry(placebook.getGeometry());
+					for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
+					{
+						item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+					}
 
-					manager.merge(dbPlacebook);
-					log.info("Updated PlaceBook: " + mapper.writeValueAsString(dbPlacebook));
+					if(item.getOwner() == null)
+					{
+						item.setOwner(dbPlacebook.getOwner());
+					}
+
+					if(item.getTimestamp() == null)
+					{
+						item.setTimestamp(new Date());
+					}
+
+					dbPlacebook.addItem(item);
 				}
-				else
+
+				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 				{
-					placebook.setOwner(UserManager.getCurrentUser(manager));
-					manager.persist(placebook);
-					log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));					
+					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 				}
+
+				dbPlacebook.setGeometry(placebook.getGeometry());
+
+				manager.merge(dbPlacebook);
 			}
 			else
-			{		
+			{
 				placebook.setOwner(UserManager.getCurrentUser(manager));
 				manager.persist(placebook);
-				log.info("Added PlaceBook: " + mapper.writeValueAsString(placebook));
+				updateItems.addAll(placebook.getItems());									
 			}
-
 			manager.getTransaction().commit();
 
-			manager.getTransaction().begin();			
-			for(PlaceBookItem item: placebook.getItems())
+			manager.getTransaction().begin();
+			setProxy();			
+			for(PlaceBookItem item: updateItems)
 			{
-				if(item instanceof MediaItem)
+				try
 				{
-					MediaItem mediaItem = (MediaItem)item;
-					if(mediaItem.getPath() == null || !new File(mediaItem.getPath()).exists())
+					if(item instanceof MediaItem)
 					{
-						try
-						{
-							getMediaFromURL(mediaItem);
-						}
-						catch(Exception e)
-						{
-							log.info(e.getMessage(), e);
-						}						
+						final MediaItem mediaItem = (MediaItem)item;
+						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());			
+					}
+					else if(item instanceof GPSTraceItem)
+					{
+						final GPSTraceItem gpsItem = (GPSTraceItem)item;
+						gpsItem.readTrace(gpsItem.getSourceURL().openStream());
+					}
+					else if(item instanceof WebBundleItem)
+					{
+						//final WebBundleItem webItem = (WebBundleItem)item;
+						// TODO
 					}
 				}
-				else if(item instanceof GPSTraceItem)
+				catch(Exception e)
 				{
-					GPSTraceItem gpsItem = (GPSTraceItem)item;
-					if(gpsItem.getTrace() == null || gpsItem.getTrace().trim().equals(""))
-					{
-						try
-						{
-							getGPSFromURL(gpsItem);
-						}
-						catch(Exception e)
-						{
-							log.info(e.getMessage(), e);
-						}
-					}
+					log.info(e.getMessage(), e);
 				}
 			}
 			manager.getTransaction().commit();			
 			
 			res.setContentType("application/json");				
 			final ServletOutputStream sos = res.getOutputStream();
-			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());			
+			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+			log.info("Saved Placebook:" + mapper.writeValueAsString(resultPlacebook));
 			mapper.writeValue(sos, resultPlacebook);
 			sos.flush();			
 		}
@@ -905,36 +921,6 @@ public class PlaceBooksAdminController
 		}
 
 		return searchGET(out.toString());
-	}
-
-	private void getMediaFromURL(final MediaItem item) throws Exception
-	{
-		System.getProperties().put( "proxySet", "true" );
-		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
-		System.getProperties().put( "proxyPort", "3128" );
-		
-		item.writeDataToDisk(item.getSourceURL().toExternalForm(), item.getSourceURL().openStream());
-	}
-	
-	private void getGPSFromURL(final GPSTraceItem item) throws Exception
-	{
-		System.getProperties().put( "proxySet", "true" );
-		System.getProperties().put( "proxyHost", "wwwcache.cs.nott.ac.uk" );
-		System.getProperties().put( "proxyPort", "3128" );
-		
-		final InputStreamReader reader = new InputStreamReader(item.getSourceURL().openStream());
-		final StringWriter writer = new StringWriter();
-		int data;
-		while((data = reader.read()) != -1)
-		{
-			writer.write(data);
-		}
-		reader.close();
-		writer.close();
-		
-		log.info("Got gps from url " + item.getSourceURL());
-		
-		item.setTrace(writer.toString());
 	}	
 	
 	@RequestMapping(value = "/admin/add_item/upload", 

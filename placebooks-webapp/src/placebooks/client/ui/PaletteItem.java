@@ -73,6 +73,8 @@ public class PaletteItem extends Composite
 	PlaceBookItem createItem()
 	{
 		// TODO is there a better way to clone item?
-		return PlaceBookItem.parse(new JSONObject(item).toString());
+		PlaceBookItem copyItem = PlaceBookItem.parse(new JSONObject(item).toString());
+		copyItem.setKey(null);
+		return copyItem;
 	}
 }
