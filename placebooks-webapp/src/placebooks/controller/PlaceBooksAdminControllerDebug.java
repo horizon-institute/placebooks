@@ -4,25 +4,39 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import java.io.StringWriter;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.OutputKeys;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.PlaceBook;
 import placebooks.model.User;
+import placebooks.model.GPSTraceItem;
 import placebooks.utils.InitializeDatabase;
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
@@ -77,32 +91,89 @@ public class PlaceBooksAdminControllerDebug
 	}
 	
 	@RequestMapping(value = "/admin/everytrail")
-	public void testToImageItemFromEverytrail()
+	public void getEverytrailData()
 	{
 		EntityManager entityManager = EMFSingleton.getEntityManager();
 		User testUser = UserManager.getUser(entityManager, "everytrail_test@live.co.uk");
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 		
 		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
-		//assertEquals("success", loginResponse.getStatus());
-		//assertEquals(details.getUserID(), loginResponse.getValue());
 		
+		EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
+
+		for (Node trip : trips.getTrips())
+		{
+			final NamedNodeMap tripAttr = trip.getAttributes();
+			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
+			log.debug("Getting tracks for trip: " + tripId);
+			EverytrailTracksResponse tracks = EverytrailHelper.Tracks(tripId, details.getUsername(), details.getPassword());
+			for (Node track : tracks.getTracks())
+			{
+				final NamedNodeMap trackAttr = track.getAttributes();
+				log.info("trackAttr = " + trackAttr.toString());
+				final NodeList props = track.getChildNodes();
+				for (int i = 0; i < props.getLength(); ++ i)
+				{
+					Node item = props.item(i);
+					String itemName = item.getNodeName();
+					log.debug("Inspecting property: " + itemName + 
+							  " which is " + item.getTextContent());
+					if (itemName.equalsIgnoreCase("trk"))
+					{
+																		
+						try
+						{
+							Transformer t = 
+							TransformerFactory.newInstance().newTransformer();
+						    t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+											    "yes");
+							StringWriter s = new StringWriter();
+						    t.transform(new DOMSource(item), 
+										new StreamResult(s));
+
+							entityManager.getTransaction().begin();
+							GPSTraceItem g = 
+								new GPSTraceItem(testUser, null, null, 
+												 s.toString());
+							entityManager.persist(g);
+							entityManager.getTransaction().commit();
+						}
+						catch (final Throwable e)
+						{
+							log.error(e.getMessage(), e);
+						}
+						finally
+						{
+							if (entityManager.getTransaction().isActive())
+							{
+								entityManager.getTransaction().rollback();
+								log.error("Rolling current persist transaction back");
+							}
+						}
+					}
+					
+
+				}
+			}
+		}
+
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 		
 		Vector<Node> pictures = picturesResponse.getPictures();
 		
-		//assertEquals(800, imageItem.getImage().getWidth());
-		//assertEquals(479, imageItem.getImage().getHeight());
-					
-		try
+		try 
 		{
-			entityManager.getTransaction().begin();
-			ImageItem imageItem = new ImageItem(testUser, null, null, null);
-			entityManager.persist(imageItem);
-			entityManager.getTransaction().commit();
-			entityManager.getTransaction().begin();
-			ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
-			entityManager.getTransaction().commit();
+			for (Node picture : pictures)
+			{
+				entityManager.getTransaction().begin();
+				ImageItem imageItem = new ImageItem(testUser, null, null, null);
+				entityManager.persist(imageItem);
+				entityManager.getTransaction().commit();
+				log.error("************** imageItem key = " + imageItem.getKey());
+				entityManager.getTransaction().begin();
+				ItemFactory.toImageItem(testUser, picture, imageItem);
+				entityManager.getTransaction().commit();
+			}
 		}
 		finally
 		{
