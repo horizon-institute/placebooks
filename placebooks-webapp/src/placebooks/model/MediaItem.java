@@ -87,7 +87,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 		if (new File(path).exists() || new File(path).mkdirs())
 		{
-			final File dataFile = new File(path);
+			final File dataFile = new File(getPath());
 			final FileInputStream fis = new FileInputStream(dataFile);
 			final File to = new File(path + "/" + dataFile.getName());
 
