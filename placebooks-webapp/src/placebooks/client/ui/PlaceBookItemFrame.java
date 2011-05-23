@@ -5,6 +5,7 @@ import java.util.List;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.PlaceBookCanvas.SaveTimer;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
 import placebooks.client.ui.widget.MapPanel;

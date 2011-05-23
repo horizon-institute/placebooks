@@ -103,6 +103,8 @@ public abstract class MediaItem extends PlaceBookItem
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
+		if(getKey() == null) { throw new IOException("Key is null"); }
+		
 		if (!new File(path).exists() && !new File(path).mkdirs()) { throw new IOException("Failed to write file"); }
 
 		final int extIdx = name.lastIndexOf(".");

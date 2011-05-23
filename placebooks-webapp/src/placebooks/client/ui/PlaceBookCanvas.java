@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
@@ -30,10 +31,14 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -43,6 +48,45 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookCanvas extends Composite
 {
+	public class SaveTimer extends Timer
+	{
+		private static final int saveDelay = 2000;	
+
+		public void markChanged()
+		{
+			cancel();
+			schedule(saveDelay);
+		}
+
+		@Override
+		public void run()
+		{
+			PlaceBookService.savePlaceBook(placebook, new RequestCallback()
+			{
+				@Override
+				public void onError(final Request request, final Throwable exception)
+				{
+					GWT.log(exception.getMessage(), exception);
+				}
+
+				@Override
+				public void onResponseReceived(final Request request, final Response response)
+				{
+					GWT.log(response.getStatusCode() + " Response: " + response.getText());
+					if(response.getStatusCode() == 200)
+					{
+						final PlaceBook result = PlaceBook.parse(response.getText());
+						setPlaceBook(result);				
+					}
+					else
+					{
+						markChanged();
+					}
+				}
+			});
+		}
+	}
+	
 	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookCanvas>
 	{
 	}
@@ -124,6 +168,11 @@ public class PlaceBookCanvas extends Composite
 		});
 	}
 
+	public PlaceBook getPlaceBook()
+	{
+		return placebook;
+	}
+	
 	public void reflow()
 	{
 		for (final PlaceBookPanel panel : panels)
@@ -160,7 +209,10 @@ public class PlaceBookCanvas extends Composite
 	public void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
-		saveTimer.setPlaceBook(placebook);
+		for(PlaceBookItemFrame item: items)
+		{
+			item.removeFromParent();
+		}
 		items.clear();
 
 		for (int index = 0; index < placebook.getItems().length(); index++)

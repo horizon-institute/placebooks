@@ -380,6 +380,7 @@ public class PlaceBooksAdminController
 					}
 					else
 					{
+						manager.persist(item);
 						updateItems.add(item);
 					}
 
@@ -418,6 +419,8 @@ public class PlaceBooksAdminController
 			}
 			manager.getTransaction().commit();
 
+			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
+			
 			manager.getTransaction().begin();
 			setProxy();			
 			for(PlaceBookItem item: updateItems)
@@ -427,7 +430,7 @@ public class PlaceBooksAdminController
 					if(item instanceof MediaItem)
 					{
 						final MediaItem mediaItem = (MediaItem)item;
-						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());			
+						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());
 					}
 					else if(item instanceof GPSTraceItem)
 					{
@@ -1205,6 +1208,7 @@ public class PlaceBooksAdminController
 								   	   @PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
+		log.info("Serving Image Item " + key);
 
 		try
 		{
