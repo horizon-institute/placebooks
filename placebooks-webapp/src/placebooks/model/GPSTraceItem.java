@@ -1,6 +1,9 @@
 package placebooks.model;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 
 import javax.persistence.Entity;
@@ -67,6 +70,23 @@ public class GPSTraceItem extends PlaceBookItem
 		return GPSTraceItem.class.getName();
 	}
 
+	public void readTrace(final InputStream is) throws Exception
+	{
+		final InputStreamReader reader = new InputStreamReader(is);
+		final StringWriter writer = new StringWriter();
+		int data;
+		while((data = reader.read()) != -1)
+		{
+			writer.write(data);
+		}
+		reader.close();
+		writer.close();
+		
+		log.info("Got gps from url " + getSourceURL());
+		
+		setTrace(writer.toString());
+	}
+	
 	// @Persistent
 	// @Column(jdbcType = "CLOB")
 	public String getTrace()
