@@ -193,6 +193,10 @@ public class PlaceBookCanvas extends Composite
 		add(new PaletteItem(
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));
+		add(new PaletteItem(
+		    				PlaceBookItem
+		    						.parse("{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Test Audio\"},\"parameters\":{}}")));
+		
 
 		for (int index = 0; index < items.length(); index++)
 		{
