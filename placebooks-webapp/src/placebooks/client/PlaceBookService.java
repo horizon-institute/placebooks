@@ -10,6 +10,11 @@ import com.google.gwt.json.client.JSONObject;
 
 public class PlaceBookService
 {
+	public static void getPaletteItems(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/palette", callback);
+	}
+
 	public static void getPlaceBook(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/placebook/" + key, callback);
@@ -25,11 +30,6 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/saveplacebook", RequestBuilder.POST, "placebook="
 				+ new JSONObject(placebook).toString(), callback);
 	}
-	
-	public static void getPaletteItems(final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/palette", callback);
-	}
 
 	private static String getHostURL()
 	{
@@ -44,12 +44,12 @@ public class PlaceBookService
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
 			final RequestCallback callback)
 	{
-		GWT.log(url);
+		GWT.log("Request: " + url);
 		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));
 		if (data != null)
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			GWT.log(data);			
+			GWT.log("Request data: " + data);
 		}
 		try
 		{

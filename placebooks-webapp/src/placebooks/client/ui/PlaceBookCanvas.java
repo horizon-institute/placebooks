@@ -2,9 +2,12 @@ package placebooks.client.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
+import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
@@ -32,14 +35,13 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
@@ -50,7 +52,7 @@ public class PlaceBookCanvas extends Composite
 {
 	public class SaveTimer extends Timer
 	{
-		private static final int saveDelay = 2000;	
+		private static final int saveDelay = 2000;
 
 		public void markChanged()
 		{
@@ -61,32 +63,24 @@ public class PlaceBookCanvas extends Composite
 		@Override
 		public void run()
 		{
-			PlaceBookService.savePlaceBook(placebook, new RequestCallback()
+			PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
 			{
 				@Override
-				public void onError(final Request request, final Throwable exception)
+				public void failure(final Request request)
 				{
-					GWT.log(exception.getMessage(), exception);
+					markChanged();
 				}
 
 				@Override
-				public void onResponseReceived(final Request request, final Response response)
+				public void success(final Request request, final Response response)
 				{
-					GWT.log(response.getStatusCode() + " Response: " + response.getText());
-					if(response.getStatusCode() == 200)
-					{
-						final PlaceBook result = PlaceBook.parse(response.getText());
-						setPlaceBook(result);				
-					}
-					else
-					{
-						markChanged();
-					}
+					final PlaceBook result = PlaceBook.parse(response.getText());
+					setPlaceBook(result);
 				}
 			});
 		}
 	}
-	
+
 	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookCanvas>
 	{
 	}
@@ -172,7 +166,7 @@ public class PlaceBookCanvas extends Composite
 	{
 		return placebook;
 	}
-	
+
 	public void reflow()
 	{
 		for (final PlaceBookPanel panel : panels)
@@ -194,39 +188,61 @@ public class PlaceBookCanvas extends Composite
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video Item\"},\"parameters\":{}}")));
 		add(new PaletteItem(
-		    				PlaceBookItem
-		    						.parse("{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Bundle\"},\"parameters\":{}}")));		
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Bundle\"},\"parameters\":{}}")));
 		add(new PaletteItem(
-		    				PlaceBookItem
-		    						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));		
-		
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));
+
 		for (int index = 0; index < items.length(); index++)
 		{
 			add(new PaletteItem(items.get(index)));
 		}
 	}
 
-	public void setPlaceBook(final PlaceBook placebook)
+	public void setPlaceBook(final PlaceBook newPlacebook)
 	{
-		this.placebook = placebook;
-		for(PlaceBookItemFrame item: items)
+		this.placebook = newPlacebook;
+
+		final Map<String, PlaceBookItemFrame> kept = new HashMap<String, PlaceBookItemFrame>();
+		final Collection<PlaceBookItemFrame> removals = new ArrayList<PlaceBookItemFrame>();
+		for (final PlaceBookItemFrame item : items)
 		{
-			item.removeFromParent();
+			final PlaceBookItem newItem = getItem(newPlacebook, item.getItem().getKey());
+			if (newItem == null)
+			{
+				item.removeFromParent();
+				removals.add(item);
+			}
+			else
+			{
+				final PlaceBookPanel panel = item.getPanel();
+				final int index = newItem.hasParameter("panel") ? newItem.getParameter("panel") : 0;
+				if (panel.getIndex() != index)
+				{
+					item.setPanel(panels.get(index));
+				}
+				item.setPlaceBookItem(newItem);
+				kept.put(newItem.getKey(), item);
+			}
 		}
-		items.clear();
+		items.removeAll(removals);
 
 		for (int index = 0; index < placebook.getItems().length(); index++)
 		{
 			final PlaceBookItem item = placebook.getItems().get(index);
-			final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
-			add(frame);
-			if (item.hasParameter("panel"))
+			if (!kept.containsKey(item.getKey()))
 			{
-				frame.setPanel(panels.get(item.getParameter("panel")));
-			}
-			else
-			{
-				frame.setPanel(panels.get(0));
+				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
+				add(frame);
+				if (item.hasParameter("panel"))
+				{
+					frame.setPanel(panels.get(item.getParameter("panel")));
+				}
+				else
+				{
+					frame.setPanel(panels.get(0));
+				}
 			}
 		}
 
@@ -386,6 +402,17 @@ public class PlaceBookCanvas extends Composite
 				}
 			}
 		});
+	}
+
+	private PlaceBookItem getItem(final PlaceBook placebook, final String key)
+	{
+		if (key == null) { return null; }
+		for (int index = 0; index < placebook.getItems().length(); index++)
+		{
+			final PlaceBookItem item = placebook.getItems().get(index);
+			if (key.equals(item.getKey())) { return item; }
+		}
+		return null;
 	}
 
 	private boolean isInWidget(final Widget widget, final int x, final int y)

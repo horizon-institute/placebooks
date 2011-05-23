@@ -58,6 +58,10 @@ public class PaletteItem extends Composite
 		{
 			image.setResource(Resources.INSTANCE.movies());
 		}
+		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		{
+			image.setResource(Resources.INSTANCE.music());
+		}		
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			image.setResource(Resources.INSTANCE.map());

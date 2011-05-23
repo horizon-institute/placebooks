@@ -375,7 +375,12 @@ public class PlaceBooksAdminController
 							{
 								item.setSourceURL(newItem.getSourceURL());
 								updateItems.add(item);
-							}							
+							}				
+							
+							for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
+							{
+								item.addParameterEntry(entry.getKey(), entry.getValue());	
+							}
 						}
 					}
 					else

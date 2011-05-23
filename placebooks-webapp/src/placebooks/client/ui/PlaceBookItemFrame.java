@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.media.client.Audio;
 import com.google.gwt.media.client.Video;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -168,11 +169,21 @@ public class PlaceBookItemFrame extends Composite
 			widgetPanel.add(image);
 			menuItems.add(setItemSourceURL);
 		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			final Audio audio = Audio.createIfSupported();
+			audio.setStyleName(Resources.INSTANCE.style().imageitem());
+			audio.setControls(true);
+			if (audio != null)
+			{
+				widgetPanel.add(audio);
+			}
+			menuItems.add(setItemSourceURL);
+		}		
 		else if (item.getClassName().equals("placebooks.model.VideoItem"))
 		{
 			final Video video = Video.createIfSupported();
 			video.setStyleName(Resources.INSTANCE.style().imageitem());
-			video.setSrc(item.getSourceURL());
 			video.setControls(true);
 			if (video != null)
 			{
@@ -184,7 +195,6 @@ public class PlaceBookItemFrame extends Composite
 		{
 			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
 			panel.setHeight("500px");
-			panel.setURL(item.getSourceURL());
 			menuItems.add(setItemSourceURL);			
 			widgetPanel.add(panel);
 		}
@@ -213,13 +223,32 @@ public class PlaceBookItemFrame extends Composite
 			}
 			else
 			{
-				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey());
+				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey() +"?"+System.currentTimeMillis());
 			}
 		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			final Audio audio = (Audio)widgetPanel.getWidget(0);
+			if(item.getKey() == null)
+			{
+				audio.setSrc(item.getSourceURL());				
+			}
+			else
+			{
+				audio.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/audioitem/" + item.getKey() +"?"+System.currentTimeMillis());
+			}
+		}		
 		else if (item.getClassName().equals("placebooks.model.VideoItem"))
 		{
 			final Video video = (Video)widgetPanel.getWidget(0);
-			video.setSrc(item.getSourceURL());
+			if(item.getKey() == null)
+			{
+				video.setSrc(item.getSourceURL());				
+			}
+			else
+			{
+				video.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/videoitem/" + item.getKey() +"?"+System.currentTimeMillis());
+			}
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
@@ -274,6 +303,10 @@ public class PlaceBookItemFrame extends Composite
 		{
 			return Resources.INSTANCE.movies();
 		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			return Resources.INSTANCE.music();
+		}		
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			return Resources.INSTANCE.map();
@@ -302,6 +335,12 @@ public class PlaceBookItemFrame extends Composite
 		event.stopPropagation();
 	}
 
+	public void setPlaceBookItem(final PlaceBookItem item)
+	{
+		this.item = item;
+		updateItemWidget();
+	}
+	
 	void hideFrame()
 	{
 		frame.getElement().getStyle().setZIndex(0);
