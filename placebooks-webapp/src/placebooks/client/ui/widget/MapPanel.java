@@ -62,10 +62,7 @@ public class MapPanel extends SimplePanel
 //					new $wnd.OpenLayers.Control.LayerSwitcher(),
 //					new $wnd.OpenLayers.Control.Attribution()
 					],
-//			maxExtent : new $wnd.OpenLayers.Bounds(-20037508.34, -20037508.34,
-//					20037508.34, 20037508.34),
-//			maxResolution : 156543.0399,
-//			numZoomLevels : 19,
+			numZoomLevels : 19,
 			units : 'm',
 			projection : new $wnd.OpenLayers.Projection("EPSG:900913"),
 			displayProjection : new $wnd.OpenLayers.Projection("EPSG:4326")
@@ -76,25 +73,13 @@ public class MapPanel extends SimplePanel
 		var zoom=13
 
 		// Define the map layer
-		// Here we use a predefined layer that will be kept up to date with URL changes
-		//layerMapnik = new $wnd.OpenLayers.Layer.OSM.Mapnik("Mapnik");
-		//map.addLayer(layerMapnik);
 		layerTilesAtHome = new $wnd.OpenLayers.Layer.OSM.Osmarender("Osmarender");
 		map.addLayer(layerTilesAtHome);
-		//layerCycleMap = new $wnd.OpenLayers.Layer.OSM.CycleMap("CycleMap");
-		//map.addLayer(layerCycleMap);
-		//layerMarkers = new $wnd.OpenLayers.Layer.Markers("Markers");
-		//map.addLayer(layerMarkers);
 
 		var lonLat = new $wnd.OpenLayers.LonLat(lon, lat).transform(
 				new $wnd.OpenLayers.Projection("EPSG:4326"), map
 						.getProjectionObject());
 		map.setCenter(lonLat, zoom);
-
-		//var size = new $wnd.OpenLayers.Size(21, 25);
-		//var offset = new $wnd.OpenLayers.Pixel(-(size.w / 2), -size.h);
-		//var icon = new $wnd.OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png', size,	offset);
-		//layerMarkers.addMarker(new $wnd.OpenLayers.Marker(lonLat, icon));
 
 		return map;
 	}-*/;
@@ -108,6 +93,7 @@ public class MapPanel extends SimplePanel
 				dataExtent.extend(this.getDataExtent());
 			else
 				dataExtent = this.getDataExtent();
+			//map.zoomTo(map.getZoomForExtent(dataExtent));
 			map.zoomToExtent(dataExtent);
 		};
  

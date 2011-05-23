@@ -4,10 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,11 +32,9 @@ import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
@@ -53,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.xml.sax.SAXException;
 
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
@@ -377,11 +371,23 @@ public class PlaceBooksAdminController
 							{
 								item.setSourceURL(newItem.getSourceURL());
 								updateItems.add(item);
-							}							
+							}				
+							
+							for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
+							{
+								item.addParameterEntry(entry.getKey(), entry.getValue());	
+							}
+							
+							if(item instanceof TextItem)
+							{
+								TextItem text = (TextItem)item;
+								text.setText(((TextItem)newItem).getText());
+							}
 						}
 					}
 					else
 					{
+						manager.persist(item);
 						updateItems.add(item);
 					}
 
@@ -420,6 +426,8 @@ public class PlaceBooksAdminController
 			}
 			manager.getTransaction().commit();
 
+			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
+			
 			manager.getTransaction().begin();
 			setProxy();			
 			for(PlaceBookItem item: updateItems)
@@ -429,7 +437,7 @@ public class PlaceBooksAdminController
 					if(item instanceof MediaItem)
 					{
 						final MediaItem mediaItem = (MediaItem)item;
-						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());			
+						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());
 					}
 					else if(item instanceof GPSTraceItem)
 					{
@@ -643,7 +651,7 @@ public class PlaceBooksAdminController
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
-				if (!processItemData(itemData, pm, param, value))
+				if (!itemData.processItemData(pm, param, value))
 				{
 					String[] split = PlaceBooksAdminHelper.getExtension(param);
 					if (split == null)
@@ -929,173 +937,110 @@ public class PlaceBooksAdminController
 					method = RequestMethod.POST)
 	public ModelAndView uploadFile(final HttpServletRequest req)
 	{
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
+		final EntityManager manager = EMFSingleton.getEntityManager();
 		final ItemData itemData = new ItemData();
-		PlaceBookItem pbi = null;
-
+		
 		try
 		{
-			pm.getTransaction().begin();
-
-			final FileItemIterator i = 
-				new ServletFileUpload().getItemIterator(req);
-			while (i.hasNext())
-			{
-				final FileItemStream item = i.next();
+			FileItem fileData = null;
+			String name = null;
+			String type = null;
+			String itemKey = null;
+			String placebookKey = null;
+			
+			manager.getTransaction().begin();
+			@SuppressWarnings("unchecked")
+			final List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
+			for(FileItem item: items)
+			{	
 				if (item.isFormField())
 				{
-					processItemData(itemData, pm, item.getFieldName(), 
-									Streams.asString(item.openStream()));
+					String value = Streams.asString(item.getInputStream());
+					if(!itemData.processItemData(manager, item.getFieldName(), value))
+					{
+						if(item.getFieldName().equals("key"))
+						{
+							placebookKey = value;
+						}
+						else if(item.getFieldName().equals("itemKey"))
+						{
+							itemKey = value;
+						}
+					}
 				}
 				else
 				{
-					//String property = null;
-				
-					String[] split = 
-						PlaceBooksAdminHelper.getExtension(item.getFieldName());
+					name = item.getName();					
+					fileData = item;
+					String[] split = PlaceBooksAdminHelper.getExtension(item.getFieldName());
 					if (split == null)
 						continue;
 
-					String prefix = split[0], suffix = split[1];
-
-					final PlaceBook p = pm.find(PlaceBook.class, suffix);
-
-					if (prefix.contentEquals("gpstrace"))
-					{
-						final InputStreamReader reader = 
-							new InputStreamReader(item.openStream());
-						final StringWriter writer = new StringWriter();
-						int data;
-						while((data = reader.read()) != -1)
-						{
-							writer.write(data);
-						}
-						reader.close();
-						writer.close();
-						pbi = new GPSTraceItem(null, null, null, 
-											   writer.toString());
-						p.addItem(pbi);
-
-						continue;
-					}
-					else if (!prefix.contentEquals("video") &&
-							 !prefix.contentEquals("audio") && 
-							 !prefix.contentEquals("image"))
-					{
-						throw new Exception("Unsupported file type");
-					}
-
-					final String path = 
-						PropertiesSingleton
-							.get(this.getClass().getClassLoader())
-							.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
-					if (!new File(path).exists() && !new File(path).mkdirs()) 
-					{
-						throw new Exception("Failed to write file"); 
-					}
-
-					File file = null;
-
-					final int extIdx = item.getName().lastIndexOf(".");
-					final String ext = 
-						item.getName().substring(extIdx + 1, 
-												 item.getName().length());
-
-					if (prefix.contentEquals("video"))
-					{
-						pbi = new VideoItem(null, null, null, null);
-						p.addItem(pbi);
-						pm.getTransaction().commit();
-						pm.getTransaction().begin();
-						((VideoItem) pbi).setPath(path + "/" + pbi.getKey() 
-												   + "." + ext);
-
-						file = new File(((VideoItem) pbi).getPath());
-					}
-					else if (prefix.contentEquals("audio"))
-					{
-						pbi = new AudioItem(null, null, null, null);
-						p.addItem(pbi);
-						pm.getTransaction().commit();
-						pm.getTransaction().begin();
-						((AudioItem) pbi).setPath(path + "/" + pbi.getKey() 
-												   + "." + ext);
-
-						file = new File(((AudioItem) pbi).getPath());
-					}
-					else if (prefix.contentEquals("image"))
-					{
-						pbi = new ImageItem(null, null, null, null);
-						p.addItem(pbi);
-						pm.getTransaction().commit();
-						pm.getTransaction().begin();
-						((ImageItem)pbi).setPath(path + "/" + pbi.getKey()
-												  + "." + ext);
-						file = new File(((ImageItem)pbi).getPath());
-					}
-
-					final InputStream input = item.openStream();
-					final OutputStream output = new FileOutputStream(file);
-					int byte_;
-					while ((byte_ = input.read()) != -1)
-					{
-						output.write(byte_);
-					}
-					output.close();
-					input.close();
-
-					log.info("Wrote " + prefix + " file " 
-							 + file.getAbsolutePath());
-
+					type = split[0];
 				}
-
 			}
 
-			if (pbi == null || itemData.getOwner() == null) 
-			{ 
-				throw new Exception("Error setting data elements"); 
+			if(itemData.getOwner() == null)
+			{
+				itemData.setOwner(UserManager.getCurrentUser(manager));
 			}
-
-			pbi.setOwner(itemData.getOwner());
-			pbi.setSourceURL(itemData.getSourceURL());
-			pbi.setGeometry(itemData.getGeometry());
-
-			pm.getTransaction().commit();
-		}
-		catch (final FileUploadException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final ParserConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final SAXException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final IOException e)
-		{
-			log.error(e.toString());
+			
+			PlaceBookItem item = null;
+			if(itemKey != null)
+			{
+				item = manager.find(PlaceBookItem.class, itemKey);
+			}
+			else if(placebookKey != null)
+			{
+				PlaceBook placebook = manager.find(PlaceBook.class, placebookKey);
+				
+				if(type.equals("gpstrace"))
+				{
+					item = new GPSTraceItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);
+					((GPSTraceItem)item).readTrace(fileData.getInputStream());
+				}
+				else if(type.equals("image"))
+				{
+					item = new ImageItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);			
+				}
+				else if(type.equals("video"))
+				{
+					item = new VideoItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);
+				}
+				else if(type.equals("audio"))
+				{
+					item = new AudioItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);					
+				}					
+			}
+			
+			if(item instanceof MediaItem)
+			{
+				manager.getTransaction().commit();
+				((MediaItem)item).writeDataToDisk(name, fileData.getInputStream());
+				manager.getTransaction().begin();				
+			}	
+			
+			manager.getTransaction().commit();
 		}
 		catch (final Exception e)
 		{
-			log.error(e.toString());
+			log.error(e.toString(), e);
 		}
 		finally
 		{
-			if (pm.getTransaction().isActive())
+			if (manager.getTransaction().isActive())
 			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current persist transaction back");
+				manager.getTransaction().rollback();
 			}
 
-			pm.close();
+			manager.close();
 		}
 
-		return new ModelAndView("message", "text", "Done");
+		return new ModelAndView("message", "text", "Failed");
 	}
 
 	@RequestMapping(value = "/admin/add_item/text", method = RequestMethod.POST)
@@ -1116,7 +1061,7 @@ public class PlaceBooksAdminController
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
-				if (!processItemData(itemData, pm, param, value))
+				if (!itemData.processItemData(pm, param, value))
 				{
 					String[] split = PlaceBooksAdminHelper.getExtension(param);
 					if (split == null)
@@ -1210,6 +1155,7 @@ public class PlaceBooksAdminController
 								   	   @PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
+		log.info("Serving Image Item " + key);
 
 		try
 		{
@@ -1359,61 +1305,56 @@ public class PlaceBooksAdminController
 			return sourceURL;
 		}
 
-		public void setGeometry(final Geometry geometry)
+		private void setGeometry(final Geometry geometry)
 		{
 			this.geometry = geometry;
 		}
 
-		public void setOwner(final User owner)
+		private void setOwner(final User owner)
 		{
 			this.owner = owner;
 		}
 
-		public void setSourceURL(final URL sourceURL)
+		private void setSourceURL(final URL sourceURL)
 		{
 			this.sourceURL = sourceURL;
 		}
+		
+		public boolean processItemData(final EntityManager pm, 
+											   final String field,
+											   final String value)
+		{
+			if (field.equals("owner"))
+			{
+				setOwner(UserManager.getUser(pm, value));
+			}
+			else if (field.equals("sourceurl"))
+			{
+				try
+				{
+					setSourceURL(new URL(value));
+				}
+				catch (final java.net.MalformedURLException e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else if (field.equals("geometry"))
+			{
+				try
+				{
+					setGeometry(new WKTReader().read(value));
+				}
+				catch (final ParseException e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
 	}
-
-
-	// Assumes currently open EntityManager
-	private static boolean processItemData(final ItemData i, 
-										   final EntityManager pm, 
-										   final String field,
-										   final String value)
-	{
-		if (field.equals("owner"))
-		{
-			i.setOwner(UserManager.getUser(pm, value));
-		}
-		else if (field.equals("sourceurl"))
-		{
-			try
-			{
-				i.setSourceURL(new URL(value));
-			}
-			catch (final java.net.MalformedURLException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else if (field.equals("geometry"))
-		{
-			try
-			{
-				i.setGeometry(new WKTReader().read(value));
-			}
-			catch (final ParseException e)
-			{
-				log.error(e.toString());
-			}
-		}
-		else
-		{
-			return false;
-		}
-		return true;
-	}
-
-
 }

@@ -3,10 +3,13 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="com.google.gwt.resources.Resources" />
-	<inherits name="com.google.gwt.json.JSON" /> 
-	<inherits name="com.google.gwt.http.HTTP" />	
+	<inherits name="com.google.gwt.json.JSON" />
+	<inherits name="com.google.gwt.http.HTTP" />
+	<inherits name="com.google.gwt.activity.Activity" />
+	<inherits name="com.google.gwt.place.Place" />
 
-	<script src="http://www.openlayers.org/api/OpenLayers.js" />	
+
+	<script src="http://www.openlayers.org/api/OpenLayers.js" />
 	<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" />
 
 	<source path="client" />

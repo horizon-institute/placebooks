@@ -58,6 +58,10 @@ public class PaletteItem extends Composite
 		{
 			image.setResource(Resources.INSTANCE.movies());
 		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			image.setResource(Resources.INSTANCE.music());
+		}		
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			image.setResource(Resources.INSTANCE.map());
@@ -72,9 +76,10 @@ public class PaletteItem extends Composite
 	
 	PlaceBookItem createItem()
 	{
-		// TODO is there a better way to clone item?
-		PlaceBookItem copyItem = PlaceBookItem.parse(new JSONObject(item).toString());
-		copyItem.setKey(null);
-		return copyItem;
+		if(item.getKey() != null)
+		{
+			return item;
+		}
+		return PlaceBookItem.parse(new JSONObject(item).toString());
 	}
 }
