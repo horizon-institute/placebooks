@@ -32,6 +32,7 @@ public abstract class MediaItem extends PlaceBookItem
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
 					 final String file)
 	{
+		super(owner, geom, sourceURL);
 		this.path = file;
 	}
 
@@ -118,7 +119,7 @@ public abstract class MediaItem extends PlaceBookItem
 		final int extIdx = name.lastIndexOf(".");
 		final String ext = name.substring(extIdx + 1, name.length());
 
-		String filePath = path + "/" + getKey() + "." + ext;
+		String filePath = path + "" + getKey() + "." + ext;
 		
 		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;
