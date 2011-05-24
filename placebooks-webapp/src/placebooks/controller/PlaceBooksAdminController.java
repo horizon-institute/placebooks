@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -322,7 +321,6 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
 	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
@@ -352,7 +350,16 @@ public class PlaceBooksAdminController
 					}
 				}
 
-				dbPlacebook.setItems(Collections.EMPTY_LIST);
+				dbPlacebook.setItems(placebook.getItems());
+				
+				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+				{
+					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+				}
+	
+				dbPlacebook.setGeometry(placebook.getGeometry());
+				
+				placebook = dbPlacebook;
 			}
 			
 			for (final PlaceBookItem newItem : placebook.getItems())
@@ -411,29 +418,19 @@ public class PlaceBooksAdminController
 				{
 					item.setTimestamp(new Date());
 				}
-
-				if(dbPlacebook != null)
-				{
-					dbPlacebook.addItem(item);
-				}
 			}
 
-			if(dbPlacebook != null)
+			if(placebook.getOwner() == null)
 			{
-				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
-				{
-					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
-				}
-	
-				dbPlacebook.setGeometry(placebook.getGeometry());
-	
-				manager.merge(dbPlacebook);
+				placebook.setOwner(UserManager.getCurrentUser(manager));
 			}
-			else
+			
+			if(placebook.getTimestamp() == null)
 			{
-				placebook = manager.merge(placebook);
-				updateItems.addAll(placebook.getItems());									
+				placebook.setTimestamp(new Date());
 			}
+				
+			placebook = manager.merge(placebook);									
 			manager.getTransaction().commit();
 
 			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
