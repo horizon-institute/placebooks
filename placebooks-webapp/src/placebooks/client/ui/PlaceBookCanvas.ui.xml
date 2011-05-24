@@ -20,7 +20,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 0px;
+			top: 20px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -100,6 +100,16 @@
 			user-select: text;
 		}
 		
+		.populate {
+			position: absolute;
+			text-align: center;
+			top: 0px;
+			right: 0px;
+			height: 20px;
+			width: 120px;
+			z-index: -5;			
+		}
+		
 		.titleLabel {
 			line-height: 40px;
 			height: 40px;
@@ -116,6 +126,7 @@
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
+		<g:Button styleName="{style.populate}" ui:field="populate">Populate</g:Button>	
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />

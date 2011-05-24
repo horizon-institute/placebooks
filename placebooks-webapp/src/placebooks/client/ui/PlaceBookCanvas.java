@@ -43,6 +43,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
@@ -97,6 +98,9 @@ public class PlaceBookCanvas extends Composite
 	@UiField
 	Panel canvas;
 
+	@UiField
+	Button populate;
+	
 	@UiField
 	Image dragImage;
 
@@ -163,7 +167,40 @@ public class PlaceBookCanvas extends Composite
 			}
 		});
 	}
-
+	
+	@UiHandler("populate")
+	public void startPopulation(ClickEvent event)
+	{
+		populate.setEnabled(false);
+		PlaceBookService.everytrail(new AbstractCallback()
+		{
+			@Override
+			public void success(Request request, Response response)
+			{
+				getPaletteItems();
+			}
+			
+			@Override
+			public void failure(Request request)
+			{
+				getPaletteItems();
+			}			
+		});
+	}
+	
+	private void getPaletteItems()
+	{
+		PlaceBookService.getPaletteItems(new AbstractCallback()
+		{
+			@Override
+			public void success(Request request, Response response)
+			{
+				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
+				setPalette(items);			
+			}
+		});
+	}
+	
 	public PlaceBook getPlaceBook()
 	{
 		return placebook;
@@ -180,6 +217,7 @@ public class PlaceBookCanvas extends Composite
 	public void setPalette(final JsArray<PlaceBookItem> items)
 	{
 		palette.clear();
+		
 		add(new PaletteItem(
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Text Item\"},\"parameters\":{},\"text\":\"New Text Block\"}")));

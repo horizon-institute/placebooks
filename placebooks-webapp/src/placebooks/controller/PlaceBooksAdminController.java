@@ -46,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
@@ -245,6 +246,37 @@ public class PlaceBooksAdminController
 		return "redirect:/login.html";
 	}
 
+	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
+	public String addLoginDetails(@RequestParam final String username,
+			@RequestParam final String password, @RequestParam final String service)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+		
+		try
+		{
+			manager.getTransaction().begin();
+			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
+			manager.persist(loginDetails);
+			manager.getTransaction().commit();
+		}
+		catch (final Exception e)
+		{
+			log.error("Error creating user", e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling login detail creation");
+			}
+			manager.close();
+		}
+
+		return "redirect:/index.html";
+	}
+	
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
 	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
 	{
