@@ -14,7 +14,7 @@
 	<div style='border:2px dashed;padding:5px'><b>
 	PlaceBook: ${pb.key}, owner=${pb.owner.email}, timestamp=${pb.timestamp}, 
 	geometry=${pb.geometry}, ??? elements</b>
-	[<a href='../package/${pb.key}.zip'>package</a>] 
+	[<a href='../package/${pb.key}'>package</a>] 
 	[<a href='../delete_placebook/${pb.key}'>delete</a>] 
 	[<a href='../shelf/${pb.owner.email}'>shelf for this user</a>]
 	<form action='../add_placebook_metadata' method='POST'>

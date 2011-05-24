@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public abstract class MediaItem extends PlaceBookItem
 {
 	@JsonIgnore
-	protected String path;
+	protected String path; // Always points to a file, never a dir
 
 	MediaItem()
 	{
@@ -61,10 +61,11 @@ public abstract class MediaItem extends PlaceBookItem
 	@Override
 	public void deleteItemData()
 	{
-		if (!new File(path).delete())
-		{
-			log.error("Problem deleting file " + path);
-		}
+		final File f = new File(getPath());
+		if (f.exists())
+			f.delete();
+		else
+			log.error("Problem deleting file " + f.getAbsolutePath());
 	}
 
 	public String getPath()
@@ -134,4 +135,5 @@ public abstract class MediaItem extends PlaceBookItem
 		
 		log.info("Wrote " + name + " file " + filePath);
 	}
+
 }

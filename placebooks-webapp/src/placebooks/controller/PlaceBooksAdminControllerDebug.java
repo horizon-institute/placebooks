@@ -392,6 +392,7 @@ public class PlaceBooksAdminControllerDebug
 		{
 			pm.getTransaction().begin();
 			final PlaceBookItem item = pm.find(PlaceBookItem.class, key);
+			item.deleteItemData();
 			item.getPlaceBook().removeItem(item);
 			pm.remove(item);
 			pm.getTransaction().commit();
@@ -648,7 +649,7 @@ public class PlaceBooksAdminControllerDebug
 	{
 		EntityManager entityManager = EMFSingleton.getEntityManager();
 		User testUser = UserManager.getCurrentUser(entityManager);
-		LoginDetails details = testUser.getLoginDetails("Everytrail");		
+		LoginDetails details = testUser.getLoginDetails("Everytrail");
 		
 		EverytrailLoginResponse loginResponse = 
 			EverytrailHelper.UserLogin(details.getUsername(), 

@@ -125,7 +125,7 @@ public final class PlaceBooksAdminHelper
 		return false;
 	}
 
-	public static final File makePackage(PlaceBook p )
+	public static final File makePackage(PlaceBook p)
 	{
 		final String out = placeBookToXML(p);
 
