@@ -1199,7 +1199,7 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
 					method = RequestMethod.GET)
-	public ModelAndView streamMediaItem(final HttpServletRequest req, 
+	public void streamMediaItem(final HttpServletRequest req, 
 								   	    final HttpServletResponse res,
 									    @PathVariable("type") final String type,
 								   	    @PathVariable("key") final String key)
@@ -1228,7 +1228,9 @@ public class PlaceBooksAdminController
 		}
 
 		if (path == null)
-			return null;
+		{
+			return;
+		}
 
 		try
 		{
@@ -1246,32 +1248,66 @@ public class PlaceBooksAdminController
 			if (split == null)
 				throw new Exception("Error getting file suffix");
 
+			
 			final ServletOutputStream sos = res.getOutputStream();
+			final long contentLength = file.length();			
 			res.setContentType(type_ + "/" + split[1]);
-			//res.setContentLength();
-			res.addHeader("Content-Disposition", 
-						  "attachment; filename=" + file.getName());
+			res.addHeader("Accept-Ranges", "bytes");
+			res.addHeader("Content-Length", Long.toString(contentLength));
 
 			final FileInputStream fis = new FileInputStream(file);
-			final BufferedInputStream bis = 
-				new BufferedInputStream(fis);
+			final BufferedInputStream bis = new BufferedInputStream(fis);
 
-			final byte data[] = new byte[2048];
-			int i;
-			while ((i = bis.read(data, 0, 2048)) != -1)
+			final String range = req.getHeader("Range");
+			long startByte = 0;
+			long endByte = contentLength -1;
+			if(range != null)
 			{
-				sos.write(data, 0, i);
+				if(range.startsWith("bytes="))
+				{
+					try
+					{
+						String[] rangeItems = range.substring(6).split("-");
+						startByte = Long.parseLong(rangeItems[0]);
+						endByte = Long.parseLong(rangeItems[1]);
+					}
+					catch(Exception e)
+					{
+						
+					}
+				}
 			}
-			sos.flush();
-			fis.close();
-
+			
+			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+			
+			final int bufferLen = 2048; 
+			final byte data[] = new byte[bufferLen];
+			int length;
+			bis.skip(startByte);
+			try
+			{
+				while ((length = bis.read(data, 0, bufferLen)) != -1)
+				{
+					sos.write(data, 0, length);	
+				}
+				sos.flush();
+			}
+			finally
+			{				
+				fis.close();
+				sos.close();
+			}
 		}
 		catch (final Throwable e)
 		{
-			log.error(e.getMessage(), e);
+//			Enumeration headers = req.getHeaderNames();
+//			while(headers.hasMoreElements())
+//			{
+//				String header = (String)headers.nextElement();
+//				log.info(header + ": " + req.getHeader(header));
+//			}
+			log.error("Error serving " + type + " " + key);
 		}
-		
-		return null;
 	}
 	
 
