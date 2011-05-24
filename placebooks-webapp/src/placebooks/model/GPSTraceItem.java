@@ -26,7 +26,8 @@ public class GPSTraceItem extends PlaceBookItem
 	@Lob
 	private String trace;
 
-	public GPSTraceItem(final User owner, final Geometry geom, final URL sourceURL, final String trace)
+	public GPSTraceItem(final User owner, final Geometry geom, 
+						final URL sourceURL, final String trace)
 	{
 		super(owner, geom, sourceURL);
 		this.trace = trace;
@@ -49,10 +50,11 @@ public class GPSTraceItem extends PlaceBookItem
 			reader.close();
 
 			final Element item = getConfigurationHeader(config);
-			final Element traceElem = 
-				(Element)(document.getElementsByTagName("gpx").item(0));
-			final Node traceNode = config.importNode(traceElem, true);
-			item.appendChild(traceNode);
+			final Element data = config.createElement("data");
+			final Node traceNode = 
+				config.importNode(document.getDocumentElement(), true);
+			data.appendChild(traceNode);
+			item.appendChild(data);
 			root.appendChild(item);
 		}
 		catch (Exception e)
