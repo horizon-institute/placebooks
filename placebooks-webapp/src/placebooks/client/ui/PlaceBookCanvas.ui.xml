@@ -28,6 +28,7 @@
 			background: #556;	
 			-webkit-user-select: none;
 			-moz-user-select: none;
+			-o-user-select: none;
 			user-select: none;	
 			overflow: auto;
 		}
@@ -50,8 +51,9 @@
 			left: 0px;
 			z-index: 20;
 			background: rgba(0,0,0,0.4);	
-			-webkit-user-select: none;
+			-webkit-user-select: none;	
 			-moz-user-select: none;
+			-o-user-select: none;			
 			user-select: none;	
 		}
 		
@@ -94,6 +96,7 @@
 			height: 25px;
 			-webkit-user-select: text;
 			-moz-user-select: text;
+			-o-user-select: text;			
 			user-select: text;
 		}
 		
