@@ -1022,6 +1022,8 @@ public class PlaceBooksAdminController
 			}	
 			
 			manager.getTransaction().commit();
+			
+			return new ModelAndView("message", "text", "Success");
 		}
 		catch (final Exception e)
 		{

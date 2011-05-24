@@ -4,7 +4,7 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 30px;
+			top: 0px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
@@ -77,8 +77,12 @@
 			position: absolute;
 			top: 0px;
 			left: 0px;
-			right: 120px;
-			height: 30px;
+			right: 0px;
+			height: 25px;
+			padding: 5px 10px;
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			user-select: text;
 		}
 		
 		.titleLabel {
@@ -101,9 +105,9 @@
 		<!--<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>-->		
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
-		<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
-		</p:MousePanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+			<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
+			</p:MousePanel>		
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">
 		</p:MousePanel>

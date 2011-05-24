@@ -38,6 +38,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
@@ -139,8 +141,8 @@ public class PlaceBookItemFrame extends Composite
 			final FormPanel form = new FormPanel();
 			final FileUpload upload = new FileUpload();
 			final Hidden hidden = new Hidden("itemKey", item.getKey());
-			final PopupPanel dialogBox = new PopupPanel(false, true);	
-			final String type = item.getClassName().substring(17, item.getClassName().length()-4).toLowerCase();
+			final PopupPanel dialogBox = new PopupPanel(false, true);
+			final String type = item.getClassName().substring(17, item.getClassName().length() - 4).toLowerCase();
 			upload.setName(type + "." + item.getKey());
 
 			final Button closeButton = new Button("Upload", new ClickHandler()
@@ -148,8 +150,9 @@ public class PlaceBookItemFrame extends Composite
 				@Override
 				public void onClick(final ClickEvent event)
 				{
-					dialogBox.hide();
+					//dialogBox.hide();
 					form.submit();
+					// TODO Working indicator
 				}
 			});
 
@@ -165,22 +168,32 @@ public class PlaceBookItemFrame extends Composite
 			form.setAction(GWT.getHostPageBaseURL() + "/placebooks/a/admin/add_item/upload");
 			form.setEncoding(FormPanel.ENCODING_MULTIPART);
 			form.setMethod(FormPanel.METHOD_POST);
-		    form.setWidget(panel);			
-		    form.addSubmitCompleteHandler(new SubmitCompleteHandler()
+			form.setWidget(panel);
+			form.addSubmitHandler(new SubmitHandler()
 			{
 				@Override
-				public void onSubmitComplete(SubmitCompleteEvent event)
+				public void onSubmit(SubmitEvent event)
+				{
+					GWT.log("Submitted");
+					
+				}
+			});
+			form.addSubmitCompleteHandler(new SubmitCompleteHandler()
+			{
+				@Override
+				public void onSubmitComplete(final SubmitCompleteEvent event)
 				{
 					GWT.log("Submit complete: " + event.getResults());
 					updateItemWidget();
+					dialogBox.hide();
 				}
-			});			
-			
+			});
+
 			panel.add(upload);
 			panel.add(hidden);
 			panel.add(closeButton);
 			panel.add(cancelButton);
-			
+
 			dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
 			dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
 			dialogBox.setGlassEnabled(true);
@@ -246,7 +259,7 @@ public class PlaceBookItemFrame extends Composite
 				widgetPanel.add(audio);
 			}
 			menuItems.add(setItemSourceURL);
-			menuItems.add(upload);			
+			menuItems.add(upload);
 		}
 		else if (item.getClassName().equals("placebooks.model.VideoItem"))
 		{
@@ -258,14 +271,14 @@ public class PlaceBookItemFrame extends Composite
 				widgetPanel.add(video);
 			}
 			menuItems.add(setItemSourceURL);
-			menuItems.add(upload);			
+			menuItems.add(upload);
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
 			panel.setHeight("500px");
 			menuItems.add(setItemSourceURL);
-			menuItems.add(upload);			
+			menuItems.add(upload);
 			widgetPanel.add(panel);
 		}
 		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
@@ -273,7 +286,7 @@ public class PlaceBookItemFrame extends Composite
 			final Frame frame = new Frame(item.getSourceURL());
 			frame.setStyleName(Resources.INSTANCE.style().imageitem());
 			menuItems.add(setItemSourceURL);
-			widgetPanel.add(frame);			
+			widgetPanel.add(frame);
 		}
 		updateItemWidget();
 	}
