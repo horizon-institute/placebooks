@@ -63,6 +63,7 @@ public class PlaceBookCanvas extends Composite
 		@Override
 		public void run()
 		{
+			savingPanel.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
 			PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
 			{
 				@Override
@@ -76,6 +77,7 @@ public class PlaceBookCanvas extends Composite
 				{
 					final PlaceBook result = PlaceBook.parse(response.getText());
 					setPlaceBook(result);
+					savingPanel.getElement().getStyle().setDisplay(Display.NONE);					
 				}
 			});
 		}
@@ -107,8 +109,8 @@ public class PlaceBookCanvas extends Composite
 	@UiField
 	Panel palette;
 
-	// @UiField
-	// Panel savingPanel;
+	@UiField
+	Panel savingPanel;
 
 	@UiField
 	EditablePanel title;
