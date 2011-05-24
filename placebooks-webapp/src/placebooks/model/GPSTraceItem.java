@@ -43,12 +43,14 @@ public class GPSTraceItem extends PlaceBookItem
 		{
 			final StringReader reader = new StringReader(trace);
 			final InputSource source = new InputSource(reader);
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document document = builder.parse(source);
 			reader.close();
 
 			final Element item = getConfigurationHeader(config);
-			final Element traceElem = (Element) (document.getElementsByTagName("gpx").item(0));
+			final Element traceElem = 
+				(Element)(document.getElementsByTagName("gpx").item(0));
 			final Node traceNode = config.importNode(traceElem, true);
 			item.appendChild(traceNode);
 			root.appendChild(item);

@@ -143,7 +143,9 @@ public class PlaceBook
 			{
 				final Element elem = 	
 					config.createElement(e.getKey().toString());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				elem.appendChild(config.createTextNode(
+					e.getValue().toString())
+				);
 				sElem.appendChild(elem);
 			}
 
