@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -334,7 +333,6 @@ public class PlaceBooksAdminController
 			PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
 			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
-			final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();			
 			if (dbPlacebook != null)
 			{
 				// Remove any items that are no longer used
@@ -343,10 +341,6 @@ public class PlaceBooksAdminController
 					if (!containsItem(item, placebook.getItems()))
 					{
 						manager.remove(item);
-					}
-					else
-					{
-						oldItems.put(item.getKey(), item);
 					}
 				}
 
@@ -362,23 +356,18 @@ public class PlaceBooksAdminController
 				placebook = dbPlacebook;
 			}
 			
-			for (final PlaceBookItem newItem : placebook.getItems())
+			final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placebook.getItems());
+			placebook.setItems(new ArrayList<PlaceBookItem>());
+			for (final PlaceBookItem newItem : newItems)
 			{
 				// Update existing item if possible
 				PlaceBookItem item = newItem;
 				if(item.getKey() != null)
 				{
-					if(oldItems.containsKey(item.getKey()))
+					PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
+					if(oldItem != null)
 					{
-						item = oldItems.get(item.getKey());
-					}
-					else
-					{
-						PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
-						if(oldItem != null)
-						{
-							item = oldItem;
-						}
+						item = oldItem;
 					}
 														
 					if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
@@ -418,6 +407,8 @@ public class PlaceBooksAdminController
 				{
 					item.setTimestamp(new Date());
 				}
+				
+				placebook.addItem(item);
 			}
 
 			if(placebook.getOwner() == null)
