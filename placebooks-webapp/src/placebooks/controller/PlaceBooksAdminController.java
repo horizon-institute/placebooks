@@ -404,7 +404,7 @@ public class PlaceBooksAdminController
 	
 				if(item.getOwner() == null)
 				{
-					item.setOwner(dbPlacebook.getOwner());
+					item.setOwner(UserManager.getCurrentUser(manager));
 				}
 
 				if(item.getTimestamp() == null)
@@ -431,7 +431,6 @@ public class PlaceBooksAdminController
 			}
 			else
 			{
-				placebook.setOwner(UserManager.getCurrentUser(manager));
 				manager.merge(placebook);
 				updateItems.addAll(placebook.getItems());									
 			}
