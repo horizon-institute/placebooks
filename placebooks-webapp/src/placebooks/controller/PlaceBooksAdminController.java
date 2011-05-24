@@ -336,10 +336,10 @@ public class PlaceBooksAdminController
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
 			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
+			final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();			
 			if (dbPlacebook != null)
 			{
 				// Remove any items that are no longer used
-				final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();
 				for (final PlaceBookItem item : dbPlacebook.getItems())
 				{
 					if (!containsItem(item, placebook.getItems()))
@@ -353,71 +353,86 @@ public class PlaceBooksAdminController
 				}
 
 				dbPlacebook.setItems(Collections.EMPTY_LIST);
-				for (final PlaceBookItem newItem : placebook.getItems())
+			}
+			
+			for (final PlaceBookItem newItem : placebook.getItems())
+			{
+				// Update existing item if possible
+				PlaceBookItem item = newItem;
+				if(item.getKey() != null)
 				{
-					// Update existing item if possible
-					PlaceBookItem item = newItem;
-					if(item.getKey() != null)
+					if(oldItems.containsKey(item.getKey()))
 					{
-						if(oldItems.containsKey(item.getKey()))
-						{
-							item = oldItems.get(item.getKey());
-							
-							if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-							{
-								item.setSourceURL(newItem.getSourceURL());
-								updateItems.add(item);
-							}				
-							
-							for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
-							{
-								item.addParameterEntry(entry.getKey(), entry.getValue());	
-							}
-							
-							if(item instanceof TextItem)
-							{
-								TextItem text = (TextItem)item;
-								text.setText(((TextItem)newItem).getText());
-							}
-						}
+						item = oldItems.get(item.getKey());
 					}
 					else
 					{
-						manager.persist(item);
+						PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
+						if(oldItem != null)
+						{
+							item = oldItem;
+						}
+					}
+														
+					if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
+					{
+						item.setSourceURL(newItem.getSourceURL());
 						updateItems.add(item);
-					}
-
-					for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
+					}				
+						
+					for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
 					{
-						item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+						item.addParameterEntry(entry.getKey(), entry.getValue());	
 					}
-
-					if(item.getOwner() == null)
+						
+					if(item instanceof TextItem)
 					{
-						item.setOwner(dbPlacebook.getOwner());
+						TextItem text = (TextItem)item;
+						text.setText(((TextItem)newItem).getText());
 					}
-
-					if(item.getTimestamp() == null)
-					{
-						item.setTimestamp(new Date());
-					}
-
-					dbPlacebook.addItem(item);
+				}
+				else
+				{
+					manager.persist(item);
+					updateItems.add(item);
+				}
+					
+				for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
+				{
+					item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
+				}
+	
+				if(item.getOwner() == null)
+				{
+					item.setOwner(dbPlacebook.getOwner());
 				}
 
+				if(item.getTimestamp() == null)
+				{
+					item.setTimestamp(new Date());
+				}
+
+				if(dbPlacebook != null)
+				{
+					dbPlacebook.addItem(item);
+				}
+			}
+
+			if(dbPlacebook != null)
+			{
 				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 				{
 					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 				}
-
+	
 				dbPlacebook.setGeometry(placebook.getGeometry());
-
+	
 				manager.merge(dbPlacebook);
 			}
 			else
 			{
 				placebook.setOwner(UserManager.getCurrentUser(manager));
-				manager.persist(placebook);
+				manager.merge(placebook);
 				updateItems.addAll(placebook.getItems());									
 			}
 			manager.getTransaction().commit();
@@ -455,10 +470,8 @@ public class PlaceBooksAdminController
 			
 			res.setContentType("application/json");				
 			final ServletOutputStream sos = res.getOutputStream();
-			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, 
-														   placebook.getKey());
-			log.info("Saved Placebook:" 
-					 + mapper.writeValueAsString(resultPlacebook));
+			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());
+			log.info("Saved Placebook:" + mapper.writeValueAsString(resultPlacebook));
 			mapper.writeValue(sos, resultPlacebook);
 			sos.flush();			
 		}
@@ -476,8 +489,6 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	
-	
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
 	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
 										  final HttpServletResponse res,
@@ -535,8 +546,7 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/package/{key}.zip", 
-					method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
 	public ModelAndView makePackage(final HttpServletRequest req, 
 									final HttpServletResponse res,
 		  	   @PathVariable("key") final String key)
@@ -568,10 +578,8 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/zip");
-			res.addHeader("Content-Disposition", "attachment; filename=\"" 
+			res.setHeader("Content-Disposition", "attachment; filename=\"" 
 						  + p.getKey() + ".zip\"");
-			final long len = zipFile.length();
-			res.addHeader("Content-Length", Long.toString(len));
 			sos.write(bos.toByteArray());
 			sos.flush();
 
@@ -635,7 +643,7 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final ItemData itemData = new ItemData();
-
+		
 		try
 		{
 			FileItem fileData = null;
@@ -643,7 +651,7 @@ public class PlaceBooksAdminController
 			String type = null;
 			String itemKey = null;
 			String placebookKey = null;
-
+			
 			manager.getTransaction().begin();
 			@SuppressWarnings("unchecked")
 			final List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
@@ -680,7 +688,7 @@ public class PlaceBooksAdminController
 			{
 				itemData.setOwner(UserManager.getCurrentUser(manager));
 			}
-
+			
 			PlaceBookItem item = null;
 			if(itemKey != null)
 			{
@@ -689,7 +697,7 @@ public class PlaceBooksAdminController
 			else if(placebookKey != null)
 			{
 				PlaceBook placebook = manager.find(PlaceBook.class, placebookKey);
-
+				
 				if(type.equals("gpstrace"))
 				{
 					item = new GPSTraceItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
@@ -712,17 +720,17 @@ public class PlaceBooksAdminController
 					item.setPlaceBook(placebook);					
 				}					
 			}
-
+			
 			if(item instanceof MediaItem)
 			{
 				manager.getTransaction().commit();
 				((MediaItem)item).writeDataToDisk(name, fileData.getInputStream());
 				manager.getTransaction().begin();				
 			}	
-
+			
 			manager.getTransaction().commit();
 			
-			return new ModelAndView("message", "text", "Success");
+			return new ModelAndView("message", "text", "Success");					
 		}
 		catch (final Exception e)
 		{
@@ -740,8 +748,6 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "Failed");
 	}
-	
-
 
 	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", 
 					method = RequestMethod.GET)
