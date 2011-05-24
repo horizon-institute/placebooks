@@ -568,9 +568,10 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/zip");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" 
+			res.addHeader("Content-Disposition", "attachment; filename=\"" 
 						  + p.getKey() + ".zip\"");
-			res.setContentLength((int)zipFile.length());
+			final long len = zipFile.length();
+			res.addHeader("Content-Length", Long.toString(len));
 			sos.write(bos.toByteArray());
 			sos.flush();
 
