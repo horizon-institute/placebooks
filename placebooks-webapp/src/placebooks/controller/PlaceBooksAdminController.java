@@ -333,7 +333,7 @@ public class PlaceBooksAdminController
 		manager.getTransaction().begin();
 		try
 		{
-			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+			PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
 			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
 			final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();			
@@ -431,7 +431,7 @@ public class PlaceBooksAdminController
 			}
 			else
 			{
-				manager.merge(placebook);
+				placebook = manager.merge(placebook);
 				updateItems.addAll(placebook.getItems());									
 			}
 			manager.getTransaction().commit();
