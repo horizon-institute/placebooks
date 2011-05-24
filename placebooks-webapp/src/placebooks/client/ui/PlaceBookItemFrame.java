@@ -139,19 +139,9 @@ public class PlaceBookItemFrame extends Composite
 			final FormPanel form = new FormPanel();
 			final FileUpload upload = new FileUpload();
 			final Hidden hidden = new Hidden("itemKey", item.getKey());
-			final PopupPanel dialogBox = new PopupPanel(false, true);			
-			if (item.getClassName().equals("placebooks.model.ImageItem"))
-			{
-				upload.setName("image." + item.getKey());
-			}
-			else if (item.getClassName().equals("placebooks.model.AudioItem"))
-			{
-				upload.setName("audio." + item.getKey());
-			}
-			else if (item.getClassName().equals("placebooks.model.VideoItem"))
-			{
-				upload.setName("video." + item.getKey());
-			}
+			final PopupPanel dialogBox = new PopupPanel(false, true);	
+			final String type = item.getClassName().substring(17, item.getClassName().length()-4).toLowerCase();
+			upload.setName(type + "." + item.getKey());
 
 			final Button closeButton = new Button("Upload", new ClickHandler()
 			{
@@ -256,6 +246,7 @@ public class PlaceBookItemFrame extends Composite
 				widgetPanel.add(audio);
 			}
 			menuItems.add(setItemSourceURL);
+			menuItems.add(upload);			
 		}
 		else if (item.getClassName().equals("placebooks.model.VideoItem"))
 		{
@@ -267,20 +258,22 @@ public class PlaceBookItemFrame extends Composite
 				widgetPanel.add(video);
 			}
 			menuItems.add(setItemSourceURL);
+			menuItems.add(upload);			
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
 			panel.setHeight("500px");
 			menuItems.add(setItemSourceURL);
+			menuItems.add(upload);			
 			widgetPanel.add(panel);
 		}
 		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
 		{
 			final Frame frame = new Frame(item.getSourceURL());
 			frame.setStyleName(Resources.INSTANCE.style().imageitem());
-			widgetPanel.add(frame);
 			menuItems.add(setItemSourceURL);
+			widgetPanel.add(frame);			
 		}
 		updateItemWidget();
 	}
