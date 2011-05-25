@@ -258,6 +258,7 @@ public class PlaceBooksAdminController
 			manager.getTransaction().begin();
 			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
 			manager.persist(loginDetails);
+			user.add(loginDetails);			
 			manager.getTransaction().commit();
 		}
 		catch (final Exception e)
