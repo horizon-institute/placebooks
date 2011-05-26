@@ -11,6 +11,14 @@
 	bottom: 20px;
 }
 
+.listItem {
+	border: 1px solid #555;
+}
+
+.listItem:HOVER {
+	background: #555;	
+}
+
 .textitem {
 	-webkit-user-select: text;
 	-moz-user-select: text;
@@ -50,6 +58,13 @@ img {
 	right: 5%;
 }
 
+.panelcenter {
+	border-right: 0px;
+	border-left: 1px dashed #CCC;
+	left: 35%;
+	right: 35%;
+}
+
 .dragImage {
 	z-index: 20;
 	position: absolute;
@@ -60,13 +75,6 @@ img {
 	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
 	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
 	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-}
-
-.panelcenter {
-	border-right: 0px;
-	border-left: 1px dashed #CCC;
-	left: 35%;
-	right: 35%;
 }
 
 .glassPanel {

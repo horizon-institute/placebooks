@@ -50,7 +50,6 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
@@ -365,7 +364,7 @@ public class PlaceBooksAdminController
 		{
 			PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
-			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
+			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
 			if (dbPlacebook != null)
 			{
 				// Remove any items that are no longer used
@@ -378,14 +377,12 @@ public class PlaceBooksAdminController
 				}
 
 				dbPlacebook.setItems(placebook.getItems());
-				
 				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 				{
 					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 				}
 	
-				dbPlacebook.setGeometry(placebook.getGeometry());
-				
+				dbPlacebook.setGeometry(placebook.getGeometry());				
 				placebook = dbPlacebook;
 			}
 			
@@ -406,40 +403,35 @@ public class PlaceBooksAdminController
 					if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
 					{
 						item.setSourceURL(newItem.getSourceURL());
-						updateItems.add(item);
-					}				
-						
-					for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
-					{
-						item.addParameterEntry(entry.getKey(), entry.getValue());	
+						updateMedia.add(item);
 					}
-						
-					if(item instanceof TextItem)
+				}
+				else if(newItem.getMetadata().get("originalItemID") != null)
+				{
+					final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
+					if(originalItem != null)
 					{
-						TextItem text = (TextItem)item;
-						text.setText(((TextItem)newItem).getText());
+						item = originalItem;
+						manager.detach(item);
 					}
+					else
+					{
+						updateMedia.add(item);
+					}
+					manager.persist(item);					
 				}
 				else
 				{
 					manager.persist(item);
-					updateItems.add(item);
+					updateMedia.add(item);
 				}
-					
-				for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
-				{
-					item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
-				}
-	
+				
 				if(item.getOwner() == null)
 				{
 					item.setOwner(UserManager.getCurrentUser(manager));
 				}
-
-				if(item.getTimestamp() == null)
-				{
-					item.setTimestamp(new Date());
-				}
+				
+				item.update(newItem);
 				
 				placebook.addItem(item);
 			}
@@ -461,7 +453,7 @@ public class PlaceBooksAdminController
 			
 			manager.getTransaction().begin();
 			setProxy();			
-			for(PlaceBookItem item: updateItems)
+			for(PlaceBookItem item: updateMedia)
 			{
 				try
 				{

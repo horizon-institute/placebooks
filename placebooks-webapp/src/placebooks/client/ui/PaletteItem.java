@@ -76,10 +76,12 @@ public class PaletteItem extends Composite
 	
 	PlaceBookItem createItem()
 	{
-		if(item.getKey() != null)
+		PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
+		if(newItem.getKey() != null)
 		{
-			return item;
+			newItem.setMetadata("originalItemID", newItem.getKey());
+			newItem.setKey(null);			
 		}
-		return PlaceBookItem.parse(new JSONObject(item).toString());
+		return newItem;
 	}
 }

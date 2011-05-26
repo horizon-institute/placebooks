@@ -1,6 +1,10 @@
 package placebooks.model.json;
 
+import java.util.Date;
+
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import placebooks.model.PlaceBook;
 
 public class PlaceBookEntry
 {
@@ -21,11 +25,25 @@ public class PlaceBookEntry
 
 	@JsonProperty
 	private String title;
+	
+	@JsonProperty
+	private Date timestamp;
 
 	public PlaceBookEntry()
 	{
 	}
 
+	public PlaceBookEntry(final PlaceBook placebook)
+	{
+		this.key = placebook.getKey();
+		this.description = placebook.getMetadataValue("description");
+		this.title = placebook.getMetadataValue("title");
+		this.numItems = placebook.getItems().size();
+		this.owner = placebook.getOwner().getKey();
+		this.timestamp = placebook.getTimestamp();
+		this.packagePath = placebook.getPackagePath();
+	}
+	
 	public String getDescription()
 	{
 		return description;
@@ -39,6 +57,16 @@ public class PlaceBookEntry
 	public int getNumItems()
 	{
 		return numItems;
+	}
+	
+	public Date getTimestamp()
+	{
+		return timestamp;
+	}
+	
+	public void setTimestamp(final Date timestamp)
+	{
+		this.timestamp = timestamp;
 	}
 
 	public String getOwner()

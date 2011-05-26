@@ -26,6 +26,16 @@ public class TextItem extends PlaceBookItem
 		index.addAll(SearchHelper.getIndex(text));
 	}
 
+	@Override
+	public void update(PlaceBookItem item)
+	{
+		super.update(item);
+		if(item instanceof TextItem)
+		{
+			text = ((TextItem) item).getText();
+		}
+	}
+
 	TextItem()
 	{
 		super();

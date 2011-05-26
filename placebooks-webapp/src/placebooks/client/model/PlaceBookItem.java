@@ -42,7 +42,24 @@ public class PlaceBookItem extends JavaScriptObject
 		this.parameters[name] = value;
 	}-*/;
 
+	public final native void setMetadata(String name, String value)
+	/*-{
+		if(!('metadata' in this))
+		{
+			this.metadata = new Object();
+		}
+		this.metadata[name] = value;
+	}-*/;
+	
 	public final native void setSourceURL(String value) /*-{ this.sourceURL = value; }-*/;
 
 	public final native void setText(String newText) /*-{ this.text = newText; }-*/;
+
+	public final native void removeMetadata(String name)
+	/*-{
+		if(('metadata' in this))
+		{
+			delete myJSONObject[name];
+		}
+	}-*/;
 }

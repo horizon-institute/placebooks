@@ -33,7 +33,7 @@ public class EditorActivity extends AbstractActivity
 			public void success(Request request, Response response)
 			{
 				final PlaceBook placebook = PlaceBook.parse(response.getText());
-				canvas.setPlaceBook(placebook);				
+				canvas.updatePlaceBook(placebook);				
 			}
 		});
 		

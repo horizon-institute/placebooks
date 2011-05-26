@@ -27,7 +27,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			// Value can be null, so do a null check..
 			if (value == null) { return; }
 
-			sb.appendHtmlConstant("<div style=\"" + placebooks.client.resources.Resources.INSTANCE.style().panel()
+			sb.appendHtmlConstant("<div style=\"" + placebooks.client.resources.Resources.INSTANCE.style().listItem()
 					+ "\">");
 
 			// Add the name and address.

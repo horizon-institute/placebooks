@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class DropMenu extends FlowPanel
 {
-	public void show(final List<MenuItem> items, final int x, final int y)
+	public void show(final List<? extends MenuItem> items, final int x, final int y)
 	{
 		clear();
 		for(MenuItem item: items)

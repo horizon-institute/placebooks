@@ -40,7 +40,7 @@ public class PlaceBookEditor implements EntryPoint
 
 				if (entry.getKey().equals("new"))
 				{
-					canvas.setPlaceBook(PlaceBook.parse(newPlaceBook));
+					canvas.updatePlaceBook(PlaceBook.parse(newPlaceBook));
 				}
 				else
 				{
@@ -50,7 +50,7 @@ public class PlaceBookEditor implements EntryPoint
 						public void success(final Request request, final Response response)
 						{
 							final PlaceBook placebook = PlaceBook.parse(response.getText());
-							canvas.setPlaceBook(placebook);
+							canvas.updatePlaceBook(placebook);
 						}
 					});
 				}
