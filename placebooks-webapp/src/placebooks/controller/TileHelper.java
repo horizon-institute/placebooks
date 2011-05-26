@@ -96,6 +96,9 @@ public final class TileHelper
 	public static final File getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException
 	{
+		final int inc = 1000;
+		final int pixels = 200;
+
 		// 0 = TL, 1 = BR
 		Coordinate[] bbox_ = new Coordinate[2];
 		bbox_[0] = new Coordinate(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -110,8 +113,6 @@ public final class TileHelper
 			bbox_[1].y = Math.max(coords[i].y, bbox_[1].y);
 		}
 		
-		log.info("bbox_[] = " + Arrays.toString(bbox_));
-		
 		OSRef[] bbox = new OSRef[2];
 		for (int i = 0; i < bbox_.length; ++i)
 		{
@@ -121,31 +122,41 @@ public final class TileHelper
 					 + bbox[i].getNorthing());
 		}
 
-		final double eDelta = Math.abs(bbox[1].getEasting() 
-									   - bbox[0].getEasting());
-		final double nDelta = Math.abs(bbox[1].getEasting() 
-									   - bbox[0].getEasting());
+		int x = (int)Math.floor((bbox[0].getEasting() / inc)) * inc,
+			y = (int)Math.floor((bbox[0].getNorthing() / inc)) * inc;
+		bbox[0] = new OSRef(x, y);
+		x = (int)Math.ceil((bbox[1].getEasting() / inc)) * inc;
+		y = (int)Math.ceil((bbox[1].getNorthing() / inc)) * inc;
+		bbox[1] = new OSRef(x, y);
+		
 
-		final int inc = 2000;
-		final int eBlocks = (int)Math.ceil(eDelta / (double)inc);
-		final int nBlocks = (int)Math.ceil(nDelta / (double)inc);
+		final int eBlocks = (int)Math.ceil(
+									(Math.abs(bbox[1].getEasting() 
+									 - bbox[0].getEasting())
+								 	) / (double)inc);
+		final int nBlocks = (int)Math.ceil(
+									(Math.abs(bbox[1].getEasting() 
+									   - bbox[0].getEasting())
+									) / (double)inc);
+		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
 
 		final BufferedImage buf = 
-			new BufferedImage(200 * eBlocks, 200 * nBlocks, 
+			new BufferedImage(pixels * eBlocks, pixels * nBlocks, 
 							  BufferedImage.TYPE_INT_RGB);
 		final Graphics graphics = buf.createGraphics();
 
-		int n = 0, m = 0;
+		int n = 0;
 		for (int i = (int)bbox[0].getEasting(); i < (int)bbox[1].getEasting(); 
 			 i += inc)
 		{
+			int m = 0;
 			for (int j = (int)bbox[0].getNorthing(); 
 				 j < (int)bbox[1].getNorthing(); j += inc)
 			{
+				log.info("i = " + i + " j = " + j);
 				// %5C = \
 				final String url = 
 					buildOpenSpaceQuery(5, inc, new OSRef(i, j), "image%5Cpng");
-				log.info("URL = " + url);
 				try
 				{
 					
@@ -158,16 +169,16 @@ public final class TileHelper
 						   );
 
 					graphics.drawImage(tile, n, m, null);
+					log.info("Drawing tile at " + n + ", " + m);
 				}
 				catch (final Throwable e)
 				{
 					log.error(e.toString());
 				}
 
-				m += 200;
+				m += pixels;
 			}
-
-			n += 200;
+			n += pixels;
 		}
 
 		graphics.dispose();
