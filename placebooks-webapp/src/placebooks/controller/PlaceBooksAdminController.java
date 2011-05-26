@@ -592,6 +592,7 @@ public class PlaceBooksAdminController
 			res.setContentType("application/zip");
 			res.setHeader("Content-Disposition", "attachment; filename=\"" 
 						  + p.getKey() + ".zip\"");
+			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
 
