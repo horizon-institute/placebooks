@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -297,6 +298,34 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
+	public void update(PlaceBookItem item)
+	{
+		for(Entry<String, Integer> entry: item.getParameters().entrySet())
+		{
+			addParameterEntry(entry.getKey(), entry.getValue());	
+		}
+		
+		for(Entry<String, String> entry: item.getMetadata().entrySet())
+		{
+			addMetadataEntry(entry.getKey(), entry.getValue());
+		}
+		
+		if(item.getGeometry() != null)
+		{
+			geom = item.getGeometry();
+		}
+		
+		if(item.getSourceURL() != null)
+		{
+			sourceURL = item.getSourceURL().toExternalForm();
+		}
+		
+		if(item.getTimestamp() == null)
+		{
+			item.setTimestamp(new Date());
+		}		
+	}
+	
 	public PlaceBookItemSearchIndex getSearchIndex()
 	{
 		return index;

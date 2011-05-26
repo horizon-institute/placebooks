@@ -12,6 +12,8 @@ public interface PlaceBookCSS extends CssResource
 
 	String panel();
 
+	String listItem();
+	
 	String panelcenter();
 
 	String panelleft();

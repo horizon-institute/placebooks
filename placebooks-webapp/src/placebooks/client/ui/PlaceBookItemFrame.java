@@ -55,15 +55,6 @@ public class PlaceBookItemFrame extends Composite
 	{
 	}
 
-	private static final MenuItem deleteItem = new MenuItem("Delete")
-	{
-		@Override
-		public void run()
-		{
-			// TODO
-		}
-	};
-
 	private static PlaceBookItemFrameUiBinder uiBinder = GWT.create(PlaceBookItemFrameUiBinder.class);
 
 	@UiField
@@ -204,17 +195,18 @@ public class PlaceBookItemFrame extends Composite
 		}
 	};
 
-	public PlaceBookItemFrame(final SaveTimer timer, final PaletteItem item)
+	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookCanvas canvas, final PaletteItem item)
 	{
-		this(timer, item.createItem());
+		this(timer, canvas, item.createItem());
 	}
 
-	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookItem item)
+	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookCanvas canvas, final PlaceBookItem item)
 	{
 		this.item = item;
 		this.saveTimer = timer;
 		initWidget(uiBinder.createAndBindUi(this));
-		menuItems.add(deleteItem);
+		menuItems.add(new DeletePlaceBookMenuItem("delete", canvas, this));
+		menuItems.add(new AddMapMenuItem("App to Map", canvas, this));
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
@@ -275,6 +267,7 @@ public class PlaceBookItemFrame extends Composite
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
+			// TODO Handle null key
 			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
 			panel.setHeight("500px");
 			menuItems.add(setItemSourceURL);

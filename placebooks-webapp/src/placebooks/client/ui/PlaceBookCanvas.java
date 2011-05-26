@@ -76,8 +76,7 @@ public class PlaceBookCanvas extends Composite
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					final PlaceBook result = PlaceBook.parse(response.getText());
-					setPlaceBook(result);
+					updatePlaceBook(PlaceBook.parse(response.getText()));
 					savingPanel.getElement().getStyle().setDisplay(Display.NONE);					
 				}
 			});
@@ -132,6 +131,11 @@ public class PlaceBookCanvas extends Composite
 	private PlaceBook placebook;
 
 	private SaveTimer saveTimer = new SaveTimer();
+
+	public Iterable<PlaceBookItemFrame> getItems()
+	{
+		return items;
+	}
 
 	public PlaceBookCanvas()
 	{
@@ -244,7 +248,7 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
-	public void setPlaceBook(final PlaceBook newPlacebook)
+	public void updatePlaceBook(final PlaceBook newPlacebook)
 	{
 		this.placebook = newPlacebook;
 
@@ -277,7 +281,7 @@ public class PlaceBookCanvas extends Composite
 			final PlaceBookItem item = placebook.getItems().get(index);
 			if (!kept.containsKey(item.getKey()))
 			{
-				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
+				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, this, item);
 				add(frame);
 				if (item.hasParameter("panel"))
 				{
@@ -347,9 +351,7 @@ public class PlaceBookCanvas extends Composite
 
 			if (finished)
 			{
-				items.remove(dragItem);
-				canvas.remove(dragItem);
-				placebook.removeItem(dragItem.getItem());
+				remove(dragItem);
 				dragImage.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 				if (isInWidget(dragItem, x, y))
 				{
@@ -400,7 +402,7 @@ public class PlaceBookCanvas extends Composite
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, item);
+				final PlaceBookItemFrame frame = new PlaceBookItemFrame(saveTimer, PlaceBookCanvas.this, item);
 				add(frame);
 				placebook.getItems().push(frame.getItem());
 				startDrag(frame, event);
@@ -479,5 +481,12 @@ public class PlaceBookCanvas extends Composite
 		dragImage.setStyleName(Resources.INSTANCE.style().dragImage());
 
 		handleDrag(event, false);
+	}
+
+	public void remove(PlaceBookItemFrame item)
+	{
+		items.remove(item);
+		canvas.remove(item);
+		placebook.removeItem(item.getItem());		
 	}
 }

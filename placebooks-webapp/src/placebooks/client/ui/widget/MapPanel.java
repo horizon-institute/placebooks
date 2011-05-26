@@ -1,19 +1,28 @@
 package placebooks.client.ui.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import placebooks.client.model.Geometry;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapPanel extends SimplePanel
 {
-	private String id;
+	private final String id;
 
 	private JavaScriptObject map;
 
 	private String url;
-	
+
 	private JavaScriptObject routeLayer;
 
+	private JavaScriptObject markerLayer;
+
+	List<Geometry> markers = new ArrayList<Geometry>();
+	
 	public MapPanel(final String id)
 	{
 		// setElement(DOM.createDiv());
@@ -26,7 +35,7 @@ public class MapPanel extends SimplePanel
 		this.url = url;
 		if (map != null)
 		{
-			if(routeLayer != null)
+			if (routeLayer != null)
 			{
 				removeLayer(map, routeLayer);
 			}
@@ -41,26 +50,22 @@ public class MapPanel extends SimplePanel
 		super.onLoad();
 
 		map = createMap(id);
+		markerLayer = createMarkerLayer(map);
 		if (url != null)
 		{
-			GWT.log("Load gpx at " + url);			
+			GWT.log("Load gpx at " + url);
 			routeLayer = loadGPX(map, url);
 		}
 	}
-
-	private final native void removeLayer(final JavaScriptObject map, final JavaScriptObject layer)
-	/*-{
-		map.removeLayer(layer);
-	}-*/;
 	
 	private final native JavaScriptObject createMap(String id)
 	/*-{
 		var map = new $wnd.OpenLayers.Map(id, {
 			controls : [
-//					new $wnd.OpenLayers.Control.Navigation(),
-//					new $wnd.OpenLayers.Control.PanZoomBar(),
-//					new $wnd.OpenLayers.Control.LayerSwitcher(),
-//					new $wnd.OpenLayers.Control.Attribution()
+	//					new $wnd.OpenLayers.Control.Navigation(),
+	//					new $wnd.OpenLayers.Control.PanZoomBar(),
+	//					new $wnd.OpenLayers.Control.LayerSwitcher(),
+	//					new $wnd.OpenLayers.Control.Attribution()
 					],
 			numZoomLevels : 19,
 			units : 'm',
@@ -84,6 +89,14 @@ public class MapPanel extends SimplePanel
 		return map;
 	}-*/;
 
+	private final native JavaScriptObject createMarkerLayer(JavaScriptObject map)
+	/*-{
+		layerMarkers = new $wnd.OpenLayers.Layer.Markers("Markers");
+		map.addLayer(layerMarkers);
+
+		return layerMarkers;
+	}-*/;
+	
 	private final native JavaScriptObject loadGPX(JavaScriptObject map, String url)
 	/*-{
 		var dataExtent;
@@ -96,7 +109,7 @@ public class MapPanel extends SimplePanel
 			//map.zoomTo(map.getZoomForExtent(dataExtent));
 			map.zoomToExtent(dataExtent);
 		};
- 
+	
 		// Add the Layer with the GPX Track
 		var lgpx = new $wnd.OpenLayers.Layer.GML("Lakeside cycle ride", url, {
 			format : $wnd.OpenLayers.Format.GPX,
@@ -111,5 +124,10 @@ public class MapPanel extends SimplePanel
 		lgpx.events.register("loadend", lgpx, setExtent);				
 		map.addLayer(lgpx);
 		return lgpx;
+	}-*/;
+
+	private final native void removeLayer(final JavaScriptObject map, final JavaScriptObject layer)
+	/*-{
+		map.removeLayer(layer);
 	}-*/;
 }
