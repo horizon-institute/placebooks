@@ -79,24 +79,29 @@ public class PlaceBooksAdminControllerDebug
 								 final HttpServletResponse res)
 	{
 		
-		final String poly = "POLYGON ((52.629182 1.294842, 52.629182 1.297631, 52.627697 1.297631, 52.627697 1.294842, 52.629182 1.294842))";
+//		final String poly = 
+//			"POLYGON ((56.89869142157009 -5.145721435546875, 56.70770945859063 -5.145721435546875, 56.70770945859063 -4.808921813964844, 56.89869142157009 -4.808921813964844, 56.89869142157009 -5.145721435546875))";
+		final String poly = "POLYGON ((52.7295 1.2595, 52.6233 1.2595, 52.6233 1.3823, 52.7295 1.3823, 52.7295 1.2595))";
 		
 		try
 		{
 			final File map = TileHelper.getMap(new WKTReader().read(poly));
 			
-			ImageInputStream iis = ImageIO.createImageInputStream(map);
-			Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-			String fmt = "png";
-			while (readers.hasNext()) 
+			if (map != null && map.exists())
 			{
-				ImageReader read = readers.next();
-				fmt = read.getFormatName();
+				ImageInputStream iis = ImageIO.createImageInputStream(map);
+				Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+				String fmt = "png";
+				while (readers.hasNext()) 
+				{
+					ImageReader read = readers.next();
+					fmt = read.getFormatName();
+				}
+	
+				OutputStream out = res.getOutputStream();
+				ImageIO.write(ImageIO.read(map), fmt, out);
+				out.close();
 			}
-
-			OutputStream out = res.getOutputStream();
-			ImageIO.write(ImageIO.read(map), fmt, out);
-			out.close();
 		}
 		catch (final Throwable e)
 		{
