@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import java.net.URL;
 
@@ -13,11 +14,17 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.FileOutputStream;
+import java.io.BufferedInputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletOutputStream;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.TransformerFactory;
@@ -50,8 +57,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
+import uk.me.jstott.jcoord.LatLng;
+
+
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
-// in here.
+// in here that is NOT generic / not for front-end. 
+// 
+// Or use this class as a testing ground...
 
 @Controller
 public class PlaceBooksAdminControllerDebug
@@ -59,6 +71,44 @@ public class PlaceBooksAdminControllerDebug
 
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
+
+
+	@RequestMapping(value = "/admin/debug/get_tiles", 
+					method = RequestMethod.GET)
+	public ModelAndView getTiles(final HttpServletRequest req, 
+								 final HttpServletResponse res)
+	{
+		
+		final String poly = "POLYGON ((52.629182 1.294842, 52.629182 1.297631, 52.627697 1.297631, 52.627697 1.294842, 52.629182 1.294842))";
+		
+		try
+		{
+			final File map = TileHelper.getMap(new WKTReader().read(poly));
+			
+			ImageInputStream iis = ImageIO.createImageInputStream(map);
+			Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+			String fmt = "png";
+			while (readers.hasNext()) 
+			{
+				ImageReader read = readers.next();
+				fmt = read.getFormatName();
+			}
+
+			OutputStream out = res.getOutputStream();
+			ImageIO.write(ImageIO.read(map), fmt, out);
+			out.close();
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+			return new ModelAndView("message", "text", "Error, " 
+									+ e.toString());
+		}
+
+		return null;
+
+	}
+
 
 	@RequestMapping(value = "/admin/debug/print_placebooks", 
 					method = RequestMethod.GET)
@@ -644,6 +694,7 @@ public class PlaceBooksAdminControllerDebug
 
 
 
+	// TODO: total hack below.
 	@RequestMapping(value = "/admin/everytrail")
 	public void getEverytrailData()
 	{

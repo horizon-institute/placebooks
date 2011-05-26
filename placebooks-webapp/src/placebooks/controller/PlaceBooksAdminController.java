@@ -833,7 +833,6 @@ public class PlaceBooksAdminController
 					{
 						ImageReader read = readers.next();
 						fmt = read.getFormatName();
-						System.out.println("*** format name = " + fmt);
 					}
 
 					OutputStream out = res.getOutputStream();

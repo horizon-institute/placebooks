@@ -120,7 +120,7 @@ public abstract class MediaItem extends PlaceBookItem
 		final int extIdx = name.lastIndexOf(".");
 		final String ext = name.substring(extIdx + 1, name.length());
 
-		String filePath = path + "" + getKey() + "." + ext;
+		String filePath = path + "/" + getKey() + "." + ext;
 		
 		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;

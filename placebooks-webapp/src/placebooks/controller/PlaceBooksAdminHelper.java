@@ -33,9 +33,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -299,15 +297,7 @@ public final class PlaceBooksAdminHelper
 
 			return out.getBuffer().toString();
 		}
-		catch (final ParserConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final TransformerConfigurationException e)
-		{
-			log.error(e.toString());
-		}
-		catch (final TransformerException e)
+		catch (final Throwable e)
 		{
 			log.error(e.toString());
 		}

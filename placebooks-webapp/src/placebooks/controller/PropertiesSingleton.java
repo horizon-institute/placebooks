@@ -21,6 +21,10 @@ public final class PropertiesSingleton
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
+	public static final String IDEN_OPENSPACE_BASEURL = "openspace.baseurl";
+	public static final String IDEN_OPENSPACE_HOST = "openspace.host";
+	public static final String IDEN_OPENSPACE_APIKEY = "openspace.apikey";
+
 	public static final String IDEN_WGET = "webbundleitem.wget";
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
 	public static final String PROXY_ACTIVE = "proxy.active";
