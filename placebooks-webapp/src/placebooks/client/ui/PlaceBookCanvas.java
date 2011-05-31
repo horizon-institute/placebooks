@@ -12,6 +12,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.places.EditorPlace;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
 
@@ -36,6 +37,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -122,6 +124,8 @@ public class PlaceBookCanvas extends Composite
 
 	private PlaceBookPanel dragPanel = null;
 
+	private final PlaceController placeController;
+	
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PaletteItem> paletteItems = new ArrayList<PaletteItem>();
@@ -137,9 +141,11 @@ public class PlaceBookCanvas extends Composite
 		return items;
 	}
 
-	public PlaceBookCanvas()
+	public PlaceBookCanvas(PlaceController placeController)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		this.placeController = placeController;
 
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
@@ -250,6 +256,11 @@ public class PlaceBookCanvas extends Composite
 
 	public void updatePlaceBook(final PlaceBook newPlacebook)
 	{
+		if(this.placebook != null && (this.placebook.getKey() == null || !this.placebook.getKey().equals(newPlacebook.getKey())))
+		{
+			placeController.goTo(new EditorPlace(newPlacebook));
+		}
+		
 		this.placebook = newPlacebook;
 
 		final Map<String, PlaceBookItemFrame> kept = new HashMap<String, PlaceBookItemFrame>();
