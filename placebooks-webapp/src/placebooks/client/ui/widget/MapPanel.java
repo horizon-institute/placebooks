@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.model.Geometry;
+import placebooks.client.ui.PlaceBookCanvas;
+import placebooks.client.ui.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -21,13 +23,16 @@ public class MapPanel extends SimplePanel
 
 	private JavaScriptObject markerLayer;
 
+	private final PlaceBookCanvas canvas;
+	
 	List<Geometry> markers = new ArrayList<Geometry>();
 	
-	public MapPanel(final String id)
+	public MapPanel(final String id, final PlaceBookCanvas canvas)
 	{
 		// setElement(DOM.createDiv());
-		getElement().setId(id);
+		getElement().setId("mapPanel" + id);
 		this.id = id;
+		this.canvas = canvas;
 	}
 
 	public void setURL(final String url)
@@ -51,6 +56,14 @@ public class MapPanel extends SimplePanel
 
 		map = createMap(id);
 		markerLayer = createMarkerLayer(map);
+		for(PlaceBookItemFrame item: canvas.getItems())
+		{
+			if(item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id) && item.getItem().getGeometry() != null)
+			{
+				// TODO Add marker
+			}
+		}
+		
 		if (url != null)
 		{
 			GWT.log("Load gpx at " + url);
@@ -60,7 +73,7 @@ public class MapPanel extends SimplePanel
 	
 	private final native JavaScriptObject createMap(String id)
 	/*-{
-		var map = new $wnd.OpenLayers.Map(id, {
+		var map = new $wnd.OpenLayers.Map("mapPanel" + id, {
 			controls : [
 	//					new $wnd.OpenLayers.Control.Navigation(),
 	//					new $wnd.OpenLayers.Control.PanZoomBar(),
@@ -88,6 +101,17 @@ public class MapPanel extends SimplePanel
 
 		return map;
 	}-*/;
+	
+	private final native void addMarker(JavaScriptObject map, JavaScriptObject markerLayer, float lon, float lat)
+	/*-{
+		var lonLat = new $wnd.OpenLayers.LonLat(lon, lat).transform(new $wnd.OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+		
+		var size = new $wnd.OpenLayers.Size(21, 25);
+		var offset = new $wnd.OpenLayers.Pixel(-(size.w/2), -size.h);
+		var icon = new $wnd.OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png',size,offset);
+		layerMarkers.addMarker(new $wnd.OpenLayers.Marker(lonLat,icon));
+	}-*/;
+	
 
 	private final native JavaScriptObject createMarkerLayer(JavaScriptObject map)
 	/*-{

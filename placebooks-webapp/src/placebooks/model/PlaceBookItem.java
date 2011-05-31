@@ -300,11 +300,14 @@ public abstract class PlaceBookItem
 
 	public void update(PlaceBookItem item)
 	{
+		parameters.clear();
 		for(Entry<String, Integer> entry: item.getParameters().entrySet())
 		{
 			addParameterEntry(entry.getKey(), entry.getValue());	
 		}
-		
+
+		index.clear();
+		metadata.clear();
 		for(Entry<String, String> entry: item.getMetadata().entrySet())
 		{
 			addMetadataEntry(entry.getKey(), entry.getValue());

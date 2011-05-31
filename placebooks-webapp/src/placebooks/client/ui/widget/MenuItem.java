@@ -22,5 +22,10 @@ public abstract class MenuItem extends Label
 		});
 	}
 	
+	public boolean isEnabled()
+	{
+		return true;
+	}
+	
 	public abstract void run();
 }	

@@ -59,7 +59,7 @@ public class PlaceBookItem extends JavaScriptObject
 	/*-{
 		if(('metadata' in this))
 		{
-			delete myJSONObject[name];
+			delete this.metadata[name];
 		}
 	}-*/;
 }

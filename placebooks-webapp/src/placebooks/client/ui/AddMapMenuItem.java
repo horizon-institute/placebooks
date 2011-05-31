@@ -24,7 +24,7 @@ public class AddMapMenuItem extends MenuItem
 		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
 		for(PlaceBookItemFrame itemFrame: canvas.getItems())
 		{
-			if(itemFrame.getItem().getClassName().equals("placebook.model.GPSTraceItem"))
+			if(itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 			{
 				mapItems.add(itemFrame.getItem());
 			}
@@ -33,6 +33,13 @@ public class AddMapMenuItem extends MenuItem
 		if(mapItems.size() == 1)
 		{
 			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
+			item.markChanged();			
 		}
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return !item.getItem().getClassName().equals("placebooks.model.GPSTraceItem") && !item.getItem().hasMetadata("mapItemID");
 	}
 }

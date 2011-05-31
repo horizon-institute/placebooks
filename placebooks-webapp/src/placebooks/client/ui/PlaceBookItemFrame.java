@@ -103,8 +103,8 @@ public class PlaceBookItemFrame extends Composite
 					if (!textBox.getValue().equals(item.getSourceURL()))
 					{
 						item.setSourceURL(textBox.getValue());
-						saveTimer.markChanged();
-						updateItemWidget();
+						markChanged();
+						refresh();
 					}
 				}
 			});
@@ -122,6 +122,11 @@ public class PlaceBookItemFrame extends Composite
 			dialogBox.show();
 		}
 	};
+	
+	public void markChanged()
+	{
+		saveTimer.markChanged();
+	}
 
 	private final MenuItem upload = new MenuItem("Upload")
 	{
@@ -175,7 +180,7 @@ public class PlaceBookItemFrame extends Composite
 				public void onSubmitComplete(final SubmitCompleteEvent event)
 				{
 					GWT.log("Submit complete: " + event.getResults());
-					updateItemWidget();
+					refresh();
 					dialogBox.hide();
 				}
 			});
@@ -205,8 +210,9 @@ public class PlaceBookItemFrame extends Composite
 		this.item = item;
 		this.saveTimer = timer;
 		initWidget(uiBinder.createAndBindUi(this));
-		menuItems.add(new DeletePlaceBookMenuItem("delete", canvas, this));
+		menuItems.add(new DeletePlaceBookMenuItem("Delete", canvas, this));
 		menuItems.add(new AddMapMenuItem("App to Map", canvas, this));
+		menuItems.add(new RemoveMapMenuItem("Remove from Map", this));		
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
@@ -268,7 +274,7 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			// TODO Handle null key
-			final MapPanel panel = new MapPanel("mapPanel" + item.getKey());
+			final MapPanel panel = new MapPanel(item.getKey(), canvas);
 			panel.setHeight("500px");
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
@@ -281,7 +287,7 @@ public class PlaceBookItemFrame extends Composite
 			menuItems.add(setItemSourceURL);
 			widgetPanel.add(frame);
 		}
-		updateItemWidget();
+		refresh();
 	}
 
 	public PlaceBookItem getItem()
@@ -292,7 +298,7 @@ public class PlaceBookItemFrame extends Composite
 	public void setPlaceBookItem(final PlaceBookItem item)
 	{
 		this.item = item;
-		updateItemWidget();
+		refresh();
 	}
 
 	void addDragStartHandler(final MouseDownHandler handler)
@@ -432,7 +438,7 @@ public class PlaceBookItemFrame extends Composite
 		frame.getElement().getStyle().setZIndex(0);
 	}
 
-	private void updateItemWidget()
+	public void refresh()
 	{
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
