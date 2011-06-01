@@ -6,9 +6,9 @@ import java.util.List;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookCanvas.SaveTimer;
+import placebooks.client.ui.openlayers.MapWidget;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
-import placebooks.client.ui.widget.MapPanel;
 import placebooks.client.ui.widget.MenuItem;
 import placebooks.client.ui.widget.MousePanel;
 
@@ -274,7 +274,7 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			// TODO Handle null key
-			final MapPanel panel = new MapPanel(item.getKey(), canvas);
+			final MapWidget panel = new MapWidget(item.getKey(), canvas);
 			panel.setHeight("500px");
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
@@ -485,7 +485,7 @@ public class PlaceBookItemFrame extends Composite
 		}
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
-			final MapPanel mapPanel = (MapPanel) widgetPanel.getWidget(0);
+			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
 			if (item.getKey() == null)
 			{
 				mapPanel.setURL(item.getSourceURL());
