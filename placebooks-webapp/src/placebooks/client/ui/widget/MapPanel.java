@@ -1,9 +1,5 @@
 package placebooks.client.ui.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import placebooks.client.model.Geometry;
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookItemFrame;
 
@@ -13,6 +9,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapPanel extends SimplePanel
 {
+	private final static String POINT_PREFIX= "POINT (";
+	
 	private final String id;
 
 	private JavaScriptObject map;
@@ -25,7 +23,7 @@ public class MapPanel extends SimplePanel
 
 	private final PlaceBookCanvas canvas;
 	
-	List<Geometry> markers = new ArrayList<Geometry>();
+	//List<Geometry> markers = new ArrayList<Geometry>();
 	
 	public MapPanel(final String id, final PlaceBookCanvas canvas)
 	{
@@ -46,6 +44,8 @@ public class MapPanel extends SimplePanel
 			}
 			GWT.log("Load gpx at " + url);
 			routeLayer = loadGPX(map, url);
+			
+			refreshMarkers();			
 		}
 	}
 
@@ -56,13 +56,7 @@ public class MapPanel extends SimplePanel
 
 		map = createMap(id);
 		markerLayer = createMarkerLayer(map);
-		for(PlaceBookItemFrame item: canvas.getItems())
-		{
-			if(item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id) && item.getItem().getGeometry() != null)
-			{
-				// TODO Add marker
-			}
-		}
+		refreshMarkers();
 		
 		if (url != null)
 		{
@@ -70,6 +64,32 @@ public class MapPanel extends SimplePanel
 			routeLayer = loadGPX(map, url);
 		}
 	}
+	
+	private void refreshMarkers()
+	{
+		clearMarkers(markerLayer);
+		for(PlaceBookItemFrame item: canvas.getItems())
+		{
+			if(item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id) && item.getItem().getGeometry() != null)
+			{
+				String geometry = item.getItem().getGeometry();
+				if(geometry.startsWith(POINT_PREFIX))
+				{
+					String latLong = geometry.substring(POINT_PREFIX.length(), geometry.length() - 1);
+					int comma = latLong.indexOf(" ");
+					float lat = Float.parseFloat(latLong.substring(0,comma));
+					float lon = Float.parseFloat(latLong.substring(comma + 1));
+					addMarker(map, markerLayer, lat, lon);
+					GWT.log("Added marker for " + item.getItem().getKey() + " at " + lat + ", " + lon);
+				}
+			}
+		}
+	}
+	
+	private final native JavaScriptObject clearMarkers(JavaScriptObject markerLayer)
+	/*-{
+		markerLayer.clearMarkers();
+	}-*/;
 	
 	private final native JavaScriptObject createMap(String id)
 	/*-{
@@ -102,7 +122,7 @@ public class MapPanel extends SimplePanel
 		return map;
 	}-*/;
 	
-	private final native void addMarker(JavaScriptObject map, JavaScriptObject markerLayer, float lon, float lat)
+	private final native void addMarker(JavaScriptObject map, JavaScriptObject markerLayer, float lat, float lon)
 	/*-{
 		var lonLat = new $wnd.OpenLayers.LonLat(lon, lat).transform(new $wnd.OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
 		

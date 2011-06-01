@@ -19,6 +19,24 @@ import com.vividsolutions.jts.io.WKTReader;
 public class JSONTests
 {
 	@Test
+	public void parseGeometryTest() throws Exception
+	{
+		String geometry = "POINT (52.5189367988799 -4.04983520507812)";
+		if(geometry.startsWith("POINT ("))
+		{
+			String latLong = geometry.substring(6, geometry.length() - 1);
+			System.out.println(latLong);
+			int comma = latLong.indexOf(" ");
+			String latStr = latLong.substring(0,comma);
+			System.out.println(latStr);
+			float lat = Float.parseFloat(latStr);
+			String lonStr = latLong.substring(comma + 1);
+			System.out.println(lonStr);			
+			float lon = Float.parseFloat(lonStr);
+		}		
+	}
+	
+	@Test
 	public void getPlacebookJsonTest() throws Exception
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
