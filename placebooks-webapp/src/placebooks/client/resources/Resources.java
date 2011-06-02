@@ -24,6 +24,8 @@ public interface Resources extends ClientBundle
 	ImageResource picture();
 
 	ImageResource progress();
+	
+	ImageResource progress2();	
 
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();

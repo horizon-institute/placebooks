@@ -25,7 +25,7 @@
 		<input type='submit' value='Add'>
 	</form>
 
-	<form action='../add_item/upload' method='POST' enctype='multipart/form-data'>
+	<form action='../add_item/uploadandcreate' method='POST' enctype='multipart/form-data'>
 		Upload video: 
 		<input type='file' name='video.${pb.key}'>
 		<input type='hidden' name='key' value='${pb.key}'>
@@ -34,7 +34,7 @@
 		<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
 		<input type='submit' value='Upload'>
 	</form>
-	<form action='../add_item/upload' method='POST' enctype='multipart/form-data'>
+	<form action='../add_item/uploadandcreate' method='POST' enctype='multipart/form-data'>
 		Upload audio: 
 		<input type='file' name='audio.${pb.key}'>
 		<input type='hidden' name='key' value='${pb.key}'>
@@ -58,7 +58,7 @@
 		<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
 		<input type='submit' value='Upload'>
 	</form>
-	<form action='../add_item/upload' method='POST' enctype='multipart/form-data'>
+	<form action='../add_item/uploadandcreate' method='POST' enctype='multipart/form-data'>
 		Upload image: 
 		<input type='file' name='image.${pb.key}'>
 		<input type='hidden' name='key' value='${pb.key}'>
@@ -67,7 +67,7 @@
 		<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
 		<input type='submit' value='Upload'>
 	</form>
-	<form action='../add_item/upload' method='POST' enctype='multipart/form-data'>
+	<form action='../add_item/uploadandcreate' method='POST' enctype='multipart/form-data'>
 		Upload GPS trace: 
 		<input type='file' name='gpstrace.${pb.key}'>
 		<input type='hidden' name='key' value='${pb.key}'>

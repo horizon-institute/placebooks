@@ -22,8 +22,17 @@ public class TextItem extends PlaceBookItem
 					final String text)
 	{
 		super(owner, geom, sourceURL);
-		this.text = text;
-		index.addAll(SearchHelper.getIndex(text));
+		setText(text);
+	}
+
+	@Override
+	public void update(PlaceBookItem item)
+	{
+		super.update(item);
+		if(item instanceof TextItem)
+		{
+			setText(((TextItem) item).getText());
+		}
 	}
 
 	TextItem()
@@ -61,5 +70,6 @@ public class TextItem extends PlaceBookItem
 	public void setText(final String text)
 	{
 		this.text = text;
+		index.addAll(SearchHelper.getIndex(text));		
 	}
 }

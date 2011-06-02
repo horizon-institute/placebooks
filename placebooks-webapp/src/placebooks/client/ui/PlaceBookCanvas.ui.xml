@@ -4,7 +4,7 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 30px;
+			top: 0px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
@@ -20,7 +20,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 0px;
+			top: 20px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -28,6 +28,7 @@
 			background: #556;	
 			-webkit-user-select: none;
 			-moz-user-select: none;
+			-o-user-select: none;
 			user-select: none;	
 			overflow: auto;
 		}
@@ -50,8 +51,9 @@
 			left: 0px;
 			z-index: 20;
 			background: rgba(0,0,0,0.4);	
-			-webkit-user-select: none;
+			-webkit-user-select: none;	
 			-moz-user-select: none;
+			-o-user-select: none;			
 			user-select: none;	
 		}
 		
@@ -64,21 +66,48 @@
 			display: inline-block;
 		}
 
+		.savingLabel {
+			color: white;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 15px;
+			padding-left: 15px;
+			vertical-align: top;
+		}
+
 		.savingPanel {
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			height: 15px;
 			background: #555;
-			border: 1px solid #333;
-			border-radius: 5px;
-			margin-top: 100px;
-			padding: 10px 20px;
-			display: inline-block;
+			border-left: 1px solid #333;
+			border-bottom: 1px solid #333;			
+			border-bottom-left-radius: 5px;
+			padding: 5px 20px 10px 15px;
+			display: none;
+			z-index: 55;
 		}
 
 		.titleBar {
 			position: absolute;
+			top: 10px;
+			left: 15px;
+			right: 150px;
+			height: 25px;
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-o-user-select: text;			
+			user-select: text;
+		}
+		
+		.populate {
+			position: absolute;
+			text-align: center;
 			top: 0px;
-			left: 0px;
-			right: 120px;
-			height: 30px;
+			right: 0px;
+			height: 20px;
+			width: 120px;
+			z-index: -5;			
 		}
 		
 		.titleLabel {
@@ -97,13 +126,14 @@
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
-		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
-		<!--<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">Saving</g:InlineLabel></g:FlowPanel>-->		
+		<g:Button styleName="{style.populate}" ui:field="populate">Populate</g:Button>	
+		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
-		<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
-		</p:MousePanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
+			<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
+			</p:MousePanel>		
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">
 		</p:MousePanel>

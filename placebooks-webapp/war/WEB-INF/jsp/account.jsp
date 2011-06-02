@@ -27,5 +27,7 @@
     	out.println("<a href=\"\">" + placebook.getKey() + "</a>");
     }
 %>
+<a href="/placebooks/addEverytrail.html">Add Everytrail Login</a>
+
 </body>
 </html>

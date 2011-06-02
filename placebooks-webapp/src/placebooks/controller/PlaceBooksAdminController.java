@@ -10,10 +10,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +46,10 @@ import org.springframework.web.servlet.ModelAndView;
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
@@ -248,6 +245,38 @@ public class PlaceBooksAdminController
 		return "redirect:/login.html";
 	}
 
+	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
+	public String addLoginDetails(@RequestParam final String username,
+			@RequestParam final String password, @RequestParam final String service)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+		
+		try
+		{
+			manager.getTransaction().begin();
+			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
+			manager.persist(loginDetails);
+			user.add(loginDetails);			
+			manager.getTransaction().commit();
+		}
+		catch (final Exception e)
+		{
+			log.error("Error creating user", e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling login detail creation");
+			}
+			manager.close();
+		}
+
+		return "redirect:/index.html";
+	}
+	
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
 	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
 	{
@@ -323,7 +352,6 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
 	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
@@ -334,100 +362,98 @@ public class PlaceBooksAdminController
 		manager.getTransaction().begin();
 		try
 		{
-			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+			PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
-			final Collection<PlaceBookItem> updateItems = new ArrayList<PlaceBookItem>();
+			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
 			if (dbPlacebook != null)
 			{
 				// Remove any items that are no longer used
-				final Map<String, PlaceBookItem> oldItems = new HashMap<String, PlaceBookItem>();
 				for (final PlaceBookItem item : dbPlacebook.getItems())
 				{
 					if (!containsItem(item, placebook.getItems()))
 					{
 						manager.remove(item);
 					}
-					else
-					{
-						oldItems.put(item.getKey(), item);
-					}
 				}
 
-				dbPlacebook.setItems(Collections.EMPTY_LIST);
-				for (final PlaceBookItem newItem : placebook.getItems())
-				{
-					// Update existing item if possible
-					PlaceBookItem item = newItem;
-					if(item.getKey() != null)
-					{
-						if(oldItems.containsKey(item.getKey()))
-						{
-							item = oldItems.get(item.getKey());
-							
-							if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-							{
-								item.setSourceURL(newItem.getSourceURL());
-								updateItems.add(item);
-							}				
-							
-							for(Entry<String, Integer> entry: newItem.getParameters().entrySet())
-							{
-								item.addParameterEntry(entry.getKey(), entry.getValue());	
-							}
-							
-							if(item instanceof TextItem)
-							{
-								TextItem text = (TextItem)item;
-								text.setText(((TextItem)newItem).getText());
-							}
-						}
-					}
-					else
-					{
-						manager.persist(item);
-						updateItems.add(item);
-					}
-
-					for(Entry<String, String> metadataItem: newItem.getMetadata().entrySet())
-					{
-						item.addMetadataEntry(metadataItem.getKey(), metadataItem.getValue());
-					}
-
-					if(item.getOwner() == null)
-					{
-						item.setOwner(dbPlacebook.getOwner());
-					}
-
-					if(item.getTimestamp() == null)
-					{
-						item.setTimestamp(new Date());
-					}
-
-					dbPlacebook.addItem(item);
-				}
-
+				dbPlacebook.setItems(placebook.getItems());
 				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 				{
 					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
 				}
-
-				dbPlacebook.setGeometry(placebook.getGeometry());
-
-				manager.merge(dbPlacebook);
+	
+				dbPlacebook.setGeometry(placebook.getGeometry());				
+				placebook = dbPlacebook;
 			}
-			else
+			
+			final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placebook.getItems());
+			placebook.setItems(new ArrayList<PlaceBookItem>());
+			for (final PlaceBookItem newItem : newItems)
+			{
+				// Update existing item if possible
+				PlaceBookItem item = newItem;
+				if(item.getKey() != null)
+				{
+					PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
+					if(oldItem != null)
+					{
+						item = oldItem;
+					}
+														
+					if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
+					{
+						item.setSourceURL(newItem.getSourceURL());
+						updateMedia.add(item);
+					}
+				}
+				else if(newItem.getMetadata().get("originalItemID") != null)
+				{
+					final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
+					if(originalItem != null)
+					{
+						item = originalItem;
+						manager.detach(item);
+					}
+					else
+					{
+						updateMedia.add(item);
+					}
+					manager.persist(item);					
+				}
+				else
+				{
+					manager.persist(item);
+					updateMedia.add(item);
+				}
+				
+				if(item.getOwner() == null)
+				{
+					item.setOwner(UserManager.getCurrentUser(manager));
+				}
+				
+				item.update(newItem);
+				
+				placebook.addItem(item);
+			}
+
+			if(placebook.getOwner() == null)
 			{
 				placebook.setOwner(UserManager.getCurrentUser(manager));
-				manager.persist(placebook);
-				updateItems.addAll(placebook.getItems());									
 			}
+			
+			if(placebook.getTimestamp() == null)
+			{
+				placebook.setTimestamp(new Date());
+			}
+				
+			placebook = manager.merge(placebook);									
 			manager.getTransaction().commit();
 
 			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
 			
 			manager.getTransaction().begin();
 			setProxy();			
-			for(PlaceBookItem item: updateItems)
+			for(PlaceBookItem item: updateMedia)
 			{
 				try
 				{
@@ -475,313 +501,6 @@ public class PlaceBooksAdminController
 		}
 	}
 
-
-	@RequestMapping(value = "/admin/add_placebook", method = RequestMethod.POST)
-	public ModelAndView addPlaceBook(@RequestParam final String owner, 
-									 @RequestParam final String geometry)
-	{
-		if (owner != null)
-		{
-			Geometry geometry_ = null;
-			try
-			{
-				geometry_ = new WKTReader().read(geometry);
-			}
-			catch (final ParseException e)
-			{
-				log.error(e.toString());
-			}
-
-			// If created inside getting the EntityManager, some fields are
-			// null. Not sure why... TODO
-			final PlaceBook p = new PlaceBook(null, geometry_);
-
-			final EntityManager pm = EMFSingleton.getEntityManager();
-
-			final User owner_ = UserManager.getUser(pm, owner);
-
-			if (owner_ == null) 
-			{ 
-				return new ModelAndView("message", "text", 
-										"User does not exist"); 
-			}
-
-			p.setOwner(owner_);
-
-			try
-			{
-				pm.getTransaction().begin();
-				pm.persist(p);
-				pm.getTransaction().commit();
-			}
-			finally
-			{
-				if (pm.getTransaction().isActive())
-				{
-					pm.getTransaction().rollback();
-					log.error("Rolling current persist transaction back");
-				}
-				pm.close();
-			}
-
-			return new ModelAndView("message", "text", "PlaceBook added");
-		}
-		else
-		{
-			return new ModelAndView("message", "text", "Error in POST");
-		}
-	}
-
-	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
-					method = RequestMethod.POST)
-	public ModelAndView addPlaceBookItemMapping(
-		@RequestParam final String key, @RequestParam final String mKey,
-		@RequestParam final String mValue, 
-		@PathVariable("type") final String type)
-	{
-		if (!type.equals("metadata") && !type.equals("parameter"))
-			return new ModelAndView("message", "text", "Error in type");
-
-		if (key != null && mKey != null && mValue != null)
-		{
-			final EntityManager pm = EMFSingleton.getEntityManager();
-
-			try
-			{
-				pm.getTransaction().begin();
-				final PlaceBookItem p = pm.find(PlaceBookItem.class, key);
-				if (type.equals("metadata"))
-				{
-					p.addMetadataEntry(mKey, mValue);
-				}
-				else if (type.equals("parameter"))
-				{
-					int iValue = -1;
-					try
-					{
-						iValue = Integer.parseInt(mValue);
-					}
-					catch (final NumberFormatException e)
-					{
-						log.error("Error parsing parameter data value");
-					}
-
-					p.addParameterEntry(mKey, new Integer(iValue));
-				}
-				pm.getTransaction().commit();
-			}
-			finally
-			{
-				if (pm.getTransaction().isActive())
-				{
-					pm.getTransaction().rollback();
-					log.error("Rolling current persist transaction back");
-				}
-				pm.close();
-			}
-
-			return new ModelAndView("message", "text", "Metadata/param added");
-		}
-		else
-		{
-			return new ModelAndView("message", "text", "Error in POST");
-		}
-	}
-
-	@RequestMapping(value = "/admin/add_placebook_metadata", 
-					method = RequestMethod.POST)
-	public ModelAndView addPlaceBookMetadata(@RequestParam final String key, 
-											 @RequestParam final String mKey,
-								 			 @RequestParam final String mValue)
-	{
-		if (key != null && mKey != null && mValue != null)
-		{
-			final EntityManager pm = EMFSingleton.getEntityManager();
-
-			try
-			{
-				pm.getTransaction().begin();
-				final PlaceBook p = pm.find(PlaceBook.class, key);
-				p.addMetadataEntry(mKey, mValue);
-				pm.getTransaction().commit();
-			}
-			finally
-			{
-				if (pm.getTransaction().isActive())
-				{
-					pm.getTransaction().rollback();
-					log.error("Rolling current persist transaction back");
-				}
-
-				pm.close();
-			}
-			return new ModelAndView("message", "text", "Metadata added");
-		}
-		else
-		{
-			return new ModelAndView("message", "text", "Error in POST");
-		}
-	}
-
-	@RequestMapping(value = "/admin", method = RequestMethod.GET)
-	public String adminPage()
-	{
-		return "admin";
-	}
-
-	@RequestMapping(value = "/admin/add_item/webbundle", 
-					method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
-	public ModelAndView createWebBundle(final HttpServletRequest req)
-	{
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		final ItemData itemData = new ItemData();
-		WebBundleItem wbi = null;
-
-		try
-		{
-			pm.getTransaction().begin();
-
-			for (final Enumeration<String> params = req.getParameterNames(); 
-				 params.hasMoreElements();)
-			{
-				final String param = params.nextElement();
-				final String value = req.getParameterValues(param)[0];
-				if (!itemData.processItemData(pm, param, value))
-				{
-					String[] split = PlaceBooksAdminHelper.getExtension(param);
-					if (split == null)
-						continue;
-
-					String prefix = split[0], suffix = split[1];
-
-					if (prefix.contentEquals("url"))
-					{
-						try
-						{
-							final PlaceBook p = pm.find(PlaceBook.class, 
-														suffix);
-							URL sourceURL = null;
-							if (value.length() > 0)
-							{
-								sourceURL = new URL(value);
-							}
-							wbi = new WebBundleItem(null, null, sourceURL, 
-													null);
-							p.addItem(wbi);
-							pm.getTransaction().commit();
-							pm.getTransaction().begin();
-						}
-						catch (final java.net.MalformedURLException e)
-						{
-							log.error(e.toString());
-						}
-					}
-				}
-
-			}
-
-			if (wbi != null)
-			{
-				wbi.setOwner(itemData.getOwner());
-				wbi.setGeometry(itemData.getGeometry());
-				wbi.setWebBundle(wbi.getWebBundlePath());
-			}
-
-			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
-				wbi.getOwner() == null))) 
-			{ 
-				throw new Exception("Error setting data elements"); 
-			}
-
-			PlaceBooksAdminHelper.scrape(wbi);
-
-			pm.getTransaction().commit();
-		}
-		catch (final Throwable e)
-		{
-			log.warn(e.getMessage(), e);
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current persist transaction back");
-			}
-
-			pm.close();
-		}
-
-		return new ModelAndView("message", "text", "Scraped");
-	}
-
-
-	@RequestMapping(value = "/admin/delete_placebook/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView deletePlaceBook(@PathVariable("key") final String key)
-	{
-
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		try
-		{
-			pm.getTransaction().begin();
-			final PlaceBook p = pm.find(PlaceBook.class, key);
-			pm.remove(p);
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete single transaction back");
-			}
-
-			pm.close();
-		}
-
-		log.info("Deleted PlaceBook");
-
-		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
-	}
-
-	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView deletePlaceBookItem(@PathVariable("key") 
-											final String key)
-	{
-
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		try
-		{
-			pm.getTransaction().begin();
-			final PlaceBookItem item = pm.find(PlaceBookItem.class, key);
-			item.getPlaceBook().removeItem(item);
-			pm.remove(item);
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete single transaction back");
-			}
-			pm.close();
-		}
-
-		log.info("Deleted PlaceBookItem " + key);
-
-		return new ModelAndView("message", "text", "Deleted PlaceBookItem: " 
-								+ key);
-
-	}
-	
-	
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
 	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
 										  final HttpServletResponse res,
@@ -873,6 +592,7 @@ public class PlaceBooksAdminController
 			res.setContentType("application/zip");
 			res.setHeader("Content-Disposition", "attachment; filename=\"" 
 						  + p.getKey() + ".zip\"");
+			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
 
@@ -1022,6 +742,8 @@ public class PlaceBooksAdminController
 			}	
 			
 			manager.getTransaction().commit();
+			
+			return new ModelAndView("message", "text", "Success");					
 		}
 		catch (final Exception e)
 		{
@@ -1039,75 +761,6 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "Failed");
 	}
-
-	@RequestMapping(value = "/admin/add_item/text", method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
-	public ModelAndView uploadText(final HttpServletRequest req)
-	{
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		final ItemData itemData = new ItemData();
-		PlaceBookItem pbi = null;
-
-		try
-		{
-			pm.getTransaction().begin();
-
-			for (final Enumeration<String> params = req.getParameterNames(); 
-				 params.hasMoreElements();)
-			{
-				final String param = params.nextElement();
-				final String value = req.getParameterValues(param)[0];
-				if (!itemData.processItemData(pm, param, value))
-				{
-					String[] split = PlaceBooksAdminHelper.getExtension(param);
-					if (split == null)
-						continue;
-
-					String prefix = split[0], suffix = split[1];
-
-					final PlaceBook p = pm.find(PlaceBook.class, suffix);
-
-					if (prefix.contentEquals("text"))
-					{
-						String value_ = null;
-						if (value.length() > 0)
-						{
-							value_ = value;
-						}
-						pbi = new TextItem(null, null, null, value_);
-						p.addItem(pbi);
-					}
-				}
-
-			}
-
-			if ((pbi != null && ((TextItem) pbi).getText() == null) || 
-				pbi == null || itemData.getOwner() == null) 
-			{ 
-				return new ModelAndView(
-					"message", "text", "Error setting data elements"); 
-			}
-
-			pbi.setOwner(itemData.getOwner());
-			pbi.setGeometry(itemData.getGeometry());
-			pbi.setSourceURL(itemData.getSourceURL());
-
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current persist transaction back");
-			}
-			pm.close();
-		}
-
-		return new ModelAndView("message", "text", "TextItem added");
-	}
-
 
 	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", 
 					method = RequestMethod.GET)
@@ -1172,7 +825,6 @@ public class PlaceBooksAdminController
 					{
 						ImageReader read = readers.next();
 						fmt = read.getFormatName();
-						System.out.println("*** format name = " + fmt);
 					}
 
 					OutputStream out = res.getOutputStream();
@@ -1199,7 +851,7 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
 					method = RequestMethod.GET)
-	public ModelAndView streamMediaItem(final HttpServletRequest req, 
+	public void streamMediaItem(final HttpServletRequest req, 
 								   	    final HttpServletResponse res,
 									    @PathVariable("type") final String type,
 								   	    @PathVariable("key") final String key)
@@ -1228,7 +880,9 @@ public class PlaceBooksAdminController
 		}
 
 		if (path == null)
-			return null;
+		{
+			return;
+		}
 
 		try
 		{
@@ -1246,38 +900,72 @@ public class PlaceBooksAdminController
 			if (split == null)
 				throw new Exception("Error getting file suffix");
 
+			
 			final ServletOutputStream sos = res.getOutputStream();
+			final long contentLength = file.length();			
 			res.setContentType(type_ + "/" + split[1]);
-			//res.setContentLength();
-			res.addHeader("Content-Disposition", 
-						  "attachment; filename=" + file.getName());
+			res.addHeader("Accept-Ranges", "bytes");
+			res.addHeader("Content-Length", Long.toString(contentLength));
 
 			final FileInputStream fis = new FileInputStream(file);
-			final BufferedInputStream bis = 
-				new BufferedInputStream(fis);
+			final BufferedInputStream bis = new BufferedInputStream(fis);
 
-			final byte data[] = new byte[2048];
-			int i;
-			while ((i = bis.read(data, 0, 2048)) != -1)
+			final String range = req.getHeader("Range");
+			long startByte = 0;
+			long endByte = contentLength -1;
+			if(range != null)
 			{
-				sos.write(data, 0, i);
+				if(range.startsWith("bytes="))
+				{
+					try
+					{
+						String[] rangeItems = range.substring(6).split("-");
+						startByte = Long.parseLong(rangeItems[0]);
+						endByte = Long.parseLong(rangeItems[1]);
+					}
+					catch(Exception e)
+					{
+						
+					}
+				}
 			}
-			sos.flush();
-			fis.close();
-
+			
+			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+			
+			final int bufferLen = 2048; 
+			final byte data[] = new byte[bufferLen];
+			int length;
+			bis.skip(startByte);
+			try
+			{
+				while ((length = bis.read(data, 0, bufferLen)) != -1)
+				{
+					sos.write(data, 0, length);	
+				}
+				sos.flush();
+			}
+			finally
+			{				
+				fis.close();
+				sos.close();
+			}
 		}
 		catch (final Throwable e)
 		{
-			log.error(e.getMessage(), e);
+//			Enumeration headers = req.getHeaderNames();
+//			while(headers.hasMoreElements())
+//			{
+//				String header = (String)headers.nextElement();
+//				log.info(header + ": " + req.getHeader(header));
+//			}
+			log.error("Error serving " + type + " " + key);
 		}
-		
-		return null;
 	}
 	
 
 	
 	// Helper class for passing around general PlaceBookItem data
-	private static class ItemData
+	public static class ItemData
 	{
 		private Geometry geometry;
 		private User owner;

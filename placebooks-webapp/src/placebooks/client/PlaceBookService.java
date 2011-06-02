@@ -25,6 +25,11 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
 	}
 
+	public static void everytrail(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
+	}
+	
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/saveplacebook", RequestBuilder.POST, "placebook="

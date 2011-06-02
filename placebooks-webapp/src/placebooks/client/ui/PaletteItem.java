@@ -5,6 +5,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -74,12 +75,24 @@ public class PaletteItem extends Composite
 		panel.addMouseDownHandler(handler);
 	}
 	
+	void addClickHander(final ClickHandler handler)
+	{
+		panel.addClickHandler(handler);
+	}
+	
+	public boolean isFolder()
+	{
+		return false;
+	}
+	
 	PlaceBookItem createItem()
 	{
-		if(item.getKey() != null)
+		PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
+		if(newItem.getKey() != null)
 		{
-			return item;
+			newItem.setMetadata("originalItemID", newItem.getKey());
+			newItem.setKey(null);			
 		}
-		return PlaceBookItem.parse(new JSONObject(item).toString());
+		return newItem;
 	}
 }

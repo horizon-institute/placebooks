@@ -32,14 +32,7 @@ public class Shelf
 				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 			}
 
-			final PlaceBookEntry entry = new PlaceBookEntry();
-			entry.setKey(pb.getKey());
-			entry.setOwner(pb.getOwner().getEmail());
-			entry.setTitle(pb.getMetadataValue("title"));
-			entry.setNumItems(pb.getItems().size());
-			entry.setDescription(pb.getMetadataValue("description"));
-			entry.setPackagePath(pb.getPackagePath());
-
+			final PlaceBookEntry entry = new PlaceBookEntry(pb);
 			entries.add(entry);
 		}
 	}
