@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+/placebooks-webapp/.project
+=======
 placebooks-webapp/.project
+>>>>>>> upstream/master
 thumbs.db
 .settings
 .buildpath

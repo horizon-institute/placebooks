@@ -2,25 +2,32 @@ package org.placebooks.www;
 
 public class TextItem extends Item {
 
-	private String URL;
-	private String Text;
+	private String url;
+	private String text;
+	private int order;
 	
 	public String getURL() {
-		return URL;
+		return url;
 	}
 	public void setURL(String uRL) {
-		URL = uRL;
+		url = uRL;
 	}
 	public String getText() {
-		return Text;
+		return text;
 	}
 	public void setText(String text) {
-		Text = text;
+		this.text = text;
+	}
+	public int getOrder(){
+		return order;
+	}
+	public void setOrder(int o){
+		order = o;
 	}
 	
 	@Override
 	public String toString() {
-		return "Text=" + Text + "\nURL=" + URL; 
+		return "Text=" + text + "\nURL=" + url + "\nOrder=" + order; 
 	}
 	
 }

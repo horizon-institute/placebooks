@@ -26,7 +26,7 @@ public class XMLHandler extends DefaultHandler {
 //	GPSItem gpsitem;	
 	VideoItem vitem;
 	AudioItem aitem;	
-	StringBuilder url,text,filename;
+	StringBuilder url,text,filename, order;
 
 	/*
 	 * fields
@@ -35,16 +35,20 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_placebooksText = false;
 	 private boolean in_textUrl = false;
 	 private boolean in_textText = false;
+	 private boolean in_textOrder = false;
 
 	 private boolean in_placebooksImage = false;
 	 private boolean in_imageUrl = false;
 	 private boolean in_imageFilename = false;
+	 private boolean in_imageOrder = false;
 	 
 	 private boolean in_placebooksVideo = false;
 	 private boolean in_videoFilename = false;
+	 private boolean in_videoOrder = false;
 	 
 	 private boolean in_placebooksAudio = false;
 	 private boolean in_audioFilename = false;
+	 private boolean in_audioOrder = false;
 	 
 	 private boolean in_key = false;
 
@@ -121,7 +125,26 @@ public class XMLHandler extends DefaultHandler {
 			 else if (this.in_placebooksAudio){
 				 this.in_audioFilename = true;
 				 filename = new StringBuilder();
-			 }
+				 
+		  }else if(localName.equalsIgnoreCase("order")){
+			  if(this.in_placebooksText){
+				  this.in_textOrder = true;
+				  order = new StringBuilder();
+			  }
+			  else if (this.in_placebooksImage){
+				  this.in_imageOrder = true;
+				  order = new StringBuilder();
+			  }
+			  else if (this.in_placebooksVideo){
+				  this.in_videoOrder = true;
+				  order = new StringBuilder();
+			  }
+			  else if (this.in_placebooksAudio){
+				  this.in_audioOrder = true;
+				  order = new StringBuilder();
+			  }
+			  
+		  } //end of order
 			 
 		 }  
 	 }
@@ -198,6 +221,30 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 
 		 }
+		 else if (localName.equalsIgnoreCase("order")){
+			 this.in_textOrder = false;
+			 this.in_imageOrder = false;
+			 this.in_videoOrder = false;
+			 this.in_audioOrder = false;
+			 
+			 if(this.in_placebooksText){
+				String o =  (order.toString());
+				titem.setOrder(Integer.parseInt(o));				 
+			 }
+			 else if(this.in_placebooksImage){
+				String o =  (order.toString());
+				imitem.setOrder(Integer.parseInt(o));	 
+			 }
+			 else if(this.in_placebooksVideo){
+				 String o = (order.toString());
+				 vitem.setOrder(Integer.parseInt(o));
+			 }
+			 else if(this.in_placebooksAudio){
+				 String o = (order.toString());
+				 aitem.setOrder(Integer.parseInt(o));
+			 }
+		 }
+		 
 	 }
 
 	 /** Gets called on the following structure:
@@ -221,6 +268,18 @@ public class XMLHandler extends DefaultHandler {
 		 }
 		 else if (this.in_audioFilename){
 			 filename.append(ch, start, length).toString();
+		 }
+		 else if (this.in_textOrder){
+			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_imageOrder){
+			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_videoOrder){
+			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_audioOrder){
+			 order.append(ch, start, length).toString();
 		 }
 		
 		 

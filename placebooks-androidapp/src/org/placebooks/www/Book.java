@@ -19,7 +19,7 @@ public class Book {
 	
 	private ArrayList <String> alAudioFilename = new ArrayList <String>();
 	private ArrayList <String> alVideoFilename = new ArrayList <String>();
-
+	
 //	private  ArrayList<String> alImgItem = new ArrayList<String>();
 	
 

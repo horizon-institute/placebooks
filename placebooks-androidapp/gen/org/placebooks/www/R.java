@@ -55,26 +55,25 @@ public final class R {
         public static final int stop=0x7f020005;
     }
     public static final class id {
-        public static final int Button01=0x7f060005;
-        public static final int Button02=0x7f060006;
         public static final int btnLogin=0x7f060004;
-        public static final int btn_download=0x7f060014;
-        public static final int flipper=0x7f060009;
-        public static final int item_subtitle=0x7f060013;
-        public static final int item_title=0x7f060012;
-        public static final int lLayout=0x7f060008;
-        public static final int linearLayout=0x7f06000b;
-        public static final int linearLayout2=0x7f06000d;
-        public static final int linearLayout3=0x7f060010;
+        public static final int btn_download=0x7f060012;
+        public static final int btn_view=0x7f060013;
+        public static final int flipper=0x7f060007;
+        public static final int item_subtitle=0x7f060011;
+        public static final int item_title=0x7f060010;
+        public static final int lLayout=0x7f060006;
+        public static final int linearLayout=0x7f060009;
+        public static final int linearLayout2=0x7f06000b;
+        public static final int linearLayout3=0x7f06000e;
         public static final int linearlayout=0x7f060000;
-        public static final int scroller=0x7f06000a;
-        public static final int scroller2=0x7f06000c;
-        public static final int scroller3=0x7f06000f;
-        public static final int status=0x7f060007;
-        public static final int text2=0x7f06000e;
-        public static final int text3=0x7f060011;
+        public static final int scroller=0x7f060008;
+        public static final int scroller2=0x7f06000a;
+        public static final int scroller3=0x7f06000d;
+        public static final int status=0x7f060005;
+        public static final int text2=0x7f06000c;
+        public static final int text3=0x7f06000f;
         public static final int txtPlacebooks=0x7f060001;
-        public static final int txtShelf=0x7f060015;
+        public static final int txtShelf=0x7f060014;
         public static final int txt_password=0x7f060003;
         public static final int txt_username=0x7f060002;
     }
