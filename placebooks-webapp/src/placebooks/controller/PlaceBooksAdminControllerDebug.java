@@ -1,10 +1,8 @@
 package placebooks.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -86,8 +84,8 @@ public class PlaceBooksAdminControllerDebug
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 		
 		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
-		assertEquals("success", loginResponse.getStatus());
-		assertEquals(details.getUserID(), loginResponse.getValue());
+		//assertEquals("success", loginResponse.getStatus());
+		//assertEquals(details.getUserID(), loginResponse.getValue());
 		
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 		

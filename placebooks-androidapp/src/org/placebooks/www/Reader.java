@@ -56,6 +56,7 @@ import android.view.animation.AnimationUtils;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.animation.Animation.AnimationListener;
+import android.text.Html;
 
 
 
@@ -69,11 +70,13 @@ public class Reader extends Activity {
 	
 	//ScrollView and LinearLayout
 	private ScrollView sv;		//scroll view that wraps the linear layout
-	private LinearLayout ll;	//main linear layout
-	private LinearLayout ll2;	//linear layout for the audio buttons (play/pause/stop)
-	private LinearLayout ll3;
-	private LinearLayout llAudio;
-	private ViewFlipper flipper;
+	private ScrollView sv2;		//scroll view for page 2
+	private ScrollView sv3;		//scroll view for page 3
+	private LinearLayout ll;	//main linear layout page 1
+	private LinearLayout ll2;	//page 2
+	private LinearLayout ll3;	//page 3
+	private LinearLayout llAudio;	//audio layout
+	private ViewFlipper flipper;	//flipper for the swipe navigation
 	//swipe gesture constants
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -83,17 +86,17 @@ public class Reader extends Activity {
 	private Animation slideLeftOut;
 	private Animation slideRightIn;
 	private Animation slideRightOut;
-	private ScrollView sv2;
-	private ScrollView sv3;
 	View.OnTouchListener gestureListener;
 
 	
 	//Variables for placebook key (the id of the book) and the User's Name (unsure if it is staying)
 	private String pbkey;	//this is the placebook key that defines the ID for each placebook. The contents of each placebook is stored in the folder "key" e.g folder /1234567/contents in here
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
-		
-	//ArrayLists of every Item Type
-	private ArrayList <String> alTextText = new ArrayList <String>();	// arraylist for the text elements in the placebook	
+    private String packagePath;
+	
+	
+	//ArrayLists of every Item Type's Filename/Path
+	private ArrayList <String> alTextText = new ArrayList <String>();	// arraylist for the text elements in the placebook. Text of the Text Item
 	private ArrayList <String> alImageFilename = new ArrayList <String>();	//arraylist of the image path file names 
 	private ArrayList <String> alAudioFilename = new ArrayList <String>();	//arraylist of the audio path file names
 	private ArrayList <String> alVideoFilename = new ArrayList <String>();	//arraylist of the video path file names
@@ -115,6 +118,15 @@ public class Reader extends Activity {
 	     	 public void onCreate(Bundle savedInstanceState) {
 			        super.onCreate(savedInstanceState);	//icicle
 			        getWindow().setFormat(PixelFormat.TRANSLUCENT);
+			        
+			        /*
+			         * get the extras (package path) out of the new intent
+			         * retrieve the packagePath.
+			         */
+			        Intent intent = getIntent();
+			        if(intent != null) packagePath = intent.getStringExtra("packagePath");
+			        	        
+			        	
 		
 			        setContentView(R.layout.reader);
 			        flipper=(ViewFlipper)findViewById(R.id.flipper); 
@@ -222,7 +234,7 @@ public class Reader extends Activity {
 					 
 					 ImageView image = new ImageView(this);
 					 //locate the file path where the images are stored on the SD CARD. 
-					 String myImagePath = "/sdcard/placebooks/unzipped/" + "/packages/" + pbkey + "/" + alImageFilename.get(i);
+					 String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + alImageFilename.get(i);
 					 
 					    BitmapFactory.Options options = new BitmapFactory.Options();
 					    options.inSampleSize = 1;
@@ -242,7 +254,7 @@ public class Reader extends Activity {
 				  
 				 for (int i=0; i<alTextText.size(); i++){
 					 TextView tv = new TextView(this);
-					 tv.setText(alTextText.get(i));
+					 tv.setText(Html.fromHtml(alTextText.get(i)));	//create its HTML layout
 					 tv.setTextColor(0xFF000000);
 					 ll.addView(tv);
 				 } 
@@ -256,7 +268,7 @@ public class Reader extends Activity {
 				 for ( int i=0; i<alVideoFilename.size(); i++){
 					 
 					 //Locate the video and get the thumbnail image of the video file
-					 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped/packages/" + pbkey + "/" + alVideoFilename.get(i), MediaStore.Images.Thumbnails.MINI_KIND);
+					 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + alVideoFilename.get(i), MediaStore.Images.Thumbnails.MINI_KIND);
 			 
 					 //ArrayList of ImageButtons. Same view
 					 ibThumb.add(new ImageButton(this));
@@ -317,7 +329,7 @@ public class Reader extends Activity {
 			 */
 		    public void playVideo(int id){
 				  
-				  File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped/packages/" + pbkey + "/" + alVideoFilename.get(id)); //alVideoFilename.get(id));
+				  File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped" + packagePath + "/" + alVideoFilename.get(id)); //alVideoFilename.get(id));
 
 					if (clip.exists()) {
 
@@ -477,7 +489,7 @@ public class Reader extends Activity {
 		    public void playAudio(int id){
 		       		     
 		        try {
-		            mp.setDataSource("sdcard/placebooks/unzipped/packages/" + pbkey + "/" + alAudioFilename.get(id));
+		            mp.setDataSource("sdcard/placebooks/unzipped" + packagePath + "/" + alAudioFilename.get(id));
 		        } catch (IllegalArgumentException e) {
 		            // TODO Auto-generated catch block
 		            e.printStackTrace();
@@ -579,7 +591,8 @@ public class Reader extends Activity {
 				 * try and catch because it might not exist..etc
 				 * The pbkey for this will be inserting upon a user clicking a placebook..depending on which one is clicked, it's corresponding placebook will get fetched
 				 */
-				FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/packages/0001/config.xml");  //text.txt
+			//	FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/packages/home/" + username + "/placebooks-data/packages/" + key + "/config.xml");    /* 0001/config.xml");  //text.txt*/
+				FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/" + packagePath + "/config.xml");
 			//	FileInputStream in = new FileInputStream("/sdcard/PlaceBooks/unzipped/stuart/placebook-data/packages/pack123/config.xml"); 
 
 				xr.parse(new InputSource(in));

@@ -235,9 +235,14 @@ public abstract class PlaceBookItem
 		item.setAttribute("key", getKey());
 		item.setAttribute("owner", getOwner().getKey());
 
-		final Element timestamp = config.createElement("timestamp");
-		timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
-		item.appendChild(timestamp);
+		// Timestamp is ok to be null
+		if (getTimestamp() != null)
+		{
+			final Element timestamp = config.createElement("timestamp");
+			timestamp.appendChild(config.createTextNode(
+				getTimestamp().toString()));
+			item.appendChild(timestamp);
+		}
 
 		// Geometry and sourceURL are acceptable as null
 

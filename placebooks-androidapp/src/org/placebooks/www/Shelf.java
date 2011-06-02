@@ -8,6 +8,7 @@ import android.os.Environment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.ZipException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,11 @@ import java.io.IOException;
 import android.view.View.OnClickListener; 
 import android.view.LayoutInflater;
 
+import java.net.URL;
+import android.os.AsyncTask;
+import android.content.res.Configuration;
+import android.app.AlertDialog;
+
 
 
 public class Shelf extends ListActivity {
@@ -68,6 +74,9 @@ public class Shelf extends ListActivity {
 		public void onCreate(Bundle savedInstanceState) {
 		        super.onCreate(savedInstanceState);	//icicle
 		        setContentView(R.layout.shelflist);	//push shelf list layout into the content view
+		        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
+
+		      
 		      
 		        /*
 		         * get the extras (username) out of the new intent
@@ -75,7 +84,7 @@ public class Shelf extends ListActivity {
 		         */
 		        Intent intent = getIntent();
 		        if(intent != null) username = intent.getStringExtra("username");
-		        	        
+
 		        		       
 		        /*
 		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
@@ -90,16 +99,16 @@ public class Shelf extends ListActivity {
 		          	
 		          	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
-			        tv.setText("reading the shelf from the Internet. Also updating the cached shelf.");	
+			        tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
 			        ll.addView(tv);
 		          	
 		        }
 		        else if (!isOnline()) {		//do a check if there is a shelf file on the sdcard
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
-			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/packages/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
 		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
-			        tv.setText("reading the cached shelf because cannot connect to Internet at this time.");
+			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time.");
 			        ll.addView(tv);
 			        
 			        
@@ -117,28 +126,45 @@ public class Shelf extends ListActivity {
 		        try{
 		        	
 		        	JSONArray entries = json.getJSONArray("entries");
+		        	JSONObject u = json.getJSONObject("user");
 		        	
 			        for(int i=0;i<entries.length();i++){						
 					
 			        	final MyListItemModel item = new MyListItemModel(this);
 			        	JSONObject e = entries.getJSONObject(i);
+			        	
 			        	item.setID(i);		//Owner ID
 			        	item.setKey(e.getString("key"));	//book key key
 			        	item.setTitle(e.getString("title"));	//book title
 			        	item.setDescription(e.getString("description"));	//book description
 			        	item.setPackagePath(e.getString("packagePath"));
+			        	
+			        	
+			        	item.setOwner(u.getString("name"));  //book owner name e.g stuart
 			        		
 			        	 item.dl_listener = new OnClickListener(){
 				        	public void  onClick  (View  v){
 				        		
-				        			/*
-				        			 * placebook does not exist on sdcard so download it.
-				        			 * call the download method and pass it the book key
-				        			 */
-				        			downloadPlaceBook(item.getKey());
+				        		//if the sdcard is mounted then download
+				        		if (isSdPresent()){
 				        		
-					        		//Toast msg = Toast.makeText(Shelf.this, "Message " + item.getKey(), Toast.LENGTH_LONG);
-					        		//msg.show();
+				        			/**
+				        			 * placebook does not exist on sdcard so download it.
+				        			 * call the download method and pass it the book key and package path
+				        			 */
+				        			downloadPlaceBook(item.getKey(), item.getPackagePath() );
+				        		}
+				        		else{
+				        			//no sdcard
+				        			Log.d("MyApp", "No SDCARD");
+				        		       
+				                	AlertDialog.Builder builder = new AlertDialog.Builder(Shelf.this);
+				                	builder.setTitle("No SD Card!");
+				                	builder.setMessage("There is no sd card mounted to this device! You need an sd card to download a placebook!");
+				                	builder.setPositiveButton("OK", null);
+				                	builder.show();
+				        			
+				        		}
 
 						     } 
 						   };
@@ -150,9 +176,11 @@ public class Shelf extends ListActivity {
 					        		 * placebook exists on sdcard so view it
 					        		 * call to viewPlacebook();
 					        		 */
-					        		Intent i = new Intent();
-					        		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
-					        		startActivity(i);	
+					        		Intent intent = new Intent();
+					        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
+					        		
+					        		intent.putExtra("packagePath", item.getPackagePath());
+					        		startActivity(intent);	
 					        		
 							     } 
 							   };
@@ -195,11 +223,11 @@ public class Shelf extends ListActivity {
 	 public void DownloadFromUrl(String DownloadUrl, String fileName) {
 
 		   try {
-		           //File root = android.os.Environment.getExternalStorageDirectory();               
+		           //File root = android.os.Environment.getExternalStorageDirectory();   
 
 		           //File dir = new File (root.getAbsolutePath() + "/xmls");
 		           File SDCardRoot = Environment.getExternalStorageDirectory();
-		           File dir = new File(SDCardRoot + "/placebooks/unzipped/packages/"); //SDCardRoot/PlaceBooks/unzipped/packages
+		           File dir = new File(SDCardRoot + "/placebooks/unzipped/"); //SDCardRoot/PlaceBooks/unzipped/packages
 		           if(dir.exists()==false) {
 		                dir.mkdirs();
 		           }
@@ -243,20 +271,17 @@ public class Shelf extends ListActivity {
 		   }
 
 		}	 
-	 
-	 /*
-	  * Method for downloading a PlaceBook to the SDCard
-	  */
-	 public void downloadPlaceBook(String theKey) {
-		 //String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
 
+	 public void downloadPlaceBook(String theKey, String downloadPath) {
+	//	 String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
+		 String dlPath = downloadPath;
 	     String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
-	     new DownloadFileAsync().execute(url);	
-		///Toast msg = Toast.makeText(Shelf.this, "Message " + theKey, Toast.LENGTH_LONG);
+		 new DownloadFileAsync(dlPath).execute(url);	
+		
+		 //Toast msg = Toast.makeText(Shelf.this, "Message " + theKey, Toast.LENGTH_LONG);
  		//msg.show();
 	    }
-
-	 			
+	 		
 			 @Override
 			    public void onConfigurationChanged (Configuration newConfig){
 			    	super.onConfigurationChanged(newConfig);
@@ -279,7 +304,12 @@ public class Shelf extends ListActivity {
 			    }
 			    
 			   public class DownloadFileAsync extends AsyncTask<String, String, String> {
-			        
+				   String packagePath;
+				  
+				   public DownloadFileAsync(String dlPath){
+					   packagePath = dlPath;
+				   }
+				   
 			        @Override
 			        protected void onPreExecute() {
 			            super.onPreExecute();
@@ -294,7 +324,7 @@ public class Shelf extends ListActivity {
 
 			            try {
 			                URL url = new URL(aurl[0]);
-			                //URLConnection urlConnection  = url.openConnection();
+			          //      URLConnection urlConnection  = url.openConnection();
 			                //create the new connection
 			                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 			                //set up some things on the connection
@@ -314,7 +344,8 @@ public class Shelf extends ListActivity {
 			                /**
 			                 * This needs to be changed to whatever the filename you are downloading is called. 
 			                 */
-			                Log.i("Local filename:",""+filename);	//filename is download.zip
+			                //String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
+			                Log.i("Local filename:",""+filename);
 			                file = new File(SDCardRoot + placebooksfolder,filename); //SDCardRoot/PlaceBooks
 
 			                
@@ -356,15 +387,15 @@ public class Shelf extends ListActivity {
 			                fileOutput.flush();
 			                fileOutput.close();
 			                
-			                // location of the downloaded .zip file on the sd card
-			                String fileLoc = (Environment.getExternalStorageDirectory() +placebooksfolder + "/" +filename);  //PlaceBooks/filename.zip
-			                String unzipLocation = Environment.getExternalStorageDirectory() + placebooksfolder + "/unzipped/packages/";
+			                // location of the downloaded .zip file on the sd card AND unzip file path (where to unzip)
+			                String zipFileLocation = (SDCardRoot +placebooksfolder + "/" +filename);
+			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped" + packagePath) ;
+			                // pass these values to the unzipper method in the decompress class
+			                Decompress unzipper=new Decompress(zipFileLocation, unzipPath);			                
 			                
-			                Decompress d = new Decompress(fileLoc, unzipLocation); 
-			                d.unzip();
-			                
-			    
+			                			    
 			                if(downloadedSize==totalSize)   filepath=file.getPath();
+			                reload();
 			                
 			            //catch some possible errors...  
 			            } catch (MalformedURLException e) {
@@ -392,9 +423,33 @@ public class Shelf extends ListActivity {
 			        @Override
 			        protected void onPostExecute(String unused) {
 			            dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+			            
 			        }
 			    }
 			   
-	
+			   
+			   /*
+			    * Reload method for reloading the activity
+			    */
+			   public void reload() {
+
+				    Intent intent = getIntent();
+				    overridePendingTransition(0, 0);
+				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				    finish();
+
+				    overridePendingTransition(0, 0);
+				    startActivity(intent);
+				}
+
+			   
+			   /*
+			    * A method that checks if an SDCard is present on the mobile device
+			    */  
+			   public static boolean isSdPresent() {
+				   
+				   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+				   
+			   }
 
 }	//end of public shelf

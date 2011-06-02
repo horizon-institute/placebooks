@@ -117,17 +117,23 @@ public class PlaceBook
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
 
-		final Element timestamp = config.createElement("timestamp");
-		timestamp.appendChild(
-			config.createTextNode(this.getTimestamp().toString())
-		);
-		root.appendChild(timestamp);
+		if (getTimestamp() != null)
+		{
+			final Element timestamp = config.createElement("timestamp");
+			timestamp.appendChild(
+				config.createTextNode(this.getTimestamp().toString())
+			);
+			root.appendChild(timestamp);
+		}
 
-		final Element geometry = config.createElement("geometry");
-		geometry.appendChild(
-			config.createTextNode(this.getGeometry().toText())
-		);
-		root.appendChild(geometry);
+		if (getGeometry() != null)
+		{
+			final Element geometry = config.createElement("geometry");
+			geometry.appendChild(
+				config.createTextNode(this.getGeometry().toText())
+			);
+			root.appendChild(geometry);
+		}
 
 		if (!metadata.isEmpty())
 		{

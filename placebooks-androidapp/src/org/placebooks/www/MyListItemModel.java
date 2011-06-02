@@ -11,6 +11,7 @@ public class MyListItemModel { //that's our book
     private String title; // the book's title
     private String description;	//the book's description
     private int id; //book owner id
+    private String owner;  //book owner name e.g stuart
     private String key;	//book key
     private String packagePath;	//package path for the book
     private Context context;
@@ -41,6 +42,14 @@ public class MyListItemModel { //that's our book
     
     public void setKey(String key){
     	this.key = key;
+    }
+    
+    public String getOwner(){
+    	return owner;
+    }
+    
+    public void setOwner(String theOwner){
+    	this.owner = theOwner;
     }
     
     public int getID() {

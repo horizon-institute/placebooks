@@ -48,21 +48,22 @@
             android:layout_height="wrap_content"
             android:text="Sign In"
             /> 
-<!--  
+  <!--
 	  <Button 
 			android:text="Get My PlaceBook"
 			android:id="@+id/Button01"
 			android:layout_width="150px"
 			android:layout_height="wrap_content"
 			/> 
-						
+					
 	  <Button 
-			android:text="View My PlaceBook"
+			android:text="View A PlaceBook"
 			android:id="@+id/Button02"
 			android:layout_width="150px"
 			android:layout_height="wrap_content"
 			/> 
-			-->
+		-->		
+			
 	  <TextView android:id="@+id/status"
     		android:layout_width="fill_parent" 
    			 android:layout_height="wrap_content" 

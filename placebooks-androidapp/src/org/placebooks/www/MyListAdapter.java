@@ -23,7 +23,7 @@ public class MyListAdapter extends BaseAdapter {
 
 
      /*
-      * onstructor takes in the context from the shelf class and
+      * Constructor takes in the context from the shelf class and
       * set the LayoutInflater
       */
     public MyListAdapter(Context c){//(View renderer) {
@@ -85,7 +85,7 @@ public class MyListAdapter extends BaseAdapter {
         button2.setOnClickListener(item.view_listener);
         
         //check if the package has already been downloaded to the SDCard
-		File f = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks/unzipped/packages/"+item.getKey());
+		File f = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks/unzipped" + item.getPackagePath());
 		if(f.exists()){
 			//If exists then hide 'download' button and show 'view' button
 			//button2.setText("View");

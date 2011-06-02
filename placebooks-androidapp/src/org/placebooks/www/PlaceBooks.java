@@ -49,11 +49,11 @@ public class PlaceBooks extends Activity {
         
         if (isSdPresent()){
         	//SDCard IS mounted. Now check if PlaceBooks dir exists. Create it on first app startup.
-    		File directory = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks/");
+    		File directory = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks");///");
     		
 	    		if(!directory.exists()){
 	    			//create the placebooks directory on the SDCard
-	    			directory = new File(Environment.getExternalStorageDirectory()+File.separator+"PlaceBooks");
+	    			directory = new File(Environment.getExternalStorageDirectory()+"/PlaceBooks");//File.separator+"PlaceBooks");
 	    			directory.mkdirs();
 	    		}
 	    		else{
@@ -114,7 +114,39 @@ public class PlaceBooks extends Activity {
         		
         	}
         });
-      }
+        
+        
+        /*
+         * View my placebook button       
+         */
+/*      Button buttonR = (Button) findViewById(R.id.Button02);
+        buttonR.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v){
+        		
+        		//check to see if there is an sd card mounted  
+   	        	if (!isSdPresent()){
+   	             
+       	         	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
+       	         	builder.setTitle("No SD Card!");
+       	         	builder.setMessage("There is no sd card mounted to this device! You must mount an sd card to the device!");
+       	         	builder.setPositiveButton("OK", null);
+       	         	AlertDialog dialog = builder.show();
+
+   	        	}  
+   	        	else{
+   	        		// There is an sd card mounted so read the placebook from the sd card and display it by calling the Reader Class
+	        		Intent i = new Intent();
+	        		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
+	        		startActivity(i);	
+   	        	
+   	        	}
+        	}
+        });    
+
+   */     
+        
+        
+      }   //end of onCreate()
            
    
 	   /*

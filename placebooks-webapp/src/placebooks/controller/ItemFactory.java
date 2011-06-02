@@ -129,7 +129,7 @@ public class ItemFactory
 		imageItem.setGeometry(geom);
 		imageItem.setSourceURL(sourceUrl);
 			//= new ImageItem(testUser, geom, sourceUrl, image);
-		imageItem.addMetadataEntry("picture_id", picture_id);
+		imageItem.addMetadataEntry("title", picture_id);
 	}
 
 	public static VideoItem toVideoItem(final User owner, final VideoEntry youtubeVideo)

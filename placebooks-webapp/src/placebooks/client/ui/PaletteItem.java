@@ -36,7 +36,14 @@ public class PaletteItem extends Composite
 	public PaletteItem(PlaceBookItem placeBookItem)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		this.text.setText(placeBookItem.getMetadata("title"));
+		if(placeBookItem.hasMetadata("title"))
+		{
+			this.text.setText(placeBookItem.getMetadata("title"));
+		}
+		else
+		{
+			this.text.setText("Unnamed");
+		}
 		item = placeBookItem;
 
 		if (item.getClassName().equals("placebooks.model.TextItem"))
@@ -51,6 +58,10 @@ public class PaletteItem extends Composite
 		{
 			image.setResource(Resources.INSTANCE.movies());
 		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			image.setResource(Resources.INSTANCE.music());
+		}		
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			image.setResource(Resources.INSTANCE.map());
@@ -65,7 +76,10 @@ public class PaletteItem extends Composite
 	
 	PlaceBookItem createItem()
 	{
-		// TODO is there a better way to clone item?
+		if(item.getKey() != null)
+		{
+			return item;
+		}
 		return PlaceBookItem.parse(new JSONObject(item).toString());
 	}
 }
