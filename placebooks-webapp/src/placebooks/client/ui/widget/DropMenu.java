@@ -13,7 +13,10 @@ public class DropMenu extends FlowPanel
 		clear();
 		for(MenuItem item: items)
 		{
-			add(item);
+			if(item.isEnabled())
+			{
+				add(item);
+			}
 		}
 			 
 		getElement().getStyle().setTop(y, Unit.PX);

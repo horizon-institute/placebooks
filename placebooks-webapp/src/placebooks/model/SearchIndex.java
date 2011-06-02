@@ -51,10 +51,14 @@ public class SearchIndex
 		return Collections.unmodifiableSet(index);
 	}
 
+	public void clear()
+	{
+		index.clear();
+	}
+	
 	public void setIndex(final Set<String> index)
 	{
 		this.index.clear();
 		this.index.addAll(index);
 	}
-
 }

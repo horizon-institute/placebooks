@@ -16,6 +16,13 @@ public class RemoveMapMenuItem extends MenuItem
 	public void run()
 	{
 		item.getItem().removeMetadata("mapItemID");
-		// TODO Update map
+		item.refresh();
+		item.markChanged();		
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return item.getItem().hasMetadata("mapItemID");
 	}
 }

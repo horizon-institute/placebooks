@@ -12,6 +12,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.places.EditorPlace;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
 
@@ -36,6 +37,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -77,7 +79,7 @@ public class PlaceBookCanvas extends Composite
 				public void success(final Request request, final Response response)
 				{
 					updatePlaceBook(PlaceBook.parse(response.getText()));
-					savingPanel.getElement().getStyle().setDisplay(Display.NONE);					
+					savingPanel.getElement().getStyle().setDisplay(Display.NONE);
 				}
 			});
 		}
@@ -98,9 +100,6 @@ public class PlaceBookCanvas extends Composite
 	Panel canvas;
 
 	@UiField
-	Button populate;
-	
-	@UiField
 	Image dragImage;
 
 	@UiField
@@ -111,6 +110,9 @@ public class PlaceBookCanvas extends Composite
 
 	@UiField
 	Panel palette;
+
+	@UiField
+	Button populate;
 
 	@UiField
 	Panel savingPanel;
@@ -130,16 +132,15 @@ public class PlaceBookCanvas extends Composite
 
 	private PlaceBook placebook;
 
+	private final PlaceController placeController;
+
 	private SaveTimer saveTimer = new SaveTimer();
 
-	public Iterable<PlaceBookItemFrame> getItems()
-	{
-		return items;
-	}
-
-	public PlaceBookCanvas()
+	public PlaceBookCanvas(final PlaceController placeController)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+
+		this.placeController = placeController;
 
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
@@ -171,43 +172,20 @@ public class PlaceBookCanvas extends Composite
 			}
 		});
 	}
-	
-	@UiHandler("populate")
-	public void startPopulation(ClickEvent event)
+
+	public Iterable<PlaceBookItemFrame> getItems()
 	{
-		populate.setEnabled(false);
-		PlaceBookService.everytrail(new AbstractCallback()
-		{
-			@Override
-			public void success(Request request, Response response)
-			{
-				getPaletteItems();
-			}
-			
-			@Override
-			public void failure(Request request)
-			{
-				getPaletteItems();
-			}			
-		});
+		return items;
 	}
-	
-	private void getPaletteItems()
-	{
-		PlaceBookService.getPaletteItems(new AbstractCallback()
-		{
-			@Override
-			public void success(Request request, Response response)
-			{
-				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				setPalette(items);			
-			}
-		});
-	}
-	
+
 	public PlaceBook getPlaceBook()
 	{
 		return placebook;
+	}
+
+	public void markChanged()
+	{
+		saveTimer.markChanged();
 	}
 
 	public void reflow()
@@ -218,16 +196,24 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
+	public void remove(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+		canvas.remove(item);
+		placebook.removeItem(item.getItem());
+		saveTimer.markChanged();
+	}
+
 	public void setPalette(final JsArray<PlaceBookItem> items)
 	{
 		palette.clear();
-		
+
 		add(new PaletteItem(
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Text Item\"},\"parameters\":{},\"text\":\"New Text Block\"}")));
 		add(new PaletteItem(
 				PlaceBookItem
-						.parse("{\"@class\":\"placebooks.model.ImageItem\",\"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Image Item\"},\"parameters\":{}}")));
+						.parse("{\"@class\":\"placebooks.model.ImageItem\",\"geom\": \"POINT(42.438878 -71.119277)\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Image Item\"},\"parameters\":{}}")));
 		add(new PaletteItem(
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video Item\"},\"parameters\":{}}")));
@@ -238,9 +224,8 @@ public class PlaceBookCanvas extends Composite
 				PlaceBookItem
 						.parse("{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\"http://www.topografix.com/fells_loop.gpx\",\"metadata\":{\"title\":\"Test Route\"},\"parameters\":{}}")));
 		add(new PaletteItem(
-		    				PlaceBookItem
-		    						.parse("{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Test Audio\"},\"parameters\":{}}")));
-		
+				PlaceBookItem
+						.parse("{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Test Audio\"},\"parameters\":{}}")));
 
 		for (int index = 0; index < items.length(); index++)
 		{
@@ -248,8 +233,34 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
+	@UiHandler("populate")
+	public void startPopulation(final ClickEvent event)
+	{
+		populate.setEnabled(false);
+		PlaceBookService.everytrail(new AbstractCallback()
+		{
+			@Override
+			public void failure(final Request request)
+			{
+				getPaletteItems();
+			}
+
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				getPaletteItems();
+			}
+		});
+	}
+
 	public void updatePlaceBook(final PlaceBook newPlacebook)
 	{
+		if (this.placebook != null
+				&& (this.placebook.getKey() == null || !this.placebook.getKey().equals(newPlacebook.getKey())))
+		{
+			placeController.goTo(new EditorPlace(newPlacebook));
+		}
+
 		this.placebook = newPlacebook;
 
 		final Map<String, PlaceBookItemFrame> kept = new HashMap<String, PlaceBookItemFrame>();
@@ -461,6 +472,19 @@ public class PlaceBookCanvas extends Composite
 		return null;
 	}
 
+	private void getPaletteItems()
+	{
+		PlaceBookService.getPaletteItems(new AbstractCallback()
+		{
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
+				setPalette(items);
+			}
+		});
+	}
+
 	private boolean isInWidget(final Widget widget, final int x, final int y)
 	{
 		final int left = widget.getElement().getOffsetLeft();
@@ -481,12 +505,5 @@ public class PlaceBookCanvas extends Composite
 		dragImage.setStyleName(Resources.INSTANCE.style().dragImage());
 
 		handleDrag(event, false);
-	}
-
-	public void remove(PlaceBookItemFrame item)
-	{
-		items.remove(item);
-		canvas.remove(item);
-		placebook.removeItem(item.getItem());		
 	}
 }
