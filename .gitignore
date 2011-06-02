@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-/placebooks-webapp/.project
-=======
 placebooks-webapp/.project
->>>>>>> upstream/master
+placebooks-androidapp/bin
 thumbs.db
 .settings
 .buildpath
