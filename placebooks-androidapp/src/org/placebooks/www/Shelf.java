@@ -1,36 +1,43 @@
 package org.placebooks.www;
 
-import android.app.Activity;
+//import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.zip.ZipException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListAdapter;
+import android.view.ViewGroup;
+//import android.widget.AdapterView;
+//import android.widget.AdapterView.OnItemClickListener;
+//import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+//import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.InputStream;
@@ -38,38 +45,46 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import org.apache.http.util.ByteArrayBuffer;
 import java.io.IOException;
-import android.widget.Button;
 import android.view.View.OnClickListener; 
+import android.view.LayoutInflater;
 
+import java.net.URL;
+import android.os.AsyncTask;
+import android.content.res.Configuration;
+import android.app.AlertDialog;
 
 
 
 public class Shelf extends ListActivity {
 	
-	private String name;
 	private JSONObject json;
-//    protected ListView mListView;
     private String username;
-    private ArrayList<Button> download;
-    private ArrayList<Button> view;
     ListView lv;
-    private ArrayList<Integer> pbkey = new ArrayList<Integer>();
-    
+	
+	//-- Download variables --
+	private static String placebooksfolder = new String("/PlaceBooks");
+	private File file;
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    private ProgressDialog mProgressDialog;
+    private String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
+    //-- Download Variables --
+
 	
 	 @Override
 		public void onCreate(Bundle savedInstanceState) {
 		        super.onCreate(savedInstanceState);	//icicle
 		        setContentView(R.layout.shelflist);	//push shelf list layout into the content view
-		
-		        ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-		        
+		        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
+
+		      
+		      
 		        /*
 		         * get the extras (username) out of the new intent
 		         * retrieve the username.
 		         */
 		        Intent intent = getIntent();
 		        if(intent != null) username = intent.getStringExtra("username");
-		        	        
+
 		        		       
 		        /*
 		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
@@ -84,16 +99,16 @@ public class Shelf extends ListActivity {
 		          	
 		          	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
-			        tv.setText("reading the shelf from the Internet. Also updating the cached shelf.");	
+			        tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
 			        ll.addView(tv);
 		          	
 		        }
 		        else if (!isOnline()) {		//do a check if there is a shelf file on the sdcard
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
-			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/packages/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
 		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
-			        tv.setText("reading the cached shelf because cannot connect to Internet at this time.");
+			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time.");
 			        ll.addView(tv);
 			        
 			        
@@ -106,52 +121,87 @@ public class Shelf extends ListActivity {
 		        	ll.addView(tv);
 		        }
 		       
-		        
+		        List<MyListItemModel> myListModel = new ArrayList<MyListItemModel>();
+
 		        try{
 		        	
 		        	JSONArray entries = json.getJSONArray("entries");
+		        	JSONObject u = json.getJSONObject("user");
 		        	
 			        for(int i=0;i<entries.length();i++){						
-						HashMap<String, String> map = new HashMap<String, String>();	
-						JSONObject e = entries.getJSONObject(i);
-						
-						pbkey.add(e.getInt("key"));	// store the placebook keys in the arraylist	
-						map.put("id",  String.valueOf(i));
-			        	map.put("title", "Title:" + e.getString("title"));
-			        	map.put("description", "Description: " +  e.getString("description"));
-			        	mylist.add(map);
+					
+			        	final MyListItemModel item = new MyListItemModel(this);
+			        	JSONObject e = entries.getJSONObject(i);
+			        	
+			        	item.setID(i);		//Owner ID
+			        	item.setKey(e.getString("key"));	//book key key
+			        	item.setTitle(e.getString("title"));	//book title
+			        	item.setDescription(e.getString("description"));	//book description
+			        	item.setPackagePath(e.getString("packagePath"));
+			        	
+			        	
+			        	item.setOwner(u.getString("name"));  //book owner name e.g stuart
+			        		
+			        	 item.dl_listener = new OnClickListener(){
+				        	public void  onClick  (View  v){
+				        		
+				        		//if the sdcard is mounted then download
+				        		if (isSdPresent()){
+				        		
+				        			/**
+				        			 * placebook does not exist on sdcard so download it.
+				        			 * call the download method and pass it the book key and package path
+				        			 */
+				        			downloadPlaceBook(item.getKey(), item.getPackagePath() );
+				        		}
+				        		else{
+				        			//no sdcard
+				        			Log.d("MyApp", "No SDCARD");
+				        		       
+				                	AlertDialog.Builder builder = new AlertDialog.Builder(Shelf.this);
+				                	builder.setTitle("No SD Card!");
+				                	builder.setMessage("There is no sd card mounted to this device! You need an sd card to download a placebook!");
+				                	builder.setPositiveButton("OK", null);
+				                	builder.show();
+				        			
+				        		}
+
+						     } 
+						   };
+						   
+						 item.view_listener = new OnClickListener(){
+					       public void  onClick  (View  v){
+					        						        		
+					        		/*
+					        		 * placebook exists on sdcard so view it
+					        		 * call to viewPlacebook();
+					        		 */
+					        		Intent intent = new Intent();
+					        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
+					        		
+					        		intent.putExtra("packagePath", item.getPackagePath());
+					        		startActivity(intent);	
+					        		
+							     } 
+							   };
+						   
+			        	
+			        	myListModel.add(item);	//add the item to the arraylist of ListItems
+			        		}
+
+			        	}catch(JSONException e) {
+			        		Log.e("log_tag", "Error parsing data "+e.toString());
+			        	}
+			        	
+			        	
+			        	MyListAdapter adapter = new MyListAdapter(this);	//create the Adapter
+			        	adapter.setModel(myListModel);		//pass the ArrayList into the Adapter
+			        	setListAdapter(adapter);			//assign Adapter
+			        	lv = getListView();				//call the ListView
+			        	lv.setTextFilterEnabled(true);  //enables filtering for the contents of the ListView.
 			        	
 			        				        	
-					}		
-		        }catch(JSONException e)        {
-		        	 Log.e("log_tag", "Error parsing data "+e.toString());
-		        }
-		        
-		        ListAdapter adapter = new SimpleAdapter(this, mylist , R.layout.shelf, 
-		                        new String[] { "title", "description" }, 
-		                        new int[] { R.id.item_title, R.id.item_subtitle });
-		        
-		        setListAdapter(adapter);
-		        
-		        
-		      /*  final ListView lv = getListView();
-		        lv.setTextFilterEnabled(true);	
-		        
-		        //action listener for each row
-		        lv.setOnItemClickListener(new OnItemClickListener() {
-		        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {        		
-		        		@SuppressWarnings("unchecked")
-						HashMap<String, String> o = (HashMap<String, String>) lv.getItemAtPosition(position);	        		
-		        		Toast.makeText(Shelf.this, o.get("title") + "' was clicked.", Toast.LENGTH_SHORT).show(); 
-
-					}
-				});    
-		       */
-		       
-		        
-		   
-		        
-		        
+		    
 	 } //end of onCreate
 	 
 	 /*
@@ -173,11 +223,11 @@ public class Shelf extends ListActivity {
 	 public void DownloadFromUrl(String DownloadUrl, String fileName) {
 
 		   try {
-		           //File root = android.os.Environment.getExternalStorageDirectory();               
+		           //File root = android.os.Environment.getExternalStorageDirectory();   
 
 		           //File dir = new File (root.getAbsolutePath() + "/xmls");
 		           File SDCardRoot = Environment.getExternalStorageDirectory();
-		           File dir = new File(SDCardRoot + "/placebooks/unzipped/packages/"); //SDCardRoot/PlaceBooks/unzipped/packages
+		           File dir = new File(SDCardRoot + "/placebooks/unzipped/"); //SDCardRoot/PlaceBooks/unzipped/packages
 		           if(dir.exists()==false) {
 		                dir.mkdirs();
 		           }
@@ -220,51 +270,186 @@ public class Shelf extends ListActivity {
 		       Log.d("DownloadManager", "Error: " + e);
 		   }
 
-		}
-	 
+		}	 
 
-	 public void myClickHandler(View v) 
-	    {
-	          
-	        //reset all the listView items background colours 
-	        //before we set the clicked one..
+	 public void downloadPlaceBook(String theKey, String downloadPath) {
+	//	 String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
+		 String dlPath = downloadPath;
+	     String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
+		 new DownloadFileAsync(dlPath).execute(url);	
+		
+		 //Toast msg = Toast.makeText(Shelf.this, "Message " + theKey, Toast.LENGTH_LONG);
+ 		//msg.show();
+	    }
+	 		
+			 @Override
+			    public void onConfigurationChanged (Configuration newConfig){
+			    	super.onConfigurationChanged(newConfig);
+			    }
 
-	        lv = getListView();
-		    lv.setTextFilterEnabled(true);
-    
-	        for (int i=0; i < lv.getChildCount(); i++) 
-	       {
-	        	
-//	            lvItems.getChildAt(i).setBackgroundColor(Color.BLUE); 
-	        	
-	        	/*LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-		        TextView tv = new TextView(this);
-		        tv.setText("keys are: " + pbkey.get(i));	
-		        ll.addView(tv);
-	        	*/
-	        
-	       }
-	        
-	        
-	        //get the row the clicked button is in
-//	        LinearLayout vwParentRow = (LinearLayout)v.getParent();
-	         
-//	        TextView child = (TextView)vwParentRow.getChildAt(0);
-//	        Button btnChild = (Button)vwParentRow.getChildAt(1);
-//	        btnChild.setText(child.getText());
-//	        btnChild.setText("I've been clicked!");
-	        
-	        //int c = Color.CYAN;
-	        
-//	        vwParentRow.setBackgroundColor(c); 
-//	        vwParentRow.refreshDrawableState();      
-		// Toast.makeText(getApplicationContext(), "OK button clicked", Toast.LENGTH_LONG).show();
+			    
+			    @Override
+			    protected Dialog onCreateDialog(int id) {
+			        switch (id) {
+			            case DIALOG_DOWNLOAD_PROGRESS:
+			                mProgressDialog = new ProgressDialog(this);
+			                mProgressDialog.setMessage("Downloading PlaceBook..");
+			                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			                mProgressDialog.setCancelable(true);
+			                mProgressDialog.show();
+			                return mProgressDialog;
+			            default:
+			                return null;
+			        }
+			    }
+			    
+			   public class DownloadFileAsync extends AsyncTask<String, String, String> {
+				   String packagePath;
+				  
+				   public DownloadFileAsync(String dlPath){
+					   packagePath = dlPath;
+				   }
+				   
+			        @Override
+			        protected void onPreExecute() {
+			            super.onPreExecute();
+			            showDialog(DIALOG_DOWNLOAD_PROGRESS);
+			        }
 
-		}
-	 
-	
-	 
-	
-	
+			        @Override
+			        protected String doInBackground(String... aurl) {
+			      //      int count;
+			            String filepath=null;
 
-}
+
+			            try {
+			                URL url = new URL(aurl[0]);
+			          //      URLConnection urlConnection  = url.openConnection();
+			                //create the new connection
+			                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+			                //set up some things on the connection
+			                urlConnection.setRequestMethod("GET");
+			                urlConnection.setDoOutput(true); 
+			                 //and connect!
+			                urlConnection.connect();
+
+			                int lenghtOfFile = urlConnection .getContentLength();
+			                Log.d("ANDRO_ASYNC", "Lenght of file: " + lenghtOfFile);
+
+			       
+			                File SDCardRoot = Environment.getExternalStorageDirectory();
+			                //create a new file, specifying the path, and the filename
+			                //which we want to save the file as.
+			    
+			                /**
+			                 * This needs to be changed to whatever the filename you are downloading is called. 
+			                 */
+			                //String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
+			                Log.i("Local filename:",""+filename);
+			                file = new File(SDCardRoot + placebooksfolder,filename); //SDCardRoot/PlaceBooks
+
+			                
+			                if(file.createNewFile())
+			                {
+			                 file.createNewFile();
+			                }
+
+			                //this will be used to write the downloaded data into the file we created
+			                FileOutputStream fileOutput = new FileOutputStream(file);
+
+			                //this will be used in reading the data from the internet
+			                InputStream inputStream = urlConnection.getInputStream();
+			                
+			                               
+			                //this is the total size of the file
+			                int totalSize = urlConnection.getContentLength();
+			                //variable to store total downloaded bytes
+			                int downloadedSize = 0;                
+
+			                //create a buffer...
+			                byte[] buffer = new byte[1024];
+			                int bufferLength = 0; //used to store a temporary size of the buffer
+
+			                
+			                while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+			              	  
+			                    //add the data in the buffer to the file in the file output stream (the file on the sd card
+			                    fileOutput.write(buffer, 0, bufferLength);
+			                    //add up the size so we know how much is downloaded
+			                    downloadedSize += bufferLength;
+			                    publishProgress(""+(int)((downloadedSize*100)/lenghtOfFile));
+			                    
+			                    //this is where you would do something to report the progress, like this maybe
+			                    Log.i("Progress:","downloadedSize:"+downloadedSize+"totalSize:"+ totalSize) ;
+
+			                   }
+			                     
+			                fileOutput.flush();
+			                fileOutput.close();
+			                
+			                // location of the downloaded .zip file on the sd card AND unzip file path (where to unzip)
+			                String zipFileLocation = (SDCardRoot +placebooksfolder + "/" +filename);
+			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped" + packagePath) ;
+			                // pass these values to the unzipper method in the decompress class
+			                Decompress unzipper=new Decompress(zipFileLocation, unzipPath);			                
+			                
+			                			    
+			                if(downloadedSize==totalSize)   filepath=file.getPath();
+			                reload();
+			                
+			            //catch some possible errors...  
+			            } catch (MalformedURLException e) {
+			            	
+			            	e.printStackTrace();
+			            }
+			            catch (IOException e) {
+			            	
+			            	e.printStackTrace();
+			            }
+			            
+			            catch (Exception e) {}
+			            
+			            Log.i("filepath:", " " +filepath);
+			            
+			            //return null;
+			            return filepath;
+			            
+			        }
+			        protected void onProgressUpdate(String... progress) {
+			             Log.d("ANDRO_ASYNC",progress[0]);
+			             mProgressDialog.setProgress(Integer.parseInt(progress[0]));
+			        }
+
+			        @Override
+			        protected void onPostExecute(String unused) {
+			            dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+			            
+			        }
+			    }
+			   
+			   
+			   /*
+			    * Reload method for reloading the activity
+			    */
+			   public void reload() {
+
+				    Intent intent = getIntent();
+				    overridePendingTransition(0, 0);
+				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				    finish();
+
+				    overridePendingTransition(0, 0);
+				    startActivity(intent);
+				}
+
+			   
+			   /*
+			    * A method that checks if an SDCard is present on the mobile device
+			    */  
+			   public static boolean isSdPresent() {
+				   
+				   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+				   
+			   }
+
+}	//end of public shelf

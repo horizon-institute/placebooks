@@ -40,7 +40,10 @@ public final class TileHelper
 
 
 	private static final String buildOpenSpaceQuery(final int layer, 
-													final int blockSize,
+													final int blockSizeX,
+													final int blockSizeY,
+													final int width,
+													final int height,
 													final OSRef ref,
 													final String format)
 	{
@@ -61,8 +64,8 @@ public final class TileHelper
 
 		final int x1 = (int)ref.getEasting();
 		final int y1 = (int)ref.getNorthing();
-		final int x2 = x1 + blockSize;
-		final int y2 = y1 + blockSize;
+		final int x2 = x1 + blockSizeX;
+		final int y2 = y1 + blockSizeY;
 
 		final String url = baseURL
 					 + "?FORMAT=" + format
@@ -78,24 +81,84 @@ public final class TileHelper
 					 	+ Integer.toString(x1) + "," + Integer.toString(y1)
 						+ "," + Integer.toString(x2) + "," 
 						+ Integer.toString(y2)
-					 + "&WIDTH=200&HEIGHT=200";
+					 + "&WIDTH=" + Integer.toString(width) + "&HEIGHT=" 
+					 + Integer.toString(height);
 
 		return url;
 	}
 
 	public static final File getMap(final PlaceBook p)
+		throws IOException, IllegalArgumentException
 	{
-		return null;
+		if (p.getGeometry() == null)
+		{
+			p.calcBoundary();
+			if (p.getGeometry() != null)
+				return getMap(p.getGeometry());
+			else
+				return null;
+		}
+		else
+			return getMap(p.getGeometry());
 	}
 
 	public static final File getMap(final PlaceBookItem pi)
+		throws IOException, IllegalArgumentException
 	{
-		return null;
+		return getMap(pi.getGeometry());
 	}
 
 	public static final File getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException
 	{
+		int layer = 5;
+		int incX = 1000;
+		int incY = 1000;
+		int pixelX = 200;
+		int pixelY = 200;
+		String fmt = "png";
+
+		try
+		{
+			layer = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5")
+			);
+			incX = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_EASTING, 
+								 "1000")
+			);
+			incY = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_NORTHING, 
+								 "1000")
+			);
+			pixelX = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_X, "200")
+			);
+			pixelY = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_Y, "200")
+			);
+			fmt = PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png")
+					.toLowerCase().trim();
+
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString());
+		}
+
+
 		// 0 = TL, 1 = BR
 		Coordinate[] bbox_ = new Coordinate[2];
 		bbox_[0] = new Coordinate(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -110,8 +173,6 @@ public final class TileHelper
 			bbox_[1].y = Math.max(coords[i].y, bbox_[1].y);
 		}
 		
-		log.info("bbox_[] = " + Arrays.toString(bbox_));
-		
 		OSRef[] bbox = new OSRef[2];
 		for (int i = 0; i < bbox_.length; ++i)
 		{
@@ -121,31 +182,43 @@ public final class TileHelper
 					 + bbox[i].getNorthing());
 		}
 
-		final double eDelta = Math.abs(bbox[1].getEasting() 
-									   - bbox[0].getEasting());
-		final double nDelta = Math.abs(bbox[1].getEasting() 
-									   - bbox[0].getEasting());
+		int x = (int)Math.floor((bbox[0].getEasting() / incX)) * incX,
+			y = (int)Math.floor((bbox[0].getNorthing() / incY)) * incY;
+		bbox[0] = new OSRef(x, y);
+		x = (int)Math.ceil((bbox[1].getEasting() / incX)) * incX;
+		y = (int)Math.ceil((bbox[1].getNorthing() / incY)) * incY;
+		bbox[1] = new OSRef(x, y);
+		
 
-		final int inc = 2000;
-		final int eBlocks = (int)Math.ceil(eDelta / (double)inc);
-		final int nBlocks = (int)Math.ceil(nDelta / (double)inc);
+		final int eBlocks = (int)Math.ceil(
+									(Math.abs(bbox[1].getEasting() 
+									 - bbox[0].getEasting())
+								 	) / (double)incX);
+		final int nBlocks = (int)Math.ceil(
+									(Math.abs(bbox[1].getNorthing() 
+									   - bbox[0].getNorthing())
+									) / (double)incY);
+		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
 
 		final BufferedImage buf = 
-			new BufferedImage(200 * eBlocks, 200 * nBlocks, 
+			new BufferedImage(pixelX * eBlocks, pixelY * nBlocks, 
 							  BufferedImage.TYPE_INT_RGB);
 		final Graphics graphics = buf.createGraphics();
 
-		int n = 0, m = 0;
-		for (int i = (int)bbox[0].getEasting(); i < (int)bbox[1].getEasting(); 
-			 i += inc)
+		int n = 0;
+		for (int i = (int)bbox[0].getEasting(); i <= (int)bbox[1].getEasting(); 
+			 i += incX)
 		{
-			for (int j = (int)bbox[0].getNorthing(); 
-				 j < (int)bbox[1].getNorthing(); j += inc)
+			int m = 0;
+			for (int j = (int)bbox[1].getNorthing(); 
+				 j >= (int)bbox[0].getNorthing(); j -= incY)
 			{
+				log.info("i = " + i + " j = " + j);
 				// %5C = \
 				final String url = 
-					buildOpenSpaceQuery(5, inc, new OSRef(i, j), "image%5Cpng");
-				log.info("URL = " + url);
+					buildOpenSpaceQuery(layer, incX, incY, pixelX, pixelY, 
+										new OSRef(i, j), "image%5C" + fmt
+					);
 				try
 				{
 					
@@ -158,16 +231,17 @@ public final class TileHelper
 						   );
 
 					graphics.drawImage(tile, n, m, null);
+					log.info("Drawing tile at " + n + ", " + m);
 				}
 				catch (final Throwable e)
 				{
 					log.error(e.toString());
 				}
 
-				m += 200;
+				m += pixelY;
 			}
 
-			n += 200;
+			n += pixelX;
 		}
 
 		graphics.dispose();
@@ -185,8 +259,15 @@ public final class TileHelper
 				throw new IOException("Failed to write file"); 
 			}
 	
-			mapFile = new File(path + "/map.png");
-			ImageIO.write(buf, "png", mapFile);
+			final String name = 
+				Integer.toString((int)bbox[0].getEasting()) 
+				+ Integer.toString((int)bbox[1].getNorthing())
+				+ Integer.toString((int)bbox[1].getEasting()) 
+				+ Integer.toString((int)bbox[0].getNorthing());
+
+
+			mapFile = new File(path + "/" + name + "." + fmt);
+			ImageIO.write(buf, fmt, mapFile);
 			log.info("Wrote map file " + mapFile.getAbsolutePath());
 		
 		}

@@ -73,44 +73,78 @@ public class PlaceBooksAdminControllerDebug
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
 
-	@RequestMapping(value = "/admin/debug/get_tiles", 
-					method = RequestMethod.GET)
-	public ModelAndView getTiles(final HttpServletRequest req, 
-								 final HttpServletResponse res)
+	@RequestMapping(value = "/admin/add_item/map", 
+					method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")	
+	public ModelAndView addMapImageItem(final HttpServletRequest req, 
+								 		final HttpServletResponse res)
 	{
-		
-//		final String poly = 
-//			"POLYGON ((56.89869142157009 -5.145721435546875, 56.70770945859063 -5.145721435546875, 56.70770945859063 -4.808921813964844, 56.89869142157009 -4.808921813964844, 56.89869142157009 -5.145721435546875))";
-		final String poly = "POLYGON ((52.7295 1.2595, 52.6233 1.2595, 52.6233 1.3823, 52.7295 1.3823, 52.7295 1.2595))";
-		
+
+		final EntityManager pm = EMFSingleton.getEntityManager();
+
+		final PlaceBooksAdminController.ItemData itemData = 
+			new PlaceBooksAdminController.ItemData();
+		PlaceBookItem pbi = null;
+
 		try
 		{
-			final File map = TileHelper.getMap(new WKTReader().read(poly));
-			
-			if (map != null && map.exists())
+			pm.getTransaction().begin();
+
+			for (final Enumeration<String> params = req.getParameterNames(); 
+				 params.hasMoreElements();)
 			{
-				ImageInputStream iis = ImageIO.createImageInputStream(map);
-				Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-				String fmt = "png";
-				while (readers.hasNext()) 
+				final String param = params.nextElement();
+				final String value = req.getParameterValues(param)[0];
+				if (!itemData.processItemData(pm, param, value))
 				{
-					ImageReader read = readers.next();
-					fmt = read.getFormatName();
+					String[] split = PlaceBooksAdminHelper.getExtension(param);
+					if (split == null)
+						continue;
+
+					String prefix = split[0], suffix = split[1];
+
+					final PlaceBook p = pm.find(PlaceBook.class, suffix);
+
+					if (prefix.contentEquals("map"))
+					{
+						pbi = new MapImageItem(null, null, null, null);
+						p.addItem(pbi);
+					}
 				}
-	
-				OutputStream out = res.getOutputStream();
-				ImageIO.write(ImageIO.read(map), fmt, out);
-				out.close();
+
 			}
-		}
+
+			if (pbi == null || itemData.getOwner() == null) 
+			{ 
+				return new ModelAndView(
+					"message", "text", "Error setting data elements"); 
+			}
+
+			pbi.setOwner(itemData.getOwner());
+			pbi.setGeometry(itemData.getGeometry());
+			pbi.setSourceURL(itemData.getSourceURL());
+			((MapImageItem)pbi).setPath(
+				(TileHelper.getMap(pbi.getGeometry())).getPath()
+			);
+			
+			pm.getTransaction().commit();
+
+		}		
 		catch (final Throwable e)
 		{
 			log.error(e.getMessage(), e);
-			return new ModelAndView("message", "text", "Error, " 
-									+ e.toString());
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+			pm.close();
 		}
 
-		return null;
+		return new ModelAndView("message", "text", "MapImageItem added");
 
 	}
 

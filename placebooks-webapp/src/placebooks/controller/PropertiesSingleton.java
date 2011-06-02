@@ -18,6 +18,13 @@ public final class PropertiesSingleton
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
 
+	public static final String IDEN_TILER_LAYER = "tiler.layer";
+	public static final String IDEN_TILER_NORTHING = "tiler.northing";
+	public static final String IDEN_TILER_EASTING = "tiler.easting";
+	public static final String IDEN_TILER_PIXEL_X = "tiler.x_pixels";
+	public static final String IDEN_TILER_PIXEL_Y = "tiler.y_pixels";
+	public static final String IDEN_TILER_FMT = "tiler.format";
+
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
