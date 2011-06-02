@@ -126,7 +126,10 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_audioFilename = true;
 				 filename = new StringBuilder();
 				 
-		  }else if(localName.equalsIgnoreCase("order")){
+		  }else if(localName.equalsIgnoreCase("parameters")){
+				 
+		   if (localName.equalsIgnoreCase("order")){	 
+
 			  if(this.in_placebooksText){
 				  this.in_textOrder = true;
 				  order = new StringBuilder();
@@ -144,8 +147,10 @@ public class XMLHandler extends DefaultHandler {
 				  order = new StringBuilder();
 			  }
 			  
-		  } //end of order
-			 
+		   }//end of if order
+			  
+		  } //end of parameters
+			
 		 }  
 	 }
 
@@ -221,29 +226,32 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 
 		 }
-		 else if (localName.equalsIgnoreCase("order")){
-			 this.in_textOrder = false;
-			 this.in_imageOrder = false;
-			 this.in_videoOrder = false;
-			 this.in_audioOrder = false;
+		 else if (localName.equalsIgnoreCase("parameters")){
+			 
+		 if (localName.equalsIgnoreCase("order")){	 
 			 
 			 if(this.in_placebooksText){
-				String o =  (order.toString());
-				titem.setOrder(Integer.parseInt(o));				 
+				this.in_textOrder = false;
+				titem.setOrder(Integer.parseInt(order.toString()));
+				order = null;
 			 }
 			 else if(this.in_placebooksImage){
-				String o =  (order.toString());
-				imitem.setOrder(Integer.parseInt(o));	 
+				this.in_imageOrder = false;
+				imitem.setOrder(Integer.parseInt(order.toString()));
+				order = null;
 			 }
 			 else if(this.in_placebooksVideo){
-				 String o = (order.toString());
-				 vitem.setOrder(Integer.parseInt(o));
+				 this.in_videoOrder = false;
+				 vitem.setOrder(Integer.parseInt(order.toString()));
+				 order = null;
 			 }
 			 else if(this.in_placebooksAudio){
-				 String o = (order.toString());
-				 aitem.setOrder(Integer.parseInt(o));
+				 this.in_audioOrder = false;
+				 aitem.setOrder(Integer.parseInt(order.toString()));
+				 order = null;
 			 }
-		 }
+		 }//end of if order
+		 }//end of else if parameters	
 		 
 	 }
 
