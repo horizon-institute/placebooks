@@ -25,6 +25,15 @@
 		<input type='submit' value='Add'>
 	</form>
 
+	<form action='../add_item/map' method='POST'>
+		Generate mapitem
+		<input type='hidden' name='map.${pb.key}' value=''>
+		<input type='hidden' name='key' value='${pb.key}'>
+		<input type='text' value='POLYGON ((52.651864 1.261797, 52.651864 1.322222, 52.607322 1.322222, 52.607322 1.261797, 52.651864 1.261797))' name='geometry'>
+		<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
+		<input type='submit' value='Gen map'>
+	</form>
+
 	<form action='../add_item/uploadandcreate' method='POST' enctype='multipart/form-data'>
 		Upload video: 
 		<input type='file' name='video.${pb.key}'>
