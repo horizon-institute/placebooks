@@ -6,8 +6,13 @@ public class Layer extends JavaScriptObject
 {
 	protected Layer() {}
 	
-	public final native Extent getExtent()
+	public final native void setVisible(final boolean visible)
 	/*-{
-		this.getDataExtent();
+		this.setVisibility(visible);
+	}-*/;	
+	
+	public final native Events getEvents()
+	/*-{
+		return this.events;
 	}-*/;
 }

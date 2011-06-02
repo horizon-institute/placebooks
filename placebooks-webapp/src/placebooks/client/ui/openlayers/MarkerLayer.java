@@ -19,4 +19,9 @@ public class MarkerLayer extends Layer
 	/*-{
 		this.clearMarkers();
 	}-*/;
+	
+	public final native Bounds getDataExtent()
+	/*-{
+		return this.getDataExtent();
+	}-*/;	
 }

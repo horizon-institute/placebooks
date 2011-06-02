@@ -15,4 +15,14 @@ public class LonLat extends JavaScriptObject
 	/*-{
 		return this.transform(proj1, proj2);
 	}-*/;	
+	
+	public final native float getLon()
+	/*-{
+		return this.lon;
+	}-*/;
+	
+	public final native float getLat()
+	/*-{
+		return this.lat;
+	}-*/;
 }

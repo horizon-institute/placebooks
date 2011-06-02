@@ -13,4 +13,9 @@ public class Marker extends JavaScriptObject
 	}-*/;
 	
 	protected Marker() {}
+
+	public final native Events getEvents()
+	/*-{
+		return this.events;
+	}-*/;	
 }

@@ -21,6 +21,15 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native String getMetadata(String name) /*-{ return this.metadata[name]; }-*/;
 
+	public final native String getMetadata(String name, final String defaultValue)
+	/*-{
+		if('metadata' in this && name in this.metadata)
+		{
+			return this.metadata[name];
+		}
+		return defaultValue;
+	}-*/;	
+	
 	public final native int getParameter(String name) /*-{ return this.parameters[name]; }-*/;
 
 	public final native String getSourceURL() /*-{ return this.sourceURL; }-*/;

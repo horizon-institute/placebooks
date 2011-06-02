@@ -74,6 +74,24 @@ public class PlaceBookItemFrame extends Composite
 
 	private DropMenu dropMenu;
 
+	private final MenuItem hideTrail = new MenuItem("Hide Trail")
+	{
+		@Override
+		public boolean isEnabled()
+		{
+			return item.getClassName().equals("placebooks.model.GPSTraceItem")
+					&& item.getMetadata("routeVisible", "true").equals("true");
+		}
+
+		@Override
+		public void run()
+		{
+			item.setMetadata("routeVisible", "false");
+			markChanged();
+			refresh();
+		}
+	};
+
 	private PlaceBookItem item;
 
 	private final List<MenuItem> menuItems = new ArrayList<MenuItem>();
@@ -122,11 +140,24 @@ public class PlaceBookItemFrame extends Composite
 			dialogBox.show();
 		}
 	};
-	
-	public void markChanged()
+
+	private final MenuItem showTrail = new MenuItem("Show Trail")
 	{
-		saveTimer.markChanged();
-	}
+		@Override
+		public boolean isEnabled()
+		{
+			return item.getClassName().equals("placebooks.model.GPSTraceItem") && item.getMetadata("routeVisible", "true").equals("false");
+		}
+
+		@Override
+		public void run()
+		{
+			item.removeMetadata("routeVisible");
+			markChanged();
+			refresh();
+
+		}
+	};
 
 	private final MenuItem upload = new MenuItem("Upload")
 	{
@@ -146,7 +177,7 @@ public class PlaceBookItemFrame extends Composite
 				@Override
 				public void onClick(final ClickEvent event)
 				{
-					//dialogBox.hide();
+					// dialogBox.hide();
 					form.submit();
 					// TODO Working indicator
 				}
@@ -168,10 +199,10 @@ public class PlaceBookItemFrame extends Composite
 			form.addSubmitHandler(new SubmitHandler()
 			{
 				@Override
-				public void onSubmit(SubmitEvent event)
+				public void onSubmit(final SubmitEvent event)
 				{
 					GWT.log("Submitted");
-					
+
 				}
 			});
 			form.addSubmitCompleteHandler(new SubmitCompleteHandler()
@@ -212,7 +243,9 @@ public class PlaceBookItemFrame extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		menuItems.add(new DeletePlaceBookMenuItem("Delete", canvas, this));
 		menuItems.add(new AddMapMenuItem("App to Map", canvas, this));
-		menuItems.add(new RemoveMapMenuItem("Remove from Map", this));		
+		menuItems.add(new RemoveMapMenuItem("Remove from Map", this));
+		menuItems.add(showTrail);
+		menuItems.add(hideTrail);
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
@@ -293,6 +326,76 @@ public class PlaceBookItemFrame extends Composite
 	public PlaceBookItem getItem()
 	{
 		return item;
+	}
+
+	public void markChanged()
+	{
+		saveTimer.markChanged();
+	}
+
+	public void refresh()
+	{
+		if (item.getClassName().equals("placebooks.model.TextItem"))
+		{
+			// final EditablePanel panel = (EditablePanel)widgetPanel.getWidget(0);
+		}
+		else if (item.getClassName().equals("placebooks.model.ImageItem"))
+		{
+			final Image image = (Image) widgetPanel.getWidget(0);
+			if (item.getKey() == null)
+			{
+				image.setUrl(item.getSourceURL());
+			}
+			else
+			{
+				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey() + "?"
+						+ System.currentTimeMillis());
+			}
+		}
+		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		{
+			final Audio audio = (Audio) widgetPanel.getWidget(0);
+			if (item.getKey() == null)
+			{
+				audio.setSrc(item.getSourceURL());
+			}
+			else
+			{
+				audio.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/audioitem/" + item.getKey() + "?"
+						+ System.currentTimeMillis());
+			}
+		}
+		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		{
+			final Video video = (Video) widgetPanel.getWidget(0);
+			if (item.getKey() == null)
+			{
+				video.setSrc(item.getSourceURL());
+			}
+			else
+			{
+				video.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/videoitem/" + item.getKey() + "?"
+						+ System.currentTimeMillis());
+			}
+		}
+		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
+		{
+			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
+			GWT.log(item.getMetadata("routeVisible"));
+			if (item.getKey() == null)
+			{
+				mapPanel.setURL(item.getSourceURL(), item.getMetadata("routeVisible", "true").equals("true"));
+			}
+			else
+			{
+				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey(), item.getMetadata("routeVisible", "true").equals("true"));
+			}
+		}
+		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
+		{
+			final Frame frame = (Frame) widgetPanel.getWidget(0);
+			frame.setUrl(item.getSourceURL());
+		}
 	}
 
 	public void setPlaceBookItem(final PlaceBookItem item)
@@ -436,69 +539,5 @@ public class PlaceBookItemFrame extends Composite
 	{
 		frame.removeStyleName(Resources.INSTANCE.style().dragShadow());
 		frame.getElement().getStyle().setZIndex(0);
-	}
-
-	public void refresh()
-	{
-		if (item.getClassName().equals("placebooks.model.TextItem"))
-		{
-			// final EditablePanel panel = (EditablePanel)widgetPanel.getWidget(0);
-		}
-		else if (item.getClassName().equals("placebooks.model.ImageItem"))
-		{
-			final Image image = (Image) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				image.setUrl(item.getSourceURL());
-			}
-			else
-			{
-				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
-		}
-		else if (item.getClassName().equals("placebooks.model.AudioItem"))
-		{
-			final Audio audio = (Audio) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				audio.setSrc(item.getSourceURL());
-			}
-			else
-			{
-				audio.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/audioitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
-		}
-		else if (item.getClassName().equals("placebooks.model.VideoItem"))
-		{
-			final Video video = (Video) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				video.setSrc(item.getSourceURL());
-			}
-			else
-			{
-				video.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/videoitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
-		}
-		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
-		{
-			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				mapPanel.setURL(item.getSourceURL());
-			}
-			else
-			{
-				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey());
-			}
-		}
-		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
-		{
-			final Frame frame = (Frame) widgetPanel.getWidget(0);
-			frame.setUrl(item.getSourceURL());
-		}
 	}
 }
