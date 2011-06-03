@@ -35,6 +35,9 @@
 	right: 0px;
 	background: rgba(0, 0, 0, 0.5);
 	z-index: 1000;
+	color: white;
+	padding: 2px 5px;
+	border-bottom: 1px solid black;
 }
 
 .imageitem {
