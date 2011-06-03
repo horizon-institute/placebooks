@@ -11,9 +11,9 @@ public class LonLat extends JavaScriptObject
 	
 	protected LonLat() {}
 	
-	public final native LonLat transform(Projection proj1, Projection proj2)
+	public final native LonLat transform(Projection source, Projection dest)
 	/*-{
-		return this.transform(proj1, proj2);
+		return this.transform(source, dest);
 	}-*/;	
 	
 	public final native float getLon()

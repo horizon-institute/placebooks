@@ -28,6 +28,15 @@
 	font-size: 12px;
 }
 
+.mapLabel {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+}
+
 .imageitem {
 	width: 100%;
 }

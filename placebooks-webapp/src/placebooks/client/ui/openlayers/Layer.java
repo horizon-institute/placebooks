@@ -15,4 +15,14 @@ public class Layer extends JavaScriptObject
 	/*-{
 		return this.events;
 	}-*/;
+
+	public final native String getZIndex()
+	/*-{
+		return this.getZIndex();
+	}-*/;
+	
+	public final native void setZIndex(final int zindex)
+	/*-{
+		this.setZIndex(zindex);
+	}-*/;
 }

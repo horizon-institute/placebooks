@@ -71,4 +71,9 @@ public class PlaceBookItem extends JavaScriptObject
 			delete this.metadata[name];
 		}
 	}-*/;
+
+	public final native void setGeometry(String string)
+	/*-{
+		this.geom = string;
+	}-*/;
 }
