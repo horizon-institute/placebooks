@@ -27,4 +27,6 @@ public interface PlaceBookCSS extends CssResource
 	String menuItem();
 
 	String popupPanel();
+	
+	String mapLabel();
 }

@@ -68,4 +68,9 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.zoomToExtent(extent);
 	}-*/;
+
+	public final native void raiseLayer(Layer layer)
+	/*-{
+		this.raiseLayer(layer);
+	}-*/;
 }

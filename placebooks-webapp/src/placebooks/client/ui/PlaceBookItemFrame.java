@@ -381,7 +381,6 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
-			GWT.log(item.getMetadata("routeVisible"));
 			if (item.getKey() == null)
 			{
 				mapPanel.setURL(item.getSourceURL(), item.getMetadata("routeVisible", "true").equals("true"));

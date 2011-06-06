@@ -770,6 +770,8 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
 
+		log.info("Serving GPS Trace for " + key);
+		
 		try
 		{
 			final GPSTraceItem g = em.find(GPSTraceItem.class, key);

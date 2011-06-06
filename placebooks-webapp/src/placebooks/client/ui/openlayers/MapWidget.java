@@ -1,5 +1,6 @@
 package placebooks.client.ui.openlayers;
 
+import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookItemFrame;
 
@@ -9,6 +10,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapWidget extends SimplePanel
 {
+	private final static Projection latLonProjection = Projection.create("ESPG:4326");
+	
 	private final static String POINT_PREFIX = "POINT (";
 
 	private final PlaceBookCanvas canvas;
@@ -28,7 +31,7 @@ public class MapWidget extends SimplePanel
 		@Override
 		void handleEvent(final Event event)
 		{
-			recenter();
+			refreshMarkers();
 		}
 	};
 
@@ -43,6 +46,7 @@ public class MapWidget extends SimplePanel
 		getElement().setId("mapPanel" + id);
 		this.id = id;
 		this.canvas = canvas;
+		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		add(interactionLabel);
 		interactionLabel.setVisible(false);
 	}
@@ -50,21 +54,10 @@ public class MapWidget extends SimplePanel
 	public void setURL(final String url, final boolean visible)
 	{
 		this.url = url;
+		this.visible = visible;
 		if (map != null)
 		{
-			if (routeLayer != null)
-			{
-				map.removeLayer(routeLayer);
-			}
-			GWT.log("Load gpx at " + url);
-			routeLayer = RouteLayer.create(id, url);
-			routeLayer.getEvents().register("loadend", routeLayer, recenterEvent.getFunction());
-			this.visible = visible;
-			GWT.log("Set visible " + visible);
-			routeLayer.setVisible(visible);
-			map.addLayer(routeLayer);
-
-			refreshMarkers();
+			createRoute();
 		}
 	}
 
@@ -79,33 +72,56 @@ public class MapWidget extends SimplePanel
 			@Override
 			void handleEvent(Event event)
 			{
-				LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(), Projection.create("EPSG:4326"));			
-				GWT.log("Clicked at " + lonLat.getLat() + "N, " + lonLat.getLon() + "E");			
+				LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(), latLonProjection);			
+				GWT.log("Clicked at " + lonLat.getLat() + "N, " + lonLat.getLon() + "E");	
+				if(positionItem != null)
+				{
+					positionItem.getItem().setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
+					positionItem.markChanged();					
+					refreshMarkers();
+				}
 			}
 		}.getFunction());
 		map.addControl(control);
 		control.activate();
 		map.addLayer(OSMLayer.create("Osmarender"));
 		map.setCenter(LonLat.create(-1.18f, 52.95f), 13);
-		markerLayer = MarkerLayer.create("markerLayer");
-		map.addLayer(markerLayer);
-
-		refreshMarkers();
-
+		
 		if (url != null)
 		{
-			GWT.log("Load gpx at " + url);
-			routeLayer = RouteLayer.create(id, url);
-			routeLayer.getEvents().register("loadend", routeLayer, recenterEvent.getFunction());
-			GWT.log("Set visible " + visible);
-			routeLayer.setVisible(visible);
-			map.addLayer(routeLayer);
+			createRoute();
 		}
 	}
 
+	private void createRoute()
+	{
+		if (routeLayer != null)
+		{
+			map.removeLayer(routeLayer);
+		}		
+		
+		if(markerLayer != null)
+		{
+			map.removeLayer(markerLayer);
+		}
+		
+		routeLayer = RouteLayer.create(id, url);
+		routeLayer.getEvents().register("loadend", routeLayer, recenterEvent.getFunction());
+		routeLayer.setVisible(visible);
+
+		markerLayer = MarkerLayer.create("markerLayer");
+		
+		map.addLayer(routeLayer);
+		map.addLayer(markerLayer);
+	}
+	
 	private void recenter()
 	{
-		Bounds bounds = markerLayer.getDataExtent();
+		Bounds bounds = null;
+		if(markerLayer != null)
+		{
+			bounds = markerLayer.getDataExtent();
+		}
 		if (routeLayer != null)
 		{
 			if (bounds == null)
@@ -125,38 +141,44 @@ public class MapWidget extends SimplePanel
 
 	private void refreshMarkers()
 	{
-		markerLayer.clearMarkers();
-		positionItem = null;
-		for (final PlaceBookItemFrame item : canvas.getItems())
+		if(markerLayer != null)
 		{
-			if (item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id))
+			markerLayer.clearMarkers();
+			positionItem = null;
+			interactionLabel.setVisible(false);
+			for (final PlaceBookItemFrame item : canvas.getItems())
 			{
-				if(item.getItem().getGeometry() != null)
+				if (item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id))
 				{
-					final String geometry = item.getItem().getGeometry();
-					if (geometry.startsWith(POINT_PREFIX))
+					if(item.getItem().getGeometry() != null)
 					{
-						final String latLong = geometry.substring(POINT_PREFIX.length(), geometry.length() - 1);
-						final int comma = latLong.indexOf(" ");
-						final float lat = Float.parseFloat(latLong.substring(0, comma));
-						final float lon = Float.parseFloat(latLong.substring(comma + 1));
-						Marker marker = Marker.create(LonLat.create(lon, lat));
-						marker.getEvents().register("click", marker, new EventHandler()
+						final String geometry = item.getItem().getGeometry();
+						if (geometry.startsWith(POINT_PREFIX))
 						{
-							@Override
-							void handleEvent(Event event)
-							{
-								GWT.log("Clickedx at " + event.getX() + "," + event.getY());				
-							}
-						}.getFunction());
-						markerLayer.addMarker(marker);
-						GWT.log("Added marker for " + item.getItem().getKey() + " at " + lat + ", " + lon);
+							final String latLong = geometry.substring(POINT_PREFIX.length(), geometry.length() - 1);
+							final int comma = latLong.indexOf(" ");
+							final float lat = Float.parseFloat(latLong.substring(0, comma));
+							final float lon = Float.parseFloat(latLong.substring(comma + 1));
+							Marker marker = Marker.create(LonLat.create(lon, lat).transform(latLonProjection, map.getProjection()));
+	//						marker.getEvents().register("click", marker, new EventHandler()
+	//						{
+	//							@Override
+	//							void handleEvent(Event event)
+	//							{
+	//								GWT.log("Clickedx at " + event.getX() + "," + event.getY());				
+	//							}
+	//						}.getFunction());
+							markerLayer.addMarker(marker);
+							GWT.log("Added marker for " + item.getItem().getKey() + " at " + lat + ", " + lon);
+						}
 					}
-				}
-				else
-				{
-					positionItem = item;
-					interactionLabel.setText("Set position of item " + item.getItem().getKey());
+					else
+					{
+						GWT.log("No geometry for " + item.getItem().getKey());
+						positionItem = item;
+						interactionLabel.setText("Set position of item " + item.getItem().getKey());
+						interactionLabel.setVisible(true);
+					}
 				}
 			}
 		}
