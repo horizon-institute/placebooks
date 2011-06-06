@@ -4,6 +4,7 @@ public class AudioItem extends Item {
 	
 	private String filename;
 	private int order;
+	private int panel;
 	
 	public String getFilename() {
 		return filename;
@@ -15,12 +16,19 @@ public class AudioItem extends Item {
 		return order;
 	}
 	public void setOrder(int o){
-		order = o;
+		this.order = o;
 	}
+	public int getPanel(){
+		return panel;
+	}
+	public void setPanel(int p){
+		this.panel = p;
+	}
+	
 	
 	@Override
 	public String toString() {
-		return "\nFilename=" + filename + "\nOrder=" +order; 
+		return "\nFilename=" + filename + "\nPanel=" +panel + "\nOrder=" +order; 
 
 	}
 	

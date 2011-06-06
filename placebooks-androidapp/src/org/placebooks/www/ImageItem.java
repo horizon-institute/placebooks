@@ -5,6 +5,7 @@ package org.placebooks.www;
 public class ImageItem extends Item {
 	private String filename;
 	private String URL;
+	private int panel;
 	private int order;
 
 
@@ -28,11 +29,17 @@ public class ImageItem extends Item {
 	public void setOrder(int o){
 		order = o;
 	}
+	public int getPanel(){
+		return panel;
+	}
+	public void setPanel(int p){
+		this.panel = p;
+	}
 
 	@Override
 	public String toString() {
 
-		return "\nFilename=" + filename + "\nURL=" + URL + "\nOrder=" +order;
+		return "\nFilename=" + filename + "\nURL=" + URL + "\nPanel=" +panel + "\nOrder=" +order;
 		
 	}
 }
