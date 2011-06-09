@@ -3,6 +3,7 @@ package org.placebooks.www;
 import java.util.ArrayList;
 //import java.util.Iterator;
 //import java.util.ListIterator;
+import java.util.Collections;
 
 
 //A book is an array list of items (items can be images, video, audio, text or gps trails)
@@ -10,16 +11,12 @@ public class Book {
 	
 	private String key;
 	private String owner;	
+	//private int timestamp;	//need a timestamp on the book so that we can compare timestamps for any book updates
 
-	private ArrayList<Point> alPage1 = new ArrayList<Point>();
-	private ArrayList<Point> alPage2 = new ArrayList<Point>();
-	private ArrayList<Point> alPage3 = new ArrayList<Point>();
 	
-	//0 -> text item, 1 -> image item, 2-> video item, 4 -> audio item
-	private ArrayList<Integer> alPage1Types = new ArrayList<Integer>();
-	private ArrayList<Integer> alPage2Types = new ArrayList<Integer>();
-	private ArrayList<Integer> alPage3Types = new ArrayList<Integer>();
-	
+	private ArrayList<Point> page1 = new ArrayList<Point>();
+	private ArrayList<Point> page2 = new ArrayList<Point>();
+	private ArrayList<Point> page3 = new ArrayList<Point>();
 
 
 	/*
@@ -28,21 +25,28 @@ public class Book {
 	 */
 	ArrayList<Item> items = new ArrayList<Item>();
 	//ArrayList<ArrayList> pages = new ArrayList<ArrayList>();	//ArrayList 0,1,2 (page numbers) 
-	
+	ArrayList<TextItem> textItems = new ArrayList<TextItem>();
+	ArrayList<ImageItem> imageItems = new ArrayList<ImageItem>();
+	ArrayList<VideoItem> videoItems = new ArrayList<VideoItem>();
+	ArrayList<AudioItem> audioItems = new ArrayList<AudioItem>();
+	ArrayList<MapImageItem> mapImageItems = new ArrayList<MapImageItem>();
 
+	
+	//page1.add(textItems)....add all the types of items
+	//collections.sort(page1) sort by order
 	
 	/*
 	 * Getter methods
 	 */
 	
-	public ArrayList<Point> getPage1Items(){
-		return alPage1;
+	public ArrayList<Point> getPage1(){
+		return page1;
 	}
-	public ArrayList<Point> getPage2Items(){
-		return alPage2;
+	public ArrayList<Point> getPage2(){
+		return page2;
 	}
-	public ArrayList<Point> getPage3Items(){
-		return alPage3;
+	public ArrayList<Point> getPage3(){
+		return page3;
 	}
 	
 	//get the placebook key (ID itself)
@@ -75,125 +79,120 @@ public class Book {
 			this.items = items;
 		}
 		
-
-
-	
+		
+		
 	public String toString(){
-    
-		for (int i = 0; i< items.size();i++){
-	       
-			if (items.get(i) instanceof TextItem){
-				   
-		    	  String textItem = items.get(i).toString();
-		    	  int size = textItem.length();	    	  
-		    	  
-		    	  int start = textItem.indexOf("Text=");
-		    	  int fEnd = textItem.indexOf("URL=");
-		    	  int urlEnd = textItem.indexOf("Panel=");
-		    	  int panelEnd = textItem.indexOf("Order=");
-		    	  
-		    	  String textText = textItem.substring(start+5, fEnd-1);
-		    	  //String textURL = textItem.substring(fEnd+4, urlEnd-1);
-		    	  String textPanel = textItem.substring(urlEnd+6, panelEnd-1);
-		    	  String textOrder = textItem.substring(panelEnd+6, size);
-		    	  
-		    	 
-		    	  Point pItems = new Point(textText, Integer.parseInt(textPanel), Integer.parseInt(textOrder), "TEXT");
-		    	  if (Integer.parseInt(textPanel) == 0){
-		    	  alPage1.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(textPanel) == 1) {
-		    		  alPage2.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(textPanel) == 2){
-		    		  alPage3.add(pItems);
-		    	  }
-		    	  
-		    	
-		      }
-			
-			else if (items.get(i) instanceof ImageItem){
-		 		    	  
-		    	  //imgItem.add(items.get(i).toString());
-		    	  String imgItem = items.get(i).toString();
-		    	  int size = imgItem.length();
+		
+	for(TextItem item: textItems) {
+		String text = item.getText();
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		
+  	  	Point pItems = new Point(text, panel, order, type);
 
-		    	  int start =imgItem.indexOf("Filename=");
-		    	  int fEnd = imgItem.indexOf("URL=");		    	  
-		    	  int urlEnd = imgItem.indexOf("Panel=");
-		    	  int panelEnd = imgItem.indexOf("Order=");
-		    	  
-		    	  String imageFilename = imgItem.substring(start+9, fEnd-1);
-		    	 // String imageURL = imgItem.substring(fEnd+4, urlEnd-1);
-		    	  String imagePanel = imgItem.substring(urlEnd+6, panelEnd-1);
-		    	  String imageOrder = imgItem.substring(panelEnd+6, size);
-		    	  
-		    	  
-		    	  Point pItems = new Point(imageFilename, Integer.parseInt(imagePanel), Integer.parseInt(imageOrder), "IMAGE");
-		    	  if (Integer.parseInt(imagePanel) == 0){
-		    	  alPage1.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(imagePanel) == 1) {
-		    		  alPage2.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(imagePanel) == 2){
-		    		  alPage3.add(pItems);
-		    	  }
-		   	
-		      }
-		      else if (items.get(i) instanceof VideoItem){
-		    	  String videoItem = items.get(i).toString();
-		    	  int size = videoItem.length();
+		
+		//add to page 1
+		if(panel == 0){
+			page1.add(pItems);
+		}
+		//add to page 2
+		if(panel == 1){
+			page2.add(pItems);
 
-		    	  int start = videoItem.indexOf("Filename=");
-		    	  int fEnd = videoItem.indexOf("Panel=");
-		    	  int panelEnd = videoItem.indexOf("Order=");
-		    	  
-		    	  String videoFilename = videoItem.substring(start+9, fEnd-1);
-		    	  String videoPanel = videoItem.substring(fEnd+6, panelEnd-1);
-		    	  String videoOrder = videoItem.substring(panelEnd+6, size);
-		    	  
-		    	  
-		    	  Point pItems = new Point(videoFilename, Integer.parseInt(videoPanel), Integer.parseInt(videoOrder), "VIDEO");
-		    	  if (Integer.parseInt(videoPanel) == 0){
-		    	  alPage1.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(videoPanel) == 1) {
-		    		  alPage2.add(pItems);
-		    	  }
-		    	  else if(Integer.parseInt(videoPanel) == 2){
-		    		  alPage3.add(pItems);
-		    	  }
-		    	  
-		      }
-		          else if (items.get(i) instanceof AudioItem){
-		        	  String audioItem = items.get(i).toString();
-			    	  int size = audioItem.length();
+		}
+		//add to page 3
+		if(panel == 2){
+			page3.add(pItems);
 
-			    	  int start = audioItem.indexOf("Filename=");
-			    	  int fEnd = audioItem.indexOf("Panel=");
-			    	  int panelEnd = audioItem.indexOf("Order=");
-			    	  
-			    	  String audioFilename = audioItem.substring(start+9, fEnd-1);
-			    	  String audioPanel = audioItem.substring(fEnd+6, panelEnd-1);
-			    	  String audioOrder = audioItem.substring(panelEnd+6, size);
-
-			    	  
-			    	  Point pItems = new Point(audioFilename, Integer.parseInt(audioPanel), Integer.parseInt(audioOrder), "AUDIO"); 
-			    	  if (Integer.parseInt(audioPanel) == 0){
-			    		  alPage1.add(pItems);
-			    	  }
-			    	  else if(Integer.parseInt(audioPanel) == 1) {
-			    		  alPage2.add(pItems);
-			    	  }
-			    	  else if(Integer.parseInt(audioPanel) == 2){
-			    		  alPage3.add(pItems);
-			    	  }
-		        	  
-		          }
-	    	
+		}
+		
 	}
+	
+	for(ImageItem item: imageItems) {
+		String filename = item.getFilename();
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		
+  	  	Point pItems = new Point(filename, panel, order, type);
 
+		//add to page 1
+		if(panel == 0){
+			page1.add(pItems);
+//			page1Types.add(type);
+		}
+		//add to page 2
+		if(panel == 1){
+			page2.add(pItems);
+//			page2Types.add(type);
+		}
+		//add to page 3
+		if(panel == 2){
+			page3.add(pItems);
+//			page3Types.add(type);
+		}
+		
+	}
+	
+	for(VideoItem item: videoItems) {
+		String filename = item.getFilename();
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		
+  	  	Point pItems = new Point(filename, panel, order, type);
+		
+		//add to page 1
+		if(panel == 0){
+			page1.add(pItems);
+//			page1Types.add(type);
+
+		}
+		//add to page 2
+		if(panel == 1){
+			page2.add(pItems);
+//			page2Types.add(type);
+
+		}
+		//add to page 3
+		if(panel == 2){
+			page3.add(pItems);
+//			page3Types.add(type);
+		}
+		
+	}
+	
+	for(AudioItem item: audioItems) {
+		String filename = item.getFilename();
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		
+  	  	Point pItems = new Point(filename, panel, order, type);
+		
+		//add to page 1
+		if(panel == 0){
+			page1.add(pItems);
+
+		}
+		//add to page 2
+		if(panel == 1){
+			page2.add(pItems);
+
+		}
+		//add to page 3
+		if(panel == 2){
+			page3.add(pItems);
+		}
+		
+	}
+	
+	//Finally sort the items of each page by their Order Number
+	Collections.sort(page1);
+	Collections.sort(page2);
+	Collections.sort(page3);
+	
    return key ;
    
  
