@@ -1,17 +1,52 @@
 package org.placebooks.www;
 
+import java.util.*;
+
 public class Point implements Comparable<Point>{
 
 	public String type;
-	public String data;			//Text for Text Item, Filename for other Items
+	public String data;			//maybe make this an arraylist? e.g filename, geometry, url..etc
 	public int panel;
 	public int order;
+	//public ArrayList<Float> geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
 	
 	public Point(String data, int panel, int order, String type){
 		this.data = data;
 		this.panel = panel;
 		this.order = order;
 		this.type = type;
+	}
+	
+	/*
+	 * Getter methods
+	 */
+	public String getType(){
+		return type;
+	}
+	public String getData(){
+		return data;
+	}
+	public int getPanel(){
+		return panel;
+	}
+	public int getOrder(){
+		return order;
+	}
+	
+	/*
+	 * Setter methods
+	 */
+	public void setType(String t){
+		this.type = t;
+	}
+	public void setData(String d){
+		this.data = d;
+	}
+	public void setPanel(int p){
+		this.panel = p;
+	}
+	public void setOrder(int o){
+		this.order = o;
 	}
 	
 	

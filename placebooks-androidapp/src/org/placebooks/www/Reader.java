@@ -101,16 +101,15 @@ public class Reader extends Activity {
 	ArrayList<Point> page2 = new ArrayList<Point>();
 	ArrayList<Point> page3 = new ArrayList<Point>();
 	
-	ArrayList<String> page1Types = new ArrayList<String>();
-	ArrayList<String> page2Types = new ArrayList<String>();
-	ArrayList<String> page3Types = new ArrayList<String>();
+	ArrayList<String> page1Type = new ArrayList<String>();
+	ArrayList<String> page2Type = new ArrayList<String>();
+	ArrayList<String> page3Type = new ArrayList<String>();
 	
-	ArrayList<String> page1Items = new ArrayList<String>();
-	ArrayList<String> page2Items = new ArrayList<String>();
-	ArrayList<String> page3Items = new ArrayList<String>();
+	ArrayList<String> page1Data = new ArrayList<String>();
+	ArrayList<String> page2Data = new ArrayList<String>();
+	ArrayList<String> page3Data = new ArrayList<String>();
 
-	
-	
+		
 	//Video Variables
 	private VideoView video;
 	private MediaController ctlr;
@@ -158,78 +157,99 @@ public class Reader extends Activity {
 			        try {
 				        getMyXML();		//call method to parse XML		
 				        
+				     /*   
+				        for(String a: page1Data) {
+				        	//String s = a;
+				            //a.getType();
+				            TextView tv = new TextView(this);
+							  tv.setText(a);
+							  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+							  ll.addView(tv);
+				        }
+				     */
+	       
 					  
-				  for (int i=0;i<page1Items.size();i++ ){
+				  for (int i=0;i<page1Data.size();i++ ){
 					 
 					  
-					 if(page1Types.get(i).toString().equalsIgnoreCase("TEXT")){
-						 displayText(page1Items.get(i).toString(), ll);		//display text (stored in next element of array) on page 1 (ll)
+					 if(page1Type.get(i).toString().equalsIgnoreCase("Text")){
+						 
+						 displayText(page1Data.get(i).toString(), ll);		//display text (stored in next element of array) on page 1 (ll)
 						
 					 }
-					 else if (page1Types.get(i).toString().equalsIgnoreCase("IMAGE")){
-						 displayImage(page1Items.get(i).toString(), ll);
+					 else if (page1Type.get(i).toString().equalsIgnoreCase("Image")){
+						 displayImage(page1Data.get(i).toString(), ll);
 						 
 					 }
-					 else if (page1Types.get(i).toString().equalsIgnoreCase("VIDEO")){
-						 displayVideo(page1Items.get(i).toString(), ll);		
+					 else if (page1Type.get(i).toString().equalsIgnoreCase("Video")){
+						 displayVideo(page1Data.get(i).toString(), ll);		
 					 }
-					 else if (page1Types.get(i).toString().equalsIgnoreCase("AUDIO")){
-						 displayAudio(page1Items.get(i).toString(), ll);	
+					 else if (page1Type.get(i).toString().equalsIgnoreCase("Audio")){
+						 displayAudio(page1Data.get(i).toString(), ll);	
+						 
+					 }
+					 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
+						 //displayMapImage(page1Items.get(i).toString(), ll);
+						 
+						 TextView tv = new TextView(this);
+						  tv.setText(page1.get(i).toString());
+						  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						  ll.addView(tv);
 						 
 					 }
 					 
-				  	 /*
-					  TextView tv = new TextView(this);
-					  tv.setText(page1Types.get(i).toString());
-					  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-					  ll.addView(tv);
-					 */
+				  	 
+				//	  TextView tv = new TextView(this);
+				//	  tv.setText(page1Types.get(i).toString());
+				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+				//	  ll.addView(tv);
 					 
-				  }
+					 
+				  } 
 				  
-				  for (int i=0;i<page2Items.size();i++ ){
+				  for (int i=0;i<page2Data.size();i++ ){
 					  
-					  if(page2Types.get(i).toString().equalsIgnoreCase("TEXT")){
-							 displayText(page2Items.get(i).toString(), ll2);		//display text (stored in next element of array) on page 2 (ll2)
+					  if(page2Type.get(i).toString().equalsIgnoreCase("TEXT")){
+							 displayText(page2Data.get(i).toString(), ll2);		//display text (stored in next element of array) on page 2 (ll2)
 						 }
-						else if (page2Types.get(i).toString().equalsIgnoreCase("IMAGE")){
-							 displayImage(page2Items.get(i).toString(), ll2);
+						else if (page2Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+							 displayImage(page2Data.get(i).toString(), ll2);
 							
 						 }
-						 else if (page2Types.get(i).toString().equalsIgnoreCase("VIDEO")){
-							 displayVideo(page2Items.get(i).toString(), ll2);		
+						 else if (page2Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+							 displayVideo(page2Data.get(i).toString(), ll2);		
 						 }
-						 else if (page2Types.get(i).toString().equalsIgnoreCase("AUDIO")){
-							 displayAudio(page2Items.get(i).toString(), ll2);	
+						 else if (page2Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+							 displayAudio(page2Data.get(i).toString(), ll2);	
 						 }
 					  
-					 /* 
-					  TextView tv = new TextView(this);
-					  tv.setText(page2Types.get(i));
-					  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-					  ll2.addView(tv);
-					  */
+					  
+				//	  TextView tv = new TextView(this);
+				//	  tv.setText(page2Types.get(i));
+				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+				//	  ll2.addView(tv);
+					  
 				  }
-				  for (int i=0;i<page3Items.size();i++ ){
+		         for (int i=0;i<page3Data.size();i++ ){
 					 
-					  if(page3Types.get(i).toString().equalsIgnoreCase("TEXT")){
-							 displayText(page3Items.get(i).toString(), ll3);		//display text (stored in next element of array) on page 3 (ll3)
+					  if(page3Type.get(i).toString().equalsIgnoreCase("TEXT")){
+							 displayText(page3Data.get(i).toString(), ll3);		//display text (stored in next element of array) on page 3 (ll3)
 						 }
-						 else if (page3Types.get(i).toString().equalsIgnoreCase("IMAGE")){
-							 displayImage(page3Items.get(i).toString(), ll3);
+						 else if (page3Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+							 displayImage(page3Data.get(i).toString(), ll3);
 						 }
-						 else if (page3Types.get(i).toString().equalsIgnoreCase("VIDEO")){
-							 displayVideo(page2Items.get(i).toString(), ll3);		
+						 else if (page3Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+							 displayVideo(page3Data.get(i).toString(), ll3);		
 						 }
-						 else if (page3Types.get(i).toString().equalsIgnoreCase("AUDIO")){
-							 displayAudio(page3Items.get(i).toString(), ll3);	
+						 else if (page3Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+							 displayAudio(page3Data.get(i).toString(), ll3);	
 						 }
 					  
-					  /*
-					  TextView tv = new TextView(this);
-					  tv.setText(page3Items.get(i));
-					  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				      ll3.addView(tv);*/
+					  
+				//	  TextView tv = new TextView(this);
+				//	  tv.setText(page3Items.get(i));
+				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+			   //     ll3.addView(tv);
 				  }
 					 
 
@@ -394,6 +414,10 @@ public class Reader extends Activity {
   
 			}
 		    
+			//start of audio methods
+			  /*
+			   * Method for displaying audio items
+			   */
 		    public void displayAudio(String audio, LinearLayout page){
 		    	
 		    		
@@ -534,10 +558,8 @@ public class Reader extends Activity {
 		    @Override
 		    public void onDestroy(){
 		    	super.onDestroy();
-		   
 		    	
 		    		stopAudio();
-		    	
 		    }
 		    
 		    private void goBlooey(Throwable t){
@@ -549,6 +571,35 @@ public class Reader extends Activity {
 		    	.setMessage(t.toString())
 		    	.setPositiveButton("OK", null)
 		    	.show();
+		    }
+		    //end of audio methods
+		    
+		    
+		    /*
+		     * Map Image Item
+		     * Method for displaying the map tile image
+		     */
+		    public void displayMapImage(String mapImage, LinearLayout page){
+		    	
+		    	ImageView image = new ImageView(this);
+			    //locate the file path where the images are stored on the SD CARD. 
+				String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+			 
+			    BitmapFactory.Options options = new BitmapFactory.Options();
+			    options.inSampleSize = 1;
+			    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
+			        
+			    image.setImageBitmap(bm); 
+			    image.setAdjustViewBounds(true);
+			    image.setScaleType(ScaleType.FIT_CENTER);
+			    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+			    page.addView(image);
+			    
+			    //New custom view that adds a bit of spacing to the end of image items
+			    View view = new View(this);
+			    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
+			    page.addView(view);
+		    	
 		    }
 		    
 				
@@ -586,53 +637,35 @@ public class Reader extends Activity {
 				
 				inLine.append(book.toString());
 				
-				// Needs to read every element from each type of array i.e you could have x amount of textItems, videoItems, audioItems..etc
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
-				//items = (ArrayList<Item>)book.getItems();
-				page1 = (ArrayList<Point>)book.getPage1Items();
-				page2 = (ArrayList<Point>)book.getPage2Items();
-				page3 = (ArrayList<Point>)book.getPage3Items();
 				
-				//sort the page items by ascending order     
-				Collections.sort(page1);
-				Collections.sort(page2);
-			    Collections.sort(page3);
+				page1 = (ArrayList<Point>)book.getPage1();
+				page2 = (ArrayList<Point>)book.getPage2();
+				page3 = (ArrayList<Point>)book.getPage3();
 				
-				for (int i=0; i<page1.size(); i++){
-					  String page1Item = page1.get(i).toString();
-			    	  int size = page1Item.length();
-			    	  int typeStart = page1Item.indexOf("<type>");
-			    	  int typeEnd = page1Item.indexOf("</type>");
-			    	 
-			    	  String itemType = page1Item.substring(typeStart+6, typeEnd);
-			    	  String itemData = page1Item.substring(typeEnd+7,size);
-			    	  page1Types.add(itemType);
-			    	  page1Items.add(itemData);
+				
+			    //Pass the data into the data ArrayLists
+				for(Point item: page1) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	page1Data.add(data);
+		        	page1Type.add(type);
 				}
-				for (int i=0; i<page2.size(); i++){
-					  String page2Item = page2.get(i).toString();
-			    	  int size = page2Item.length();
-			    	  int typeStart = page2Item.indexOf("<type>");
-			    	  int typeEnd = page2Item.indexOf("</type>");
-			    	 
-			    	  String itemType = page2Item.substring(typeStart+6, typeEnd);
-			    	  String itemData = page2Item.substring(typeEnd+7,size);
-			    	  page2Types.add(itemType);
-			    	  page2Items.add(itemData);
+				for(Point item: page2) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	page2Data.add(data);
+		        	page2Type.add(type);
 				}
-				for (int i=0; i<page3.size(); i++){
-					  String page3Item = page3.get(i).toString();
-			    	  int size = page3Item.length();
-			    	  int typeStart = page3Item.indexOf("<type>");
-			    	  int typeEnd = page3Item.indexOf("</type>");
-			    	 
-			    	  String itemType = page3Item.substring(typeStart+6, typeEnd);
-			    	  String itemData = page3Item.substring(typeEnd+7,size);
-			    	  page3Types.add(itemType);
-			    	  page3Items.add(itemData);
+				for(Point item: page3) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	page3Data.add(data);
+		        	page3Type.add(type);
 				}
 				
-							
+				
+			
 				in.close();
 				
 				return inLine.toString();    

@@ -92,10 +92,10 @@ public class Shelf extends ListActivity {
 		        */       
 		        if (isOnline()){
 		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
-		          	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+		        	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 		          										  
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
-		          	DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+		        	DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
 		          	
 		          	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
