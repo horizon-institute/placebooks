@@ -48,8 +48,8 @@ import org.w3c.dom.NodeList;
 import placebooks.model.*;
 import placebooks.utils.InitializeDatabase;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 
@@ -72,6 +72,8 @@ public class PlaceBooksAdminControllerDebug
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
+
+	private static final int MEGABYTE = 1048576;
 
 	@RequestMapping(value = "/admin/add_item/map", 
 					method = RequestMethod.POST)
@@ -587,18 +589,21 @@ public class PlaceBooksAdminControllerDebug
 		{
 			pm.getTransaction().begin();
 
-			final FileItemIterator i = 
-				new ServletFileUpload().getItemIterator(req);
-			while (i.hasNext())
+			@SuppressWarnings("unchecked")			
+			final List<FileItem> items = 
+				new ServletFileUpload(new DiskFileItemFactory())
+					.parseRequest(req);
+
+			for (FileItem item : items)
 			{
-				final FileItemStream item = i.next();
 				if (item.isFormField())
 				{
-					itemData.processItemData(pm, item.getFieldName(), 
-									Streams.asString(item.openStream()));
+					String value = Streams.asString(item.getInputStream());
+					itemData.processItemData(pm, item.getFieldName(), value);
 				}
 				else
 				{
+					log.info("*** item.getSize() = " + item.getSize());
 					//String property = null;
 
 					String[] split = 
@@ -613,7 +618,7 @@ public class PlaceBooksAdminControllerDebug
 					if (prefix.contentEquals("gpstrace"))
 					{
 						final InputStreamReader reader = 
-							new InputStreamReader(item.openStream());
+							new InputStreamReader(item.getInputStream());
 						final StringWriter writer = new StringWriter();
 						int data;
 						while((data = reader.read()) != -1)
@@ -654,6 +659,17 @@ public class PlaceBooksAdminControllerDebug
 
 					if (prefix.contentEquals("video"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
+									"20"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new VideoItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -665,6 +681,17 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (prefix.contentEquals("audio"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, 
+									"10"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new AudioItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -676,6 +703,17 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (prefix.contentEquals("image"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_IMAGE_MAX_SIZE, 
+									"1"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new ImageItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -685,7 +723,7 @@ public class PlaceBooksAdminControllerDebug
 						file = new File(((ImageItem)pbi).getPath());
 					}
 
-					final InputStream input = item.openStream();
+					final InputStream input = item.getInputStream();
 					final OutputStream output = new FileOutputStream(file);
 					int byte_;
 					while ((byte_ = input.read()) != -1)
