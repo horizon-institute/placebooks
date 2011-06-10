@@ -19,8 +19,12 @@
 <activity android:name=".Reader"></activity>
 <activity android:name=".Shelf"
 android:configChanges="orientation|keyboardHidden">
-
 </activity>
+<activity android:name=".VideoViewer"
+android:configChanges="orientation|keyboardHidden">
+</activity>
+
+
 
 
 </application>

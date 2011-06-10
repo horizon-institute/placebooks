@@ -6,7 +6,6 @@ public class TextItem extends Item {
 	private String url;
 
 	
-	
 	public String getURL() {
 		return url;
 	}

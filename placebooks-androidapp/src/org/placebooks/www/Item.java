@@ -1,27 +1,32 @@
 package org.placebooks.www;
 
+import com.vividsolutions.jts.geom.Geometry;
 
-public class Item implements Comparable<Item>{
+
+public class Item {
 	
-	private String key;
+	//attributes
+	private int key;
 	private String owner;
+	
 	private String timestamp;
-	private String geometry;
-	//private Geometry geom;
-	private String type;
+	private Geometry geometry;
+	private String type
+	;
+	//parameters
 	private int panel;
 	private int order;
+	//metadata
+	//key, value
 	
-	/*
-	 * Compare a given order number with this object.
-	 * If order of this object is greater than the
-	 * received object, then this object is
-	 * greater than the other
-	 */
-	public int compareTo(Item o) {
-        return this.order - o.order ;
-    }
 	
+	//Make a new placebook item
+/*	public Item(final String owner, final Geometry geom){
+		this.owner = owner;
+		this.geometry = geom;
+		
+	}
+	*/
 
 	
 	public String getType(){
@@ -32,10 +37,10 @@ public class Item implements Comparable<Item>{
 	}
 	
 	
-	public String getKey() {
+	public int getKey() {
 		return key;
 	}
-	public void setKey(String key) {
+	public void setKey(int key) {
 		this.key = key;
 	}
 	public String getOwner() {
@@ -50,10 +55,10 @@ public class Item implements Comparable<Item>{
 	public void setTimeStamp(String ts){
 		this.timestamp = ts;		
 	}
-	public String getGeometry(){
+	public Geometry getGeometry(){
 		return geometry;
 	}
-	public void setGeometry(String g){
+	public void setGeometry(Geometry g){
 		this.geometry = g;
 	}
 	public int getOrder(){

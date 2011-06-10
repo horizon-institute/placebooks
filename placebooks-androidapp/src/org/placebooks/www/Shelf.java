@@ -273,7 +273,6 @@ public class Shelf extends ListActivity {
 		}	 
 
 	 public void downloadPlaceBook(String theKey, String downloadPath) {
-	//	 String url = "http://cs.swan.ac.uk/~csmarkd/package.zip";
 		 String dlPath = downloadPath;
 	     String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
 		 new DownloadFileAsync(dlPath).execute(url);	
