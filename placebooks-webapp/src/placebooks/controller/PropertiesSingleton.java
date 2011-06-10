@@ -18,6 +18,10 @@ public final class PropertiesSingleton
 	public static final String IDEN_PKG = "packages.dir";
 	public static final String IDEN_PKG_Z = "packages-zipped.dir";
 
+	public static final String IDEN_VIDEO_MAX_SIZE = "videoitem.size_limit";
+	public static final String IDEN_IMAGE_MAX_SIZE = "imageitem.size_limit";
+	public static final String IDEN_AUDIO_MAX_SIZE = "audioitem.size_limit";
+
 	public static final String IDEN_TILER_LAYER = "tiler.layer";
 	public static final String IDEN_TILER_NORTHING = "tiler.northing";
 	public static final String IDEN_TILER_EASTING = "tiler.easting";

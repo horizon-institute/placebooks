@@ -70,6 +70,8 @@ public class PlaceBooksAdminController
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminController.class.getName());
 
+	private static final int MEGABYTE = 1048576;
+
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
 	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
@@ -667,8 +669,9 @@ public class PlaceBooksAdminController
 			
 			manager.getTransaction().begin();
 			@SuppressWarnings("unchecked")
-			final List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
-			for(FileItem item: items)
+			final List<FileItem> items = 
+				new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
+			for (FileItem item: items)
 			{	
 				if (item.isFormField())
 				{
@@ -689,11 +692,43 @@ public class PlaceBooksAdminController
 				{
 					name = item.getName();					
 					fileData = item;
-					String[] split = PlaceBooksAdminHelper.getExtension(item.getFieldName());
+					String[] split = 
+						PlaceBooksAdminHelper.getExtension(item.getFieldName());
 					if (split == null)
 						continue;
 
 					type = split[0];
+
+					String dLimit = null, iden = null;
+					if (type.equals("image"))
+					{
+						iden = PropertiesSingleton.IDEN_IMAGE_MAX_SIZE;
+						dLimit = "1";
+					}
+					else if (type.equals("video"))
+					{
+						iden = PropertiesSingleton.IDEN_VIDEO_MAX_SIZE;
+						dLimit = "20";
+					}
+					else if (type.equals("audio"))
+					{
+						iden = PropertiesSingleton.IDEN_AUDIO_MAX_SIZE;
+						dLimit = "10";
+					}
+
+					if (dLimit != null && iden != null)
+					{
+						int maxSize = Integer.parseInt(PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+							.getProperty(iden, dLimit)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+						{
+							throw new Exception("File too big, limit = " 
+												+ Integer.toString(maxSize) 
+												+ "Mb");
+						}
+					}
 				}
 			}
 
@@ -713,23 +748,31 @@ public class PlaceBooksAdminController
 				
 				if(type.equals("gpstrace"))
 				{
-					item = new GPSTraceItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item = new GPSTraceItem(itemData.getOwner(), 
+											itemData.getGeometry(), 
+											itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 					((GPSTraceItem)item).readTrace(fileData.getInputStream());
 				}
 				else if(type.equals("image"))
 				{
-					item = new ImageItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item = new ImageItem(itemData.getOwner(), 
+										 itemData.getGeometry(), 
+										 itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);			
 				}
 				else if(type.equals("video"))
 				{
-					item = new VideoItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item = new VideoItem(itemData.getOwner(), 
+										 itemData.getGeometry(), 
+										 itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 				}
 				else if(type.equals("audio"))
 				{
-					item = new AudioItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item = new AudioItem(itemData.getOwner(), 
+										 itemData.getGeometry(), 
+										 itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);					
 				}					
 			}
