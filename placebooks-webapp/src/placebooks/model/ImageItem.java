@@ -19,6 +19,17 @@ public class ImageItem extends MediaItem
 	{
 	}
 
+	public ImageItem(final ImageItem i)
+	{
+		super(i);
+	}
+
+	@Override
+	public ImageItem deepCopy()
+	{
+		return new ImageItem(this);
+	}
+
 	@Override
 	public String getEntityName()
 	{

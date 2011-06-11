@@ -51,6 +51,36 @@ public final class PlaceBooksAdminHelper
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminHelper.class.getName());
 
+	// Takes a PlaceBook, copies it, and returns the (published) copy
+	public static final PlaceBook publishPlaceBook(final PlaceBook p)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		PlaceBook p_ = null;
+		try
+		{
+			em.getTransaction().begin();
+			p_ = new PlaceBook(p);
+			p_.setState(PlaceBook.STATE_PUBLISHED);
+			em.persist(p_);
+			em.getTransaction().commit();
+		}
+		catch (final Throwable e)
+		{
+			log.error("Error creating PlaceBook copy", e);
+		}
+		finally
+		{
+			if (em.getTransaction().isActive())
+			{
+				em.getTransaction().rollback();
+				log.error("Rolling back PlaceBook copy");
+			}
+			em.close();
+		}
+		return p_;
+	}
+
+
 	public static final boolean scrape(WebBundleItem wbi)
 	{
 

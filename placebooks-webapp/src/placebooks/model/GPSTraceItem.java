@@ -37,6 +37,18 @@ public class GPSTraceItem extends PlaceBookItem
 	{
 	}
 
+	public GPSTraceItem(final GPSTraceItem g)
+	{
+		super(g);
+		this.trace = new String(g.getTrace());
+	}
+	
+	@Override
+	public GPSTraceItem deepCopy()
+	{
+		return new GPSTraceItem(this);
+	}
+
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{

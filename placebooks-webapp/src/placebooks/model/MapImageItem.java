@@ -18,6 +18,17 @@ public class MapImageItem extends ImageItem
 	MapImageItem()
 	{
 	}
+	
+	public MapImageItem(final MapImageItem m)
+	{
+		super(m);
+	}
+
+	@Override
+	public MapImageItem deepCopy()
+	{
+		return new MapImageItem(this);
+	}
 
 	@Override
 	public String getEntityName()

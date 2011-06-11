@@ -75,6 +75,37 @@ public class PlaceBooksAdminControllerDebug
 
 	private static final int MEGABYTE = 1048576;
 
+
+	@RequestMapping(value = "/admin/publish_placebook/{key}",
+					method = RequestMethod.GET)
+	public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+	{
+		final EntityManager pm = EMFSingleton.getEntityManager();
+
+		try
+		{
+			pm.getTransaction().begin();
+			final PlaceBook p = pm.find(PlaceBook.class, key);
+			final PlaceBook p_ = new PlaceBook(p);
+			pm.persist(p_);
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete single transaction back");
+			}
+			pm.close();
+		}
+
+		log.info("Copied PlaceBookItem " + key);
+
+		return new ModelAndView("message", "text", "Copied PlaceBook: " 
+								+ key);
+	}
+
 	@RequestMapping(value = "/admin/add_item/map", 
 					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")	
