@@ -177,11 +177,16 @@ public class Shelf extends ListActivity {
 					        		 * call to viewPlacebook();
 					        		 */
 					        		Intent intent = new Intent();
+								    //overridePendingTransition(0, 0);
+								    //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
 					        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
 					        		
 					        		intent.putExtra("packagePath", item.getPackagePath());
+								    //overridePendingTransition(0, 0);
 					        		startActivity(intent);	
 					        		
+
 							     } 
 							   };
 						   
@@ -395,6 +400,7 @@ public class Shelf extends ListActivity {
 			                			    
 			                if(downloadedSize==totalSize)   filepath=file.getPath();
 			                reload();
+			                //onRestart();
 			                
 			            //catch some possible errors...  
 			            } catch (MalformedURLException e) {
@@ -430,6 +436,8 @@ public class Shelf extends ListActivity {
 			   /*
 			    * Reload method for reloading the activity
 			    */
+			   //@Override
+			   //public void onRestart(){
 			   public void reload() {
 
 				    Intent intent = getIntent();

@@ -131,7 +131,8 @@ public class Reader extends Activity {
 	     	 public void onCreate(Bundle savedInstanceState) {
 			        super.onCreate(savedInstanceState);	//icicle
 			        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-			        
+			        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
+
 			        /*
 			         * get the extras (package path) out of the new intent
 			         * retrieve the packagePath.
@@ -407,8 +408,8 @@ public class Reader extends Activity {
 			             @Override
 			             public void onClick(View v) {
 			            	 
-			            	 //playVideo(video);
-			            	 //create a new intenet based on the VideoViewer class
+			            	 //Play the video - calls VideoViewer class
+			            	 //create a new intent based on the VideoViewer class
 			            	 Intent intent = new Intent();
 		     				 	overridePendingTransition(0, 0);
 		     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -428,33 +429,8 @@ public class Reader extends Activity {
 			} //end of displayVideo method
 			
 	
-			 
-			/*
-			 * Call this Method to play a Video Item
-			 */
-		   // public void playVideo(int id){
-			  public void playVideo(String videoFile){
-				  File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped" + packagePath + "/" + videoFile); //alVideoFilename.get(id));
-
-					if (clip.exists()) {
-
-							video = new VideoView(Reader.this);
-							video.setVideoPath(clip.getAbsolutePath());
-
-							video.setLayoutParams(new Gallery.LayoutParams(
-									LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-
-							ctlr=new MediaController(Reader.this);
-							ctlr.setMediaPlayer(video);
-							video.setMediaController(ctlr);
-							video.requestFocus();
-							video.start();
-		                    setContentView(video);
-
-						} 
-  
-			}
-		    
+			
+			
 			//start of audio methods
 			  /*
 			   * Method for displaying audio items
@@ -662,21 +638,24 @@ public class Reader extends Activity {
 				*/
 		    	
 			 	ImageButton thumb = new ImageButton(this);
-			 	thumb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 50));
+			 	thumb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 200));
 			 	
 			 	thumb.setOnClickListener(new OnClickListener() {
 		             @Override
 		             public void onClick(View v) {
 		                 
-		            	 WebView webView = new WebView(Reader.this);
-		 			 	
-					 	 webView.loadUrl("file://" + "/sdcard/PlaceBooks/unzipped" + packagePath + "/" + filename + ".html");
-						 webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-						 webView.getSettings().setBuiltInZoomControls(true);
-						 webView.getSettings().setJavaScriptEnabled(true);	//allows the webview to be able to handle javascript in websites
-						 
-						 setContentView(webView);
-						 
+		            	 //display the web site in a new view (call the WebBundleViewer)
+		            	 Intent intent = new Intent();
+	     				 	overridePendingTransition(0, 0);
+	     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+	     	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.WebBundleViewer");
+	     	        	 intent.putExtra("filename", filename);
+	     	        	 intent.putExtra("url", url);
+	     	        	 intent.putExtra("path", packagePath);
+		     		        overridePendingTransition(0, 0);
+	     	        	 startActivity(intent);	
+			            	
 		            	
 		             } //end of public void
 		 
@@ -814,13 +793,13 @@ public class Reader extends Activity {
 			 return false;
 			 }
 
-			 /*
-			 @Override
+			 
+		/*	 @Override
 			 public void onResume(){
 			        getWindow().setWindowAnimations(0);	//do not animate the view when the activity resumes
 				 
 			 }
-			  */
+		*/	  
 			 
 	
 			

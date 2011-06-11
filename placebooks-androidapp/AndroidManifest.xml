@@ -23,6 +23,10 @@ android:configChanges="orientation|keyboardHidden">
 <activity android:name=".VideoViewer"
 android:configChanges="orientation|keyboardHidden">
 </activity>
+<activity android:name=".WebBundleViewer"
+android:configChanges="orientation|keyboardHidden">
+</activity>
+
 
 
 
