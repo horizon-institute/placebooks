@@ -7,7 +7,6 @@ public class ImageItem extends Item {
 	private String URL;
 
 
-
 	public String getFilename() {
 		return filename;
 	}

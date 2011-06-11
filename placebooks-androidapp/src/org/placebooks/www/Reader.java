@@ -57,8 +57,8 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.animation.Animation.AnimationListener;
 import android.text.Html;
-import java.util.Collections; //for sorting the Order ArrayLists
-
+import android.webkit.WebView;
+import android.webkit.WebSettings;
 
 
 
@@ -108,6 +108,10 @@ public class Reader extends Activity {
 	ArrayList<String> page1Data = new ArrayList<String>();
 	ArrayList<String> page2Data = new ArrayList<String>();
 	ArrayList<String> page3Data = new ArrayList<String>();
+	
+	ArrayList<String> page1Url = new ArrayList<String>();
+	ArrayList<String> page2Url = new ArrayList<String>();
+	ArrayList<String> page3Url = new ArrayList<String>();
 
 		
 	//Video Variables
@@ -120,14 +124,15 @@ public class Reader extends Activity {
 	private ImageButton ibAudioPlay; 
 	private ImageButton ibAudioPause;
 	private ImageButton ibAudioStop;
-	
+	private boolean audio_included = false;	//audio flag
 	
 
 	 		 @Override
 	     	 public void onCreate(Bundle savedInstanceState) {
 			        super.onCreate(savedInstanceState);	//icicle
 			        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-			        
+			        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
+
 			        /*
 			         * get the extras (package path) out of the new intent
 			         * retrieve the packagePath.
@@ -149,24 +154,27 @@ public class Reader extends Activity {
 			        
 			        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
 			        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
+			        slideLeftIn.setDuration(350);
+
 			        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
 			        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
 
-				
+			        slideRightIn.setDuration(350);
+			        slideRightOut.setDuration(400);
 					      	       	        
 			        try {
 				        getMyXML();		//call method to parse XML		
 				        
-				     /*   
-				        for(String a: page1Data) {
+				       //if url!=null 
+				      /*  for(int i =0; i<page1Url.size(); i++) {
 				        	//String s = a;
 				            //a.getType();
 				            TextView tv = new TextView(this);
-							  tv.setText(a);
+							  tv.setText("url = " + page1Url.get(i));
 							  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 							  ll.addView(tv);
 				        }
-				     */
+				       */
 	       
 					  
 				  for (int i=0;i<page1Data.size();i++ ){
@@ -189,13 +197,26 @@ public class Reader extends Activity {
 						 
 					 }
 					 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
-						 //displayMapImage(page1Items.get(i).toString(), ll);
-						 
+						 //displayMapImage(page1Data.get(i).toString(), ll);
+					/*	 
 						 TextView tv = new TextView(this);
-						  tv.setText(page1.get(i).toString());
-						  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-						  ll.addView(tv);
+						 tv.setText(page1.get(i).toString());
+						 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						 ll.addView(tv);*/
 						 
+					 }
+					 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+						
+						//try {}catch...etc   - data element could be null if it doesn't exist in the config.xml 
+					   displayWebBundle(page1Data.get(i),page1Url.get(i), ll ); //filename, url, page
+						
+				  /*
+					   TextView tv = new TextView(this);
+					   tv.setText("data = " + page1Data.get(i).toString() + "URL=" + page1Url.toString());		//cannot convert a null to string maybe?
+					   tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+					   ll.addView(tv);
+				  */   
+						
 					 }
 					 
 				  	 
@@ -306,19 +327,29 @@ public class Reader extends Activity {
 				  * -- need to work on ordering next -- e.g could have img, txt, img, whereas right now it will always display the list of all images one after each other
 				  */
 				 
-					ImageView image = new ImageView(this);
+					//ImageView image = new ImageView(this);
+				 	WebView webby = new WebView(this);
+
 				    //locate the file path where the images are stored on the SD CARD. 
 					String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + img;
 				 
 				    BitmapFactory.Options options = new BitmapFactory.Options();
 				    options.inSampleSize = 1;
 				    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
-				        
+				    
+				    /*
 				    image.setImageBitmap(bm); 
 				    image.setAdjustViewBounds(true);
 				    image.setScaleType(ScaleType.FIT_CENTER);
 				    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 				    page.addView(image);
+				    */
+				    webby.loadUrl("file://" + myImagePath);
+				    webby.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+				    webby.getSettings().setBuiltInZoomControls(true);
+				    page.addView(webby);
+
+				    
 				    
 				    //New custom view that adds a bit of spacing to the end of image items
 				    View view = new View(this);
@@ -346,7 +377,7 @@ public class Reader extends Activity {
 			/*
 			 * Method for displaying the Video Items		 
 			 */
-			private void displayVideo(String video, LinearLayout page){
+			private void displayVideo(final String video, LinearLayout page){
 				 					 
 					 //Locate the video and get the thumbnail image of the video file
 					 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + video, MediaStore.Images.Thumbnails.MINI_KIND);
@@ -373,12 +404,23 @@ public class Reader extends Activity {
 					/*
 					 * Differentiate between which Listener was pressed by comparing the View reference.
 					 */
-					final String vi = video;
 					ibThumb.setOnClickListener(new OnClickListener() {
 			             @Override
 			             public void onClick(View v) {
 			            	 
-			            	 playVideo(vi);
+			            	 //Play the video - calls VideoViewer class
+			            	 //create a new intent based on the VideoViewer class
+			            	 Intent intent = new Intent();
+		     				 	overridePendingTransition(0, 0);
+		     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+	        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.VideoViewer");
+	        	        	 intent.putExtra("video", video);
+	        	        	 intent.putExtra("path", packagePath);
+		     				    overridePendingTransition(0, 0);
+	        	        	 startActivity(intent);	
+	        	        	 
+	        	        
 			            	
 			             } //end of public void
 				 
@@ -387,40 +429,17 @@ public class Reader extends Activity {
 			} //end of displayVideo method
 			
 	
-			 
-			/*
-			 * Call this Method to play a Video Item
-			 */
-		   // public void playVideo(int id){
-			  public void playVideo(String videoFile){
-				  File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped" + packagePath + "/" + videoFile); //alVideoFilename.get(id));
-
-					if (clip.exists()) {
-
-							video = new VideoView(Reader.this);
-							video.setVideoPath(clip.getAbsolutePath());
-
-							video.setLayoutParams(new Gallery.LayoutParams(
-									LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-
-							ctlr=new MediaController(Reader.this);
-							ctlr.setMediaPlayer(video);
-							video.setMediaController(ctlr);
-							video.requestFocus();
-							video.start();
-		                    setContentView(video);
-
-						} 
-  
-			}
-		    
+			
+			
 			//start of audio methods
 			  /*
 			   * Method for displaying audio items
 			   */
-		    public void displayAudio(String audio, LinearLayout page){
+		    public void displayAudio(final String audio, LinearLayout page){
 		    	
-		    		
+		    	 //audio exists so set the audio flag to true
+		    	 audio_included = true;
+		    	
 		    	 ibAudioPlay = new ImageButton(this);
 		    	 ibAudioPlay.setImageResource(R.drawable.play);
 		    	 
@@ -462,12 +481,11 @@ public class Reader extends Activity {
 						 *  Set Click Listener for the buttons
 						 *  
 						 */
-				 		 final String au = audio; 
 				         ibAudioPlay.setOnClickListener(new OnClickListener() {
 				             @Override
 				             public void onClick(View v) {
 				                 
-				            	 playAudio(au);
+				            	 playAudio(audio);
 				            	
 				             } //end of public void
 				 
@@ -498,7 +516,7 @@ public class Reader extends Activity {
 		    
 		  		    
 		    
-		    public void playAudio(String audioFile){
+		    public void playAudio(final String audioFile){
 		       		     
 		        try {
 		            mp.setDataSource("sdcard/placebooks/unzipped" + packagePath + "/" + audioFile);
@@ -559,7 +577,12 @@ public class Reader extends Activity {
 		    public void onDestroy(){
 		    	super.onDestroy();
 		    	
+		    	//stop audio only if audio exists
+		    	if (audio_included){
 		    		stopAudio();
+		    		//reset the audio flag
+		    		audio_included = false;
+		    	}
 		    }
 		    
 		    private void goBlooey(Throwable t){
@@ -600,6 +623,50 @@ public class Reader extends Activity {
 			    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
 			    page.addView(view);
 		    	
+		    }
+		    
+		    /*
+		     * Web Bundle Item
+		     * Method for displaying the web bundle
+		     */
+		    public void displayWebBundle(final String filename, final String url, final LinearLayout page){
+		    	/*
+		    	   TextView tv = new TextView(this);
+				   tv.setText("data = " + filename + "\nURL=" + url);		//cannot convert a null to string maybe?
+				   tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+				   page.addView(tv);
+				*/
+		    	
+			 	ImageButton thumb = new ImageButton(this);
+			 	thumb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 200));
+			 	
+			 	thumb.setOnClickListener(new OnClickListener() {
+		             @Override
+		             public void onClick(View v) {
+		                 
+		            	 //display the web site in a new view (call the WebBundleViewer)
+		            	 Intent intent = new Intent();
+	     				 	overridePendingTransition(0, 0);
+	     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+	     	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.WebBundleViewer");
+	     	        	 intent.putExtra("filename", filename);
+	     	        	 intent.putExtra("url", url);
+	     	        	 intent.putExtra("path", packagePath);
+		     		        overridePendingTransition(0, 0);
+	     	        	 startActivity(intent);	
+			            	
+		            	
+		             } //end of public void
+		 
+		         });
+		    	
+		    	
+			 	
+			 	
+			 	//webView.loadUrl("http://developer.android.com/reference/android/webkit/WebView.html");///sdcard/PlaceBooks/unzipped/home/stuart/placebooks-data/packages/477/Borth.html");//"/sdcard/placebooks/unzipped" + packagePath + "/Borth.html");
+			 	page.addView(thumb);
+		    
 		    }
 		    
 				
@@ -648,20 +715,28 @@ public class Reader extends Activity {
 				for(Point item: page1) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String url = item.getUrl();
 		        	page1Data.add(data);
 		        	page1Type.add(type);
+		        	page1Url.add(url);
 				}
 				for(Point item: page2) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String url = item.getUrl();
 		        	page2Data.add(data);
 		        	page2Type.add(type);
+		        	page2Url.add(url);
+
 				}
 				for(Point item: page3) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String url = item.getUrl();
 		        	page3Data.add(data);
 		        	page3Type.add(type);
+		        	page3Url.add(url);
+
 				}
 				
 				
@@ -718,7 +793,13 @@ public class Reader extends Activity {
 			 return false;
 			 }
 
-
+			 
+		/*	 @Override
+			 public void onResume(){
+			        getWindow().setWindowAnimations(0);	//do not animate the view when the activity resumes
+				 
+			 }
+		*/	  
 			 
 	
 			

@@ -11,7 +11,7 @@ public class Book {
 	
 	private String key;
 	private String owner;	
-	//private int timestamp;	//need a timestamp on the book so that we can compare timestamps for any book updates
+	private String timestamp;	//need a timestamp on the book so that we can compare timestamps for any book updates
 
 	
 	private ArrayList<Point> page1 = new ArrayList<Point>();
@@ -20,20 +20,19 @@ public class Book {
 
 
 	/*
-	 * ArrayList contains all the items in a placebook.
-	 * This ArrayList is then used in this class to find instances of each 'type' of item
+	 * ArrayLists for each item type
 	 */
-	ArrayList<Item> items = new ArrayList<Item>();
 	//ArrayList<ArrayList> pages = new ArrayList<ArrayList>();	//ArrayList 0,1,2 (page numbers) 
 	ArrayList<TextItem> textItems = new ArrayList<TextItem>();
 	ArrayList<ImageItem> imageItems = new ArrayList<ImageItem>();
 	ArrayList<VideoItem> videoItems = new ArrayList<VideoItem>();
 	ArrayList<AudioItem> audioItems = new ArrayList<AudioItem>();
 	ArrayList<MapImageItem> mapImageItems = new ArrayList<MapImageItem>();
+	ArrayList<WebBundleItem> webBundleItems = new ArrayList<WebBundleItem>();
 
-	
-	//page1.add(textItems)....add all the types of items
-	//collections.sort(page1) sort by order
+	public ArrayList<WebBundleItem> getWebBundle(){
+		return this.webBundleItems;
+	}
 	
 	/*
 	 * Getter methods
@@ -57,10 +56,11 @@ public class Book {
 	public String getOwner() {
 		return owner;
 	}
-	//Return the items in the placebook arraylist
-	public ArrayList<Item> getItems() {
-		return items;
+	//get the placebook timestamp
+	public String getTimestamp(){
+		return timestamp;
 	}
+
 	
 	/*
 	 * Setter methods
@@ -74,11 +74,11 @@ public class Book {
 		public void setOwner(String owner) {
 			this.owner = owner;
 		}
-		//Add items to the placebook arraylist (arraylist of items of different types)
-		public void setItems(ArrayList<Item> items) {
-			this.items = items;
+		//set placebook timestamp
+		public void setTimestamp(String timestamp){
+			this.timestamp = timestamp;
 		}
-		
+
 		
 		
 	public String toString(){
@@ -88,7 +88,7 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
-		
+
   	  	Point pItems = new Point(text, panel, order, type);
 
 		
@@ -114,23 +114,22 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+		String url = item.getURL();
+
 		
-  	  	Point pItems = new Point(filename, panel, order, type);
+  	  	Point pItems = new Point(filename, panel, order, type, url);
 
 		//add to page 1
 		if(panel == 0){
 			page1.add(pItems);
-//			page1Types.add(type);
 		}
 		//add to page 2
 		if(panel == 1){
 			page2.add(pItems);
-//			page2Types.add(type);
 		}
 		//add to page 3
 		if(panel == 2){
 			page3.add(pItems);
-//			page3Types.add(type);
 		}
 		
 	}
@@ -140,25 +139,23 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+
 		
   	  	Point pItems = new Point(filename, panel, order, type);
 		
 		//add to page 1
 		if(panel == 0){
 			page1.add(pItems);
-//			page1Types.add(type);
 
 		}
 		//add to page 2
 		if(panel == 1){
 			page2.add(pItems);
-//			page2Types.add(type);
 
 		}
 		//add to page 3
 		if(panel == 2){
 			page3.add(pItems);
-//			page3Types.add(type);
 		}
 		
 	}
@@ -182,6 +179,27 @@ public class Book {
 
 		}
 		//add to page 3
+		if(panel == 2){
+			page3.add(pItems);
+		}
+		
+	}
+	
+	for(WebBundleItem item: webBundleItems){
+		String filename = item.getFilename();
+		String url = item.getURL();
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		
+		Point pItems = new Point(filename, panel, order, type, url);
+		
+		if(panel == 0){
+			page1.add(pItems);
+		}
+		if(panel == 1){
+			page2.add(pItems);
+		}
 		if(panel == 2){
 			page3.add(pItems);
 		}

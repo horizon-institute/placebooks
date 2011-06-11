@@ -8,6 +8,7 @@ public class Point implements Comparable<Point>{
 	public String data;			//maybe make this an arraylist? e.g filename, geometry, url..etc
 	public int panel;
 	public int order;
+	public String url;
 	//public ArrayList<Float> geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
 	
 	public Point(String data, int panel, int order, String type){
@@ -16,6 +17,16 @@ public class Point implements Comparable<Point>{
 		this.order = order;
 		this.type = type;
 	}
+	
+	public Point(String data, int panel, int order, String type, String url){
+		this.data = data;
+		this.panel = panel;
+		this.order = order;
+		this.type = type;
+		this.url = url;
+	}
+	
+	
 	
 	/*
 	 * Getter methods
@@ -31,6 +42,9 @@ public class Point implements Comparable<Point>{
 	}
 	public int getOrder(){
 		return order;
+	}
+	public String getUrl(){
+		return url;
 	}
 	
 	/*
@@ -63,7 +77,7 @@ public class Point implements Comparable<Point>{
 	
 	@Override
 	public String toString() {
-		return "<type>" +type +"</type>" + data;
+		return "<type>" +type +"</type>" + "<data>" + data + "</data>";
 	}
 
 	

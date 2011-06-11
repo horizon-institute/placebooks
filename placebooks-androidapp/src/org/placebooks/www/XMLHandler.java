@@ -20,13 +20,14 @@ import android.util.Log;
 
 public class XMLHandler extends DefaultHandler {
 	Book myBook;
-//	Item item;
 	TextItem titem;
 	ImageItem imitem;
-//	GPSItem gpsitem;	
+	GPSTraceItem gpsitem;	
 	VideoItem vitem;
 	AudioItem aitem;
 	MapImageItem mimitem;
+	WebBundleItem wbitem;
+	
 	StringBuilder url,text,filename, panel, order, geometry;
 
 	/*
@@ -58,6 +59,12 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_placebooksMapImage = false;
 	 private boolean in_mapImageGeometry = false;
 	 private boolean in_mapImageFilename = false;
+	 
+	 private boolean in_placebooksWebBundle = false;
+	 private boolean in_webBundleFilename = false;
+	 private boolean in_webBundleUrl = false;
+	 private boolean in_webBundlePanel = false;
+	 private boolean in_webBundleOrder = false;
 	 
 	 
 	 private boolean in_key = false;
@@ -128,6 +135,12 @@ public class XMLHandler extends DefaultHandler {
 			 mimitem.setType("MapImage");	// NEWLY ADDED
 
 		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.WebBundleItem")){
+			 this.in_placebooksWebBundle = true;
+			 wbitem = new WebBundleItem();
+			 wbitem.setType("WebBundle");
+		 }
+		 
 		 
 		 else if (localName.equalsIgnoreCase("text")) {
 			 if(this.in_placebooksText){
@@ -142,6 +155,10 @@ public class XMLHandler extends DefaultHandler {
 			 }else if(this.in_placebooksImage){
 				this.in_imageUrl = true;
 				url = new StringBuilder();
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleUrl = true;
+				 url = new StringBuilder();
 			 }
 		 }
 		 else if (localName.equalsIgnoreCase("filename")) {
@@ -158,6 +175,10 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 else if (this.in_placebooksMapImage){
 				 this.in_mapImageFilename = true;
+				 filename = new StringBuilder();
+			 }
+			 else if (this.in_placebooksWebBundle){
+				 this.in_webBundleFilename = true;
 				 filename = new StringBuilder();
 			 }
 		  }
@@ -179,6 +200,11 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_audioPanel = true;
 				 panel = new StringBuilder();
 			 }
+			 else if (this.in_placebooksWebBundle){
+				 this.in_webBundlePanel= true;
+				 panel = new StringBuilder();
+			 }
+			 
 			 
 		 } //end of else if panel
 		 else if(localName.equalsIgnoreCase("order")){
@@ -197,6 +223,10 @@ public class XMLHandler extends DefaultHandler {
 			  }
 			  else if (this.in_placebooksAudio){
 				  this.in_audioOrder = true;
+				  order = new StringBuilder();
+			  }
+			  else if (this.in_placebooksWebBundle){
+				  this.in_webBundleOrder = true;
 				  order = new StringBuilder();
 			  }
 			  
@@ -250,6 +280,11 @@ public class XMLHandler extends DefaultHandler {
 			 mimitem = null;
 			 
 		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.WebBundleItem")){
+			 this.in_placebooksWebBundle = false;
+			 this.myBook.webBundleItems.add(wbitem);
+			 wbitem = null;
+		 }
 		 
 		 
 		 else if (localName.equalsIgnoreCase("url")) {  
@@ -260,6 +295,11 @@ public class XMLHandler extends DefaultHandler {
 			 }else if(this.in_placebooksImage){
 				 this.in_imageUrl = false;
 				 imitem.setURL(url.toString());		
+				 url = null;
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleUrl = false;
+				 wbitem.setURL(url.toString());
 				 url = null;
 			 }
 		 }
@@ -294,6 +334,11 @@ public class XMLHandler extends DefaultHandler {
 				 mimitem.setFilename(filename.toString());
 				 filename = null;
 			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleFilename = false;
+				 wbitem.setFilename(filename.toString());
+				 filename = null;			 
+			 }
 			 
 		 }
 		 
@@ -318,7 +363,11 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_audioPanel = false;
 				 aitem.setPanel(Integer.parseInt(panel.toString()));
 				 panel = null;
-				
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundlePanel = false;
+				 wbitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
 			 }
 			 
 		 }
@@ -344,7 +393,11 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_audioOrder = false;
 				 aitem.setOrder(Integer.parseInt(order.toString()));
 				 order = null;
-				 
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleOrder = false;
+				 wbitem.setOrder(Integer.parseInt(order.toString()));
+				 order = null;
 			 }
 		 }//end of else if order
 		 
@@ -352,7 +405,7 @@ public class XMLHandler extends DefaultHandler {
 			 
 			 if(this.in_placebooksMapImage){
 				 this.in_mapImageGeometry = false;
-				 mimitem.setGeometry(geometry.toString());
+				 //mimitem.setGeometry(geometry.toString());
 			 }
 		 }
 		 
@@ -427,6 +480,21 @@ public class XMLHandler extends DefaultHandler {
 		 }
 		 else if (this.in_mapImageFilename){
 			 filename.append(ch, start, length).toString();
+		 }
+		 
+		 //web bundle item
+		 
+		 else if (this.in_webBundleUrl){
+			 url.append(ch, start, length).toString();
+		 }
+		 else if (this.in_webBundleFilename){
+			 filename.append(ch, start, length).toString();
+		 }
+		 else if(this.in_webBundlePanel){
+			 panel.append(ch, start, length).toString();
+		 }
+		 else if(this.in_webBundleOrder){
+			 order.append(ch, start, length).toString();
 		 }
 		 
 		 
