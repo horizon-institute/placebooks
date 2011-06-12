@@ -27,13 +27,17 @@ public class WebBundleItem extends PlaceBookItem
 	@Transient
 	private BufferedImage thumbnail;
 
-	private String webBundle;
+	private String webBundleName;
+
+	private String webBundlePath;
 
 	public WebBundleItem(final User owner, final Geometry geom, 
-						 final URL sourceURL, final String webBundle)
+						 final URL sourceURL, final String webBundleName,
+						 final String webBundlePath)
 	{
 		super(owner, geom, sourceURL);
-		this.webBundle = webBundle;
+		this.webBundleName = webBundleName;
+		this.webBundlePath = webBundlePath;
 		thumbnail = null;
 	}
 
@@ -44,7 +48,8 @@ public class WebBundleItem extends PlaceBookItem
 	public WebBundleItem(final WebBundleItem w)
 	{
 		super(w);
-		this.webBundle = new String(w.getWebBundle());
+		this.webBundleName = new String(w.getWebBundleName());
+		this.webBundlePath = new String(w.getWebBundlePath());		
 		thumbnail = null;
 	}
 
@@ -68,7 +73,7 @@ public class WebBundleItem extends PlaceBookItem
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(webBundle));
+			filename.appendChild(config.createTextNode(getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -84,7 +89,7 @@ public class WebBundleItem extends PlaceBookItem
 	{
 		try
 		{
-			FileUtils.deleteDirectory(new File(webBundle));
+			FileUtils.deleteDirectory(new File(webBundlePath));
 		}
 		catch (final IOException e)
 		{
@@ -109,17 +114,31 @@ public class WebBundleItem extends PlaceBookItem
 		return thumbnail;
 	}
 
+	public String getWebBundleName()
+	{
+		return webBundleName;
+	}
+
+	public void setWebBundleName(final String name)
+	{
+		webBundleName = name;
+	}
+	public String getWebBundlePath()
+	{
+		return webBundlePath;
+	}
+
+	public void setWebBundlePath(final String path)
+	{
+		webBundlePath = path;
+	}
+
 	public String getWebBundle()
 	{
-		return webBundle;
+		return webBundlePath + "/" + webBundleName;
 	}
 
-	public void setWebBundle(final String filepath)
-	{
-		webBundle = filepath;
-	}
-
-	public String getWebBundlePath()
+	public String generateWebBundlePath()
 	{
 		return PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();

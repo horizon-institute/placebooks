@@ -80,30 +80,16 @@ public class PlaceBooksAdminControllerDebug
 					method = RequestMethod.GET)
 	public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
 	{
-		final EntityManager pm = EMFSingleton.getEntityManager();
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final PlaceBook p = em.find(PlaceBook.class, key);
+		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
+		em.close();
 
-		try
-		{
-			pm.getTransaction().begin();
-			final PlaceBook p = pm.find(PlaceBook.class, key);
-			final PlaceBook p_ = new PlaceBook(p);
-			pm.persist(p_);
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete single transaction back");
-			}
-			pm.close();
-		}
+		log.info("Published PlaceBook, old key = " + key + ", new key = " 
+				 + p_.getKey());
 
-		log.info("Copied PlaceBookItem " + key);
-
-		return new ModelAndView("message", "text", "Copied PlaceBook: " 
-								+ key);
+		return new ModelAndView("message", "text", 
+								"Published PlaceBook, new key = " + key);
 	}
 
 	@RequestMapping(value = "/admin/add_item/map", 
@@ -422,7 +408,7 @@ public class PlaceBooksAdminControllerDebug
 								sourceURL = new URL(value);
 							}
 							wbi = new WebBundleItem(null, null, sourceURL, 
-													null);
+													null, null);
 							p.addItem(wbi);
 							pm.getTransaction().commit();
 							pm.getTransaction().begin();
@@ -440,7 +426,7 @@ public class PlaceBooksAdminControllerDebug
 			{
 				wbi.setOwner(itemData.getOwner());
 				wbi.setGeometry(itemData.getGeometry());
-				wbi.setWebBundle(wbi.getWebBundlePath());
+				wbi.setWebBundlePath(wbi.generateWebBundlePath());
 			}
 
 			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 

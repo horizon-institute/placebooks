@@ -112,8 +112,9 @@ public abstract class MediaItem extends PlaceBookItem
 	public void writeDataToDisk(String name, InputStream input) 
 		throws IOException
 	{
-		final String path = PropertiesSingleton
-							.get(this.getClass().getClassLoader())
+		final String path = 
+			PropertiesSingleton
+				.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 		if(getKey() == null) { throw new IOException("Key is null"); }
