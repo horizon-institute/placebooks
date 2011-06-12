@@ -36,6 +36,12 @@ public abstract class MediaItem extends PlaceBookItem
 		this.path = file;
 	}
 
+	public MediaItem(final MediaItem m)
+	{
+		super(m);
+		this.path = new String(m.getPath());
+	}
+
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
@@ -106,8 +112,9 @@ public abstract class MediaItem extends PlaceBookItem
 	public void writeDataToDisk(String name, InputStream input) 
 		throws IOException
 	{
-		final String path = PropertiesSingleton
-							.get(this.getClass().getClassLoader())
+		final String path = 
+			PropertiesSingleton
+				.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 		if(getKey() == null) { throw new IOException("Key is null"); }

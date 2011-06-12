@@ -19,6 +19,17 @@ public class AudioItem extends MediaItem
 	{
 	}
 
+	public AudioItem(final AudioItem a)
+	{
+		super(a);
+	}
+
+	@Override
+	public AudioItem deepCopy()
+	{
+		return new AudioItem(this);
+	}
+
 	@Override
 	public String getEntityName()
 	{

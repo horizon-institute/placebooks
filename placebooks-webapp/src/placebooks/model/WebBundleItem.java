@@ -20,30 +20,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class WebBundleItem extends PlaceBookItem
 {
-	public static class WebPreview
-	{
-		private BufferedImage headerImage;
-		private String headerText;
-
-		public WebPreview(final String htmlPage, 
-						  final BufferedImage headerImage)
-		{
-			// Select headerText from htmlPage TODO
-			this.headerText = "";
-			this.headerImage = headerImage;
-		}
-
-		public BufferedImage getHeaderImage()
-		{
-			return headerImage;
-		}
-
-		public String getHeaderText()
-		{
-			return headerText;
-		}
-
-	}
 
 	private static final Logger log = 	
 		Logger.getLogger(WebBundleItem.class.getName());
@@ -51,18 +27,36 @@ public class WebBundleItem extends PlaceBookItem
 	@Transient
 	private BufferedImage thumbnail;
 
-	private File webBundle;
+	private String webBundleName;
+
+	private String webBundlePath;
 
 	public WebBundleItem(final User owner, final Geometry geom, 
-						 final URL sourceURL, final File webBundle)
+						 final URL sourceURL, final String webBundleName,
+						 final String webBundlePath)
 	{
 		super(owner, geom, sourceURL);
-		this.webBundle = webBundle;
+		this.webBundleName = webBundleName;
+		this.webBundlePath = webBundlePath;
 		thumbnail = null;
 	}
 
 	WebBundleItem()
 	{
+	}
+
+	public WebBundleItem(final WebBundleItem w)
+	{
+		super(w);
+		this.webBundleName = new String(w.getWebBundleName());
+		this.webBundlePath = new String(w.getWebBundlePath());		
+		thumbnail = null;
+	}
+
+	@Override
+	public WebBundleItem deepCopy()
+	{
+		return new WebBundleItem(this);
 	}
 
 	@Override
@@ -79,7 +73,7 @@ public class WebBundleItem extends PlaceBookItem
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(webBundle.getName()));
+			filename.appendChild(config.createTextNode(getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -95,7 +89,7 @@ public class WebBundleItem extends PlaceBookItem
 	{
 		try
 		{
-			FileUtils.deleteDirectory(webBundle);
+			FileUtils.deleteDirectory(new File(webBundlePath));
 		}
 		catch (final IOException e)
 		{
@@ -120,30 +114,35 @@ public class WebBundleItem extends PlaceBookItem
 		return thumbnail;
 	}
 
-	public String getWebBundle()
+	public String getWebBundleName()
 	{
-		return webBundle.toString();
+		return webBundleName;
 	}
 
+	public void setWebBundleName(final String name)
+	{
+		webBundleName = name;
+	}
 	public String getWebBundlePath()
+	{
+		return webBundlePath;
+	}
+
+	public void setWebBundlePath(final String path)
+	{
+		webBundlePath = path;
+	}
+
+	public String getWebBundle()
+	{
+		return webBundlePath + "/" + webBundleName;
+	}
+
+	public String generateWebBundlePath()
 	{
 		return PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
 	}
 
-	// An alternative preview - a FaceBook style header text plus image drawn
-	// from the webpage in question
-	public WebPreview getWebPreview()
-	{
-		return null;
-	}
-
-	public void setWebBundle(final String filepath)
-	{
-		if (filepath != null)
-		{
-			webBundle = new File(filepath);
-		}
-	}
 
 }

@@ -744,7 +744,8 @@ public class PlaceBooksAdminController
 			}
 			else if(placebookKey != null)
 			{
-				PlaceBook placebook = manager.find(PlaceBook.class, placebookKey);
+				PlaceBook placebook = 
+					manager.find(PlaceBook.class, placebookKey);
 				
 				if(type.equals("gpstrace"))
 				{

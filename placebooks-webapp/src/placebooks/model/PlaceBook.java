@@ -46,6 +46,9 @@ public class PlaceBook
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBook.class.getName());
 
+	public static final int STATE_UNPUBLISHED = 0;
+	public static final int STATE_PUBLISHED = 1;
+
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom; // Pertaining to the PlaceBook
@@ -71,6 +74,8 @@ public class PlaceBook
 
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
+
+	private int state = -1;
 	
 	//@JsonIgnore
 	//private Permissions readPermissions;
@@ -78,6 +83,7 @@ public class PlaceBook
 	// Make a new PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
 	{
+		this.state = STATE_UNPUBLISHED;
 		this.owner = owner;
 		if (owner != null)
 		{
@@ -102,6 +108,41 @@ public class PlaceBook
 	PlaceBook()
 	{
 		index.setPlaceBook(this);		
+	}
+
+	// Copy constructor
+	public PlaceBook(final PlaceBook p)
+	{
+		this.owner = p.getOwner();
+		if (this.owner != null)
+			this.owner.add(this);
+
+		this.geom = (Geometry)p.getGeometry().clone();
+		this.timestamp = (Date)p.getTimestamp().clone();
+		
+		index.setPlaceBook(this);
+
+		// Note: search index should be built up as this PlaceBook is cloned
+
+		final Set<Map.Entry<String, String>> s = p.getMetadata().entrySet();
+		for (Map.Entry<String, String> entry : s)
+			this.addMetadataEntry(entry.getKey(), entry.getValue());
+
+        for (PlaceBookItem item : p.getItems())
+		{
+			this.addItem(item.deepCopy());
+		}
+
+        log.info("Created copy of PlaceBook; old key = " + p.getKey());
+    }
+
+	public void setState(int state)
+	{
+		this.state = state;
+	}
+	public int getState()
+	{
+		return state;
 	}
 
 	public void addItem(final PlaceBookItem item)

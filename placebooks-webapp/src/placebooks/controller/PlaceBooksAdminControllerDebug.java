@@ -75,6 +75,23 @@ public class PlaceBooksAdminControllerDebug
 
 	private static final int MEGABYTE = 1048576;
 
+
+	@RequestMapping(value = "/admin/publish_placebook/{key}",
+					method = RequestMethod.GET)
+	public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final PlaceBook p = em.find(PlaceBook.class, key);
+		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
+		em.close();
+
+		log.info("Published PlaceBook, old key = " + key + ", new key = " 
+				 + p_.getKey());
+
+		return new ModelAndView("message", "text", 
+								"Published PlaceBook, new key = " + key);
+	}
+
 	@RequestMapping(value = "/admin/add_item/map", 
 					method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")	
@@ -391,7 +408,7 @@ public class PlaceBooksAdminControllerDebug
 								sourceURL = new URL(value);
 							}
 							wbi = new WebBundleItem(null, null, sourceURL, 
-													null);
+													null, null);
 							p.addItem(wbi);
 							pm.getTransaction().commit();
 							pm.getTransaction().begin();
@@ -409,7 +426,7 @@ public class PlaceBooksAdminControllerDebug
 			{
 				wbi.setOwner(itemData.getOwner());
 				wbi.setGeometry(itemData.getGeometry());
-				wbi.setWebBundle(wbi.getWebBundlePath());
+				wbi.setWebBundlePath(wbi.generateWebBundlePath());
 			}
 
 			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
