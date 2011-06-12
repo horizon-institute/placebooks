@@ -6,9 +6,8 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipException;
+//import java.util.zip.ZipException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,19 +19,18 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+//import android.view.ViewGroup;
 //import android.widget.AdapterView;
 //import android.widget.AdapterView.OnItemClickListener;
 //import android.widget.ListAdapter;
 import android.widget.ListView;
 //import android.widget.SimpleAdapter;
-import android.widget.Toast;
+//import android.widget.Toast;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import java.io.File;
@@ -85,12 +83,12 @@ public class Shelf extends ListActivity {
 		        Intent intent = getIntent();
 		        if(intent != null) username = intent.getStringExtra("username");
 
-		        		       
+		        OnlineCheck oc = new OnlineCheck();		       
 		        /*
 		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
 		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
 		        */       
-		        if (isOnline()){
+		        if (oc.isOnline(this)){
 		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
 		        	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 		          										  
@@ -103,7 +101,7 @@ public class Shelf extends ListActivity {
 			        ll.addView(tv);
 		          	
 		        }
-		        else if (!isOnline()) {		//do a check if there is a shelf file on the sdcard
+		        else if (!oc.isOnline(this)) {		//do a check if there is a shelf file on the sdcard
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
 			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
 		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
@@ -145,8 +143,9 @@ public class Shelf extends ListActivity {
 			        	 item.dl_listener = new OnClickListener(){
 				        	public void  onClick  (View  v){
 				        		
+				        		SDCardCheck sdcardcheck = new SDCardCheck();
 				        		//if the sdcard is mounted then download
-				        		if (isSdPresent()){
+				        		if (sdcardcheck.isSdPresent()){
 				        		
 				        			/**
 				        			 * placebook does not exist on sdcard so download it.
@@ -212,7 +211,7 @@ public class Shelf extends ListActivity {
 	 /*
 	  * Check for an Internet connection and return true if there is Internet
 	  */
-	 public boolean isOnline() {
+	/* public boolean isOnline() {
 		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
@@ -220,6 +219,7 @@ public class Shelf extends ListActivity {
 		    }
 		    return false;
 		}
+		*/
 	 
 	 /*
 	  * Method for downloading the shelf JSON file to the SDCard for caching.
@@ -453,10 +453,11 @@ public class Shelf extends ListActivity {
 			   /*
 			    * A method that checks if an SDCard is present on the mobile device
 			    */  
-			   public static boolean isSdPresent() {
+			   /*public static boolean isSdPresent() {
 				   
 				   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 				   
 			   }
+			   */
 
 }	//end of public shelf

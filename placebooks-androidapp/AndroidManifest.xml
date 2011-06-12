@@ -16,7 +16,9 @@
         </activity>
 
 
-<activity android:name=".Reader"></activity>
+<activity android:name=".Reader"
+android:configChanges="orientation|keyboardHidden">
+</activity>
 <activity android:name=".Shelf"
 android:configChanges="orientation|keyboardHidden">
 </activity>
@@ -26,7 +28,9 @@ android:configChanges="orientation|keyboardHidden">
 <activity android:name=".WebBundleViewer"
 android:configChanges="orientation|keyboardHidden">
 </activity>
-
+<activity android:name=".Register"
+android:configChanges="orientation|keyboardHidden">
+</activity>
 
 
 

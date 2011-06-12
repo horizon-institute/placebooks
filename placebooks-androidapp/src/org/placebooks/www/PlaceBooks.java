@@ -1,40 +1,37 @@
 package org.placebooks.www;
 
 import android.app.Activity;
-import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
-import java.net.URL;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-//import java.io.OutputStream;
-import java.net.HttpURLConnection;
+
 import java.io.File;
 import android.os.Environment;
 import android.util.Log;
-import java.net.MalformedURLException;
-import java.io.IOException;
 
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.app.AlertDialog;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
+//Log In needs to be a one time thing - store the credential vars in the shared preferences..
 
-
-public class PlaceBooks extends Activity {
+public class PlaceBooks extends Activity{
 	
-   
+	private ProgressDialog myDialog = null;
     private EditText etUsername;
    // private EditText etPassword;
     private String username; 
 	//private String password;  
     private Button btnLogin;
-
+    private TextView tv;
 		
     /** Called when the activity is first created. */
     @Override
@@ -43,11 +40,45 @@ public class PlaceBooks extends Activity {
         // load up the layout
         setContentView(R.layout.main);	//push main layout into the content view
         
+        //placebooks logo
+        ImageView image = (ImageView) findViewById(R.id.imgLogo);
+        image.setImageResource(R.drawable.placebooks_logo);
+        
+        //set the action listener for the register text	
+        tv = (TextView)findViewById(R.id.txtRegister);
+        tv.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v){
+        		//Toast msg = Toast.makeText(PlaceBooks.this, "Message", Toast.LENGTH_LONG);
+        		//msg.show();
+        		
+	        	myDialog = ProgressDialog.show( PlaceBooks.this, " " , " Loading page.. ", true);				   	 
+	        	
+        		new Thread() {
+                    public void run() {
+                            try{
+                            	Intent intent = new Intent();
+            				 	overridePendingTransition(0, 0);
+            				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+	            	        	intent.setClassName("org.placebooks.www", "org.placebooks.www.Register");
+	             		        overridePendingTransition(0, 0);
+	            	        	startActivity(intent);	   
+                                    
+                            } catch (Exception e) { }
+                            // Dismiss the Dialog
+                            myDialog.dismiss();
+                    }
+        		}.start();
+      		
+        		
+        	}
+        });
+        
         /*check if an SDCard exists. If it does then check if the PlaceBooks dir exists.
          * If it does not exist then create it. If there is no SDCard then alert user they need one.
          */
-        
-        if (isSdPresent()){
+        SDCardCheck sdcardcheck = new SDCardCheck();
+
+        if (sdcardcheck.isSdPresent()){
         	//SDCard IS mounted. Now check if PlaceBooks dir exists. Create it on first app startup.
     		File directory = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks");///");
     		
@@ -59,10 +90,9 @@ public class PlaceBooks extends Activity {
 	    		else{
 	    			//directory exists so do nothing
 	    		}
-        
         }
-        
-        else{  //SDCard is not mounted. Alert user.
+         //SDCard is not mounted. Alert user.
+        else{ 
         	
             Log.d("MyApp", "No SDCARD");
        
@@ -81,26 +111,38 @@ public class PlaceBooks extends Activity {
         //etPassword = (EditText) findViewById(R.id.txt_password);
        // LinearLayout ll = (LinearLayout)findViewById(R.id.linearlayout);
        
-
         
         /*
          * Sign in button pressed (action listener for button)
          */
         btnLogin.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
-        		
+				   
         				// Check Login	
         		         username = etUsername.getText().toString();
         		         //password = etPassword.getText().toString();
         		      
         		         
         		        if(username.length() > 0){
-        		
-        		        	//login successful - take user to their bookshelf
-        		        	Intent intent = new Intent();
-        	        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
-        	        		intent.putExtra("username", username);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
-        	        		startActivity(intent);		
+        	        		
+        		        	//progress dialog for user feedback
+        		        	myDialog = ProgressDialog.show( PlaceBooks.this, " " , " Logging in.. ", true);				   	 
+        		        	
+        	        		new Thread() {
+                                public void run() {
+                                        try{
+                                		    //login successful - take user to their bookshelf
+                        		        	Intent intent = new Intent();
+                        	        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
+                        	        		intent.putExtra("username", username);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
+                        	        		startActivity(intent);	
+                                                
+                                        } catch (Exception e) { }
+                                        // Dismiss the Dialog
+                                        myDialog.dismiss();
+                                }
+        	        		}.start();
+        	        			
         		
         		        } else{
         		        	
@@ -116,47 +158,17 @@ public class PlaceBooks extends Activity {
         });
         
         
-        /*
-         * View my placebook button       
-         */
-/*      Button buttonR = (Button) findViewById(R.id.Button02);
-        buttonR.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v){
-        		
-        		//check to see if there is an sd card mounted  
-   	        	if (!isSdPresent()){
-   	             
-       	         	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
-       	         	builder.setTitle("No SD Card!");
-       	         	builder.setMessage("There is no sd card mounted to this device! You must mount an sd card to the device!");
-       	         	builder.setPositiveButton("OK", null);
-       	         	AlertDialog dialog = builder.show();
-
-   	        	}  
-   	        	else{
-   	        		// There is an sd card mounted so read the placebook from the sd card and display it by calling the Reader Class
-	        		Intent i = new Intent();
-	        		i.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
-	        		startActivity(i);	
-   	        	
-   	        	}
-        	}
-        });    
-
-   */     
-        
-        
       }   //end of onCreate()
            
    
 	   /*
 	    * A method that checks if an SDCard is present on the mobile device
 	    */  
-	   public static boolean isSdPresent() {
+	   /*public static boolean isSdPresent() {
 		   
 		   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 		   
 	   }
- 
+	   */
            
 }

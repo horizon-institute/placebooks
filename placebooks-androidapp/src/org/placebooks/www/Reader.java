@@ -206,17 +206,7 @@ public class Reader extends Activity {
 						 
 					 }
 					 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-						
-						//try {}catch...etc   - data element could be null if it doesn't exist in the config.xml 
-					   displayWebBundle(page1Data.get(i),page1Url.get(i), ll ); //filename, url, page
-						
-				  /*
-					   TextView tv = new TextView(this);
-					   tv.setText("data = " + page1Data.get(i).toString() + "URL=" + page1Url.toString());		//cannot convert a null to string maybe?
-					   tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-					   ll.addView(tv);
-				  */   
-						
+					      displayWebBundle(page1Data.get(i),page1Url.get(i), ll ); //filename, url, page
 					 }
 					 
 				  	 
@@ -638,7 +628,7 @@ public class Reader extends Activity {
 				*/
 		    	
 			 	ImageButton thumb = new ImageButton(this);
-			 	thumb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 200));
+			 	thumb.setLayoutParams(new LayoutParams(350, 230));
 			 	
 			 	thumb.setOnClickListener(new OnClickListener() {
 		             @Override
