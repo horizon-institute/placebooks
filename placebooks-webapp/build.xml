@@ -37,8 +37,9 @@
 	<path id="classpath.gwt">
 		<path path="${src.dir}"/>
 		<fileset dir="${lib.dir}">
-			<include name="*.jar"/>
+			<include name="**.jar"/>
 		</fileset>
+		<pathelement path="${classes.dir}" />
     </path>
 	
 	<!-- Configure the custom Ant tasks for the Manager application -->
@@ -72,13 +73,12 @@
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
 			   includeAntRuntime="no">
 			<src path="${src.dir}"/>
-			<exclude name="/placebooks/client/**" />
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath refid="classpath"/>
 		</javac>
 	</target>
 
-	<target name="compile-gwt" description="Compile GWT web interface">
+	<target name="compile-gwt" depends="compile" description="Compile GWT web interface">
 		<java classpathref="classpath.gwt" failonerror="true" fork="true"
 	        classname="com.google.gwt.dev.Compiler"> 
 	        <arg line="-war ${war.dir}"/> 
