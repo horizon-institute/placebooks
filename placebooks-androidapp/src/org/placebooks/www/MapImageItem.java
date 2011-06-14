@@ -20,7 +20,7 @@ public class MapImageItem extends Item {
 	@Override
 	public String toString() {
 
-		return "<Filename>" + filename + "</Filename>" + "<Geometry>" + super.getGeometry() + "</Geometry>";
+		return "<Filename>" + filename + "</Filename>" + "<Geometry>" + super.getGeometry() + "</Geometry>" + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
 		
 	}
 
