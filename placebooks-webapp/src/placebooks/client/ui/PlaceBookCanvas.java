@@ -116,6 +116,9 @@ public class PlaceBookCanvas extends Composite
 	Panel palette;
 
 	@UiField
+	Label zoomLabel;
+	
+	@UiField
 	Panel savingPanel;
 
 	@UiField
@@ -242,6 +245,7 @@ public class PlaceBookCanvas extends Composite
 	{
 		this.zoom = zoom;
 		final float panelWidth = (zoom - 10) / panels.size();
+		zoomLabel.setText(zoom + "%");
 		for (final PlaceBookPanel panel : panels)
 		{
 			panel.setWidth(panelWidth);
@@ -323,16 +327,15 @@ public class PlaceBookCanvas extends Composite
 		final List<MenuItem> items = new ArrayList<MenuItem>();
 		items.add(new MenuItem("Logout")
 		{
-
 			@Override
 			public void run()
 			{
-				// TODO Auto-generated method stub
-
+				Window.open(GWT.getHostPageBaseURL() + "j_spring_security_logout", "_self", "");
 			}
 		});
 		GWT.log("sdhjsdf");
 		dropMenu.show(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
+		event.stopPropagation();
 	}
 
 	@UiHandler("backPanel")

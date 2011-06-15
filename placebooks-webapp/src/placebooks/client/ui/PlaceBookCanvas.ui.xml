@@ -127,7 +127,13 @@
 		
 		.account {
 			border-left: 1px solid grey;
-			display: inline;
+			padding: 0px 4px;
+			float:right;
+		}
+		
+		.zoomImage {
+			margin: 2px;
+			float:right;
 		}
 		
 		.toolbar {
@@ -143,10 +149,11 @@
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
 		<g:FlowPanel styleName="{style.titleBar}">
 			<p:EditablePanel ui:field="title"></p:EditablePanel>
-			<g:FlowPanel styleName="{style.toolbar}">
-				<g:Image resource="{res.zoom_in}" ui:field="zoomIn" />
-				<g:Image resource="{res.zoom_out}" ui:field="zoomOut" />				
+			<g:FlowPanel styleName="{style.toolbar}">			
 				<g:Label styleName="{style.account}" ui:field="account" />
+				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
+				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
 			</g:FlowPanel>			
 		</g:FlowPanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
