@@ -59,6 +59,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.text.Html;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
+import com.vividsolutions.jts.geom.Geometry;
 
 
 
@@ -112,12 +113,22 @@ public class Reader extends Activity {
 	ArrayList<String> page1Url = new ArrayList<String>();
 	ArrayList<String> page2Url = new ArrayList<String>();
 	ArrayList<String> page3Url = new ArrayList<String>();
+	
+	ArrayList<String> page1Keys = new ArrayList<String>();
+	ArrayList<String> page2Keys = new ArrayList<String>();
+	ArrayList<String> page3Keys = new ArrayList<String>();
+	
+	ArrayList<Geometry> page1Geometries = new ArrayList<Geometry>();
+	ArrayList<Geometry> page2Geometries = new ArrayList<Geometry>();
+	ArrayList<Geometry> page3Geometries = new ArrayList<Geometry>();
 
-		
+	//Image Variables
+	private ImageButton ibImg;
+	
 	//Video Variables
 	private VideoView video;
 	private MediaController ctlr;
-	private ImageButton ibThumb;
+	private ImageButton ibVid;
 	
 	//Audio Variables
 	private MediaPlayer mp = new MediaPlayer();
@@ -125,6 +136,9 @@ public class Reader extends Activity {
 	private ImageButton ibAudioPause;
 	private ImageButton ibAudioStop;
 	private boolean audio_included = false;	//audio flag
+	
+	//Map Image Variables
+	private ImageButton ibMap;
 	
 
 	 		 @Override
@@ -166,11 +180,11 @@ public class Reader extends Activity {
 				        getMyXML();		//call method to parse XML		
 				        
 				       //if url!=null 
-				      /*  for(int i =0; i<page1Url.size(); i++) {
+				       /* for(int i =0; i<page1Geometries.size(); i++) {
 				        	//String s = a;
 				            //a.getType();
 				            TextView tv = new TextView(this);
-							  tv.setText("url = " + page1Url.get(i));
+							  tv.setText("geometries = " + page1Geometries.get(i));
 							  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 							  ll.addView(tv);
 				        }
@@ -197,16 +211,16 @@ public class Reader extends Activity {
 						 
 					 }
 					 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
-						 //displayMapImage(page1Data.get(i).toString(), ll);
-					/*	 
-						 TextView tv = new TextView(this);
-						 tv.setText(page1.get(i).toString());
-						 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-						 ll.addView(tv);*/
+						 displayMapImage(page1Data.get(i).toString(), ll);
 						 
+						/* TextView tv = new TextView(this);
+						 tv.setText(page1Data.get(i).toString());
+						 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						 ll.addView(tv);
+						 */
 					 }
 					 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-					      displayWebBundle(page1Data.get(i),page1Url.get(i), ll ); //filename, url, page
+					      displayWebBundle(page1Data.get(i),page1Url.get(i), page1Keys.get(i), ll ); //filename, url, page
 					 }
 					 
 				  	 
@@ -310,16 +324,14 @@ public class Reader extends Activity {
 	 		 /*
 	 		  * Method for displaying the Image Items
 	 		  */
-			 private void displayImage(String img, LinearLayout page){
+			 private void displayImage(final String img, final LinearLayout page){
 				 				 
 				 /*
 				  * Dynamically creating 'x' amount of image views for each image in the placebook 
 				  * -- need to work on ordering next -- e.g could have img, txt, img, whereas right now it will always display the list of all images one after each other
 				  */
 				 
-					//ImageView image = new ImageView(this);
-				 	WebView webby = new WebView(this);
-
+				 	ImageButton ibImg = new ImageButton(this);
 				    //locate the file path where the images are stored on the SD CARD. 
 					String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + img;
 				 
@@ -327,30 +339,60 @@ public class Reader extends Activity {
 				    options.inSampleSize = 1;
 				    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
 				    
-				    /*
-				    image.setImageBitmap(bm); 
-				    image.setAdjustViewBounds(true);
-				    image.setScaleType(ScaleType.FIT_CENTER);
-				    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-				    page.addView(image);
-				    */
-				    webby.loadUrl("file://" + myImagePath);
-				    webby.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-				    webby.getSettings().setBuiltInZoomControls(true);
-				    page.addView(webby);
-
+				    //small image (height is less than 200 and the width is less than 400
+				    if (bm.getHeight() <300 & bm.getWidth() <400){
+				    Bitmap scaledbm = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight(), true);	//scale the bitmap to the right size of the button
 				    
+				    ibImg.setImageBitmap(scaledbm);
+					ibImg.setLayoutParams(new LayoutParams(bm.getWidth(), bm.getHeight()));
+					page.addView(ibImg); 	
+					    
+				    }
 				    
-				    //New custom view that adds a bit of spacing to the end of image items
+				    else{
+					    Bitmap scaledbm = Bitmap.createScaledBitmap(bm, 400, 300, true);	//scale the bitmap to the right size of the button
+						
+						ibImg.setImageBitmap(scaledbm);
+						ibImg.setLayoutParams(new LayoutParams(400, 300));
+						//ibImg.setMinimumWidth(bm.getWidth());
+						//ibImg.setMinimumHeight(bm.getHeight());
+						page.addView(ibImg); 
+				    	
+				    }
+				    
+	
+					//New custom view that adds a bit of spacing to the end of image items
 				    View view = new View(this);
 				    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
 				    page.addView(view);
+				    
+				    
+					ibImg.setOnClickListener(new OnClickListener() {
+			             @Override
+			             public void onClick(View v) {
+			            	 
+			            	 Intent intent = new Intent();
+		     				 	overridePendingTransition(0, 0);
+		     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+	        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.ImageViewer");
+	        	        	 intent.putExtra("image", img);
+	        	        	 intent.putExtra("path", packagePath);
+		     				    overridePendingTransition(0, 0);
+	        	        	 startActivity(intent);	
+	        	        	 
+	        	        
+			            	
+			             } //end of public void
+				 
+						}); 
+				    	    
 			
 			 }
 			 /*
 			  * Method for displaying the Text Items
 			  */			 
-			private void displayText(String text, LinearLayout page){
+			private void displayText(final String text, final LinearLayout page){
 				  
 				 TextView tv = new TextView(this);
 				 tv.setText(Html.fromHtml(text));	//create its HTML layout
@@ -368,23 +410,20 @@ public class Reader extends Activity {
 			 * Method for displaying the Video Items		 
 			 */
 			private void displayVideo(final String video, LinearLayout page){
+				// make the button and thumbnail look like it is a TV (simple metaphor for users to understand it is a video clip)
 				 					 
 					 //Locate the video and get the thumbnail image of the video file
 					 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + video, MediaStore.Images.Thumbnails.MINI_KIND);
+					 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, 360, 270, true);	//scale the bitmap to the right size of the button
 			 
-					 //ArrayList of ImageButtons. Same view
-					 //ibThumb.add(new ImageButton(this));
-					 ibThumb = new ImageButton(this);
-					 
+					 ibVid = new ImageButton(this);
 					 
 					//assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
-					/*ibThumb.get(i).setImageBitmap(thumb);
-					ibThumb.get(i).setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-					ll3.addView(ibThumb.get(i)); 
-						*/
-					 ibThumb.setImageBitmap(thumb);
-					 ibThumb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-					 page.addView(ibThumb); 
+					
+					 ibVid.setImageBitmap(scaledThumb);
+					 //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+					 ibVid.setLayoutParams(new LayoutParams(400,300));
+					 page.addView(ibVid); 
 					 
 					//New custom view that adds a bit of spacing to the end of image items
 					View view = new View(this);
@@ -394,7 +433,7 @@ public class Reader extends Activity {
 					/*
 					 * Differentiate between which Listener was pressed by comparing the View reference.
 					 */
-					ibThumb.setOnClickListener(new OnClickListener() {
+					ibVid.setOnClickListener(new OnClickListener() {
 			             @Override
 			             public void onClick(View v) {
 			            	 
@@ -592,26 +631,48 @@ public class Reader extends Activity {
 		     * Map Image Item
 		     * Method for displaying the map tile image
 		     */
-		    public void displayMapImage(String mapImage, LinearLayout page){
+		    public void displayMapImage(final String mapImage, final LinearLayout page){
 		    	
-		    	ImageView image = new ImageView(this);
 			    //locate the file path where the images are stored on the SD CARD. 
-				String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+						
 			 
 			    BitmapFactory.Options options = new BitmapFactory.Options();
 			    options.inSampleSize = 1;
-			    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
-			        
-			    image.setImageBitmap(bm); 
-			    image.setAdjustViewBounds(true);
-			    image.setScaleType(ScaleType.FIT_CENTER);
-			    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-			    page.addView(image);
+			    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
 			    
-			    //New custom view that adds a bit of spacing to the end of image items
-			    View view = new View(this);
-			    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
-			    page.addView(view);
+			    ibMap = new ImageButton(this);
+			    
+			    ibMap.setImageBitmap(bm);
+				ibMap.setLayoutParams(new LayoutParams(400,250));
+				page.addView(ibMap); 
+				 
+				//New custom view that adds a bit of spacing to the end of image items
+				View view = new View(this);
+				view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
+				page.addView(view);
+				
+				/*
+				 * Differentiate between which Listener was pressed by comparing the View reference.
+				 */
+				ibMap.setOnClickListener(new OnClickListener() {
+		             @Override
+		             public void onClick(View v) {
+		            	 
+		            	 Intent intent = new Intent();
+	     				 	overridePendingTransition(0, 0);
+	     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+       	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.MapImageViewer");
+       	        	 intent.putExtra("mapImage", mapImage);
+       	        	 intent.putExtra("packagePath", packagePath);
+	     				    overridePendingTransition(0, 0);
+       	        	 startActivity(intent);	
+       	        	 
+		            	
+		             } //end of public void
+			 
+					});
 		    	
 		    }
 		    
@@ -619,16 +680,16 @@ public class Reader extends Activity {
 		     * Web Bundle Item
 		     * Method for displaying the web bundle
 		     */
-		    public void displayWebBundle(final String filename, final String url, final LinearLayout page){
-		    	/*
-		    	   TextView tv = new TextView(this);
-				   tv.setText("data = " + filename + "\nURL=" + url);		//cannot convert a null to string maybe?
-				   tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				   page.addView(tv);
-				*/
+		    public void displayWebBundle(final String filename, final String url, final String itemKey, final LinearLayout page){
 		    	
 			 	ImageButton thumb = new ImageButton(this);
-			 	thumb.setLayoutParams(new LayoutParams(350, 230));
+			 	thumb.setLayoutParams(new LayoutParams(400, 250));
+			 	page.addView(thumb);
+			 	
+			 	//New custom view that adds a bit of spacing to the end of image items
+				View view = new View(this);
+				view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
+				page.addView(view);
 			 	
 			 	thumb.setOnClickListener(new OnClickListener() {
 		             @Override
@@ -643,7 +704,8 @@ public class Reader extends Activity {
 	     	        	 intent.putExtra("filename", filename);
 	     	        	 intent.putExtra("url", url);
 	     	        	 intent.putExtra("path", packagePath);
-		     		        overridePendingTransition(0, 0);
+	     	        	 intent.putExtra("itemKey", itemKey);
+	     	        	 overridePendingTransition(0, 0);
 	     	        	 startActivity(intent);	
 			            	
 		            	
@@ -651,12 +713,7 @@ public class Reader extends Activity {
 		 
 		         });
 		    	
-		    	
-			 	
-			 	
-			 	//webView.loadUrl("http://developer.android.com/reference/android/webkit/WebView.html");///sdcard/PlaceBooks/unzipped/home/stuart/placebooks-data/packages/477/Borth.html");//"/sdcard/placebooks/unzipped" + packagePath + "/Borth.html");
-			 	page.addView(thumb);
-		    
+ 
 		    }
 		    
 				
@@ -705,27 +762,39 @@ public class Reader extends Activity {
 				for(Point item: page1) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
+		        	Geometry geom = item.getGeometry();
 		        	page1Data.add(data);
 		        	page1Type.add(type);
 		        	page1Url.add(url);
+		        	page1Keys.add(itemKey);
+		        	page1Geometries.add(geom);
 				}
 				for(Point item: page2) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
+		        	Geometry geom = item.getGeometry();
 		        	page2Data.add(data);
 		        	page2Type.add(type);
 		        	page2Url.add(url);
+		        	page2Keys.add(itemKey);
+		        	page2Geometries.add(geom);
 
 				}
 				for(Point item: page3) {
 		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
+		        	Geometry geom = item.getGeometry();
 		        	page3Data.add(data);
 		        	page3Type.add(type);
 		        	page3Url.add(url);
+		        	page3Keys.add(itemKey);
+		        	page3Geometries.add(geom);
 
 				}
 				

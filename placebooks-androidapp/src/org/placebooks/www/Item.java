@@ -1,12 +1,13 @@
 package org.placebooks.www;
 
 import com.vividsolutions.jts.geom.Geometry;
+//import java.text.ParseException;
 
 
 public class Item {
 	
 	//attributes
-	private int key;
+	private String key;
 	private String owner;
 	
 	private String timestamp;
@@ -37,10 +38,10 @@ public class Item {
 	}
 	
 	
-	public int getKey() {
+	public String getKey() {
 		return key;
 	}
-	public void setKey(int key) {
+	public void setKey(String key) {
 		this.key = key;
 	}
 	public String getOwner() {
@@ -58,7 +59,7 @@ public class Item {
 	public Geometry getGeometry(){
 		return geometry;
 	}
-	public void setGeometry(Geometry g){
+	public void setGeometry(Geometry g) {//throws ParseException{
 		this.geometry = g;
 	}
 	public int getOrder(){

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 //import java.util.Iterator;
 //import java.util.ListIterator;
 import java.util.Collections;
+import com.vividsolutions.jts.geom.Geometry;
 
 
 //A book is an array list of items (items can be images, video, audio, text or gps trails)
@@ -88,8 +89,10 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+		String textKey = item.getKey();
+		Geometry geom = item.getGeometry();
 
-  	  	Point pItems = new Point(text, panel, order, type);
+  	  	Point pItems = new Point(text, panel, order, type, textKey, geom);
 
 		
 		//add to page 1
@@ -114,10 +117,12 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
-		String url = item.getURL();
+		//String url = item.getURL();
+		String imageKey = item.getKey();
+		Geometry geom = item.getGeometry();
 
 		
-  	  	Point pItems = new Point(filename, panel, order, type, url);
+  	  	Point pItems = new Point(filename, panel, order, type, imageKey, geom);//, url
 
 		//add to page 1
 		if(panel == 0){
@@ -139,9 +144,11 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+		String videoKey = item.getKey();
+		Geometry geom = item.getGeometry();
 
 		
-  	  	Point pItems = new Point(filename, panel, order, type);
+  	  	Point pItems = new Point(filename, panel, order, type, videoKey, geom);
 		
 		//add to page 1
 		if(panel == 0){
@@ -165,8 +172,11 @@ public class Book {
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+		String audioKey = item.getKey();
+		Geometry geom = item.getGeometry();
+
 		
-  	  	Point pItems = new Point(filename, panel, order, type);
+  	  	Point pItems = new Point(filename, panel, order, type, audioKey, geom);
 		
 		//add to page 1
 		if(panel == 0){
@@ -185,14 +195,38 @@ public class Book {
 		
 	}
 	
+	for(MapImageItem item: mapImageItems){
+		String filename = item.getFilename();
+		//GET GEOMETRY
+		String type = item.getType();
+		int panel = item.getPanel();
+		int order = item.getOrder();
+		String mapKey = item.getKey();
+		Geometry geom = item.getGeometry();
+		
+		Point pItems = new Point(filename, panel, order, type, mapKey, geom);
+		
+		if(panel == 0){
+			page1.add(pItems);
+		}
+		if(panel == 1){
+			page2.add(pItems);
+		}
+		if(panel == 2){
+			page3.add(pItems);
+		}
+	}
+	
 	for(WebBundleItem item: webBundleItems){
 		String filename = item.getFilename();
 		String url = item.getURL();
 		String type = item.getType();
 		int panel = item.getPanel();
 		int order = item.getOrder();
+		String wbKey = item.getKey();
+		Geometry geom = item.getGeometry();
 		
-		Point pItems = new Point(filename, panel, order, type, url);
+		Point pItems = new Point(filename, panel, order, type, wbKey, geom, url);
 		
 		if(panel == 0){
 			page1.add(pItems);

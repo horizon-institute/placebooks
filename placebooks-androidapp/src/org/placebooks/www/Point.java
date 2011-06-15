@@ -1,6 +1,8 @@
 package org.placebooks.www;
 
 import java.util.*;
+import com.vividsolutions.jts.geom.Geometry;
+
 
 public class Point implements Comparable<Point>{
 
@@ -9,21 +11,27 @@ public class Point implements Comparable<Point>{
 	public int panel;
 	public int order;
 	public String url;
-	//public ArrayList<Float> geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
+	public String itemKey;
+	public Geometry geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
 	
-	public Point(String data, int panel, int order, String type){
+	public Point(String data, int panel, int order, String type, String itemKey, Geometry geom){
 		this.data = data;
 		this.panel = panel;
 		this.order = order;
 		this.type = type;
+		this.itemKey = itemKey;
+		this.geometry = geom;
 	}
 	
-	public Point(String data, int panel, int order, String type, String url){
+	public Point(String data, int panel, int order, String type, String itemKey, Geometry geom, String url){
 		this.data = data;
 		this.panel = panel;
 		this.order = order;
 		this.type = type;
+		this.itemKey = itemKey;
+		this.geometry = geom;
 		this.url = url;
+		
 	}
 	
 	
@@ -45,6 +53,12 @@ public class Point implements Comparable<Point>{
 	}
 	public String getUrl(){
 		return url;
+	}
+	public String getItemKey(){
+		return itemKey;
+	}
+	public Geometry getGeometry(){
+		return geometry;
 	}
 	
 	/*

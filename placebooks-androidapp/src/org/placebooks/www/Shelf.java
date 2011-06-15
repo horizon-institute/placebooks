@@ -393,7 +393,8 @@ public class Shelf extends ListActivity {
 			                
 			                // location of the downloaded .zip file on the sd card AND unzip file path (where to unzip)
 			                String zipFileLocation = (SDCardRoot +placebooksfolder + "/" +filename);
-			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped" + packagePath) ;
+			                //String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped" + packagePath) ;
+			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped/" + packagePath);	//NEW VERSION it doesn't need the package path - it just gets it from the zipped package structure. Old stable version needs packagePath
 			                // pass these values to the unzipper method in the decompress class
 			                Decompress unzipper=new Decompress(zipFileLocation, unzipPath);			                
 			                
