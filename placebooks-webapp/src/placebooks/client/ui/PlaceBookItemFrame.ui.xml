@@ -38,24 +38,38 @@
 		}
 		
 		.borderSection {
-			top: 0px;
-			bottom: 0px;
+			top: 22px;
+			bottom: 5px;
 			position: absolute;
 			left: 0px;
 			right: 0px;
-			border: 2px solid #447;
+			border-left: 2px solid #447;
+			border-right: 2px solid #447;			
 			opacity: 0;			
 			-webkit-transition: opacity .5s linear, visibility .5s linear;
 			transition: opacity .5s linear, visibility .5s linear;
 			visibility: hidden;			
 		}
+
+		.resizeSection {
+			height: 5px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			background: #447;
+			opacity: 0;			
+			visibility: hidden;			
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+			visibility: hidden;					
+		}
 		
 		.widget {
 			position: relative;
-			margin-top: 21px;
+			margin-top: 25px;
 			margin-left: 5px;
 			margin-right: 5px;
-			margin-bottom: 2px;
+			margin-bottom: 3px;
 			z-index: 2;
 			overflow: hidden;
 		}
@@ -72,6 +86,8 @@
 			<g:Image resource='{res.dropMenuIcon}' />
 		</p:MousePanel>
 		<p:MousePanel styleName="{style.dragSection}" ui:field="dragSection">
+		</p:MousePanel>
+		<p:MousePanel styleName="{style.resizeSection}" ui:field="resizeSection">
 		</p:MousePanel>
 	</p:MousePanel>
 </ui:UiBinder> 

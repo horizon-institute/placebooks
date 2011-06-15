@@ -321,6 +321,11 @@ public abstract class PlaceBookItem
 
 	public void update(PlaceBookItem item)
 	{
+		if(this == item)
+		{
+			return;
+		}
+		
 		parameters.clear();
 		for(Entry<String, Integer> entry: item.getParameters().entrySet())
 		{

@@ -20,7 +20,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 20px;
+			top: 0px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -123,14 +123,20 @@
 			padding-left: 15px;
 			vertical-align: top;
 		}
+		
+		.logout {
+			position: absolute;
+			top: 0px;
+			right: 0px;
+		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
-		<g:Button styleName="{style.populate}" ui:field="populate">Populate</g:Button>	
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
+			<g:Anchor styleName="{style.logout}" href="placebooks/j_spring_security_logout">logout</g:Anchor>		
 			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
 			<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
 			</p:MousePanel>		
