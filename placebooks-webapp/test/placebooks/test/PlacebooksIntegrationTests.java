@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import placebooks.controller.EMFSingleton;
@@ -21,6 +22,9 @@ import placebooks.controller.ItemFactory;
 import placebooks.controller.UserManager;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTracksResponse;
+import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
@@ -80,6 +84,8 @@ public class PlacebooksIntegrationTests
 		
 		Vector<Node> pictures = picturesResponse.getPictures();
 		
+		ImageItem imageItem = new ImageItem(testUser, null, null, null);
+		ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
 		//assertEquals(800, imageItem.getImage().getWidth());
 		//assertEquals(479, imageItem.getImage().getHeight());
 		
@@ -87,7 +93,6 @@ public class PlacebooksIntegrationTests
 		try
 		{
 			pm.getTransaction().begin();
-			ImageItem imageItem = new ImageItem(testUser, null, null, null);
 			pm.persist(imageItem);
 			pm.getTransaction().commit();
 			pm.getTransaction().begin();
@@ -103,6 +108,48 @@ public class PlacebooksIntegrationTests
 			}
 			pm.close();
 		}
+	}
+	
+	@Test
+	public void testToGPSTraceItem()
+	{
+		//Log user in after getrting details from db
+		User testUser = UserManager.getUser(pm, "everytrail_test@live.co.uk");
+		LoginDetails details = testUser.getLoginDetails("Everytrail");		
+		
+		// Check login is ok then use the userid 
+		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		assertEquals("success", loginResponse.getStatus());
+		assertEquals(details.getUserID(), loginResponse.getValue());
+		
+		
+		
+		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks("1017230");
+		assertEquals("success", tracksResponse.getStatus());
+		assertEquals(2, tracksResponse.getTracks().size());
+		
+		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null, null);
+		
+		final EntityManager pm = EMFSingleton.getEntityManager();				
+		try
+		{
+			pm.getTransaction().begin();
+			pm.persist(gpsTrace);
+			pm.getTransaction().commit();
+			pm.getTransaction().begin();
+			Node trackToUse = tracksResponse.getTracks().lastElement();
+			ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace);
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+			pm.close();
+		}	
 	}
 
 /*	@Test

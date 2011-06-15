@@ -230,6 +230,7 @@ public class PlaceBookCanvas extends Composite
 		for (int index = 0; index < items.length(); index++)
 		{
 			add(new PaletteItem(items.get(index)));
+			//@TODO mcp organise into folders here
 		}
 	}
 

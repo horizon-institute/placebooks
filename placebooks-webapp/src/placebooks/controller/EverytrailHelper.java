@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.persistence.EntityManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -39,6 +40,7 @@ import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
 import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
 import placebooks.model.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -74,7 +76,7 @@ public class EverytrailHelper
 		}
 	}
 
-	private static String apiBaseUrl = "http://www.everytrail.com/api/";
+	private static final String apiBaseUrl = "http://www.everytrail.com/api/";
 
 	private static final Logger log = Logger.getLogger(EverytrailHelper.class.getName());
 
@@ -218,7 +220,7 @@ public class EverytrailHelper
 		if (tripsData.getStatus().equals("error"))
 		{
 			log.warn("Get pictures failed when getting trips with error code: " + tripsData.getStatus());
-			picturesToReturn = tripsData.getTrips();
+			//picturesToReturn = tripsData.getTrips();
 		}
 		else
 		{
@@ -584,7 +586,7 @@ public class EverytrailHelper
 		final EverytrailResponseStatusData resultStatus = parseResponseStatus("etTripDataResponse", doc);
 		if (resultStatus.getStatus().equals("success"))
 		{
-			log.info("Pictures success");
+			//log.info("Videos success");
 			final NodeList pictureNodes = doc.getElementsByTagName("video");;
 			// log.debug("Child nodes: " + pictureNodes.getLength());
 			for (int pictureNodesIndex = 0; pictureNodesIndex < pictureNodes.getLength(); pictureNodesIndex++)
@@ -781,6 +783,8 @@ public class EverytrailHelper
 	{
 		final StringBuilder postResponse = new StringBuilder();
 
+		// Add version 3 param to all requests
+		params.put("version", "3");
 		// Construct data to post by iterating through parameter Hashtable keys Enumeration
 		final StringBuilder data = new StringBuilder();
 		final Enumeration<String> paramNames = params.keys();
@@ -866,7 +870,7 @@ public class EverytrailHelper
 	}
 
 	/**
-	 * Parse and Everytrail SPI response into an XML document from HTTP string response.
+	 * Parse and Everytrail API response into an XML document from HTTP string response.
 	 * 
 	 * @param Strung
 	 *            Post response from everytrail http post
@@ -894,7 +898,7 @@ public class EverytrailHelper
 	}
 
 	/**
-	 * Parse and Everytrail SPI response into an XML document from HTTP string response.
+	 * Parse and Everytrail API response into an XML document from HTTP string response.
 	 * 
 	 * @param StrungBuilder
 	 *            Post response from everytrail http post
@@ -903,5 +907,23 @@ public class EverytrailHelper
 	private static Document parseResponseToXml(final StringBuilder postResponse)
 	{
 		return parseResponseToXml(postResponse.toString());
+	}
+	
+	/**
+	 * Copy all of a users content from Everytrail to Placebooks database, replacing items where
+	 *  necessary based on everytrail ids
+	 * @param pm EntityManager for database
+	 * @param user 
+	 */
+	public static void UpdateEverytrailContent(final EntityManager pm, final User user)
+	{
+		LoginDetails login = user.getLoginDetails("everytrail");
+		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
+		
+		for(Node picture : picturesResponse.getPictures())
+		{
+			ImageItem item = new ImageItem(user, null, null, null);
+			ItemFactory.toImageItem(user, picture, item);
+		}
 	}
 }

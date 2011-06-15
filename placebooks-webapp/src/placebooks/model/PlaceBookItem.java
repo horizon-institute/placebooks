@@ -51,6 +51,10 @@ public abstract class PlaceBookItem
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
+	// External id is a string key to identify externally sourced data and consists of the source name 
+	// e.g (everytrail) and it's id with a hyphen in between.... "everytrail-123456" 
+	protected String externalID = null;
+	
 	@OneToOne(cascade = ALL, mappedBy = "item")
 	@JsonIgnore
 	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
@@ -134,6 +138,12 @@ public abstract class PlaceBookItem
 		return id;
 	}
 
+	public String getExternalID()
+	{
+		return externalID;
+	}
+
+	
 	public Map<String, String> getMetadata()
 	{
 		return Collections.unmodifiableMap(metadata);
@@ -205,6 +215,11 @@ public abstract class PlaceBookItem
 		this.owner = owner;
 	}
 
+	public void setExternalID(final String id)
+	{
+		this.externalID = id;
+	}
+	
 	public void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;

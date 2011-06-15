@@ -114,7 +114,7 @@ public abstract class MediaItem extends PlaceBookItem
 		
 		if (!new File(path).exists() && !new File(path).mkdirs()) 
 		{
-			throw new IOException("Failed to write file"); 
+			throw new IOException("Failed to write file '" + path + "'"); 
 		}
 
 		final int extIdx = name.lastIndexOf(".");
