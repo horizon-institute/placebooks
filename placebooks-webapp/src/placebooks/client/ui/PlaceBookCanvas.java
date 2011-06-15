@@ -47,6 +47,7 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -95,7 +96,7 @@ public class PlaceBookCanvas extends Composite
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
-	Label account;
+	HTML account;
 
 	@UiField
 	Panel backPanel;
@@ -263,7 +264,7 @@ public class PlaceBookCanvas extends Composite
 
 		this.placebook = newPlacebook;
 
-		account.setText(placebook.getOwner().getName() + " ▼");
+		account.setHTML(placebook.getOwner().getName() + " <small>▼</small>");
 
 		final Map<String, PlaceBookItemFrame> kept = new HashMap<String, PlaceBookItemFrame>();
 		final Collection<PlaceBookItemFrame> removals = new ArrayList<PlaceBookItemFrame>();
@@ -333,7 +334,6 @@ public class PlaceBookCanvas extends Composite
 				Window.open(GWT.getHostPageBaseURL() + "j_spring_security_logout", "_self", "");
 			}
 		});
-		GWT.log("sdhjsdf");
 		dropMenu.show(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
 		event.stopPropagation();
 	}

@@ -29,10 +29,10 @@ public class JSONTests
 			int comma = latLong.indexOf(" ");
 			String latStr = latLong.substring(0,comma);
 			System.out.println(latStr);
-			float lat = Float.parseFloat(latStr);
+			Float.parseFloat(latStr);
 			String lonStr = latLong.substring(comma + 1);
 			System.out.println(lonStr);			
-			float lon = Float.parseFloat(lonStr);
+			Float.parseFloat(lonStr);
 		}		
 	}
 	

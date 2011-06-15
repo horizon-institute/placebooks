@@ -1,63 +1,62 @@
 package placebooks.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Iterator;
-
-import java.net.URL;
-
-import java.io.StringWriter;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.OutputKeys;
-
-import org.apache.log4j.Logger;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import placebooks.model.*;
-import placebooks.utils.InitializeDatabase;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import placebooks.model.AudioItem;
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTracksResponse;
+import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
+import placebooks.model.MapImageItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
+import placebooks.model.WebBundleItem;
+import placebooks.utils.InitializeDatabase;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-
-import uk.me.jstott.jcoord.LatLng;
 
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff

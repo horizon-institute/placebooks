@@ -10,7 +10,7 @@
 			bottom: 0px;
 			margin-right: 120px;
 			background: #BBD;		
-			box-shadow: 2px 2px 2px #333;
+			box-shadow: 2px 2px 2px 333;
 			-webkit-user-select: none;
 			-moz-user-select: none;
 			user-select: none;
@@ -99,6 +99,7 @@
 			-o-user-select: text;			
 			user-select: text;
 			border-bottom: 1px solid grey;
+			box-shadow: 2px 2px 2px 333;			
 		}
 		
 		.populate {
@@ -150,7 +151,7 @@
 		<g:FlowPanel styleName="{style.titleBar}">
 			<p:EditablePanel ui:field="title"></p:EditablePanel>
 			<g:FlowPanel styleName="{style.toolbar}">			
-				<g:Label styleName="{style.account}" ui:field="account" />
+				<g:HTML styleName="{style.account}" ui:field="account" />
 				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
 				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>

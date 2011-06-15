@@ -1,52 +1,45 @@
 package placebooks.controller;
 
-import placebooks.model.PlaceBook;
-import placebooks.model.WebBundleItem;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.MediaItem;
-import placebooks.model.PlaceBookSearchIndex;
-import placebooks.model.PlaceBookItemSearchIndex;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.StringWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-
-import javax.persistence.TypedQuery;
 import javax.persistence.EntityManager;
-
-import org.apache.log4j.Logger;
-
-import org.apache.commons.io.FileUtils;
-
+import javax.persistence.TypedQuery;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import placebooks.model.MediaItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.PlaceBookItemSearchIndex;
+import placebooks.model.PlaceBookSearchIndex;
+import placebooks.model.WebBundleItem;
 
 
 public final class PlaceBooksAdminHelper
