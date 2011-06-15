@@ -347,6 +347,11 @@ public class PlaceBookItemFrame extends Composite
 
 	public void refresh()
 	{
+		if (item.hasParameter("height"))
+		{
+			widgetPanel.getWidget(0).setHeight("100%");
+		}
+
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			// final EditablePanel panel = (EditablePanel)widgetPanel.getWidget(0);
@@ -354,6 +359,10 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.ImageItem"))
 		{
 			final Image image = (Image) widgetPanel.getWidget(0);
+			if (item.hasParameter("height"))
+			{
+				image.setWidth("auto");
+			}
 			if (item.getKey() == null)
 			{
 				image.setUrl(item.getSourceURL());
@@ -519,7 +528,7 @@ public class PlaceBookItemFrame extends Composite
 
 	void setContentHeight(final int heightPX)
 	{
-		final int heightPCT = (int) ((heightPX * HEIGHT_PRECISION) /  panel.getOffsetHeight());
+		final int heightPCT = (int) ((heightPX * HEIGHT_PRECISION) / panel.getOffsetHeight());
 		item.setParameter("height", heightPCT);
 		saveTimer.markChanged();
 		// Assuming resize() will be called (via reflow on the panel) so don't set height here

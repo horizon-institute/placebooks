@@ -4,7 +4,7 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 0px;
+			top: 21px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
@@ -20,7 +20,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 0px;
+			top: 21px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -90,14 +90,15 @@
 
 		.titleBar {
 			position: absolute;
-			top: 10px;
-			left: 15px;
-			right: 150px;
-			height: 25px;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			height: 20px;
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-o-user-select: text;			
 			user-select: text;
+			border-bottom: 1px solid grey;
 		}
 		
 		.populate {
@@ -124,10 +125,15 @@
 			vertical-align: top;
 		}
 		
-		.logout {
+		.account {
+			border-left: 1px solid grey;
+			display: inline;
+		}
+		
+		.toolbar {
 			position: absolute;
-			top: 0px;
 			right: 0px;
+			top: 0px;
 		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
@@ -135,11 +141,16 @@
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
+		<g:FlowPanel styleName="{style.titleBar}">
+			<p:EditablePanel ui:field="title"></p:EditablePanel>
+			<g:FlowPanel styleName="{style.toolbar}">
+				<g:Image resource="{res.zoom_in}" ui:field="zoomIn" />
+				<g:Image resource="{res.zoom_out}" ui:field="zoomOut" />				
+				<g:Label styleName="{style.account}" ui:field="account" />
+			</g:FlowPanel>			
+		</g:FlowPanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
-			<g:Anchor styleName="{style.logout}" href="placebooks/j_spring_security_logout">logout</g:Anchor>		
 			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
-			<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
-			</p:MousePanel>		
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">
 		</p:MousePanel>

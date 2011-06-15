@@ -15,6 +15,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.places.EditorPlace;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
+import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
@@ -47,6 +48,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -93,6 +95,9 @@ public class PlaceBookCanvas extends Composite
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
+	Label account;
+
+	@UiField
 	Panel backPanel;
 
 	@UiField
@@ -110,15 +115,12 @@ public class PlaceBookCanvas extends Composite
 	@UiField
 	Panel palette;
 
-//	@UiField
-//	Button populate;
-
 	@UiField
 	Panel savingPanel;
 
 	@UiField
 	EditablePanel title;
-	
+
 	private PlaceBookItemFrame dragItem = null;
 
 	private PlaceBookPanel dragPanel = null;
@@ -133,9 +135,11 @@ public class PlaceBookCanvas extends Composite
 
 	private final PlaceController placeController;
 
+	private PlaceBookItemFrame resizeItem;
+
 	private SaveTimer saveTimer = new SaveTimer();
 
-	private PlaceBookItemFrame resizeItem;
+	private int zoom = 100;
 
 	public PlaceBookCanvas(final PlaceController placeController)
 	{
@@ -174,15 +178,6 @@ public class PlaceBookCanvas extends Composite
 		});
 	}
 
-	public void setZoom(final int zoom)
-	{
-		float panelWidth = (zoom - 10) / panels.size();
-		for(PlaceBookPanel panel: panels)
-		{
-			panel.setWidth(panelWidth);
-		}
-	}
-	
 	public Iterable<PlaceBookItemFrame> getItems()
 	{
 		return items;
@@ -243,25 +238,16 @@ public class PlaceBookCanvas extends Composite
 		}
 	}
 
-//	@UiHandler("populate")
-//	public void startPopulation(final ClickEvent event)
-//	{
-//		populate.setEnabled(false);
-//		PlaceBookService.everytrail(new AbstractCallback()
-//		{
-//			@Override
-//			public void failure(final Request request)
-//			{
-//				getPaletteItems();
-//			}
-//
-//			@Override
-//			public void success(final Request request, final Response response)
-//			{
-//				getPaletteItems();
-//			}
-//		});
-//	}
+	public void setZoom(final int zoom)
+	{
+		this.zoom = zoom;
+		final float panelWidth = (zoom - 10) / panels.size();
+		for (final PlaceBookPanel panel : panels)
+		{
+			panel.setWidth(panelWidth);
+			panel.reflow();
+		}
+	}
 
 	public void updatePlaceBook(final PlaceBook newPlacebook)
 	{
@@ -272,6 +258,8 @@ public class PlaceBookCanvas extends Composite
 		}
 
 		this.placebook = newPlacebook;
+
+		account.setText(placebook.getOwner().getName() + " ▼");
 
 		final Map<String, PlaceBookItemFrame> kept = new HashMap<String, PlaceBookItemFrame>();
 		final Collection<PlaceBookItemFrame> removals = new ArrayList<PlaceBookItemFrame>();
@@ -328,12 +316,24 @@ public class PlaceBookCanvas extends Composite
 
 		loadingPanel.setVisible(false);
 	}
-	
-//	@UiHandler("canvas")
-//	void handleLoad(final LoadEvent event)
-//	{
-//		reflow();
-//	}
+
+	@UiHandler("account")
+	void handleAccountMenu(final ClickEvent event)
+	{
+		final List<MenuItem> items = new ArrayList<MenuItem>();
+		items.add(new MenuItem("Logout")
+		{
+
+			@Override
+			public void run()
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
+		GWT.log("sdhjsdf");
+		dropMenu.show(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
+	}
 
 	@UiHandler("backPanel")
 	void handleClick(final ClickEvent event)
@@ -396,15 +396,15 @@ public class PlaceBookCanvas extends Composite
 				dragImage.getElement().getStyle().setTop(y - 16, Unit.PX);
 			}
 		}
-		else if(resizeItem != null)
+		else if (resizeItem != null)
 		{
-			final int y = event.getRelativeY(backPanel.getElement());			
-			int heightPX = y - resizeItem.getElement().getAbsoluteTop() - 23;
-			
+			final int y = event.getRelativeY(backPanel.getElement());
+			final int heightPX = y - resizeItem.getElement().getAbsoluteTop() - 23;
+
 			resizeItem.setContentHeight(heightPX);
 			resizeItem.getPanel().reflow();
-			
-			if(finished)
+
+			if (finished)
 			{
 				resizeItem = null;
 			}
@@ -428,6 +428,18 @@ public class PlaceBookCanvas extends Composite
 	{
 		placebook.setMetadata("title", title.getElement().getInnerText());
 		saveTimer.markChanged();
+	}
+
+	@UiHandler("zoomIn")
+	void handleZoomIn(final ClickEvent event)
+	{
+		setZoom(zoom + 20);
+	}
+
+	@UiHandler("zoomOut")
+	void handleZoomOut(final ClickEvent event)
+	{
+		setZoom(zoom - 20);
 	}
 
 	private void add(final PaletteItem item)
@@ -470,7 +482,7 @@ public class PlaceBookCanvas extends Composite
 				startResize(item, event);
 			}
 		});
-		
+
 		item.addMouseOverHandler(new MouseOverHandler()
 		{
 			@Override
@@ -516,17 +528,6 @@ public class PlaceBookCanvas extends Composite
 		return left < x && x < (left + width) && top < y && y < (top + height);
 	}
 
-	private void startResize(final PlaceBookItemFrame itemFrame, final MouseDownEvent event)
-	{
-		GWT.log("Start resize");
-		if (resizeItem != null) { return; }
-
-		resizeItem = itemFrame;
-		//resizeItem.startDrag(event);
-
-		handleDrag(event, false);
-	}
-	
 	private void startDrag(final PlaceBookItemFrame itemFrame, final MouseDownEvent event)
 	{
 		GWT.log("Start drag");
@@ -536,6 +537,16 @@ public class PlaceBookCanvas extends Composite
 		dragItem.startDrag(event);
 		dragImage.setResource(dragItem.getDragImage());
 		dragImage.setStyleName(Resources.INSTANCE.style().dragImage());
+
+		handleDrag(event, false);
+	}
+
+	private void startResize(final PlaceBookItemFrame itemFrame, final MouseDownEvent event)
+	{
+		GWT.log("Start resize");
+		if (resizeItem != null) { return; }
+
+		resizeItem = itemFrame;
 
 		handleDrag(event, false);
 	}
