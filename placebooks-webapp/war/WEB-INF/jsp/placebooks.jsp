@@ -17,6 +17,7 @@
 	[<a href='../package/${pb.key}'>package</a>] 
 	[<a href='../delete_placebook/${pb.key}'>delete</a>] 
 	[<a href='../shelf/${pb.owner.email}'>shelf for this user</a>]
+	[<a href='../publish_placebook/${pb.key}'>publish</a>]
 	<form action='../add_placebook_metadata' method='POST'>
 		Add metadata:
 		<input type='hidden' name='key' value='${pb.key}'> 

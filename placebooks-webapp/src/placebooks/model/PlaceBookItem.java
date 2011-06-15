@@ -102,6 +102,27 @@ public abstract class PlaceBookItem
 				 + ", timestamp=" + this.timestamp.toString());
 	}
 
+	public PlaceBookItem(final PlaceBookItem p)
+	{
+		this.owner = p.getOwner();
+		this.timestamp = (Date)p.getTimestamp().clone();
+		if (p.getGeometry() != null)
+			this.geom = (Geometry)p.getGeometry().clone();
+		else
+			this.geom = null;
+		if (p.getSourceURL() != null)
+			this.sourceURL = new String(p.getSourceURL().toString());
+		else
+			this.sourceURL = null;
+
+		index.setPlaceBookItem(this);
+
+		log.info("Copied PlaceBookItem, concrete name: " + getEntityName()
+				 + ", timestamp=" + this.timestamp.toString());
+	}
+
+	public abstract PlaceBookItem deepCopy();
+
 	public void addMetadataEntry(final String key, final String value)
 	{
 		metadata.put(key, value);
@@ -315,6 +336,11 @@ public abstract class PlaceBookItem
 
 	public void update(PlaceBookItem item)
 	{
+		if(this == item)
+		{
+			return;
+		}
+		
 		parameters.clear();
 		for(Entry<String, Integer> entry: item.getParameters().entrySet())
 		{

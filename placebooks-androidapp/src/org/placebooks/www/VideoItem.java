@@ -3,7 +3,7 @@ package org.placebooks.www;
 public class VideoItem extends Item {
 
 	private String filename;
-	private int order;
+	
 	
 	public String getFilename() {
 		return filename;
@@ -11,16 +11,11 @@ public class VideoItem extends Item {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	public int getOrder(){
-		return order;
-	}
-	public void setOrder(int o){
-		order = o;
-	}
+
 	
 	@Override
 	public String toString() {
-		return "\nFilename=" + filename + "\nOrder=" +order; 
+		return "\nFilename=" + filename + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder(); 
 	}
 	
 }

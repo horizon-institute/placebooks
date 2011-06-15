@@ -10,7 +10,9 @@ import org.xml.sax.helpers.DefaultHandler;
 //import java.lang.StringBuilder; 
 
 import android.util.Log;
-
+import java.text.ParseException;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * SAX document handler to create instances of our custom object models from the information stored
@@ -19,42 +21,66 @@ import android.util.Log;
  */
 
 public class XMLHandler extends DefaultHandler {
-	Book CurrentBook;
-	Item item;
+	Book myBook;
 	TextItem titem;
 	ImageItem imitem;
-//	GPSItem gpsitem;	
+	GPSTraceItem gpsitem;	
 	VideoItem vitem;
-	AudioItem aitem;	
-	StringBuilder url,text,filename, order;
+	AudioItem aitem;
+	MapImageItem mimitem;
+	WebBundleItem wbitem;
+	
+	StringBuilder url,text,filename, panel, order, geometry;
 
 	/*
 	 * fields
 	 */
 
 	 private boolean in_placebooksText = false;
+	 private boolean in_textGeometry = false;
 	 private boolean in_textUrl = false;
 	 private boolean in_textText = false;
+	 private boolean in_textPanel = false;
 	 private boolean in_textOrder = false;
 
 	 private boolean in_placebooksImage = false;
+	 private boolean in_imageGeometry = false;
 	 private boolean in_imageUrl = false;
 	 private boolean in_imageFilename = false;
+	 private boolean in_imagePanel = false;
 	 private boolean in_imageOrder = false;
 	 
 	 private boolean in_placebooksVideo = false;
+	 private boolean in_videoGeometry = false;
 	 private boolean in_videoFilename = false;
+	 private boolean in_videoPanel = false;
 	 private boolean in_videoOrder = false;
 	 
 	 private boolean in_placebooksAudio = false;
+	 private boolean in_audioGeometry = false;
 	 private boolean in_audioFilename = false;
+	 private boolean in_audioPanel = false;
 	 private boolean in_audioOrder = false;
+	 
+	 private boolean in_placebooksMapImage = false;
+	 private boolean in_mapImageGeometry = false;
+	 private boolean in_mapImageFilename = false;
+	 private boolean in_mapImagePanel = false;
+	 private boolean in_mapImageOrder = false;
+	 
+	 private boolean in_placebooksWebBundle = false;
+	 private boolean in_webBundleGeometry = false;
+	 private boolean in_webBundleFilename = false;
+	 private boolean in_webBundleUrl = false;
+	 private boolean in_webBundlePanel = false;
+	 private boolean in_webBundleOrder = false;
+	 
 	 
 	 private boolean in_key = false;
 
 	 public Book getParsedData() {
-		 //return this.books;
-		 return CurrentBook;
+		 //return the book;
+		 return myBook;
 	 }
 
 	 /* 
@@ -62,7 +88,8 @@ public class XMLHandler extends DefaultHandler {
 	  */
 	 @Override
 	 public void startDocument() throws SAXException {
-		CurrentBook = new Book();
+		//start of reading the xml document so we want to create a new book for our items
+		myBook = new Book();
 	 }
 
 	 @Override
@@ -81,32 +108,74 @@ public class XMLHandler extends DefaultHandler {
 	 public void startElement(String namespaceURI, String localName,
 			 String qName, Attributes atts) throws SAXException {
 		 
-		 if(localName.equals("placebooks.model.PlaceBook")){
+		 if(localName.equalsIgnoreCase("placebooks.model.PlaceBook")){
 			 this.in_key = true;	
 			 String attr = atts.getValue("key");
-             CurrentBook.setKey(attr);
+             myBook.setKey(attr);
 		 }
 
-		 else if (localName.equals("placebooks.model.TextItem")) {
+		 else if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {
 			 this.in_placebooksText = true;
 			 titem = new TextItem();
-		 }else if (localName.equals("placebooks.model.ImageItem")) {
+			 titem.setType("Text");	// NEWLY ADDED
+			 
+			 String attr = atts.getValue("key");		//text item key
+             titem.setKey(attr);
+
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.ImageItem")) {
 			 this.in_placebooksImage = true;
 			 imitem = new ImageItem();
-		 }else if (localName.equals("placebooks.model.VideoItem")) {
+			 imitem.setType("Image");	// NEWLY ADDED
+			 
+			 String attr = atts.getValue("key");		//image item key
+             imitem.setKey(attr);
+
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.VideoItem")) {
 			 this.in_placebooksVideo = true;
 			 vitem = new VideoItem();
-		 }else if (localName.equals("placebooks.model.AudioItem")) {
+			 vitem.setType("Video");	// NEWLY ADDED
+			 
+			 String attr = atts.getValue("key");		//video item key
+             vitem.setKey(attr);
+
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.AudioItem")) {
 			 this.in_placebooksAudio = true;
-			 aitem = new AudioItem();	 
+			 aitem = new AudioItem();
+			 aitem.setType("Audio");	// NEWLY ADDED
 			 
+			 String attr = atts.getValue("key");		//audio item key
+             aitem.setKey(attr);
+
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.MapImageItem")){
+			 this.in_placebooksMapImage = true;
+			 mimitem = new MapImageItem();
+			 mimitem.setType("MapImage");	// NEWLY ADDED
 			 
-		 }else if (localName.equals("text")) {
+			 String attr = atts.getValue("key");		//Map item key
+             mimitem.setKey(attr);
+
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.WebBundleItem")){
+			 this.in_placebooksWebBundle = true;
+			 wbitem = new WebBundleItem();
+			 wbitem.setType("WebBundle");	// NEWLY ADDED
+			 
+			 String attr = atts.getValue("key");		//WB item key
+             wbitem.setKey(attr);
+		 }
+		 
+		 
+		 else if (localName.equalsIgnoreCase("text")) {
 			 if(this.in_placebooksText){
 				 this.in_textText = true;
 				 text = new StringBuilder();
 			 }
-		 }else if (localName.equalsIgnoreCase("url")) {
+		 }
+		 else if (localName.equalsIgnoreCase("url")) {
 			 if(this.in_placebooksText){
 				this.in_textUrl = true;
 			 	url = new StringBuilder();
@@ -114,7 +183,12 @@ public class XMLHandler extends DefaultHandler {
 				this.in_imageUrl = true;
 				url = new StringBuilder();
 			 }
-		 }else if (localName.equalsIgnoreCase("filename")) {
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleUrl = true;
+				 url = new StringBuilder();
+			 }
+		 }
+		 else if (localName.equalsIgnoreCase("filename")) {
 			 if(this.in_placebooksImage){
 				 this.in_imageFilename = true;
 			 	filename = new StringBuilder();
@@ -125,11 +199,47 @@ public class XMLHandler extends DefaultHandler {
 			 else if (this.in_placebooksAudio){
 				 this.in_audioFilename = true;
 				 filename = new StringBuilder();
-				 
-		  }else if(localName.equalsIgnoreCase("parameters")){
-				 
-		   if (localName.equalsIgnoreCase("order")){	 
-
+			 }
+			 else if (this.in_placebooksMapImage){
+				 this.in_mapImageFilename = true;
+				 filename = new StringBuilder();
+			 }
+			 else if (this.in_placebooksWebBundle){
+				 this.in_webBundleFilename = true;
+				 filename = new StringBuilder();
+			 }
+		  }
+		 else if(localName.equalsIgnoreCase("panel")){
+			 
+			 if(this.in_placebooksText){
+				 this.in_textPanel = true;
+				 panel = new StringBuilder();
+			 }
+			 else if (this.in_placebooksImage){
+				 this.in_imagePanel = true;
+				 panel = new StringBuilder();
+			 }
+			 else if (this.in_placebooksVideo){
+				 this.in_videoPanel = true;
+				 panel = new StringBuilder();
+			 }
+			 else if (this.in_placebooksAudio){
+				 this.in_audioPanel = true;
+				 panel = new StringBuilder();
+			 }
+			 else if (this.in_placebooksMapImage){
+				  this.in_mapImagePanel = true;
+				  panel = new StringBuilder();
+			  }
+			 else if (this.in_placebooksWebBundle){
+				 this.in_webBundlePanel= true;
+				 panel = new StringBuilder();
+			 }
+			 
+			 
+		 } //end of else if panel
+		 else if(localName.equalsIgnoreCase("order")){
+			 
 			  if(this.in_placebooksText){
 				  this.in_textOrder = true;
 				  order = new StringBuilder();
@@ -146,12 +256,47 @@ public class XMLHandler extends DefaultHandler {
 				  this.in_audioOrder = true;
 				  order = new StringBuilder();
 			  }
+			  else if (this.in_placebooksMapImage){
+				  this.in_mapImageOrder = true;
+				  order = new StringBuilder();
+			  }
 			  
-		   }//end of if order
+			  else if (this.in_placebooksWebBundle){
+				  this.in_webBundleOrder = true;
+				  order = new StringBuilder();
+			  }
 			  
-		  } //end of parameters
-			
-		 }  
+		   }//end of else if order
+		 
+		 else if(localName.equalsIgnoreCase("geometry")){
+			 
+			 if(this.in_placebooksText){
+				 this.in_textGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+			 if(this.in_placebooksImage){
+				 this.in_imageGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+			 if(this.in_placebooksVideo){
+				 this.in_videoGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+			 if(this.in_placebooksAudio){
+				 this.in_audioGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+			 if(this.in_placebooksMapImage){
+				 this.in_mapImageGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+			 if(this.in_placebooksWebBundle){
+				 this.in_webBundleGeometry = true;
+				 geometry = new StringBuilder();
+			 }
+		 } //end of else if geometry
+		 
+			  	
 	 }
 
 	 /** Gets called on closing tags like:
@@ -164,27 +309,39 @@ public class XMLHandler extends DefaultHandler {
 			 this.in_key = false;
 		 
 		 }
-
-		 if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {
+		 else if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {
 			 this.in_placebooksText = false;
-			 this.CurrentBook.items.add(titem);
+			 //this.CurrentBook.items.add(titem);
+			 this.myBook.textItems.add(titem);
 			 titem = null;
 		 }
 		 else if (localName.equalsIgnoreCase("placebooks.model.ImageItem")) {
 			 this.in_placebooksImage = false;
-			 this.CurrentBook.items.add(imitem);
+			 this.myBook.imageItems.add(imitem);
 			 imitem = null;
 		 }  
 		 else if (localName.equalsIgnoreCase("placebooks.model.VideoItem")) {
 			 this.in_placebooksVideo = false;
-			 this.CurrentBook.items.add(vitem);
+			 this.myBook.videoItems.add(vitem);
 			 vitem = null;
 		 }  
 		 else if (localName.equalsIgnoreCase("placebooks.model.AudioItem")) {
 			 this.in_placebooksAudio = false;
-			 this.CurrentBook.items.add(aitem);
+			 this.myBook.audioItems.add(aitem);
 			 aitem = null;
 		 } 
+		 else if (localName.equalsIgnoreCase("placebooks.model.MapImageItem")){
+			 this.in_placebooksMapImage = false;
+			 this.myBook.mapImageItems.add(mimitem);	//add a new map image item to my items to my book
+			 mimitem = null;
+			 
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.WebBundleItem")){
+			 this.in_placebooksWebBundle = false;
+			 this.myBook.webBundleItems.add(wbitem);
+			 wbitem = null;
+		 }
+
 		 
 		 
 		 else if (localName.equalsIgnoreCase("url")) {  
@@ -195,6 +352,11 @@ public class XMLHandler extends DefaultHandler {
 			 }else if(this.in_placebooksImage){
 				 this.in_imageUrl = false;
 				 imitem.setURL(url.toString());		
+				 url = null;
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleUrl = false;
+				 wbitem.setURL(url.toString());
 				 url = null;
 			 }
 		 }
@@ -210,25 +372,70 @@ public class XMLHandler extends DefaultHandler {
 			 }              	
 		 }
 		 else if (localName.equalsIgnoreCase("filename")) {
-			 this.in_imageFilename = false; 
-			 this.in_videoFilename = false;
-			 this.in_audioFilename = false;
 			 
 			 if(this.in_placebooksImage){
+				 this.in_imageFilename = false; 
 				 imitem.setFilename(filename.toString());
 				 filename = null;
 			 }else if(this.in_placebooksVideo){
+				 this.in_videoFilename = false;
 				 vitem.setFilename(filename.toString());
 				 filename = null;
 			 }else if(this.in_placebooksAudio){
+				 this.in_audioFilename = false;
 				 aitem.setFilename(filename.toString());
 				 filename = null;
 			 }
+			 else if(this.in_placebooksMapImage){
+				 this.in_mapImageFilename = false;
+				 mimitem.setFilename(filename.toString());
+				 filename = null;
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleFilename = false;
+				 wbitem.setFilename(filename.toString());
+				 filename = null;			 
+			 }
 			 
 		 }
-		 else if (localName.equalsIgnoreCase("parameters")){
+		 
+		 else if(localName.equalsIgnoreCase("panel")){
 			 
-		 if (localName.equalsIgnoreCase("order")){	 
+			 if(this.in_placebooksText){
+				 this.in_textPanel = false;
+				 titem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imagePanel = false;
+				 imitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoPanel = false;
+				 vitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 else if(this.in_placebooksAudio){
+				 this.in_audioPanel = false;
+				 aitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 else if(this.in_placebooksMapImage){
+				 this.in_mapImagePanel = false;
+				 mimitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundlePanel = false;
+				 wbitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 
+		 }
+		 
+		 else if (localName.equalsIgnoreCase("order")){
 			 
 			 if(this.in_placebooksText){
 				this.in_textOrder = false;
@@ -250,48 +457,215 @@ public class XMLHandler extends DefaultHandler {
 				 aitem.setOrder(Integer.parseInt(order.toString()));
 				 order = null;
 			 }
-		 }//end of if order
-		 }//end of else if parameters	
+			 else if(this.in_placebooksMapImage){
+				this.in_mapImageOrder = false;
+				mimitem.setOrder(Integer.parseInt(order.toString()));
+				order = null;
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleOrder = false;
+				 wbitem.setOrder(Integer.parseInt(order.toString()));
+				 order = null;
+			 }
+		 }//end of else if order
 		 
+		 else if (localName.equalsIgnoreCase("geometry")){
+			 
+			 if(this.in_placebooksText){
+				 this.in_textGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 titem.setGeometry(w.read(geometry.toString()));
+					 geometry = null; 
+
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imageGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 imitem.setGeometry(w.read(geometry.toString()));
+					 geometry = null; 
+
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 vitem.setGeometry(w.read(geometry.toString()));
+					 geometry = null; 
+
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+			 }
+			 else if(this.in_placebooksAudio){
+				 this.in_audioGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 aitem.setGeometry(w.read(geometry.toString()));
+					 geometry = null; 
+
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+			 }			 
+			 else if(this.in_placebooksMapImage){
+				 this.in_mapImageGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 mimitem.setGeometry(w.read(geometry.toString()));
+					 geometry = null;
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+				  
+			 }
+			 else if(this.in_placebooksWebBundle){
+				 this.in_webBundleGeometry = false;
+				 WKTReader w = new WKTReader();				 
+ 
+				 try{
+					 wbitem.setGeometry(w.read(geometry.toString()));
+					 geometry = null; 
+				 }
+				 catch (Exception e) {  
+					    System.out.println("Exception");  
+				 }  
+			 }	 
+				 
+		}
+ 
 	 }
+	 
 
 	 /** Gets called on the following structure:
 	  * <tag>characters</tag> */
 	 @Override
 	 public void characters(char ch[], int start, int length) {
-		 if(this.in_textUrl){
-			 url.append(ch, start, length).toString();
-			 
-		 }else if(this.in_textText){
-			 text.append(ch, start, length).toString();
-			 
-		 }else if(this.in_imageUrl){
-			 url.append(ch, start, length).toString();
-			 
-		 }else if(this.in_imageFilename){
-			 filename.append(ch, start, length).toString();
-		 } 
-		 else if (this.in_videoFilename){
-			 filename.append(ch, start, length).toString();
+		 //text item
+		 
+		 if (this.in_textGeometry){
+			 geometry.append(ch, start, length).toString();
 		 }
-		 else if (this.in_audioFilename){
-			 filename.append(ch, start, length).toString();
+		 else if(this.in_textUrl){
+			 url.append(ch, start, length).toString();
+		 }
+		 else if(this.in_textText){
+			 text.append(ch, start, length).toString();
+		 }
+		 else if(this.in_textPanel){
+			 panel.append(ch, start, length).toString();
 		 }
 		 else if (this.in_textOrder){
 			 order.append(ch, start, length).toString();
 		 }
+		 
+		 
+		 //image item
+		 
+		 else if (this.in_imageGeometry){
+			 geometry.append(ch, start, length).toString();
+		 }
+		 else if(this.in_imageUrl){
+			 url.append(ch, start, length).toString();
+			 
+		 }
+		 else if(this.in_imageFilename){
+			 filename.append(ch, start, length).toString();
+		 } 
+		 else if(this.in_imagePanel){
+			 panel.append(ch, start, length).toString();
+		 }
 		 else if (this.in_imageOrder){
 			 order.append(ch, start, length).toString();
 		 }
+		 
+		 //video item
+		 
+		 else if (this.in_videoGeometry){
+			 geometry.append(ch, start, length).toString();
+		 }
+		 else if (this.in_videoFilename){
+			 filename.append(ch, start, length).toString();
+		 }
+		 else if(this.in_videoPanel){
+			 panel.append(ch, start, length).toString();
+		 }
 		 else if (this.in_videoOrder){
 			 order.append(ch, start, length).toString();
+		 }
+		 
+		 //audio item
+		 
+		 else if (this.in_audioGeometry){
+			 geometry.append(ch, start, length).toString();
+		 }
+		 else if (this.in_audioFilename){
+			 filename.append(ch, start, length).toString();
+		 }
+		 else if(this.in_audioPanel){
+			 panel.append(ch, start, length).toString();
 		 }
 		 else if (this.in_audioOrder){
 			 order.append(ch, start, length).toString();
 		 }
 		
+		 //map image item
+		 
+		 else if (this.in_mapImageGeometry){
+			 geometry.append(ch, start, length).toString();
+		 }
+		 else if (this.in_mapImageFilename){
+			 filename.append(ch, start, length).toString();
+		 }
+		 else if (this.in_mapImagePanel){
+			 panel.append(ch, start, length).toString();
+		 }
+		 else if (this.in_mapImageOrder){
+			 order.append(ch, start, length).toString();
+		 }
+		 
+		 //web bundle item
+		 
+		 else if (this.in_webBundleGeometry){
+			 geometry.append(ch, start, length).toString();
+		 }
+		 else if (this.in_webBundleUrl){
+			 url.append(ch, start, length).toString();
+		 }
+		 else if (this.in_webBundleFilename){
+			 filename.append(ch, start, length).toString();
+		 }
+		 else if(this.in_webBundlePanel){
+			 panel.append(ch, start, length).toString();
+		 }
+		 else if(this.in_webBundleOrder){
+			 order.append(ch, start, length).toString();
+		 }
 		 
 		 
 	 } //end of void characters
+	 
+ 
+	 
+ }
+	 
+		 
 
-}
+//}

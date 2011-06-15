@@ -77,8 +77,8 @@ public class MapWidget extends SimplePanel
 				if(positionItem != null)
 				{
 					positionItem.getItem().setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
+					positionItem.markChanged();					
 					refreshMarkers();
-					positionItem.markChanged();
 				}
 			}
 		}.getFunction());

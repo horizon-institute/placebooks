@@ -4,13 +4,13 @@
 	<ui:style>
 		.canvas {
 			position: absolute;
-			top: 0px;
+			top: 21px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
 			margin-right: 120px;
 			background: #BBD;		
-			box-shadow: 2px 2px 2px #333;
+			box-shadow: 2px 2px 2px 333;
 			-webkit-user-select: none;
 			-moz-user-select: none;
 			user-select: none;
@@ -20,7 +20,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 20px;
+			top: 21px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -90,14 +90,16 @@
 
 		.titleBar {
 			position: absolute;
-			top: 10px;
-			left: 15px;
-			right: 150px;
-			height: 25px;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			height: 20px;
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-o-user-select: text;			
 			user-select: text;
+			border-bottom: 1px solid grey;
+			box-shadow: 2px 2px 2px 333;			
 		}
 		
 		.populate {
@@ -123,17 +125,40 @@
 			padding-left: 15px;
 			vertical-align: top;
 		}
+		
+		.account {
+			border-left: 1px solid grey;
+			padding: 0px 4px;
+			float:right;
+		}
+		
+		.zoomImage {
+			margin: 2px;
+			float:right;
+		}
+		
+		.toolbar {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
-		<g:Button styleName="{style.populate}" ui:field="populate">Populate</g:Button>	
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
+		<g:FlowPanel styleName="{style.titleBar}">
+			<p:EditablePanel ui:field="title"></p:EditablePanel>
+			<g:FlowPanel styleName="{style.toolbar}">			
+				<g:HTML styleName="{style.account}" ui:field="account" />
+				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
+				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+			</g:FlowPanel>			
+		</g:FlowPanel>
 		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
 			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
-			<p:MousePanel styleName="{style.titleBar}"><p:EditablePanel ui:field="title"></p:EditablePanel>
-			</p:MousePanel>		
 		</p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">
 		</p:MousePanel>

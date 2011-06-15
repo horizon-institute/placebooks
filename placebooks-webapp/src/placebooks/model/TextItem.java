@@ -25,6 +25,18 @@ public class TextItem extends PlaceBookItem
 		setText(text);
 	}
 
+	public TextItem(final TextItem t)
+	{
+		super(t);
+		setText(new String(t.getText()));
+	}
+
+	@Override
+	public TextItem deepCopy()
+	{
+		return new TextItem(this);
+	}
+
 	@Override
 	public void update(PlaceBookItem item)
 	{

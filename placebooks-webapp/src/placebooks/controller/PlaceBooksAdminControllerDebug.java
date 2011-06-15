@@ -1,63 +1,62 @@
 package placebooks.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Iterator;
-
-import java.net.URL;
-
-import java.io.StringWriter;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import placebooks.model.*;
-import placebooks.utils.InitializeDatabase;
-
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import placebooks.model.AudioItem;
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTracksResponse;
+import placebooks.model.EverytrailTripsResponse;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
+import placebooks.model.LoginDetails;
+import placebooks.model.MapImageItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
+import placebooks.model.User;
+import placebooks.model.VideoItem;
+import placebooks.model.WebBundleItem;
+import placebooks.utils.InitializeDatabase;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-
-import uk.me.jstott.jcoord.LatLng;
 
 
 // NOTE: This class contains admin controller debug stuff. Put dirty debug stuff
@@ -72,6 +71,25 @@ public class PlaceBooksAdminControllerDebug
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminControllerDebug.class.getName());
 
+
+	private static final int MEGABYTE = 1048576;
+
+
+	@RequestMapping(value = "/admin/publish_placebook/{key}",
+					method = RequestMethod.GET)
+	public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final PlaceBook p = em.find(PlaceBook.class, key);
+		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
+		em.close();
+
+		log.info("Published PlaceBook, old key = " + key + ", new key = " 
+				 + p_.getKey());
+
+		return new ModelAndView("message", "text", 
+								"Published PlaceBook, new key = " + key);
+	}
 
 	@RequestMapping(value = "/admin/add_item/map", 
 					method = RequestMethod.POST)
@@ -389,7 +407,7 @@ public class PlaceBooksAdminControllerDebug
 								sourceURL = new URL(value);
 							}
 							wbi = new WebBundleItem(null, null, sourceURL, 
-													null);
+													null, null);
 							p.addItem(wbi);
 							pm.getTransaction().commit();
 							pm.getTransaction().begin();
@@ -407,7 +425,7 @@ public class PlaceBooksAdminControllerDebug
 			{
 				wbi.setOwner(itemData.getOwner());
 				wbi.setGeometry(itemData.getGeometry());
-				wbi.setWebBundle(wbi.getWebBundlePath());
+				wbi.setWebBundlePath(wbi.generateWebBundlePath());
 			}
 
 			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
@@ -587,18 +605,21 @@ public class PlaceBooksAdminControllerDebug
 		{
 			pm.getTransaction().begin();
 
-			final FileItemIterator i = 
-				new ServletFileUpload().getItemIterator(req);
-			while (i.hasNext())
+			@SuppressWarnings("unchecked")			
+			final List<FileItem> items = 
+				new ServletFileUpload(new DiskFileItemFactory())
+					.parseRequest(req);
+
+			for (FileItem item : items)
 			{
-				final FileItemStream item = i.next();
 				if (item.isFormField())
 				{
-					itemData.processItemData(pm, item.getFieldName(), 
-									Streams.asString(item.openStream()));
+					String value = Streams.asString(item.getInputStream());
+					itemData.processItemData(pm, item.getFieldName(), value);
 				}
 				else
 				{
+					log.info("*** item.getSize() = " + item.getSize());
 					//String property = null;
 
 					String[] split = 
@@ -613,7 +634,7 @@ public class PlaceBooksAdminControllerDebug
 					if (prefix.contentEquals("gpstrace"))
 					{
 						final InputStreamReader reader = 
-							new InputStreamReader(item.openStream());
+							new InputStreamReader(item.getInputStream());
 						final StringWriter writer = new StringWriter();
 						int data;
 						while((data = reader.read()) != -1)
@@ -654,6 +675,17 @@ public class PlaceBooksAdminControllerDebug
 
 					if (prefix.contentEquals("video"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
+									"20"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new VideoItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -665,6 +697,17 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (prefix.contentEquals("audio"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, 
+									"10"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new AudioItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -676,6 +719,17 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (prefix.contentEquals("image"))
 					{
+						int maxSize = Integer.parseInt(
+							PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(
+									PropertiesSingleton.IDEN_IMAGE_MAX_SIZE, 
+									"1"
+								)
+						);
+						if ((item.getSize() / MEGABYTE) > maxSize)
+							throw new Exception("File too big");
+
 						pbi = new ImageItem(null, null, null, null);
 						p.addItem(pbi);
 						pm.getTransaction().commit();
@@ -685,7 +739,7 @@ public class PlaceBooksAdminControllerDebug
 						file = new File(((ImageItem)pbi).getPath());
 					}
 
-					final InputStream input = item.openStream();
+					final InputStream input = item.getInputStream();
 					final OutputStream output = new FileOutputStream(file);
 					int byte_;
 					while ((byte_ = input.read()) != -1)

@@ -5,7 +5,6 @@ package org.placebooks.www;
 public class ImageItem extends Item {
 	private String filename;
 	private String URL;
-	private int order;
 
 
 	public String getFilename() {
@@ -22,17 +21,11 @@ public class ImageItem extends Item {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	public int getOrder(){
-		return order;
-	}
-	public void setOrder(int o){
-		order = o;
-	}
 
 	@Override
 	public String toString() {
 
-		return "\nFilename=" + filename + "\nURL=" + URL + "\nOrder=" +order;
+		return "\nFilename=" + filename + "\nURL=" + URL + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
 		
 	}
 }

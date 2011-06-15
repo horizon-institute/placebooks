@@ -1,55 +1,102 @@
 package placebooks.controller;
 
-import placebooks.model.PlaceBook;
-import placebooks.model.WebBundleItem;
-import placebooks.model.PlaceBookItem;
-import placebooks.model.PlaceBookSearchIndex;
-import placebooks.model.PlaceBookItemSearchIndex;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.StringWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-
-import javax.persistence.TypedQuery;
 import javax.persistence.EntityManager;
-
-import org.apache.log4j.Logger;
-
+import javax.persistence.TypedQuery;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import placebooks.model.MediaItem;
+import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.PlaceBookItemSearchIndex;
+import placebooks.model.PlaceBookSearchIndex;
+import placebooks.model.WebBundleItem;
 
 
 public final class PlaceBooksAdminHelper
 {
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminHelper.class.getName());
+
+	// Takes a PlaceBook, copies it, and returns the (published) copy
+	public static final PlaceBook publishPlaceBook(final EntityManager em,
+												   final PlaceBook p)
+	{
+		PlaceBook p_ = null;
+		try
+		{
+			em.getTransaction().begin();
+			p_ = new PlaceBook(p);
+			p_.setState(PlaceBook.STATE_PUBLISHED);
+			em.persist(p_);
+			em.getTransaction().commit();
+			
+			// Copy data on disk now that keys have been generated
+			for (final PlaceBookItem item : p_.getItems())
+			{
+				if (item instanceof MediaItem)
+				{
+					final String data = ((MediaItem)item).getPath();
+					((MediaItem)item).writeDataToDisk(data, 
+										 new FileInputStream(new File(data)));
+				}
+				else if (item instanceof WebBundleItem)
+				{
+					final WebBundleItem wbi = (WebBundleItem)item;
+					final String data = wbi.generateWebBundlePath(); 
+					FileUtils.copyDirectory(
+						new File(wbi.getWebBundlePath()), 
+						new File(data)
+					);
+					wbi.setWebBundlePath(data);
+				}
+			}
+
+		}
+		catch (final Throwable e)
+		{
+			log.error("Error creating PlaceBook copy", e);
+		}
+		finally
+		{
+			if (em.getTransaction().isActive())
+			{
+				em.getTransaction().rollback();
+				log.error("Rolling back PlaceBook copy");
+			}
+		}
+		return p_;
+	}
+
 
 	public static final boolean scrape(WebBundleItem wbi)
 	{
@@ -68,7 +115,7 @@ public final class PlaceBooksAdminHelper
 						.getProperty(PropertiesSingleton.IDEN_USER_AGENT, ""));
 		wgetCmd.append("\" ");
 
-		final String webBundlePath = wbi.getWebBundlePath();
+		final String webBundlePath = wbi.generateWebBundlePath();
 
 		wgetCmd.append("-P " + webBundlePath + " " + 
 					   wbi.getSourceURL().toString());
@@ -104,9 +151,9 @@ public final class PlaceBooksAdminHelper
 
 				final String urlStr = wbi.getSourceURL().toString();
 				final int protocol = urlStr.indexOf("://");
-				wbi.setWebBundle(
-					webBundlePath + "/" 
-					+ urlStr.substring(protocol + 3, urlStr.length())
+				wbi.setWebBundlePath(webBundlePath);
+				wbi.setWebBundleName(
+					urlStr.substring(protocol + 3, urlStr.length())
 				);
 				log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
 

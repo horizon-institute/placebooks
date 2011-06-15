@@ -14,6 +14,7 @@ import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -55,7 +56,9 @@ public class PlaceBookItemFrame extends Composite
 	{
 	}
 
-	private static PlaceBookItemFrameUiBinder uiBinder = GWT.create(PlaceBookItemFrameUiBinder.class);
+	private static final double HEIGHT_PRECISION = 10000;
+
+	private static final PlaceBookItemFrameUiBinder uiBinder = GWT.create(PlaceBookItemFrameUiBinder.class);
 
 	@UiField
 	Panel borderSection;
@@ -68,6 +71,9 @@ public class PlaceBookItemFrame extends Composite
 
 	@UiField
 	Panel menuButton;
+
+	@UiField
+	MousePanel resizeSection;
 
 	@UiField
 	MousePanel widgetPanel;
@@ -146,7 +152,8 @@ public class PlaceBookItemFrame extends Composite
 		@Override
 		public boolean isEnabled()
 		{
-			return item.getClassName().equals("placebooks.model.GPSTraceItem") && item.getMetadata("routeVisible", "true").equals("false");
+			return item.getClassName().equals("placebooks.model.GPSTraceItem")
+					&& item.getMetadata("routeVisible", "true").equals("false");
 		}
 
 		@Override
@@ -308,7 +315,7 @@ public class PlaceBookItemFrame extends Composite
 		{
 			// TODO Handle null key
 			final MapWidget panel = new MapWidget(item.getKey(), canvas);
-			panel.setHeight("500px");
+			panel.setHeight("100%");
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
 			widgetPanel.add(panel);
@@ -323,6 +330,11 @@ public class PlaceBookItemFrame extends Composite
 		refresh();
 	}
 
+	public int getContentHeight()
+	{
+		return widgetPanel.getElement().getClientHeight();
+	}
+
 	public PlaceBookItem getItem()
 	{
 		return item;
@@ -335,6 +347,11 @@ public class PlaceBookItemFrame extends Composite
 
 	public void refresh()
 	{
+		if (item.hasParameter("height"))
+		{
+			widgetPanel.getWidget(0).setHeight("100%");
+		}
+
 		if (item.getClassName().equals("placebooks.model.TextItem"))
 		{
 			// final EditablePanel panel = (EditablePanel)widgetPanel.getWidget(0);
@@ -342,6 +359,10 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.ImageItem"))
 		{
 			final Image image = (Image) widgetPanel.getWidget(0);
+			if (item.hasParameter("height"))
+			{
+				image.setWidth("auto");
+			}
 			if (item.getKey() == null)
 			{
 				image.setUrl(item.getSourceURL());
@@ -381,14 +402,14 @@ public class PlaceBookItemFrame extends Composite
 		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
 		{
 			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
-			GWT.log(item.getMetadata("routeVisible"));
 			if (item.getKey() == null)
 			{
 				mapPanel.setURL(item.getSourceURL(), item.getMetadata("routeVisible", "true").equals("true"));
 			}
 			else
 			{
-				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey(), item.getMetadata("routeVisible", "true").equals("true"));
+				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey(),
+								item.getMetadata("routeVisible", "true").equals("true"));
 			}
 		}
 		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
@@ -404,6 +425,11 @@ public class PlaceBookItemFrame extends Composite
 		refresh();
 	}
 
+	public void setTop(final int top)
+	{
+		getElement().getStyle().setTop(top - 20, Unit.PX);
+	}
+
 	void addDragStartHandler(final MouseDownHandler handler)
 	{
 		dragSection.addMouseDownHandler(handler);
@@ -417,6 +443,11 @@ public class PlaceBookItemFrame extends Composite
 	void addMouseOverHandler(final MouseOverHandler handler)
 	{
 		widgetPanel.addMouseOverHandler(handler);
+	}
+
+	void addResizeStartHandler(final MouseDownHandler handler)
+	{
+		resizeSection.addMouseDownHandler(handler);
 	}
 
 	ImageResource getDragImage()
@@ -477,6 +508,30 @@ public class PlaceBookItemFrame extends Composite
 		dragSection.getElement().getStyle().setOpacity(0);
 		dragSection.getElement().getStyle().setZIndex(0);
 		dragSection.getElement().getStyle().setCursor(Cursor.DEFAULT);
+		resizeSection.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		resizeSection.getElement().getStyle().setOpacity(0);
+		resizeSection.getElement().getStyle().setZIndex(0);
+		resizeSection.getElement().getStyle().setCursor(Cursor.DEFAULT);
+	}
+
+	void resize()
+	{
+		if (item.hasParameter("height"))
+		{
+			final int height = item.getParameter("height");
+			final double heightPCT = height / HEIGHT_PRECISION;
+			final int heightPX = (int) (panel.getOffsetHeight() * heightPCT);
+
+			widgetPanel.getElement().getStyle().setHeight(heightPX, Unit.PX);
+		}
+	}
+
+	void setContentHeight(final int heightPX)
+	{
+		final int heightPCT = (int) ((heightPX * HEIGHT_PRECISION) / panel.getOffsetHeight());
+		item.setParameter("height", heightPCT);
+		saveTimer.markChanged();
+		// Assuming resize() will be called (via reflow on the panel) so don't set height here
 	}
 
 	void setDropMenu(final DropMenu dropMenu)
@@ -516,6 +571,10 @@ public class PlaceBookItemFrame extends Composite
 		dragSection.getElement().getStyle().setOpacity(1);
 		dragSection.getElement().getStyle().setZIndex(5);
 		dragSection.getElement().getStyle().setCursor(Cursor.MOVE);
+		resizeSection.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		resizeSection.getElement().getStyle().setOpacity(1);
+		resizeSection.getElement().getStyle().setZIndex(5);
+		resizeSection.getElement().getStyle().setCursor(Cursor.S_RESIZE);
 	}
 
 	void startDrag(final MouseDownEvent event)

@@ -28,7 +28,16 @@
 	    android:gravity="center_horizontal" 
 	    android:background="@android:color/white"
 	    >
-	    
+	     <TextView android:id="@+id/text1"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:textSize="15sp"
+		android:layout_marginLeft="5px"
+		android:layout_marginRight="5px"
+		android:textColor="#444"
+		android:typeface="serif"
+		android:text="page 1"
+		/>
 	    
 	    
 	    
@@ -58,7 +67,7 @@
 		android:textSize="15sp"
 		android:layout_marginLeft="5px"
 		android:layout_marginRight="5px"
-		android:textColor="#111"
+		android:textColor="#444"
 		android:typeface="serif"
 		android:text="page 2"
 		/>
@@ -88,7 +97,7 @@
 		android:textSize="15sp"
 		android:layout_marginLeft="5px"
 		android:layout_marginRight="5px"
-		android:textColor="#111"
+		android:textColor="#444"
 		android:typeface="serif"
 		android:text="page 3"
 		/>

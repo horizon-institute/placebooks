@@ -19,6 +19,17 @@ public class VideoItem extends MediaItem
 	{
 
 	}
+	
+	public VideoItem(final VideoItem v)
+	{
+		super(v);
+	}
+
+	@Override
+	public VideoItem deepCopy()
+	{
+		return new VideoItem(this);
+	}
 
 	@Override
 	public String getEntityName()

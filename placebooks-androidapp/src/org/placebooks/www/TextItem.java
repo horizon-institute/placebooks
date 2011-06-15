@@ -1,10 +1,10 @@
 package org.placebooks.www;
 
 public class TextItem extends Item {
-
-	private String url;
+	
 	private String text;
-	private int order;
+	private String url;
+
 	
 	public String getURL() {
 		return url;
@@ -13,21 +13,15 @@ public class TextItem extends Item {
 		url = uRL;
 	}
 	public String getText() {
-		return text;
+		return this.text;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
-	public int getOrder(){
-		return order;
-	}
-	public void setOrder(int o){
-		order = o;
-	}
 	
 	@Override
 	public String toString() {
-		return "Text=" + text + "\nURL=" + url + "\nOrder=" + order; 
+		return "Text=" + text + "\nURL=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" + super.getOrder(); 
 	}
 	
 }
