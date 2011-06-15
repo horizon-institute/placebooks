@@ -282,6 +282,7 @@ public class ItemFactory
 					}
 					if (trkItemName.equals("trkseg"))
 					{
+						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
 						final NodeList trkSegProperties = trkItem.getChildNodes();
 						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)
 						{
@@ -292,7 +293,6 @@ public class ItemFactory
 							{
 								String lat = null;
 								String lon = null;
-								ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
 								final NamedNodeMap locationAttributes = trkSegItem.getAttributes();
 								for (int locAttributeIndex = 0; locAttributeIndex < locationAttributes.getLength(); locAttributeIndex++)
 								{
@@ -304,14 +304,15 @@ public class ItemFactory
 									{
 										lon = locationAttributes.item(locAttributeIndex).getNodeValue();
 									}
-									log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
-									Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
-									points.add(coordinateToAdd);
+								}
+								log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
+								Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
+								points.add(coordinateToAdd);
 							}
 							try
 							{
 								final GeometryFactory gf = new GeometryFactory();
-								Coordinate[] coordinates;
+								Coordinate[] coordinates = null;
 								points.toArray(coordinates);
 								LineString lineString = gf.createLineString(coordinates);
 								trackGeom = trackGeom.union(lineString);
