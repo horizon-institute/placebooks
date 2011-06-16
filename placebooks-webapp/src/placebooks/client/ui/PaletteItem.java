@@ -1,13 +1,10 @@
 package placebooks.client.ui;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -31,36 +28,10 @@ public class PaletteItem extends Composite
 
 	@UiField
 	Label text;
-	
-	private final PlaceBookItem item;
 
-	public PaletteItem(PlaceBookItem placeBookItem)
+	public PaletteItem()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		this.text.setText(placeBookItem.getMetadata("title", "Unnamed"));
-		item = placeBookItem;
-
-		if (item.getClassName().equals("placebooks.model.TextItem"))
-		{
-			image.setResource(Resources.INSTANCE.text());
-		}
-		else if (item.getClassName().equals("placebooks.model.ImageItem"))
-		{
-			image.setResource(Resources.INSTANCE.picture());
-		}
-		else if (item.getClassName().equals("placebooks.model.VideoItem"))
-		{
-			image.setResource(Resources.INSTANCE.movies());
-		}
-		else if (item.getClassName().equals("placebooks.model.AudioItem"))
-		{
-			image.setResource(Resources.INSTANCE.music());
-		}		
-		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
-		{
-			image.setResource(Resources.INSTANCE.map());
-		}
-		else if (item.getClassName().equals("placebooks.model.WebBundleItem")) { image.setResource(Resources.INSTANCE.web_page()); }		
 	}	
 
 	void addDragStartHandler(final MouseDownHandler handler)
@@ -76,16 +47,5 @@ public class PaletteItem extends Composite
 	public boolean isFolder()
 	{
 		return false;
-	}
-	
-	PlaceBookItem createItem()
-	{
-		PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
-		if(newItem.getKey() != null)
-		{
-			newItem.setMetadata("originalItemID", newItem.getKey());
-			newItem.setKey(null);			
-		}
-		return newItem;
 	}
 }

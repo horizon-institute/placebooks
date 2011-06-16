@@ -6,7 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 
 import javax.persistence.Entity;
 
@@ -24,6 +27,8 @@ public abstract class MediaItem extends PlaceBookItem
 {
 	@JsonIgnore
 	protected String path; // Always points to a file, never a dir
+	
+	protected String hash; // File hash (MD5) - so clients can tell if file has changed 
 
 	MediaItem()
 	{
@@ -109,7 +114,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 	}
 	
-	public void writeDataToDisk(String name, InputStream input) 
+	public void writeDataToDisk(String name, InputStream is) 
 		throws IOException
 	{
 		final String path = 
@@ -129,6 +134,18 @@ public abstract class MediaItem extends PlaceBookItem
 
 		String filePath = path + "/" + getKey() + "." + ext;
 		
+		InputStream input;
+		MessageDigest md = null;
+		try
+		{
+			md = MessageDigest.getInstance("MD5");
+			input = new DigestInputStream(is, md);
+		}
+		catch(Exception e)
+		{
+			input = is;
+		}
+		
 		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;
 		while ((byte_ = input.read()) != -1)
@@ -136,11 +153,15 @@ public abstract class MediaItem extends PlaceBookItem
 			output.write(byte_);
 		}
 		output.close();
-		input.close();
+		is.close();
 
+		if(md != null)
+		{
+			hash = String.format("%032x", new BigInteger(1, md.digest()));
+		}
+		
 		setPath(filePath);
 		
 		log.info("Wrote " + name + " file " + filePath);
 	}
-
 }

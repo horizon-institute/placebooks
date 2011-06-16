@@ -72,6 +72,7 @@
 			margin-bottom: 3px;
 			z-index: 2;
 			overflow: hidden;
+			min-height: 15px;
 		}
 	</ui:style>
 

@@ -21,4 +21,6 @@ public class PlaceBookEntry extends JavaScriptObject
 	public final native String getPackagePath() /*-{ return this.packagePath; }-*/;
 
 	public final native String getTitle() /*-{ return this.title; }-*/;
+
+	public final native void setOwner(User user) /*-{ this.owner = user; }-*/;
 }

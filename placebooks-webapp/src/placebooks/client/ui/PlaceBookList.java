@@ -96,6 +96,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 	public void setShelf(final Shelf shelf)
 	{
+		newPlaceBook.setOwner(shelf.getUser());
 		final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 		entries.add(newPlaceBook);
 		for (int index = 0; index < shelf.getEntries().length(); index++)

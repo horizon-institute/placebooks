@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookCanvas.SaveTimer;
 import placebooks.client.ui.openlayers.MapWidget;
@@ -238,7 +239,7 @@ public class PlaceBookItemFrame extends Composite
 		}
 	};
 
-	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookCanvas canvas, final PaletteItem item)
+	public PlaceBookItemFrame(final SaveTimer timer, final PlaceBookCanvas canvas, final PalettePlaceBookItem item)
 	{
 		this(timer, canvas, item.createItem());
 	}
@@ -253,7 +254,7 @@ public class PlaceBookItemFrame extends Composite
 		menuItems.add(new RemoveMapMenuItem("Remove from Map", this));
 		menuItems.add(showTrail);
 		menuItems.add(hideTrail);
-		if (item.getClassName().equals("placebooks.model.TextItem"))
+		if (item.is(ItemType.TEXT))
 		{
 			final EditablePanel panel = new EditablePanel(item.getText());
 			panel.setStyleName(Resources.INSTANCE.style().textitem());
@@ -268,7 +269,7 @@ public class PlaceBookItemFrame extends Composite
 			});
 			widgetPanel.add(panel);
 		}
-		else if (item.getClassName().equals("placebooks.model.ImageItem"))
+		else if (item.is(ItemType.IMAGE))
 		{
 			final Image image = new Image();
 			image.setStyleName(Resources.INSTANCE.style().imageitem());
@@ -287,7 +288,7 @@ public class PlaceBookItemFrame extends Composite
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
 		}
-		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		else if (item.is(ItemType.AUDIO))
 		{
 			final Audio audio = Audio.createIfSupported();
 			audio.setStyleName(Resources.INSTANCE.style().imageitem());
@@ -299,7 +300,7 @@ public class PlaceBookItemFrame extends Composite
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
 		}
-		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		else if (item.is(ItemType.VIDEO))
 		{
 			final Video video = Video.createIfSupported();
 			video.setStyleName(Resources.INSTANCE.style().imageitem());
@@ -311,7 +312,7 @@ public class PlaceBookItemFrame extends Composite
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
 		}
-		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
+		else if (item.is(ItemType.GPS))
 		{
 			// TODO Handle null key
 			final MapWidget panel = new MapWidget(item.getKey(), canvas);
@@ -320,7 +321,7 @@ public class PlaceBookItemFrame extends Composite
 			menuItems.add(upload);
 			widgetPanel.add(panel);
 		}
-		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
+		else if (item.is(ItemType.WEB))
 		{
 			final Frame frame = new Frame(item.getSourceURL());
 			frame.setStyleName(Resources.INSTANCE.style().imageitem());
@@ -352,67 +353,35 @@ public class PlaceBookItemFrame extends Composite
 			widgetPanel.getWidget(0).setHeight("100%");
 		}
 
-		if (item.getClassName().equals("placebooks.model.TextItem"))
+		if (item.is(ItemType.TEXT))
 		{
 			// final EditablePanel panel = (EditablePanel)widgetPanel.getWidget(0);
 		}
-		else if (item.getClassName().equals("placebooks.model.ImageItem"))
+		else if (item.is(ItemType.IMAGE))
 		{
 			final Image image = (Image) widgetPanel.getWidget(0);
 			if (item.hasParameter("height"))
 			{
 				image.setWidth("auto");
 			}
-			if (item.getKey() == null)
-			{
-				image.setUrl(item.getSourceURL());
-			}
-			else
-			{
-				image.setUrl(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/imageitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
+			image.setUrl(item.getURL());
 		}
-		else if (item.getClassName().equals("placebooks.model.AudioItem"))
+		else if (item.is(ItemType.AUDIO))
 		{
 			final Audio audio = (Audio) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				audio.setSrc(item.getSourceURL());
-			}
-			else
-			{
-				audio.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/audioitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
+			audio.setSrc(item.getURL());
 		}
-		else if (item.getClassName().equals("placebooks.model.VideoItem"))
+		else if (item.is(ItemType.VIDEO))
 		{
 			final Video video = (Video) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				video.setSrc(item.getSourceURL());
-			}
-			else
-			{
-				video.setSrc(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/videoitem/" + item.getKey() + "?"
-						+ System.currentTimeMillis());
-			}
+			video.setSrc(item.getURL());
 		}
-		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
+		else if (item.is(ItemType.GPS))
 		{
 			final MapWidget mapPanel = (MapWidget) widgetPanel.getWidget(0);
-			if (item.getKey() == null)
-			{
-				mapPanel.setURL(item.getSourceURL(), item.getMetadata("routeVisible", "true").equals("true"));
-			}
-			else
-			{
-				mapPanel.setURL(GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/gpstraceitem/" + item.getKey(),
-								item.getMetadata("routeVisible", "true").equals("true"));
-			}
+			mapPanel.setURL(item.getURL(), item.getMetadata("routeVisible", "true").equals("true"));
 		}
-		else if (item.getClassName().equals("placebooks.model.WebBundleItem"))
+		else if (item.is(ItemType.WEB))
 		{
 			final Frame frame = (Frame) widgetPanel.getWidget(0);
 			frame.setUrl(item.getSourceURL());
@@ -452,28 +421,7 @@ public class PlaceBookItemFrame extends Composite
 
 	ImageResource getDragImage()
 	{
-		if (item.getClassName().equals("placebooks.model.TextItem"))
-		{
-			return Resources.INSTANCE.text();
-		}
-		else if (item.getClassName().equals("placebooks.model.ImageItem"))
-		{
-			return Resources.INSTANCE.picture();
-		}
-		else if (item.getClassName().equals("placebooks.model.VideoItem"))
-		{
-			return Resources.INSTANCE.movies();
-		}
-		else if (item.getClassName().equals("placebooks.model.AudioItem"))
-		{
-			return Resources.INSTANCE.music();
-		}
-		else if (item.getClassName().equals("placebooks.model.GPSTraceItem"))
-		{
-			return Resources.INSTANCE.map();
-		}
-		else if (item.getClassName().equals("placebooks.model.WebBundleItem")) { return Resources.INSTANCE.web_page(); }
-		return null;
+		return item.getIcon();
 	}
 
 	int getOrder()
@@ -516,7 +464,7 @@ public class PlaceBookItemFrame extends Composite
 
 	void resize()
 	{
-		if (item.hasParameter("height"))
+		if (item.hasParameter("height") && panel != null)
 		{
 			final int height = item.getParameter("height");
 			final double heightPCT = height / HEIGHT_PRECISION;

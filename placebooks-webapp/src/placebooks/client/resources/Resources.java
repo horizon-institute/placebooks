@@ -30,6 +30,8 @@ public interface Resources extends ClientBundle
 	ImageResource zoom_in();
 	
 	ImageResource zoom_out();	
+	
+	ImageResource folder();
 
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();

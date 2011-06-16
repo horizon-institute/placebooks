@@ -14,7 +14,8 @@
 			-webkit-user-select: none;
 			-moz-user-select: none;
 			user-select: none;
-			overflow: auto;
+			overflow-x: auto;
+			overflow-y: scroll;			
 		}
 		
 		.palette {
@@ -76,8 +77,8 @@
 
 		.savingPanel {
 			position: absolute;
-			top: 0px;
-			right: 0px;
+			top: 21px;
+			right: 120px;
 			height: 15px;
 			background: #555;
 			border-left: 1px solid #333;
@@ -99,7 +100,8 @@
 			-o-user-select: text;			
 			user-select: text;
 			border-bottom: 1px solid grey;
-			box-shadow: 2px 2px 2px 333;			
+			box-shadow: 2px 2px 2px 333;	
+			overflow: none;		
 		}
 		
 		.populate {
@@ -136,12 +138,6 @@
 			margin: 2px;
 			float:right;
 		}
-		
-		.toolbar {
-			position: absolute;
-			right: 0px;
-			top: 0px;
-		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel">
@@ -149,17 +145,14 @@
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
 		<g:FlowPanel styleName="{style.titleBar}">
-			<p:EditablePanel ui:field="title"></p:EditablePanel>
-			<g:FlowPanel styleName="{style.toolbar}">			
-				<g:HTML styleName="{style.account}" ui:field="account" />
-				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
-				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
-				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-			</g:FlowPanel>			
+			<g:HTML styleName="{style.account}" ui:field="account" />
+			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
+			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			
+			<p:EditablePanel ui:field="title"></p:EditablePanel>			
 		</g:FlowPanel>
-		<p:MousePanel styleName="{style.canvas}" ui:field="canvas">
 			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
-		</p:MousePanel>	
+		<p:MousePanel styleName="{style.canvas}" ui:field="canvas"></p:MousePanel>	
 		<p:MousePanel styleName="{style.palette}" ui:field="palette">
 		</p:MousePanel>
 	</p:MousePanel>
