@@ -812,50 +812,26 @@ public class PlaceBooksAdminControllerDebug
 										details.getPassword());
 			for (Node track : tracks.getTracks())
 			{
-				final NamedNodeMap trackAttr = track.getAttributes();
-				log.info("trackAttr = " + trackAttr.toString());
-				final NodeList props = track.getChildNodes();
-				for (int i = 0; i < props.getLength(); ++ i)
+															
+				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
+				ItemFactory.toGPSTraceItem(testUser, track, gpsItem);
+				try
 				{
-					Node item = props.item(i);
-					String itemName = item.getNodeName();
-					log.debug("Inspecting property: " + itemName + 
-							  " which is " + item.getTextContent());
-					if (itemName.equalsIgnoreCase("trk"))
+					entityManager.getTransaction().begin();
+					entityManager.persist(gpsItem);
+					entityManager.getTransaction().commit();
+				}
+				catch (final Throwable e)
+				{
+					log.error(e.getMessage(), e);
+				}
+				finally
+				{
+					if (entityManager.getTransaction().isActive())
 					{
-																		
-						try
-						{
-							Transformer t = 
-							TransformerFactory.newInstance().newTransformer();
-						    t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-											    "yes");
-							StringWriter s = new StringWriter();
-						    t.transform(new DOMSource(item), 
-										new StreamResult(s));
-
-							entityManager.getTransaction().begin();
-							GPSTraceItem g = 
-								new GPSTraceItem(testUser, null, null, 
-												 s.toString());
-							entityManager.persist(g);
-							entityManager.getTransaction().commit();
-						}
-						catch (final Throwable e)
-						{
-							log.error(e.getMessage(), e);
-						}
-						finally
-						{
-							if (entityManager.getTransaction().isActive())
-							{
-								entityManager.getTransaction().rollback();
-								log.error("Rolling current persist transaction back");
-							}
-						}
+						entityManager.getTransaction().rollback();
+						log.error("Rolling current persist transaction back");
 					}
-					
-
 				}
 			}
 		}

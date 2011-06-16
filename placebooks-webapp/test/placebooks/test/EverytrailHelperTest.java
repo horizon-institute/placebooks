@@ -84,7 +84,7 @@ public class EverytrailHelperTest
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(user_id);
 		assertEquals("success", picturesResponse.getStatus());
 		// As default should return 10 pictures starting at 0 and test user has about 4 pictures
-		assertEquals(35, picturesResponse.getPictures().size());
+		assertEquals(36, picturesResponse.getPictures().size());
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class EverytrailHelperTest
 		}
 
 		assertEquals("success",response.getStatus());
-		assertEquals(1, response.getTrips().size());
+		assertEquals(2, response.getTrips().size());
 	}
 
 	/**
@@ -181,6 +181,6 @@ public class EverytrailHelperTest
 		EverytrailTripsResponse response = EverytrailHelper.Trips(test_username, test_password, test_user_id, 52.531021, -4.055394, date, null, null, null, null, false);
 		log.debug(response.getTrips());
 		assertEquals("success",response.getStatus());
-		assertEquals(1, response.getTrips().size());
+		assertEquals(4, response.getTrips().size());
 	}
 }
