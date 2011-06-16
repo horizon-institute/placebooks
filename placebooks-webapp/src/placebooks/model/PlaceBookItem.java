@@ -258,7 +258,17 @@ public abstract class PlaceBookItem
 	{
 		this.timestamp = timestamp;
 	}
+	
+	public void setMedataData(final Map<String, String> new_data)
+	{
+		this.metadata.putAll(new_data);
+	}
 
+	public void setParameters(final Map<String, Integer> new_data)
+	{
+		this.parameters.putAll(new_data);
+	}
+	
 	/**
 	 * Header common to all items
 	 * 
@@ -334,6 +344,11 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
+	/**
+	 * Implementation of 'update' for placebook item superclass to update all base fields.
+	 * This should be called from descendant classes in their implementation of 'update' 
+	 * @param item
+	 */
 	public void update(PlaceBookItem item)
 	{
 		if(this == item)
@@ -374,4 +389,11 @@ public abstract class PlaceBookItem
 	{
 		return index;
 	}
+
+	/**
+	 * Implement this is subclasses to allow the items to be updated and saved properly
+	 * @param newItem
+	 */
+	public abstract PlaceBookItem saveUpdatedItem();
+
 }

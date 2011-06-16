@@ -274,14 +274,15 @@ public class ItemFactory
 				{
 					final Node trkItem = trkProperties.item(trkPropertyIndex);
 					final String trkItemName = trkItem.getNodeName();
-					log.debug("Inspecting trk element property: " + trkItemName + " which is " + trkItem.getTextContent());
+					log.debug("Inspecting trk element property: " + trkItemName);
 
 					if (trkItemName.equals("name"))
 					{
-						log.debug("Processing track segment " + trkItem.getTextContent());
+						log.debug("Processing track name " + trkItem.getTextContent());
 					}
 					if (trkItemName.equals("trkseg"))
 					{
+						log.debug("Processing track segment " + trkItem.getTextContent());
 						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
 						final NodeList trkSegProperties = trkItem.getChildNodes();
 						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)
@@ -305,28 +306,36 @@ public class ItemFactory
 										lon = locationAttributes.item(locAttributeIndex).getNodeValue();
 									}
 								}
-								log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 								Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
 								points.add(coordinateToAdd);
 							}
-							try
+						}
+						try
+						{
+							final GeometryFactory gf = new GeometryFactory();
+							Coordinate coordinates[] = new Coordinate[points.size()];
+							points.toArray(coordinates);
+							LineString lineString = gf.createLineString(coordinates);
+							if(trackGeom==null)
 							{
-								final GeometryFactory gf = new GeometryFactory();
-								Coordinate[] coordinates = null;
-								points.toArray(coordinates);
-								LineString lineString = gf.createLineString(coordinates);
+								trackGeom = gf.createGeometry(lineString);
+							}
+							else
+							{
 								trackGeom = trackGeom.union(lineString);
 							}
-							catch (final Exception ex)
-							{
-								log.error("Couldn't get lat/lon data from Everytrail picture.");
-								log.debug(ex.getMessage());
-							}
+						}
+						catch (final Exception ex)
+						{
+							log.error("Couldn't get lat/lon data from Everytrail track.");
+							log.debug(ex.getClass());
+							log.debug(ex.getMessage());
 						}
 					}
 				}
 			}
 		}
+
 		gpsItem.setGeometry(trackGeom);
 		gpsItem.setExternalID("everytrail-" + track_id);
 		gpsItem.addMetadataEntry("source", "Everytrail");

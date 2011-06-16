@@ -2,6 +2,7 @@ package placebooks.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +10,15 @@ import java.io.OutputStream;
 import java.net.URL;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import placebooks.controller.EMFSingleton;
+import placebooks.controller.EverytrailHelper;
 import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -99,8 +103,7 @@ public abstract class MediaItem extends PlaceBookItem
 			final FileInputStream fis = new FileInputStream(dataFile);
 			final File to = new File(path + "/" + dataFile.getName());
 
-			log.info("Copying file, from=" + dataFile.toString() 
-					 + ", to=" + to.toString());
+			log.info("Copying file, from=" + dataFile.toString() + ", to=" + to.toString());
 
 			final FileOutputStream fos = new FileOutputStream(to);
 			IOUtils.copy(fis, fos);
@@ -142,5 +145,78 @@ public abstract class MediaItem extends PlaceBookItem
 		
 		log.info("Wrote " + name + " file " + filePath);
 	}
+	
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 */
+	@Override
+	public void update(PlaceBookItem item) 
+	{
+		super.update(item);
+		if(item instanceof MediaItem)
+		{
+			MediaItem updatedItem = (MediaItem) item;
+			//Overwrite existing file by saving new file in the existing folder with the existing name
+			// Check it exists first though
+			if (new File(updatedItem.getPath()).exists())
+			{
+				if (new File(this.getPath()).exists() || new File(this.getPath()).mkdirs())
+				{
+					final File dataFile = new File(updatedItem.getPath());
+					FileInputStream fis;
+					try
+					{
+						fis = new FileInputStream(dataFile);
+						this.writeDataToDisk(new File(this.getPath()).getName(), fis);
+						fis.close();
+					}
+					catch (Exception e)
+					{
+						log.error(e.getMessage());
+					}
+				}
+			}
+		}
+	}
 
+	
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public PlaceBookItem saveUpdatedItem()
+	{
+		PlaceBookItem returnItem = this;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		MediaItem item;
+		try
+		{
+			pm.getTransaction().begin();
+			item = (MediaItem) EverytrailHelper.GetExistingItem(this);
+			if(item != null)
+			{
+				
+				log.debug("Existing item found so updating");
+				item.update(this);
+				returnItem = item;
+				pm.flush();
+			}
+			else
+			{
+				log.debug("No existing item found so creating new");
+				pm.persist(this);
+			}
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+		return returnItem;
+	}
+	
 }

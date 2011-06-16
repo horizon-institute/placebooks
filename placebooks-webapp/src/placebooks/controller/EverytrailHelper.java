@@ -20,9 +20,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -41,6 +44,7 @@ import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -926,4 +930,33 @@ public class EverytrailHelper
 			ItemFactory.toImageItem(user, picture, item);
 		}
 	}
+	
+	/**
+	 * Gets the item with the external id or null if thre is none.
+	 * n.b. assumes ther's only one of these in the db.
+	 * @param externalId
+	 * @return PlaceBookItem item or null
+	 */
+	public static PlaceBookItem GetExistingItem(PlaceBookItem itemToSave)
+	{
+		PlaceBookItem item = null;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		log.debug("Querying externalID " +  itemToSave.getExternalID());
+		Query q = pm.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where placebookitem.externalID = ?1", PlaceBookItem.class);
+		q.setParameter(1, itemToSave.getExternalID());
+		try
+		{
+			item = (PlaceBookItem) q.getSingleResult();
+		}
+		catch(NoResultException ex)
+		{
+			item = null;
+		}
+		finally
+		{
+			pm.close();
+		}
+		return item;
+	}
+	
 }
