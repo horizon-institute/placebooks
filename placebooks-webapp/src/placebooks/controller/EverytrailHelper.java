@@ -937,10 +937,9 @@ public class EverytrailHelper
 	 * @param externalId
 	 * @return PlaceBookItem item or null
 	 */
-	public static PlaceBookItem GetExistingItem(PlaceBookItem itemToSave)
+	public static PlaceBookItem GetExistingItem(PlaceBookItem itemToSave, EntityManager pm)
 	{
 		PlaceBookItem item = null;
-		final EntityManager pm = EMFSingleton.getEntityManager();
 		log.debug("Querying externalID " +  itemToSave.getExternalID());
 		Query q = pm.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where placebookitem.externalID = ?1", PlaceBookItem.class);
 		q.setParameter(1, itemToSave.getExternalID());

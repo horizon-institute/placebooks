@@ -2,7 +2,6 @@ package placebooks.model;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +20,6 @@ import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.PropertiesSingleton;
 
-import com.google.gdata.data.DateTime;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
@@ -124,7 +122,7 @@ public abstract class MediaItem extends PlaceBookItem
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
 				String filePath = path + "/" + System.currentTimeMillis() + name;
-				
+
 				log.info("Copying file to=" + filePath);
 				final FileOutputStream output = new FileOutputStream(new File(filePath));
 				int byte_;
@@ -151,7 +149,7 @@ public abstract class MediaItem extends PlaceBookItem
 	throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-			.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+		.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 		if(getKey() == null) { throw new IOException("Key is null"); }
 
@@ -229,7 +227,7 @@ public abstract class MediaItem extends PlaceBookItem
 		try
 		{
 			pm.getTransaction().begin();
-			item = (MediaItem) EverytrailHelper.GetExistingItem(this);
+			item = (MediaItem) EverytrailHelper.GetExistingItem(this, pm);
 			if(item != null)
 			{
 
@@ -255,5 +253,6 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		return returnItem;
 	}
+
 
 }

@@ -146,7 +146,7 @@ public class GPSTraceItem extends PlaceBookItem
 		try
 		{
 			pm.getTransaction().begin();
-			item = (GPSTraceItem) EverytrailHelper.GetExistingItem(this);
+			item = (GPSTraceItem) EverytrailHelper.GetExistingItem(this, pm);
 			if(item != null)
 			{
 				

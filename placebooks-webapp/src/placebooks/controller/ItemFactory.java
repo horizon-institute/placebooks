@@ -27,7 +27,6 @@ import com.google.gdata.data.DateTime;
 import com.google.gdata.data.geo.impl.GeoRssWhere;
 import com.google.gdata.data.youtube.VideoEntry;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -81,7 +80,7 @@ public class ItemFactory
 		{
 			final Node item = pictureProperties.item(propertyIndex);
 			final String itemName = item.getNodeName();
-			log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
 			if (itemName.equals("caption"))
 			{
 				itemTitle = item.getTextContent();
@@ -260,7 +259,7 @@ public class ItemFactory
 		{
 			final Node item = trackProperties.item(propertyIndex);
 			final String itemName = item.getNodeName();
-			log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
 			if (itemName.equals("name"))
 			{
 				track_name = item.getTextContent();
@@ -274,7 +273,7 @@ public class ItemFactory
 				{
 					final Node trkItem = trkProperties.item(trkPropertyIndex);
 					final String trkItemName = trkItem.getNodeName();
-					log.debug("Inspecting trk element property: " + trkItemName);
+					//log.debug("Inspecting trk element property: " + trkItemName);
 
 					if (trkItemName.equals("name"))
 					{
@@ -282,7 +281,7 @@ public class ItemFactory
 					}
 					if (trkItemName.equals("trkseg"))
 					{
-						log.debug("Processing track segment " + trkItem.getTextContent());
+						//log.debug("Processing track segment " + trkItem.getTextContent());
 						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
 						final NodeList trkSegProperties = trkItem.getChildNodes();
 						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)

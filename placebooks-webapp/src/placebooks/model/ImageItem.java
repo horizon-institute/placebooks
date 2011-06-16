@@ -3,10 +3,6 @@ package placebooks.model;
 import java.net.URL;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-
-import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -46,42 +42,4 @@ public class ImageItem extends MediaItem
 		super.update((MediaItem) item);
 	}
 	
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
-	 */
-	@Override
-	public PlaceBookItem saveUpdatedItem()
-	{
-		PlaceBookItem returnItem = this;
-		final EntityManager pm = EMFSingleton.getEntityManager();
-		ImageItem existingItem;
-		try
-		{
-			pm.getTransaction().begin();
-			existingItem = (ImageItem) EverytrailHelper.GetExistingItem(this);
-			if(existingItem != null)
-			{
-				log.debug("Existing item found so updating");
-				existingItem.update(this);
-				returnItem = existingItem;
-				pm.flush();
-			}
-			else
-			{
-				log.debug("No existing item found so creating new");
-				pm.persist(this);
-			}
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
-		}
-		return returnItem;
-	}
-
 }
