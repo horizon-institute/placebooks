@@ -3,10 +3,6 @@ package placebooks.model;
 import java.net.URL;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-
-import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -40,11 +36,4 @@ public class VideoItem extends MediaItem
 	{
 		return VideoItem.class.getName();
 	}
-	
-	@Override 
-	public void update(PlaceBookItem item)
-	{
-		super.update((MediaItem) item);
-	}
-
 }

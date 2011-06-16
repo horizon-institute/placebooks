@@ -40,12 +40,6 @@ public class ImageItem extends MediaItem
 		return ImageItem.class.getName();
 	}
 	
-	@Override 
-	public void update(PlaceBookItem item)
-	{
-		super.update((MediaItem) item);
-	}
-	
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
