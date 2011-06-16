@@ -952,10 +952,6 @@ public class EverytrailHelper
 		{
 			item = null;
 		}
-		finally
-		{
-			pm.close();
-		}
 		return item;
 	}
 	

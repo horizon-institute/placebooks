@@ -21,6 +21,7 @@ import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.PropertiesSingleton;
 
+import com.google.gdata.data.DateTime;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
@@ -34,7 +35,7 @@ public abstract class MediaItem extends PlaceBookItem
 	}
 
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String file)
+			final String file)
 	{
 		super(owner, geom, sourceURL);
 		this.path = file;
@@ -56,7 +57,7 @@ public abstract class MediaItem extends PlaceBookItem
 			copyDataToPackage();
 			final Element filename = config.createElement("filename");
 			filename.appendChild(
-				config.createTextNode(new File(path).getName())
+					config.createTextNode(new File(path).getName())
 			);
 			item.appendChild(filename);
 		}
@@ -93,9 +94,9 @@ public abstract class MediaItem extends PlaceBookItem
 		// Check package dir exists already
 		final String path = 
 			PropertiesSingleton
-				.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ getPlaceBook().getKey();
+			.get(this.getClass().getClassLoader())
+			.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+			+ getPlaceBook().getKey();
 
 		if (new File(path).exists() || new File(path).mkdirs())
 		{
@@ -111,17 +112,49 @@ public abstract class MediaItem extends PlaceBookItem
 			fos.close();
 		}
 	}
-	
-	public void writeDataToDisk(String name, InputStream input) 
-		throws IOException
+
+	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException
 	{
-		final String path = 
-			PropertiesSingleton
-				.get(this.getClass().getClassLoader())
+		if(getKey() == null)
+		{
+			final String path = 
+				PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
+				String filePath = path + "/" + System.currentTimeMillis() + name;
+				
+				log.info("Copying file to=" + filePath);
+				final FileOutputStream output = new FileOutputStream(new File(filePath));
+				int byte_;
+				while ((byte_ = input.read()) != -1)
+				{
+					output.write(byte_);
+				}
+				output.close();
+				input.close();
+				setPath(filePath);
+			}	
+			else
+			{
+				throw new IOException("Failed to write file '" + path + "'"); 
+			}
+		}
+		else
+		{
+			writeDataToDisk(name, input);
+		}
+	}
+
+	public void writeDataToDisk(final String name, final InputStream input) 
+	throws IOException
+	{
+		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+			.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+
 		if(getKey() == null) { throw new IOException("Key is null"); }
-		
+
 		if (!new File(path).exists() && !new File(path).mkdirs()) 
 		{
 			throw new IOException("Failed to write file '" + path + "'"); 
@@ -131,7 +164,7 @@ public abstract class MediaItem extends PlaceBookItem
 		final String ext = name.substring(extIdx + 1, name.length());
 
 		String filePath = path + "/" + getKey() + "." + ext;
-		
+
 		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;
 		while ((byte_ = input.read()) != -1)
@@ -141,33 +174,37 @@ public abstract class MediaItem extends PlaceBookItem
 		output.close();
 		input.close();
 
-		setPath(filePath);
-		
 		log.info("Wrote " + name + " file " + filePath);
+		EntityManager entityManager = EMFSingleton.getEntityManager();
+		setPath(filePath);
+		entityManager.merge(this);
+		entityManager.close();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
 	@Override
-	public void update(PlaceBookItem item) 
+	public void update(final PlaceBookItem itemWithNewData) 
 	{
-		super.update(item);
-		if(item instanceof MediaItem)
+		super.update(itemWithNewData);
+		if(itemWithNewData instanceof MediaItem)
 		{
-			MediaItem updatedItem = (MediaItem) item;
-			//Overwrite existing file by saving new file in the existing folder with the existing name
+			MediaItem mediaItemWithNewData = (MediaItem) itemWithNewData;
+			// Overwrite existing file by saving new file in the existing folder with the 
+			// existing name 
 			// Check it exists first though
-			if (new File(updatedItem.getPath()).exists())
+			log.debug("Looking for " + mediaItemWithNewData.getPath());
+			if (new File(mediaItemWithNewData.getPath()).exists())
 			{
 				if (new File(this.getPath()).exists() || new File(this.getPath()).mkdirs())
 				{
-					final File dataFile = new File(updatedItem.getPath());
+					final File dataFile = new File(mediaItemWithNewData.getPath());
 					FileInputStream fis;
 					try
 					{
 						fis = new FileInputStream(dataFile);
-						this.writeDataToDisk(new File(this.getPath()).getName(), fis);
+						writeDataToDisk(new File(this.getPath()).getName(), fis);
 						fis.close();
 					}
 					catch (Exception e)
@@ -179,7 +216,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
@@ -195,7 +232,7 @@ public abstract class MediaItem extends PlaceBookItem
 			item = (MediaItem) EverytrailHelper.GetExistingItem(this);
 			if(item != null)
 			{
-				
+
 				log.debug("Existing item found so updating");
 				item.update(this);
 				returnItem = item;
@@ -218,5 +255,5 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		return returnItem;
 	}
-	
+
 }

@@ -41,7 +41,7 @@ public class ImageItem extends MediaItem
 	}
 	
 	@Override 
-	public void update(PlaceBookItem item)
+	public void update(final PlaceBookItem item)
 	{
 		super.update((MediaItem) item);
 	}
@@ -54,17 +54,16 @@ public class ImageItem extends MediaItem
 	{
 		PlaceBookItem returnItem = this;
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		ImageItem item;
+		ImageItem existingItem;
 		try
 		{
 			pm.getTransaction().begin();
-			item = (ImageItem) EverytrailHelper.GetExistingItem(this);
-			if(item != null)
+			existingItem = (ImageItem) EverytrailHelper.GetExistingItem(this);
+			if(existingItem != null)
 			{
-				
 				log.debug("Existing item found so updating");
-				item.update(this);
-				returnItem = item;
+				existingItem.update(this);
+				returnItem = existingItem;
 				pm.flush();
 			}
 			else

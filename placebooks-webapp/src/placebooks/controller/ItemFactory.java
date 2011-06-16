@@ -146,11 +146,11 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());
+				imageItem.writeNewFileToDisk(picture_id + ".jpg", conn.getInputStream());
 			}
 			catch (final IOException ex)
 			{
-				log.error("Can't download Everytrail Picture and convert to BufferedImage.");
+				log.error("Can't download Everytrail Picture and convert to BufferedImage URL: " + sourceUrl.toExternalForm());
 				log.debug(ex.getMessage());
 			}
 			catch (final Throwable e)
