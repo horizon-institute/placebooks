@@ -40,31 +40,40 @@ public class VideoViewer extends Activity {
 	        
 	        File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped" + packagePath + "/" + videoFile);
 
-			if (clip.exists()) {
-
-					video = new VideoView(VideoViewer.this);
-					video.setVideoPath(clip.getAbsolutePath());
-
-					video.setLayoutParams(new Gallery.LayoutParams(
-							LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-
-					ctlr=new MediaController(VideoViewer.this);
-					ctlr.setMediaPlayer(video);
-					video.setMediaController(ctlr);
-					video.requestFocus();
-					video.start();
-                    setContentView(video);
+	        try{
+				if (clip.exists()) {
+	
+						video = new VideoView(VideoViewer.this);
+						video.setVideoPath(clip.getAbsolutePath());
+	
+						video.setLayoutParams(new Gallery.LayoutParams(
+								LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+	
+						ctlr=new MediaController(VideoViewer.this);
+						ctlr.setMediaPlayer(video);
+						video.setMediaController(ctlr);
+						video.requestFocus();
+						video.start();
+	                    setContentView(video);
+		        
+		        
+				}
+				else{
+					TextView tv = new TextView(this);
+					tv.setText("File does not exist");
+					setContentView(tv);
+					
+					
+				}
+	        }
 	        
-	        
+	        catch (OutOfMemoryError E) {
+			    // release some (all) of the above objects
+					System.out.println("Out of Memory Exception");
+					TextView txtView = new TextView(VideoViewer.this);
+					txtView.setText("Error: Out of Memory - video file is too big to load!");
+					setContentView(txtView);
 			}
-			else{
-				TextView tv = new TextView(this);
-				tv.setText("File does not exist");
-				setContentView(tv);
-				
-				
-			}
-
 	 }
 	 
 }

@@ -31,6 +31,7 @@ import android.widget.ImageView;	//for images and for the map (i guess) since th
 import android.widget.VideoView;
 import android.widget.MediaController;
 import android.widget.ImageButton;
+import android.widget.Button;
 
 
 import android.widget.ScrollView;
@@ -60,7 +61,10 @@ import android.text.Html;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import com.vividsolutions.jts.geom.Geometry;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import 	android.net.Uri;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
 
 
 //Implement a Listener (added the interface to the base class)
@@ -101,6 +105,9 @@ public class Reader extends Activity {
 	ArrayList<Point> page1 = new ArrayList<Point>();
 	ArrayList<Point> page2 = new ArrayList<Point>();
 	ArrayList<Point> page3 = new ArrayList<Point>();
+	ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
+	ArrayList<Point> page5 = new ArrayList<Point>();
+	ArrayList<Point> page6 = new ArrayList<Point>();
 	
 	ArrayList<String> page1Type = new ArrayList<String>();
 	ArrayList<String> page2Type = new ArrayList<String>();
@@ -118,12 +125,12 @@ public class Reader extends Activity {
 	ArrayList<String> page2Keys = new ArrayList<String>();
 	ArrayList<String> page3Keys = new ArrayList<String>();
 	
-	ArrayList<Geometry> page1Geometries = new ArrayList<Geometry>();
-	ArrayList<Geometry> page2Geometries = new ArrayList<Geometry>();
-	ArrayList<Geometry> page3Geometries = new ArrayList<Geometry>();
+	ArrayList<Coordinate[]> page1Geometries = new ArrayList<Coordinate[]>();
+	ArrayList<Coordinate[]> page2Geometries = new ArrayList<Coordinate[]>();
+	ArrayList<Coordinate[]> page3Geometries = new ArrayList<Coordinate[]>();
 
 	//Image Variables
-	private ImageButton ibImg;
+	private ImageView imgView;
 	
 	//Video Variables
 	private VideoView video;
@@ -138,7 +145,7 @@ public class Reader extends Activity {
 	private boolean audio_included = false;	//audio flag
 	
 	//Map Image Variables
-	private ImageButton ibMap;
+	private ImageView mapImgView;
 	
 
 	 		 @Override
@@ -179,17 +186,6 @@ public class Reader extends Activity {
 			        try {
 				        getMyXML();		//call method to parse XML		
 				        
-				       //if url!=null 
-				       /* for(int i =0; i<page1Geometries.size(); i++) {
-				        	//String s = a;
-				            //a.getType();
-				            TextView tv = new TextView(this);
-							  tv.setText("geometries = " + page1Geometries.get(i));
-							  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-							  ll.addView(tv);
-				        }
-				       */
-	       
 					  
 				  for (int i=0;i<page1Data.size();i++ ){
 					 
@@ -231,7 +227,7 @@ public class Reader extends Activity {
 					 
 					 
 				  } 
-				  
+				  		  
 				  for (int i=0;i<page2Data.size();i++ ){
 					  
 					  if(page2Type.get(i).toString().equalsIgnoreCase("TEXT")){
@@ -242,10 +238,21 @@ public class Reader extends Activity {
 							
 						 }
 						 else if (page2Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-							 displayVideo(page2Data.get(i).toString(), ll2);		
+							 displayVideo(page2Data.get(i).toString(), ll2);	
+							 TextView tv = new TextView(this);
+							 tv.setText("page 2 data = " + page2Data.get(i));
+						     tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+							 ll2.addView(tv);
 						 }
 						 else if (page2Type.get(i).toString().equalsIgnoreCase("AUDIO")){
 							 displayAudio(page2Data.get(i).toString(), ll2);	
+						 }
+						 else if(page2Type.get(i).toString().equalsIgnoreCase("MapImage")){
+							 displayMapImage(page2Data.get(i).toString(), ll2);
+
+						 }
+						 else if (page2Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+						      displayWebBundle(page2Data.get(i),page2Url.get(i), page2Keys.get(i), ll2 ); //filename, url, page
 						 }
 					  
 					  
@@ -268,6 +275,13 @@ public class Reader extends Activity {
 						 }
 						 else if (page3Type.get(i).toString().equalsIgnoreCase("AUDIO")){
 							 displayAudio(page3Data.get(i).toString(), ll3);	
+						 }
+						 else if(page3Type.get(i).toString().equalsIgnoreCase("MapImage")){
+							 displayMapImage(page3Data.get(i).toString(), ll3);
+
+						 }
+						 else if (page3Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+						      displayWebBundle(page3Data.get(i),page3Url.get(i), page3Keys.get(i), ll3 ); //filename, url, page
 						 }
 					  
 					  
@@ -331,34 +345,43 @@ public class Reader extends Activity {
 				  * -- need to work on ordering next -- e.g could have img, txt, img, whereas right now it will always display the list of all images one after each other
 				  */
 				 
-				 	ImageButton ibImg = new ImageButton(this);
+					imgView = new ImageView(this);
 				    //locate the file path where the images are stored on the SD CARD. 
 					String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + img;
-				 
-				    BitmapFactory.Options options = new BitmapFactory.Options();
-				    options.inSampleSize = 1;
-				    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
-				    
-				    //small image (height is less than 200 and the width is less than 400
-				    if (bm.getHeight() <300 & bm.getWidth() <400){
-				    Bitmap scaledbm = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight(), true);	//scale the bitmap to the right size of the button
-				    
-				    ibImg.setImageBitmap(scaledbm);
-					ibImg.setLayoutParams(new LayoutParams(bm.getWidth(), bm.getHeight()));
-					page.addView(ibImg); 	
-					    
-				    }
-				    
-				    else{
-					    Bitmap scaledbm = Bitmap.createScaledBitmap(bm, 400, 300, true);	//scale the bitmap to the right size of the button
+					
+					try {
+
+							BitmapFactory.Options options = new BitmapFactory.Options();
+						    options.inSampleSize = 4;
+						    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
 						
-						ibImg.setImageBitmap(scaledbm);
-						ibImg.setLayoutParams(new LayoutParams(400, 300));
-						//ibImg.setMinimumWidth(bm.getWidth());
-						//ibImg.setMinimumHeight(bm.getHeight());
-						page.addView(ibImg); 
-				    	
-				    }
+						    
+						    //if(bm.getHeight() >300 & bm.getWidth() >400){
+						
+							    //Uri imgUri=Uri.parse(myImagePath);
+							    //imgView.setImageURI(imgUri);
+						    	imgView.setImageBitmap(bm);
+								imgView.setLayoutParams(new LayoutParams(400, 300));		//this will use seam carving later on. For now we are saying load the image in a 400x300 container
+								page.addView(imgView); 	
+						   // }
+						   /* else{
+						    	//small images
+							    imgView.setImageBitmap(bm);
+								imgView.setLayoutParams(new LayoutParams(bm.getWidth(), bm.getHeight()));
+								page.addView(imgView); 
+						    }*/
+						   
+						} catch (OutOfMemoryError E) {
+					    // release some (all) of the above objects
+							System.out.println("Out of Memory Exception");
+							TextView txtView = new TextView(Reader.this);
+							txtView.setText("Error: cannot load image. Out of memory!");
+							page.addView(txtView);
+						}
+					
+				    
+				    
+				    
 				    
 	
 					//New custom view that adds a bit of spacing to the end of image items
@@ -367,7 +390,7 @@ public class Reader extends Activity {
 				    page.addView(view);
 				    
 				    
-					ibImg.setOnClickListener(new OnClickListener() {
+					imgView.setOnClickListener(new OnClickListener() {
 			             @Override
 			             public void onClick(View v) {
 			            	 
@@ -413,17 +436,26 @@ public class Reader extends Activity {
 				// make the button and thumbnail look like it is a TV (simple metaphor for users to understand it is a video clip)
 				 					 
 					 //Locate the video and get the thumbnail image of the video file
-					 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + video, MediaStore.Images.Thumbnails.MINI_KIND);
-					 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, 360, 270, true);	//scale the bitmap to the right size of the button
-			 
-					 ibVid = new ImageButton(this);
-					 
-					//assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
-					
-					 ibVid.setImageBitmap(scaledThumb);
-					 //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-					 ibVid.setLayoutParams(new LayoutParams(400,300));
-					 page.addView(ibVid); 
+					 try{
+						 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + video, MediaStore.Images.Thumbnails.MINI_KIND);
+						 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, 360, 270, true);	//scale the bitmap to the right size of the button
+				 
+						 ibVid = new ImageButton(this);
+						 
+						//assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
+						
+						 ibVid.setImageBitmap(scaledThumb);
+						 //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+						 ibVid.setLayoutParams(new LayoutParams(400,300));
+						 page.addView(ibVid); 
+						 
+					 } catch (OutOfMemoryError E) {
+						    // release some (all) of the above objects
+								System.out.println("Out of Memory Exception");
+								TextView txtView = new TextView(Reader.this);
+								txtView.setText("Error: cannot load video. Out of memory!");
+								page.addView(txtView);
+							}
 					 
 					//New custom view that adds a bit of spacing to the end of image items
 					View view = new View(this);
@@ -635,17 +667,36 @@ public class Reader extends Activity {
 		    	
 			    //locate the file path where the images are stored on the SD CARD. 
 				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+			    mapImgView = new ImageView(this);
+
+			    if(mapImage != null){
+					try{ 
 						
-			 
-			    BitmapFactory.Options options = new BitmapFactory.Options();
-			    options.inSampleSize = 1;
-			    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
-			    
-			    ibMap = new ImageButton(this);
-			    
-			    ibMap.setImageBitmap(bm);
-				ibMap.setLayoutParams(new LayoutParams(400,250));
-				page.addView(ibMap); 
+						BitmapFactory.Options options = new BitmapFactory.Options();
+					    options.inSampleSize = 2;
+					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
+						Uri imgUri=Uri.parse(myMapImagePath);
+					    mapImgView.setImageURI(imgUri);
+					    //mapImgView.setImageBitmap(bm);
+						mapImgView.setLayoutParams(new LayoutParams(500, 500));	
+						page.addView(mapImgView); 
+						
+						
+						
+						
+			    	} catch (OutOfMemoryError E) {
+				    // release some (all) of the above objects
+						System.out.println("Out of Memory Exception");
+						TextView txtView = new TextView(Reader.this);
+						txtView.setText("Error: cannot load map file. Out of memory!");
+						page.addView(txtView);
+					}
+			    }
+			    else{
+			    	TextView t = new TextView(this);
+			    	t.setText("Error: cannot read map");
+			    	page.addView(t);
+			    }
 				 
 				//New custom view that adds a bit of spacing to the end of image items
 				View view = new View(this);
@@ -655,7 +706,7 @@ public class Reader extends Activity {
 				/*
 				 * Differentiate between which Listener was pressed by comparing the View reference.
 				 */
-				ibMap.setOnClickListener(new OnClickListener() {
+				mapImgView.setOnClickListener(new OnClickListener() {
 		             @Override
 		             public void onClick(View v) {
 		            	 
@@ -682,8 +733,10 @@ public class Reader extends Activity {
 		     */
 		    public void displayWebBundle(final String filename, final String url, final String itemKey, final LinearLayout page){
 		    	
-			 	ImageButton thumb = new ImageButton(this);
-			 	thumb.setLayoutParams(new LayoutParams(400, 250));
+			 	//ImageButton thumb = new ImageButton(this);
+			 	Button thumb = new Button(this);
+		    	thumb.setLayoutParams(new LayoutParams(400, 250));
+			 	thumb.setText("WEB BUNDLE");
 			 	page.addView(thumb);
 			 	
 			 	//New custom view that adds a bit of spacing to the end of image items
@@ -748,9 +801,15 @@ public class Reader extends Activity {
 			//	ArrayList<Book> parsedExampleDataSet = myExampleHandler.getParsedData();
 			//  Book parsedExampleDataSet = myExampleHandler.getParsedData();
 				Book book = myExampleHandler.getParsedData();
-				
-				inLine.append(book.toString());
-				
+				try{
+				inLine.append(book.toString());	
+				}
+				catch(NullPointerException npe){
+					System.out.println("Null pointer exception has been caught");
+					TextView textView = new TextView(Reader.this);
+					textView.setText("Error: Null Pointer Exception");
+					setContentView(textView);
+				}
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
 				
 				page1 = (ArrayList<Point>)book.getPage1();
@@ -764,24 +823,24 @@ public class Reader extends Activity {
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	Geometry geom = item.getGeometry();
+		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page1Data.add(data);
 		        	page1Type.add(type);
 		        	page1Url.add(url);
 		        	page1Keys.add(itemKey);
-		        	page1Geometries.add(geom);
+		        	//page1Geometries.add(geomCo);
 				}
 				for(Point item: page2) {
 		        	String data = item.getData();
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	Geometry geom = item.getGeometry();
+		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page2Data.add(data);
 		        	page2Type.add(type);
 		        	page2Url.add(url);
 		        	page2Keys.add(itemKey);
-		        	page2Geometries.add(geom);
+		        	//page2Geometries.add(geomCo);
 
 				}
 				for(Point item: page3) {
@@ -789,12 +848,13 @@ public class Reader extends Activity {
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	Geometry geom = item.getGeometry();
+		        	//Geometry geom = item.getGeometryCoordinates();
+		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page3Data.add(data);
 		        	page3Type.add(type);
 		        	page3Url.add(url);
 		        	page3Keys.add(itemKey);
-		        	page3Geometries.add(geom);
+		        	//page3Geometries.add(geomCo);
 
 				}
 				
@@ -859,6 +919,36 @@ public class Reader extends Activity {
 				 
 			 }
 		*/	  
+			 
+			//decodes image and scales it to reduce memory consumption
+			 private Bitmap decodeFile(File f){
+			     try {
+			         //Decode image size
+			         BitmapFactory.Options o = new BitmapFactory.Options();
+			         o.inJustDecodeBounds = true;
+			         BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+			         //The new size we want to scale to
+			         final int REQUIRED_SIZE=70;
+
+			         //Find the correct scale value. It should be the power of 2.
+			         int width_tmp=o.outWidth, height_tmp=o.outHeight;
+			         int scale=1;
+			         while(true){
+			             if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+			                 break;
+			             width_tmp/=2;
+			             height_tmp/=2;
+			             scale*=2;
+			         }
+
+			         //Decode with inSampleSize
+			         BitmapFactory.Options o2 = new BitmapFactory.Options();
+			         o2.inSampleSize=scale;
+			         return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+			     } catch (FileNotFoundException e) {}
+			     return null;
+			 }
 			 
 	
 			

@@ -20,7 +20,8 @@ import java.util.zip.ZipOutputStream;
 public class Decompress { 
   private String _zipFile; 
   private String _location; 
- 
+ private File fIn;
+ private File fOut;
   
   
   
@@ -29,7 +30,20 @@ public class Decompress {
     _zipFile = zipFile; 
     _location = location;//"sdcard/placebooks/unzipped"; 
     
-       //unzipFolder(_zipFile, _location);
+      // unzipFolder(_zipFile, _location);
+   /* fIn = new File(zipFile);
+    fOut = new File(location);
+    
+    try {
+	    unzip(fIn, fOut);
+    }catch (ZipException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+		} catch (IOException e) {
+		        // TODO Auto-generated catch block
+		        e.printStackTrace();
+		}
+*/    
 
 	    try {
 	        //unzip(_zipFile);
@@ -41,9 +55,9 @@ public class Decompress {
 			        // TODO Auto-generated catch block
 			        e.printStackTrace();
 			}    
-     
+       
   	} 
-  
+
   
   
   /*
@@ -224,7 +238,59 @@ public class Decompress {
 	    	  e.printStackTrace();
 	      }
   }
-*/
+  
+  */
+  
+  
+  /*
+  
+  public static void unzip(File file, File targetDir) throws ZipException,
+  IOException {
+	
+	targetDir.mkdirs();
+	ZipFile zipFile = new ZipFile(file);
+	try {
+	  Enumeration<? extends ZipEntry> entries = zipFile.entries();
+	  while (entries.hasMoreElements()) {
+	      ZipEntry entry = entries.nextElement();
+	      File targetFile = new File(targetDir, entry.getName());
+	      if (entry.isDirectory()) {
+	          targetFile.mkdirs();
+	      } else {
+	          InputStream input = zipFile.getInputStream(entry);
+	          try {
+	              OutputStream output = new FileOutputStream(targetFile);
+	              try {
+	                  copy(input, output);
+	              } finally {
+	                  output.close();
+	              }
+	          } finally {
+	              input.close();
+	          }
+	      }
+	  }
+	} finally {
+	  zipFile.close();
+	}
+}
+
+private static void copy(InputStream input, OutputStream output) 
+  throws IOException {
+byte[] buffer = new byte[4096];
+int size;
+while ((size = input.read(buffer)) != -1)
+  output.write(buffer, 0, size);
+}
+  
+  
+  */
+  
+  
+  
+  
+  
+
 
   
 } 
