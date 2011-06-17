@@ -274,26 +274,28 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_textGeometry = true;
 				 geometry = new StringBuilder();
 			 }
-			 if(this.in_placebooksImage){
+			 else if(this.in_placebooksImage){
 				 this.in_imageGeometry = true;
 				 geometry = new StringBuilder();
 			 }
-			 if(this.in_placebooksVideo){
+			 else if(this.in_placebooksVideo){
 				 this.in_videoGeometry = true;
 				 geometry = new StringBuilder();
 			 }
-			 if(this.in_placebooksAudio){
+			 else if(this.in_placebooksAudio){
 				 this.in_audioGeometry = true;
 				 geometry = new StringBuilder();
 			 }
-			 if(this.in_placebooksMapImage){
+			 
+			 else if(this.in_placebooksMapImage){
 				 this.in_mapImageGeometry = true;
 				 geometry = new StringBuilder();
 			 }
-			 if(this.in_placebooksWebBundle){
+			 else if(this.in_placebooksWebBundle){
 				 this.in_webBundleGeometry = true;
 				 geometry = new StringBuilder();
 			 }
+			 
 		 } //end of else if geometry
 		 
 			  	
@@ -579,7 +581,7 @@ public class XMLHandler extends DefaultHandler {
 		 
 		 //image item
 		 
-		 else if (this.in_imageGeometry){
+		 if (this.in_imageGeometry){
 			 geometry.append(ch, start, length).toString();
 		 }
 		 else if(this.in_imageUrl){

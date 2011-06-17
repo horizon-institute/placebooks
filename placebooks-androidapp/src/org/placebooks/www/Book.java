@@ -1,10 +1,12 @@
 package org.placebooks.www;
 
 import java.util.ArrayList;
+import java.util.*;
 //import java.util.Iterator;
 //import java.util.ListIterator;
 import java.util.Collections;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Coordinate;
 
 
 //A book is an array list of items (items can be images, video, audio, text or gps trails)
@@ -91,8 +93,10 @@ public class Book {
 		int order = item.getOrder();
 		String textKey = item.getKey();
 		Geometry geom = item.getGeometry();
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 
-  	  	Point pItems = new Point(text, panel, order, type, textKey, geom);
+  	  	//Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
+  	  	Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
 
 		
 		//add to page 1
@@ -120,9 +124,12 @@ public class Book {
 		//String url = item.getURL();
 		String imageKey = item.getKey();
 		Geometry geom = item.getGeometry();
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 
 		
-  	  	Point pItems = new Point(filename, panel, order, type, imageKey, geom);//, url
+  	  	//Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
+  	  	Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
+
 
 		//add to page 1
 		if(panel == 0){
@@ -146,9 +153,11 @@ public class Book {
 		int order = item.getOrder();
 		String videoKey = item.getKey();
 		Geometry geom = item.getGeometry();
-
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 		
-  	  	Point pItems = new Point(filename, panel, order, type, videoKey, geom);
+  	  	//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
+  	  	Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
+
 		
 		//add to page 1
 		if(panel == 0){
@@ -174,9 +183,12 @@ public class Book {
 		int order = item.getOrder();
 		String audioKey = item.getKey();
 		Geometry geom = item.getGeometry();
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 
 		
-  	  	Point pItems = new Point(filename, panel, order, type, audioKey, geom);
+  	  	//Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
+  	  	Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
+
 		
 		//add to page 1
 		if(panel == 0){
@@ -203,8 +215,12 @@ public class Book {
 		int order = item.getOrder();
 		String mapKey = item.getKey();
 		Geometry geom = item.getGeometry();
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+
 		
-		Point pItems = new Point(filename, panel, order, type, mapKey, geom);
+		//Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
+		Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
+
 		
 		if(panel == 0){
 			page1.add(pItems);
@@ -225,8 +241,10 @@ public class Book {
 		int order = item.getOrder();
 		String wbKey = item.getKey();
 		Geometry geom = item.getGeometry();
-		
-		Point pItems = new Point(filename, panel, order, type, wbKey, geom, url);
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+
+		//Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+		Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
 		
 		if(panel == 0){
 			page1.add(pItems);
