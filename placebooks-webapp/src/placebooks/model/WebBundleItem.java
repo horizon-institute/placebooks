@@ -199,7 +199,7 @@ public class WebBundleItem extends PlaceBookItem
 		try
 		{
 			pm.getTransaction().begin();
-			item = (WebBundleItem) EverytrailHelper.GetExistingItem(this);
+			item = (WebBundleItem) EverytrailHelper.GetExistingItem(this, pm);
 			if(item != null)
 			{
 				

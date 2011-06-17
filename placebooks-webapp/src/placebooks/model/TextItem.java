@@ -100,7 +100,7 @@ public class TextItem extends PlaceBookItem
 		try
 		{
 			pm.getTransaction().begin();
-			item = (TextItem) EverytrailHelper.GetExistingItem(this);
+			item = (TextItem) EverytrailHelper.GetExistingItem(this, pm);
 			if(item != null)
 			{
 				

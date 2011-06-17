@@ -76,8 +76,8 @@ public class PlaceBooksAdminControllerDebug
 
 
 	@RequestMapping(value = "/admin/publish_placebook/{key}",
-					method = RequestMethod.GET)
-	public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+			method = RequestMethod.GET)
+			public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final PlaceBook p = em.find(PlaceBook.class, key);
@@ -85,17 +85,17 @@ public class PlaceBooksAdminControllerDebug
 		em.close();
 
 		log.info("Published PlaceBook, old key = " + key + ", new key = " 
-				 + p_.getKey());
+				+ p_.getKey());
 
 		return new ModelAndView("message", "text", 
-								"Published PlaceBook, new key = " + key);
+				"Published PlaceBook, new key = " + key);
 	}
 
 	@RequestMapping(value = "/admin/add_item/map", 
-					method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")	
-	public ModelAndView addMapImageItem(final HttpServletRequest req, 
-								 		final HttpServletResponse res)
+			method = RequestMethod.POST)
+			@SuppressWarnings("unchecked")	
+			public ModelAndView addMapImageItem(final HttpServletRequest req, 
+					final HttpServletResponse res)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -109,7 +109,7 @@ public class PlaceBooksAdminControllerDebug
 			pm.getTransaction().begin();
 
 			for (final Enumeration<String> params = req.getParameterNames(); 
-				 params.hasMoreElements();)
+			params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
@@ -135,16 +135,16 @@ public class PlaceBooksAdminControllerDebug
 			if (pbi == null || itemData.getOwner() == null) 
 			{ 
 				return new ModelAndView(
-					"message", "text", "Error setting data elements"); 
+						"message", "text", "Error setting data elements"); 
 			}
 
 			pbi.setOwner(itemData.getOwner());
 			pbi.setGeometry(itemData.getGeometry());
 			pbi.setSourceURL(itemData.getSourceURL());
 			((MapImageItem)pbi).setPath(
-				(TileHelper.getMap(pbi.getGeometry())).getPath()
+					(TileHelper.getMap(pbi.getGeometry())).getPath()
 			);
-			
+
 			pm.getTransaction().commit();
 
 		}		
@@ -168,8 +168,8 @@ public class PlaceBooksAdminControllerDebug
 
 
 	@RequestMapping(value = "/admin/debug/print_placebooks", 
-					method = RequestMethod.GET)
-	public ModelAndView printPlaceBooks()
+			method = RequestMethod.GET)
+			public ModelAndView printPlaceBooks()
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -195,7 +195,7 @@ public class PlaceBooksAdminControllerDebug
 		else
 		{
 			mav = new ModelAndView("message", "text", 
-								   "Error listing PlaceBooks");
+			"Error listing PlaceBooks");
 		}
 
 		for (final PlaceBook pb : pbs)
@@ -203,7 +203,7 @@ public class PlaceBooksAdminControllerDebug
 			for (final Entry<String, String> e : pb.getMetadata().entrySet())
 			{
 				log.info("entry: '" + e.getKey() + "' => '" + e.getValue() + 
-						 "'");
+				"'");
 			}
 		}
 
@@ -214,9 +214,9 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/add_placebook", 
-					method = RequestMethod.POST)
-	public ModelAndView addPlaceBook(@RequestParam final String owner, 
-									 @RequestParam final String geometry)
+			method = RequestMethod.POST)
+			public ModelAndView addPlaceBook(@RequestParam final String owner, 
+					@RequestParam final String geometry)
 	{
 		if (owner != null)
 		{
@@ -241,7 +241,7 @@ public class PlaceBooksAdminControllerDebug
 			if (owner_ == null) 
 			{ 
 				return new ModelAndView("message", "text", 
-										"User does not exist"); 
+				"User does not exist"); 
 			}
 
 			p.setOwner(owner_);
@@ -271,11 +271,11 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/add_placebookitem_mapping/{type}", 
-					method = RequestMethod.POST)
-	public ModelAndView addPlaceBookItemMapping(
-		@RequestParam final String key, @RequestParam final String mKey,
-		@RequestParam final String mValue, 
-		@PathVariable("type") final String type)
+			method = RequestMethod.POST)
+			public ModelAndView addPlaceBookItemMapping(
+					@RequestParam final String key, @RequestParam final String mKey,
+					@RequestParam final String mValue, 
+					@PathVariable("type") final String type)
 	{
 		if (!type.equals("metadata") && !type.equals("parameter"))
 			return new ModelAndView("message", "text", "Error in type");
@@ -327,10 +327,10 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/add_placebook_metadata", 
-					method = RequestMethod.POST)
-	public ModelAndView addPlaceBookMetadata(@RequestParam final String key, 
-											 @RequestParam final String mKey,
-								 			 @RequestParam final String mValue)
+			method = RequestMethod.POST)
+			public ModelAndView addPlaceBookMetadata(@RequestParam final String key, 
+					@RequestParam final String mKey,
+					@RequestParam final String mValue)
 	{
 		if (key != null && mKey != null && mValue != null)
 		{
@@ -368,9 +368,9 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/add_item/webbundle", 
-					method = RequestMethod.POST)
-	@SuppressWarnings("unchecked")
-	public ModelAndView createWebBundle(final HttpServletRequest req)
+			method = RequestMethod.POST)
+			@SuppressWarnings("unchecked")
+			public ModelAndView createWebBundle(final HttpServletRequest req)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
@@ -383,7 +383,7 @@ public class PlaceBooksAdminControllerDebug
 			pm.getTransaction().begin();
 
 			for (final Enumeration<String> params = req.getParameterNames(); 
-				 params.hasMoreElements();)
+			params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
@@ -400,14 +400,14 @@ public class PlaceBooksAdminControllerDebug
 						try
 						{
 							final PlaceBook p = pm.find(PlaceBook.class, 
-														suffix);
+									suffix);
 							URL sourceURL = null;
 							if (value.length() > 0)
 							{
 								sourceURL = new URL(value);
 							}
 							wbi = new WebBundleItem(null, null, sourceURL, 
-													null, null);
+									null, null);
 							p.addItem(wbi);
 							pm.getTransaction().commit();
 							pm.getTransaction().begin();
@@ -429,7 +429,7 @@ public class PlaceBooksAdminControllerDebug
 			}
 
 			if (wbi == null || (wbi != null && (wbi.getSourceURL() == null || 
-				wbi.getOwner() == null))) 
+					wbi.getOwner() == null))) 
 			{ 
 				throw new Exception("Error setting data elements"); 
 			}
@@ -458,8 +458,8 @@ public class PlaceBooksAdminControllerDebug
 
 
 	@RequestMapping(value = "/admin/delete_placebook/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView deletePlaceBook(@PathVariable("key") final String key)
+			method = RequestMethod.GET)
+			public ModelAndView deletePlaceBook(@PathVariable("key") final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -488,9 +488,9 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/delete_placebookitem/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView deletePlaceBookItem(@PathVariable("key") 
-											final String key)
+			method = RequestMethod.GET)
+			public ModelAndView deletePlaceBookItem(@PathVariable("key") 
+					final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -517,7 +517,7 @@ public class PlaceBooksAdminControllerDebug
 		log.info("Deleted PlaceBookItem " + key);
 
 		return new ModelAndView("message", "text", "Deleted PlaceBookItem: " 
-								+ key);
+				+ key);
 
 	}
 
@@ -536,7 +536,7 @@ public class PlaceBooksAdminControllerDebug
 			pm.getTransaction().begin();
 
 			for (final Enumeration<String> params = req.getParameterNames(); 
-				 params.hasMoreElements();)
+			params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
@@ -565,10 +565,10 @@ public class PlaceBooksAdminControllerDebug
 			}
 
 			if ((pbi != null && ((TextItem) pbi).getText() == null) || 
-				pbi == null || itemData.getOwner() == null) 
+					pbi == null || itemData.getOwner() == null) 
 			{ 
 				return new ModelAndView(
-					"message", "text", "Error setting data elements"); 
+						"message", "text", "Error setting data elements"); 
 			}
 
 			pbi.setOwner(itemData.getOwner());
@@ -592,8 +592,8 @@ public class PlaceBooksAdminControllerDebug
 
 
 	@RequestMapping(value = "/admin/add_item/uploadandcreate", 
-					method = RequestMethod.POST)
-	public ModelAndView uploadFile(final HttpServletRequest req)
+			method = RequestMethod.POST)
+			public ModelAndView uploadFile(final HttpServletRequest req)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
@@ -608,7 +608,7 @@ public class PlaceBooksAdminControllerDebug
 			@SuppressWarnings("unchecked")			
 			final List<FileItem> items = 
 				new ServletFileUpload(new DiskFileItemFactory())
-					.parseRequest(req);
+			.parseRequest(req);
 
 			for (FileItem item : items)
 			{
@@ -644,22 +644,22 @@ public class PlaceBooksAdminControllerDebug
 						reader.close();
 						writer.close();
 						pbi = new GPSTraceItem(null, null, null, 
-											   writer.toString());
+								writer.toString());
 						p.addItem(pbi);
 
 						continue;
 					}
 					else if (!prefix.contentEquals("video") &&
-							 !prefix.contentEquals("audio") && 
-							 !prefix.contentEquals("image"))
+							!prefix.contentEquals("audio") && 
+							!prefix.contentEquals("image"))
 					{
 						throw new Exception("Unsupported file type");
 					}
 
 					final String path = 
 						PropertiesSingleton
-							.get(this.getClass().getClassLoader())
-							.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+						.get(this.getClass().getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 					if (!new File(path).exists() && !new File(path).mkdirs()) 
 					{
@@ -671,16 +671,16 @@ public class PlaceBooksAdminControllerDebug
 					final int extIdx = item.getName().lastIndexOf(".");
 					final String ext = 
 						item.getName().substring(extIdx + 1, 
-												 item.getName().length());
+								item.getName().length());
 
 					if (prefix.contentEquals("video"))
 					{
 						int maxSize = Integer.parseInt(
-							PropertiesSingleton
-							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								PropertiesSingleton
+								.get(PlaceBooksAdminHelper.class.getClassLoader())
 								.getProperty(
-									PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
-									"20"
+										PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
+										"20"
 								)
 						);
 						if ((item.getSize() / MEGABYTE) > maxSize)
@@ -691,18 +691,18 @@ public class PlaceBooksAdminControllerDebug
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
 						((VideoItem) pbi).setPath(path + "/" + pbi.getKey() 
-												   + "." + ext);
+								+ "." + ext);
 
 						file = new File(((VideoItem) pbi).getPath());
 					}
 					else if (prefix.contentEquals("audio"))
 					{
 						int maxSize = Integer.parseInt(
-							PropertiesSingleton
-							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								PropertiesSingleton
+								.get(PlaceBooksAdminHelper.class.getClassLoader())
 								.getProperty(
-									PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, 
-									"10"
+										PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, 
+										"10"
 								)
 						);
 						if ((item.getSize() / MEGABYTE) > maxSize)
@@ -713,18 +713,18 @@ public class PlaceBooksAdminControllerDebug
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
 						((AudioItem) pbi).setPath(path + "/" + pbi.getKey() 
-												   + "." + ext);
+								+ "." + ext);
 
 						file = new File(((AudioItem) pbi).getPath());
 					}
 					else if (prefix.contentEquals("image"))
 					{
 						int maxSize = Integer.parseInt(
-							PropertiesSingleton
-							.get(PlaceBooksAdminHelper.class.getClassLoader())
+								PropertiesSingleton
+								.get(PlaceBooksAdminHelper.class.getClassLoader())
 								.getProperty(
-									PropertiesSingleton.IDEN_IMAGE_MAX_SIZE, 
-									"1"
+										PropertiesSingleton.IDEN_IMAGE_MAX_SIZE, 
+										"1"
 								)
 						);
 						if ((item.getSize() / MEGABYTE) > maxSize)
@@ -735,7 +735,7 @@ public class PlaceBooksAdminControllerDebug
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
 						((ImageItem)pbi).setPath(path + "/" + pbi.getKey()
-												  + "." + ext);
+								+ "." + ext);
 						file = new File(((ImageItem)pbi).getPath());
 					}
 
@@ -750,7 +750,7 @@ public class PlaceBooksAdminControllerDebug
 					input.close();
 
 					log.info("Wrote " + prefix + " file " 
-							 + file.getAbsolutePath());
+							+ file.getAbsolutePath());
 
 				}
 
@@ -794,11 +794,11 @@ public class PlaceBooksAdminControllerDebug
 		EntityManager entityManager = EMFSingleton.getEntityManager();
 		User testUser = UserManager.getCurrentUser(entityManager);
 		LoginDetails details = testUser.getLoginDetails("Everytrail");
-		
+
 		EverytrailLoginResponse loginResponse = 
 			EverytrailHelper.UserLogin(details.getUsername(), 
-									   details.getPassword());
-		
+					details.getPassword());
+
 		EverytrailTripsResponse trips = 
 			EverytrailHelper.Trips(loginResponse.getValue());
 
@@ -809,66 +809,32 @@ public class PlaceBooksAdminControllerDebug
 			log.debug("Getting tracks for trip: " + tripId);
 			EverytrailTracksResponse tracks = 
 				EverytrailHelper.Tracks(tripId, details.getUsername(), 
-										details.getPassword());
+						details.getPassword());
 			for (Node track : tracks.getTracks())
 			{
-															
+
 				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
 				ItemFactory.toGPSTraceItem(testUser, track, gpsItem);
-				try
-				{
-					entityManager.getTransaction().begin();
-					entityManager.persist(gpsItem);
-					entityManager.getTransaction().commit();
-				}
-				catch (final Throwable e)
-				{
-					log.error(e.getMessage(), e);
-				}
-				finally
-				{
-					if (entityManager.getTransaction().isActive())
-					{
-						entityManager.getTransaction().rollback();
-						log.error("Rolling current persist transaction back");
-					}
-				}
+				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
 		}
 
 		EverytrailPicturesResponse picturesResponse = 	
 			EverytrailHelper.Pictures(loginResponse.getValue());
-		
+
 		Vector<Node> pictures = picturesResponse.getPictures();
-		
-		try 
+
+		for (Node picture : pictures)
 		{
-			for (Node picture : pictures)
-			{
-				entityManager.getTransaction().begin();
-				ImageItem imageItem = new ImageItem(testUser, null, null, null);
-				entityManager.persist(imageItem);
-				entityManager.getTransaction().commit();
-				log.error("************** imageItem key = " + imageItem.getKey());
-				entityManager.getTransaction().begin();
-				ItemFactory.toImageItem(testUser, picture, imageItem);
-				entityManager.getTransaction().commit();
-			}
-		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				log.error("Rolling current persist transaction back");
-			}
-			entityManager.close();
+			ImageItem imageItem = new ImageItem(testUser, null, null, null);
+			ItemFactory.toImageItem(testUser, picture, imageItem);
+			imageItem = (ImageItem) imageItem.saveUpdatedItem();
 		}
 	}
-	
+
 	@RequestMapping(value = "/admin/delete/all_placebooks", 
-					method = RequestMethod.GET)
-	public ModelAndView deleteAllPlaceBook()
+			method = RequestMethod.GET)
+			public ModelAndView deleteAllPlaceBook()
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -907,7 +873,7 @@ public class PlaceBooksAdminControllerDebug
 	{
 		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
 		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
-																			req.getParameter("password"));
+				req.getParameter("password"));
 		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: "
 				+ response.getValue() + "<br/>");
 	}
@@ -918,14 +884,14 @@ public class PlaceBooksAdminControllerDebug
 		InitializeDatabase.main(null);
 		return null;
 	}
-	
+
 	@RequestMapping(value = "/admin/test/everytrail/pictures", method = RequestMethod.POST)
 	public ModelAndView testEverytrailPictures(final HttpServletRequest req)
 	{
 		ModelAndView returnView;
 
 		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
-																			req.getParameter("password"));
+				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
@@ -948,7 +914,7 @@ public class PlaceBooksAdminControllerDebug
 		ModelAndView returnView;
 
 		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
-																			req.getParameter("password"));
+				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
