@@ -154,9 +154,9 @@ public class WebBundleItem extends PlaceBookItem
 	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
 	@Override
-	public void update(PlaceBookItem item)
+	public void updateItem(PlaceBookItem item)
 	{
-		super.update(item);
+		super.updateItem(item);
 		if(item instanceof WebBundleItem)
 		{
 			MediaItem updatedItem = (MediaItem) item;

@@ -41,9 +41,9 @@ public class TextItem extends PlaceBookItem
 	}
 
 	@Override
-	public void update(PlaceBookItem item)
+	public void updateItem(PlaceBookItem item)
 	{
-		super.update(item);
+		super.updateItem(item);
 		if(item instanceof TextItem)
 		{
 			setText(((TextItem) item).getText());

@@ -12,11 +12,14 @@
 }
 
 .listItem {
-	border: 1px solid #555;
+	font-family: Verdana, Arial, sans-serif;
+	margin: 2px 5px;
+	padding: 3px 5px;
+	border-radius: 5px;
 }
 
 .listItem:HOVER {
-	background: #555;	
+	background: #CCC;	
 }
 
 .textitem {

@@ -200,25 +200,34 @@ public abstract class MediaItem extends PlaceBookItem
 		entityManager.merge(this);
 		entityManager.close();
 	}
+
 	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
 	 */
 	@Override
-	public void update(final PlaceBookItem itemWithNewData) 
+	public void updateItem(final PlaceBookItem item) 
 	{
-		super.update(itemWithNewData);
-		if(itemWithNewData instanceof MediaItem)
+		super.updateItem(item);
+		if(item instanceof MediaItem)
 		{
-			MediaItem mediaItemWithNewData = (MediaItem) itemWithNewData;
+			MediaItem mediaItem = (MediaItem) item;
 			// Overwrite existing file by saving new file in the existing folder with the 
 			// existing name 
 			// Check it exists first though
-			log.debug("Looking for " + mediaItemWithNewData.getPath());
-			if (new File(mediaItemWithNewData.getPath()).exists())
+			if(mediaItem.getPath() == null)
+			{
+				return;
+			}
+			if(mediaItem.getPath().equals(getPath()))
+			{
+				return;
+			}
+			log.debug("Looking for " + mediaItem.getPath());			
+			if (new File(mediaItem.getPath()).exists())
 			{
 				if (new File(this.getPath()).exists() || new File(this.getPath()).mkdirs())
 				{
-					final File dataFile = new File(mediaItemWithNewData.getPath());
+					final File dataFile = new File(mediaItem.getPath());
 					FileInputStream fis;
 					try
 					{
@@ -234,7 +243,6 @@ public abstract class MediaItem extends PlaceBookItem
 			}
 		}
 	}
-
 	
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)

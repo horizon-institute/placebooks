@@ -274,9 +274,16 @@ public class PlaceBookCanvas extends Composite
 			addFolderItem(root, new PalettePlaceBookItem(items.get(index)));
 		}
 
-		addFolderItem(root, new PaletteFolderItem("Test", root));
+		//addFolderItem(root, new PaletteFolderItem("Test", root));
 		
 		setPaletteFolder(root);
+	}
+	
+	private void hideGUI()
+	{
+		canvas.getElement().getStyle().setTop(0, Unit.PX);
+		canvas.getElement().getStyle().setRight(0, Unit.PX);
+		palette.getElement().getStyle().setDisplay(Display.NONE);
 	}
 
 	public void updatePlaceBook(final PlaceBook newPlacebook)

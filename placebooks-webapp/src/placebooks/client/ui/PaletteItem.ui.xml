@@ -23,6 +23,7 @@
 			background: #333;
 			color: #FFF;
 			border-radius: 10px;
+			cursor: default;
 		}
 	</ui:style>
 

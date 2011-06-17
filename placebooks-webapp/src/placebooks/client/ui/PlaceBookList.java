@@ -27,21 +27,25 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			// Value can be null, so do a null check..
 			if (value == null) { return; }
 
-			sb.appendHtmlConstant("<div style=\"" + placebooks.client.resources.Resources.INSTANCE.style().listItem()
+			sb.appendHtmlConstant("<div class=\"" + placebooks.client.resources.Resources.INSTANCE.style().listItem()
 					+ "\">");
 
 			// Add the name and address.
 			sb.appendHtmlConstant("<div>");
 			if (value.getTitle() == null)
 			{
-				sb.appendEscaped("No Title");
+				sb.appendEscaped("Edit PlaceBook: No Title");
 			}
-			else
+			else if(value.getKey().equals("new"))
 			{
 				sb.appendEscaped(value.getTitle());
 			}
+			else
+			{
+				sb.appendEscaped("Edit PlaceBook: " + value.getTitle());
+			}
 			sb.appendHtmlConstant("</div>");
-			sb.appendHtmlConstant("<div>");
+			sb.appendHtmlConstant("<div><small style=\"color: #333;\">");
 			if (value.getDescription() == null)
 			{
 				sb.appendEscaped("No Description");
@@ -51,7 +55,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 				sb.appendEscaped(value.getDescription());
 			}
 
-			sb.appendHtmlConstant("</div>");
+			sb.appendHtmlConstant("</small></div>");
 		}
 	}
 
@@ -69,7 +73,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 	static
 	{
 		newPlaceBook = PlaceBookEntry
-				.parse("{\"key\": \"new\", \"title\": \"New PlaceBook\", \"description\": \"Start a new placebook\"}");
+				.parse("{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
 	}
 
 	public PlaceBookList()

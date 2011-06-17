@@ -344,18 +344,28 @@ public abstract class PlaceBookItem
 		return null;
 	}
 
-	/**
-	 * Implementation of 'update' for placebook item superclass to update all base fields.
-	 * This should be called from descendant classes in their implementation of 'update' 
-	 * @param item
-	 */
-	public void update(PlaceBookItem item)
+	public final void update(PlaceBookItem item)
 	{
 		if(this == item)
 		{
 			return;
 		}
 		
+		if(item == null)
+		{
+			throw new NullPointerException();
+		}
+		
+		updateItem(item);	
+	}
+
+	/**
+	 * Implementation of 'update' for placebook item superclass to update all base fields.
+	 * This should be called from descendant classes in their implementation of 'update' 
+	 * @param item
+	 */
+	protected void updateItem(PlaceBookItem item)
+	{
 		parameters.clear();
 		for(Entry<String, Integer> entry: item.getParameters().entrySet())
 		{
@@ -382,7 +392,7 @@ public abstract class PlaceBookItem
 		if(item.getTimestamp() == null)
 		{
 			item.setTimestamp(new Date());
-		}		
+		}	
 	}
 	
 	public PlaceBookItemSearchIndex getSearchIndex()

@@ -316,6 +316,7 @@ public class PlaceBookItemFrame extends Composite
 		{
 			// TODO Handle null key
 			final MapWidget panel = new MapWidget(item.getKey(), canvas);
+			panel.setWidth("100%");
 			panel.setHeight("100%");
 			menuItems.add(setItemSourceURL);
 			menuItems.add(upload);
