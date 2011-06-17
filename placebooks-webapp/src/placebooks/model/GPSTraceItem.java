@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.net.URL;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.Lob;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,6 +17,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import placebooks.controller.EMFSingleton;
+import placebooks.controller.EverytrailHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -113,5 +117,59 @@ public class GPSTraceItem extends PlaceBookItem
 	public void setTrace(final String trace)
 	{
 		this.trace = trace;
+	}
+
+	@Override
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 */
+	public void update(PlaceBookItem item)
+	{
+		super.update(item);
+		if(item instanceof GPSTraceItem)
+		{
+			setTrace( ( (GPSTraceItem) item).getTrace());
+		}
+	}
+
+
+	
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public PlaceBookItem saveUpdatedItem()
+	{
+		PlaceBookItem returnItem = this;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		GPSTraceItem item;
+		try
+		{
+			pm.getTransaction().begin();
+			item = (GPSTraceItem) EverytrailHelper.GetExistingItem(this, pm);
+			if(item != null)
+			{
+				
+				log.debug("Existing item found so updating");
+				item.update(this);
+				returnItem = item;
+				pm.flush();
+			}
+			else
+			{
+				log.debug("No existing item found so creating new");
+				pm.persist(this);
+			}
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+		return returnItem;
 	}
 }

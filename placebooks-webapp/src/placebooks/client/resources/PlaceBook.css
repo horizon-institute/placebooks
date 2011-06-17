@@ -1,3 +1,5 @@
+@page { size: landscape; }
+
 .panel {
 	position: absolute;
 	border: 1px solid #000;
@@ -5,8 +7,6 @@
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
 	box-shadow: 3px 3px 6px #666;
-	width: 30%;
-	height: 90%;
 	top: 40px;
 	bottom: 20px;
 }
@@ -62,19 +62,15 @@ img {
 
 .panelleft {
 	border-right: 0px;
-	left: 5%;
 }
 
 .panelright {
 	border-left: 1px dashed #CCC;
-	right: 5%;
 }
 
 .panelcenter {
 	border-right: 0px;
 	border-left: 1px dashed #CCC;
-	left: 35%;
-	right: 35%;
 }
 
 .dragImage {

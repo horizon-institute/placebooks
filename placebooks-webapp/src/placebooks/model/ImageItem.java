@@ -35,4 +35,11 @@ public class ImageItem extends MediaItem
 	{
 		return ImageItem.class.getName();
 	}
+	
+	@Override 
+	public void update(final PlaceBookItem item)
+	{
+		super.update((MediaItem) item);
+	}
+	
 }

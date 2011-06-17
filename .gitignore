@@ -8,3 +8,5 @@ datanucleus.log
 *.bak
 *.class
 build.properties
+.project
+.gwt

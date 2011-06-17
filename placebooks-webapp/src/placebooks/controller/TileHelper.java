@@ -1,36 +1,25 @@
 package placebooks.controller;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-
-import java.net.URLConnection;
-import java.net.URL;
-
-import java.awt.Image;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-
-import org.apache.log4j.Logger;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.imageio.ImageIO;
 
-import uk.me.jstott.jcoord.OSRef;
-import uk.me.jstott.jcoord.LatLng;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.apache.log4j.Logger;
 
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.OSRef;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 public final class TileHelper
 {
@@ -193,11 +182,11 @@ public final class TileHelper
 		final int eBlocks = (int)Math.ceil(
 									(Math.abs(bbox[1].getEasting() 
 									 - bbox[0].getEasting())
-								 	) / (double)incX);
+								 	) / incX);
 		final int nBlocks = (int)Math.ceil(
 									(Math.abs(bbox[1].getNorthing() 
 									   - bbox[0].getNorthing())
-									) / (double)incY);
+									) / incY);
 		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
 
 		final BufferedImage buf = 

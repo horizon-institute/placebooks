@@ -359,8 +359,9 @@ public class PlaceBooksAdminController
 	{
 		log.info("Save Placebook: " + json);
 		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);		
-		final EntityManager manager = EMFSingleton.getEntityManager();				
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User currentUser = UserManager.getCurrentUser(manager);		
 		manager.getTransaction().begin();
 		try
 		{
@@ -430,7 +431,7 @@ public class PlaceBooksAdminController
 				
 				if(item.getOwner() == null)
 				{
-					item.setOwner(UserManager.getCurrentUser(manager));
+					item.setOwner(currentUser);
 				}
 				
 				item.update(newItem);
@@ -440,7 +441,7 @@ public class PlaceBooksAdminController
 
 			if(placebook.getOwner() == null)
 			{
-				placebook.setOwner(UserManager.getCurrentUser(manager));
+				placebook.setOwner(currentUser);
 			}
 			
 			if(placebook.getTimestamp() == null)

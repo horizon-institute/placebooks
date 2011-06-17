@@ -25,7 +25,11 @@ public interface Resources extends ClientBundle
 
 	ImageResource progress();
 	
-	ImageResource progress2();	
+	ImageResource progress2();
+	
+	ImageResource zoom_in();
+	
+	ImageResource zoom_out();	
 
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();

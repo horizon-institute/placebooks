@@ -2,17 +2,23 @@ package placebooks.model;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import placebooks.controller.EMFSingleton;
+import placebooks.controller.EverytrailHelper;
 import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -144,5 +150,80 @@ public class WebBundleItem extends PlaceBookItem
 				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
 	}
 
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 */
+	@Override
+	public void update(PlaceBookItem item)
+	{
+		super.update(item);
+		if(item instanceof WebBundleItem)
+		{
+			MediaItem updatedItem = (MediaItem) item;
+			//Overwrite existing file by saving new file in the existing folder with the existing name
+			// Check it exists first though
+			if (new File(updatedItem.getPath()).exists())
+			{
+				if (new File(this.getWebBundlePath()).exists() || new File(this.getWebBundlePath()).mkdirs())
+				{
+					final File dataFile = new File(updatedItem.getPath());
+					FileInputStream fis;
+					FileOutputStream fos;
+					try
+					{
+						fis = new FileInputStream(dataFile);
+						fos = new FileOutputStream(new File(this.getWebBundlePath()).getName());
+						IOUtils.copy(fis, fos);
+						fis.close();
+						fos.close();
+					}
+					catch (Exception e)
+					{
+						log.error(e.getMessage());
+					}
+				}
+			}
+		}
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public PlaceBookItem saveUpdatedItem()
+	{
+		PlaceBookItem returnItem = this;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		WebBundleItem item;
+		try
+		{
+			pm.getTransaction().begin();
+			item = (WebBundleItem) EverytrailHelper.GetExistingItem(this, pm);
+			if(item != null)
+			{
+				
+				item.update(this);
+				pm.persist(item);
+				returnItem = item;
+				log.debug("Existing item found so updating");
+			}
+			else
+			{
+				log.debug("No existing item found so creating new");
+				pm.persist(this);
+			}
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+		return returnItem;
+	}
 
 }

@@ -8,4 +8,9 @@ public class User extends JavaScriptObject
 	{
 	}
 
+	public final native String getName()
+	/*-{
+		return this.name;
+	}-*/;
+
 }
