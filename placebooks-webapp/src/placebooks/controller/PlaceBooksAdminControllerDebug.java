@@ -792,15 +792,14 @@ public class PlaceBooksAdminControllerDebug
 	public void getEverytrailData()
 	{
 		EntityManager entityManager = EMFSingleton.getEntityManager();
-		User testUser = UserManager.getCurrentUser(entityManager);
-		LoginDetails details = testUser.getLoginDetails("Everytrail");
+		User testUser = UserManager.getUser(entityManager, "everytrail_test@live.co.uk");
+		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
 		EverytrailLoginResponse loginResponse = 
 			EverytrailHelper.UserLogin(details.getUsername(), 
 					details.getPassword());
 
-		EverytrailTripsResponse trips = 
-			EverytrailHelper.Trips(loginResponse.getValue());
+		EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
 
 		for (Node trip : trips.getTrips())
 		{
@@ -829,7 +828,7 @@ public class PlaceBooksAdminControllerDebug
 			ImageItem imageItem = new ImageItem(testUser, null, null, null);
 			ItemFactory.toImageItem(testUser, picture, imageItem);
 			imageItem = (ImageItem) imageItem.saveUpdatedItem();
-		}
+		}	
 	}
 
 	@RequestMapping(value = "/admin/delete/all_placebooks", 

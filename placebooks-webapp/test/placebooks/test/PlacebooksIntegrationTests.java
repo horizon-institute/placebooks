@@ -20,6 +20,7 @@ import placebooks.model.PlaceBookItem;
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
+import placebooks.controller.PlaceBooksAdminControllerDebug;
 import placebooks.controller.UserManager;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
@@ -135,44 +136,8 @@ public class PlacebooksIntegrationTests
 	@Test
 	public void testGetEverytrailData()
 	{
-		EntityManager entityManager = EMFSingleton.getEntityManager();
-		User testUser = UserManager.getUser(entityManager, "everytrail_test@live.co.uk");
-		LoginDetails details = testUser.getLoginDetails("Everytrail");		
-
-		EverytrailLoginResponse loginResponse = 
-			EverytrailHelper.UserLogin(details.getUsername(), 
-					details.getPassword());
-
-		EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
-
-		for (Node trip : trips.getTrips())
-		{
-			final NamedNodeMap tripAttr = trip.getAttributes();
-			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
-			log.debug("Getting tracks for trip: " + tripId);
-			EverytrailTracksResponse tracks = 
-				EverytrailHelper.Tracks(tripId, details.getUsername(), 
-						details.getPassword());
-			for (Node track : tracks.getTracks())
-			{
-
-				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
-				ItemFactory.toGPSTraceItem(testUser, track, gpsItem);
-				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
-			}
-		}
-
-		EverytrailPicturesResponse picturesResponse = 	
-			EverytrailHelper.Pictures(loginResponse.getValue());
-
-		Vector<Node> pictures = picturesResponse.getPictures();
-
-		for (Node picture : pictures)
-		{
-			ImageItem imageItem = new ImageItem(testUser, null, null, null);
-			ItemFactory.toImageItem(testUser, picture, imageItem);
-			imageItem = (ImageItem) imageItem.saveUpdatedItem();
-		}	
+		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
+		pacd.getEverytrailData();
 	}
 
 }

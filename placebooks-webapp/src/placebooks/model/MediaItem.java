@@ -233,6 +233,8 @@ public abstract class MediaItem extends PlaceBookItem
 
 				log.debug("Existing item found so updating");
 				item.update(this);
+				log.debug("Deleting file: " + this.getPath());
+				this.deleteItemData();
 				returnItem = item;
 				pm.flush();
 			}
