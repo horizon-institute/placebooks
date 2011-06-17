@@ -106,7 +106,7 @@ public class Shelf extends ListActivity {
 			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
 		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
-			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time.");
+			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time. If the shelf is blank then your memory card does not have your shelf file. Please try again with Internet access.");
 			        ll.addView(tv);
 			        
 			        
@@ -176,15 +176,13 @@ public class Shelf extends ListActivity {
 					        		 * call to viewPlacebook();
 					        		 */
 					        		Intent intent = new Intent();
-								    //overridePendingTransition(0, 0);
-								    //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
 					        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
 					        		
 					        		intent.putExtra("packagePath", item.getPackagePath());
-								    //overridePendingTransition(0, 0);
 					        		startActivity(intent);	
 					        		
+					    	  
 
 							     } 
 							   };
