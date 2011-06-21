@@ -9,14 +9,11 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import placebooks.model.PlaceBookItem;
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
@@ -25,7 +22,6 @@ import placebooks.controller.UserManager;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTracksResponse;
-import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
@@ -37,8 +33,8 @@ import placebooks.model.User;
  */
 public class PlacebooksIntegrationTests
 {
-	private static final Logger log = 
-		Logger.getLogger(PlacebooksIntegrationTests.class.getName());
+//	private static final Logger log = 
+//		Logger.getLogger(PlacebooksIntegrationTests.class.getName());
 
 	final EntityManager pm = EMFSingleton.getEntityManager();
 
@@ -92,7 +88,7 @@ public class PlacebooksIntegrationTests
 		//assertEquals(479, imageItem.getImage().getHeight());
 
 		ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
-		ImageItem saved = (ImageItem) imageItem.saveUpdatedItem();
+		/*ImageItem saved = (ImageItem)*/ imageItem.saveUpdatedItem();
 	}
 
 	@Test
@@ -117,7 +113,7 @@ public class PlacebooksIntegrationTests
 
 		Node trackToUse = tracksResponse.getTracks().lastElement();
 		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace);
-		GPSTraceItem saved = (GPSTraceItem) gpsTrace.saveUpdatedItem();
+		/*GPSTraceItem saved = (GPSTraceItem)*/ gpsTrace.saveUpdatedItem();
 	}
 
 	/*	@Test

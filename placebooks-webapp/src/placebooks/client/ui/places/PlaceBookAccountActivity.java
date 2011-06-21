@@ -14,11 +14,11 @@ import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
-public class PlaceBookListActivity extends AbstractActivity
+public class PlaceBookAccountActivity extends AbstractActivity
 {
 	private final PlaceController controller;
 	
-	public PlaceBookListActivity(PlaceController controller)
+	public PlaceBookAccountActivity(PlaceController controller)
 	{
 		super();
 		this.controller = controller;
@@ -34,7 +34,7 @@ public class PlaceBookListActivity extends AbstractActivity
 			public void onSelectionChange(final SelectionChangeEvent event)
 			{
 				final PlaceBookEntry entry = list.getSelection();
-				controller.goTo(new EditorPlace(entry.getKey()));
+				controller.goTo(new PlaceBookEditorPlace(entry.getKey()));
 			}
 		});
 		

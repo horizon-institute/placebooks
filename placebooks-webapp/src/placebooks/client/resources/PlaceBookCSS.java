@@ -8,8 +8,6 @@ public interface PlaceBookCSS extends CssResource
 
 	String dragShadow();
 
-	String imageitem();
-
 	String panel();
 
 	String listItem();
@@ -24,9 +22,13 @@ public interface PlaceBookCSS extends CssResource
 	
 	String glassPanel();
 	
+	String canvas();	
+	
 	String menuItem();
 
 	String popupPanel();
 	
 	String mapLabel();
+	
+	String widget();
 }

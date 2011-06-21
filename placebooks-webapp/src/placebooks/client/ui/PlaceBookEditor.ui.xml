@@ -1,8 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:pl="urn:import:placebooks.client.ui" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
-		.canvas {
+		.canvasPanel {
 			position: absolute;
 			top: 21px;
 			left: 0px;
@@ -10,8 +10,17 @@
 			bottom: 0px;
 			background: #BBD;		
 			overflow-x: auto;
-			overflow-y: scroll;			
+			overflow-y: scroll;	
 		}
+		
+		.innerCanvasPanel {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+			margin: 20px;
+		}		
 		
 		.palette {
 			position: absolute;
@@ -141,11 +150,10 @@
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
 			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			
-			<p:EditablePanel ui:field="title" styleName="{style.titleLabel}"></p:EditablePanel>			
+			<p:EditablePanel ui:field="title" styleName="{style.titleLabel}" />			
 		</g:FlowPanel>
-			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
-		<p:MousePanel styleName="{style.canvas}" ui:field="canvas"></p:MousePanel>	
-		<p:MousePanel styleName="{style.palette}" ui:field="palette">
-		</p:MousePanel>
+		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
+		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
+		<pl:PlaceBookPalette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

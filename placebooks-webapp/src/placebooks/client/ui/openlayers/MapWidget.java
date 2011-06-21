@@ -1,8 +1,7 @@
 package placebooks.client.ui.openlayers;
 
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookCanvas;
-import placebooks.client.ui.PlaceBookItemFrame;
+import placebooks.client.ui.PlaceBookItemWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
@@ -14,7 +13,7 @@ public class MapWidget extends SimplePanel
 	
 	private final static String POINT_PREFIX = "POINT (";
 
-	private final PlaceBookCanvas canvas;
+	//private final PlaceBookCanvas canvas;	
 
 	private final String id;
 
@@ -24,28 +23,21 @@ public class MapWidget extends SimplePanel
 
 	private MarkerLayer markerLayer;
 	
-	private PlaceBookItemFrame positionItem = null;
-
-	private final EventHandler recenterEvent = new EventHandler()
-	{
-		@Override
-		void handleEvent(final Event event)
-		{
-			refreshMarkers();
-		}
-	};
+	private PlaceBookItemWidget positionItem = null;
 
 	private RouteLayer routeLayer;
+	
+	private EventHandler loadHandler;
 
 	private String url;
 
 	private boolean visible = true;
 
-	public MapWidget(final String id, final PlaceBookCanvas canvas)
+	public MapWidget(final String id)//, final PlaceBookCanvas canvas)
 	{
 		getElement().setId("mapPanel" + id);
 		this.id = id;
-		this.canvas = canvas;
+		//this.canvas = canvas;
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		add(interactionLabel);
 		interactionLabel.setVisible(false);
@@ -60,6 +52,11 @@ public class MapWidget extends SimplePanel
 			createRoute();
 		}
 	}
+	
+	public void addLoadHandler(EventHandler eventHandler)
+	{
+		this.loadHandler = eventHandler;
+	}
 
 	@Override
 	protected void onLoad()
@@ -70,15 +67,15 @@ public class MapWidget extends SimplePanel
 		ClickControl control = ClickControl.create(new EventHandler()
 		{
 			@Override
-			void handleEvent(Event event)
+			protected void handleEvent(Event event)
 			{
 				LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(), latLonProjection);			
 				GWT.log("Clicked at " + lonLat.getLat() + "N, " + lonLat.getLon() + "E");	
 				if(positionItem != null)
 				{
 					positionItem.getItem().setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
-					positionItem.markChanged();					
-					refreshMarkers();
+					//editor.markChanged();					
+					//refreshMarkers();
 				}
 			}
 		}.getFunction());
@@ -106,7 +103,10 @@ public class MapWidget extends SimplePanel
 		}
 		
 		routeLayer = RouteLayer.create(id, url);
-		routeLayer.getEvents().register("loadend", routeLayer, recenterEvent.getFunction());
+		if(loadHandler != null)
+		{
+			routeLayer.getEvents().register("loadend", routeLayer, loadHandler.getFunction());
+		}
 		routeLayer.setVisible(visible);
 
 		markerLayer = MarkerLayer.create("markerLayer");
@@ -139,14 +139,15 @@ public class MapWidget extends SimplePanel
 		}
 	}
 
-	private void refreshMarkers()
+	public void refreshMarkers(Iterable<PlaceBookItemWidget> items)
 	{
+		GWT.log("Recenter Map! " + markerLayer);
 		if(markerLayer != null)
 		{
 			markerLayer.clearMarkers();
 			positionItem = null;
 			interactionLabel.setVisible(false);
-			for (final PlaceBookItemFrame item : canvas.getItems())
+			for (final PlaceBookItemWidget item : items)
 			{
 				if (item.getItem().hasMetadata("mapItemID") && item.getItem().getMetadata("mapItemID").equals(id))
 				{

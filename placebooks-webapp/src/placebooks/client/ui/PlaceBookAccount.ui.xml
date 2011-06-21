@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:p="urn:import:placebooks.client.ui"
+	>
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		Hello,
+		<g:Label ui:field="userLabel">User name</g:Label>
+		
+		<!--  TODO: Other account details  -->
+		<p:PlaceBookList ui:field="placebookList" />
+		
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -3,7 +3,7 @@ package placebooks.client;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.places.PlaceBookActivityMapper;
 import placebooks.client.ui.places.PlaceBookHistoryMapper;
-import placebooks.client.ui.places.PlaceBookListPlace;
+import placebooks.client.ui.places.PlaceBookAccountPlace;
 
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -23,7 +23,7 @@ public class PlaceBookEditor implements EntryPoint
 //
 //	private final PlaceBookList list = new PlaceBookList();
 
-    private Place defaultPlace = new PlaceBookListPlace();
+    private Place defaultPlace = new PlaceBookAccountPlace();
     private SimplePanel appWidget = new SimplePanel();
 	
 	@Override

@@ -4,9 +4,9 @@ import placebooks.client.ui.widget.MenuItem;
 
 public class RemoveMapMenuItem extends MenuItem
 {
-	private final PlaceBookItemFrame item;
+	private final PlaceBookItemWidgetFrame item;
 
-	public RemoveMapMenuItem(final String title, final PlaceBookItemFrame item)
+	public RemoveMapMenuItem(final String title, final PlaceBookItemWidgetFrame item)
 	{
 		super(title);
 		this.item = item;

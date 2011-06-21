@@ -32,7 +32,6 @@ public class User
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
-	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = ALL)
 	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
 

@@ -7,8 +7,6 @@
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
 	box-shadow: 3px 3px 6px #666;
-	top: 40px;
-	bottom: 20px;
 }
 
 .listItem {
@@ -18,8 +16,28 @@
 	border-radius: 5px;
 }
 
+.canvas {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	overflow: visible;
+}
+
 .listItem:HOVER {
 	background: #CCC;	
+}
+
+.widget {
+	position: relative;
+	margin-top: 25px;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	z-index: 2;
+	overflow: hidden;
+	min-height: 15px;
 }
 
 .textitem {
@@ -41,10 +59,6 @@
 	color: white;
 	padding: 2px 5px;
 	border-bottom: 1px solid black;
-}
-
-.imageitem {
-	width: 100%;
 }
 
 img {

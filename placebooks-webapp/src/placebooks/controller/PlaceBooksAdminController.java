@@ -824,6 +824,7 @@ public class PlaceBooksAdminController
 			if (g != null)
 			{
 				final String trace = g.getTrace();
+				log.info(trace);
 				
 				res.setContentType("text/xml");
 				final PrintWriter p = res.getWriter();

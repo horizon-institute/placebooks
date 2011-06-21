@@ -33,6 +33,11 @@ public class PlaceBook extends JavaScriptObject
 		return this.metadata[name];
 	}-*/;
 
+	public final void add(PlaceBookItem item)
+	{
+		getItems().push(item);
+	}
+	
 	public final native User getOwner() /*-{
 		return this.owner;
 	}-*/;

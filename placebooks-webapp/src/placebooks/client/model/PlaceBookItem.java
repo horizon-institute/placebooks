@@ -157,4 +157,12 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setSourceURL(String value) /*-{ this.sourceURL = value; }-*/;
 
 	public final native void setText(String newText) /*-{ this.text = newText; }-*/;
+
+	public final native void removeParameter(String name)
+	/*-{
+		if(('parameters' in this))
+		{
+			delete this.parameters[name];
+		}
+	}-*/;
 }

@@ -24,5 +24,5 @@ public abstract class EventHandler
 		return handler;
 	}
 	
-	abstract void handleEvent(Event event);
+	protected abstract void handleEvent(Event event);
 }

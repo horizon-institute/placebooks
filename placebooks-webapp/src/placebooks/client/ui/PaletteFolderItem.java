@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+
 import placebooks.client.resources.Resources;
 
 public class PaletteFolderItem extends PaletteItem implements Iterable<PaletteItem>
@@ -12,17 +15,30 @@ public class PaletteFolderItem extends PaletteItem implements Iterable<PaletteIt
 	
 	private final Collection<PaletteItem> children = new ArrayList<PaletteItem>();
 	
-	public PaletteFolderItem(String name, PaletteFolderItem parent)
+	public PaletteFolderItem(String name, PaletteFolderItem parent, final PlaceBookPalette palette)
 	{
 		super();
 		this.parent = parent;
 		
 		text.setText(name);
 
+		if(parent != null)
+		{
+			add(new PaletteBackItem("Back", parent, palette));
+		}
+		
 		image.setResource(Resources.INSTANCE.folder());	
+		panel.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				palette.setPaletteFolder(PaletteFolderItem.this);
+			}
+		});		
 	}
 	
-	public PaletteFolderItem getParent()
+	public PaletteFolderItem getFolderParent()
 	{
 		return parent;
 	}

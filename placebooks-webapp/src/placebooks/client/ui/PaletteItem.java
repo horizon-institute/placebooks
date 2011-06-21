@@ -3,8 +3,6 @@ package placebooks.client.ui;
 import placebooks.client.ui.widget.MousePanel;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -34,16 +32,6 @@ public class PaletteItem extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 	}	
 
-	void addDragStartHandler(final MouseDownHandler handler)
-	{
-		panel.addMouseDownHandler(handler);
-	}
-	
-	void addClickHander(final ClickHandler handler)
-	{
-		panel.addClickHandler(handler);
-	}
-	
 	public boolean isFolder()
 	{
 		return false;

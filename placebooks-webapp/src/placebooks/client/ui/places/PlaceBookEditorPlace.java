@@ -6,19 +6,19 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class EditorPlace extends Place
+public class PlaceBookEditorPlace extends Place
 {
-	@Prefix("placebook")
-	public static class Tokenizer implements PlaceTokenizer<EditorPlace>
+	@Prefix("edit")
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditorPlace>
 	{
 		@Override
-		public EditorPlace getPlace(final String token)
+		public PlaceBookEditorPlace getPlace(final String token)
 		{
-			return new EditorPlace(token);
+			return new PlaceBookEditorPlace(token);
 		}
 
 		@Override
-		public String getToken(final EditorPlace place)
+		public String getToken(final PlaceBookEditorPlace place)
 		{
 			return place.getKey();
 		}
@@ -27,13 +27,13 @@ public class EditorPlace extends Place
 	private final String placebookKey;
 	private final PlaceBook placebook;
 		
-	public EditorPlace(final PlaceBook placebook)
+	public PlaceBookEditorPlace(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 	
-	public EditorPlace(final String placebookKey)
+	public PlaceBookEditorPlace(final String placebookKey)
 	{
 		super();
 		this.placebookKey = placebookKey;
