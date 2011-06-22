@@ -244,7 +244,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 
-		return "redirect:/login.html";
+		return "redirect:/index.html";
 	}
 
 	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)

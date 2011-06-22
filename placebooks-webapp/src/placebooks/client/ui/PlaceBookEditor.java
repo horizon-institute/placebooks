@@ -145,6 +145,8 @@ public class PlaceBookEditor extends Composite
 			}
 		});
 		
+		Window.setTitle("PlaceBook Editor");
+		
 		updatePalette();
 	}
 
@@ -164,12 +166,16 @@ public class PlaceBookEditor extends Composite
 		
 		if (placebook.hasMetadata("title"))
 		{
+			Window.setTitle(placebook.getMetadata("title") + " - PlaceBook Editor" );			
 			title.getElement().setInnerText(placebook.getMetadata("title"));
 		}
 		else
 		{
+			Window.setTitle("PlaceBook Editor" );			
 			title.getElement().setInnerText("No Title");
 		}
+		
+		account.setText(placebook.getOwner().getName());
 		
 		loadingPanel.setVisible(false);
 	}

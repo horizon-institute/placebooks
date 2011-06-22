@@ -41,7 +41,9 @@ public class PlaceBook extends JavaScriptObject
 	public final native User getOwner() /*-{
 		return this.owner;
 	}-*/;
-
+	
+	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
+	
 	public final native void setMetadata(String name, String value)
 	/*-{
 		if(!('metadata' in this))

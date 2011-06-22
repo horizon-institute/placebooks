@@ -29,6 +29,16 @@ public class PlaceBookService
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
 	}
+
+	public static void login(final String email, final String password, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "j_spring_security_check", RequestBuilder.POST, "j_username=" + email + "&j_password=" + password, callback);		
+	}
+
+	public static void logout(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "j_spring_security_logout", callback);		
+	}
 	
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{

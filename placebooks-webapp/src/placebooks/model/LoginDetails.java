@@ -1,10 +1,15 @@
 package placebooks.model;
 
+import static javax.persistence.TemporalType.TIMESTAMP;
+
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -30,6 +35,10 @@ public class LoginDetails
 	private String userid;
 
 	private String username;
+	
+	@JsonIgnore
+	@Temporal(TIMESTAMP)
+	private Date lastSync;
 
 	public LoginDetails(final User user, final String service, final String userid, final String username,
 			final String password)

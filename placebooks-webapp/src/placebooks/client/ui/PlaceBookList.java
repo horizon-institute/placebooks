@@ -1,6 +1,7 @@
 package placebooks.client.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import placebooks.client.model.PlaceBookEntry;
@@ -98,16 +99,23 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 		return ((SingleSelectionModel<PlaceBookEntry>) getSelectionModel()).getSelectedObject();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setShelf(final Shelf shelf)
 	{
-		newPlaceBook.setOwner(shelf.getUser());
-		final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-		entries.add(newPlaceBook);
-		for (int index = 0; index < shelf.getEntries().length(); index++)
+		if(shelf == null)
 		{
-			entries.add(shelf.getEntries().get(index));
+			setRowData(Collections.EMPTY_LIST);
 		}
-		setRowData(entries);
+		else
+		{
+			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+			entries.add(newPlaceBook);
+			for (int index = 0; index < shelf.getEntries().length(); index++)
+			{
+				entries.add(shelf.getEntries().get(index));
+			}
+			setRowData(entries);
+		}
 	}
 
 }

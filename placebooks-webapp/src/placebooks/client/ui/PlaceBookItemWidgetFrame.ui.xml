@@ -79,9 +79,7 @@
 	<ui:with field='res' type='placebooks.client.resources.Resources' />
 
 	<p:MousePanel styleName="{style.itemFrame}" ui:field="frame">
-		<p:MousePanel styleName="{style.borderSection}" ui:field="borderSection">
-			<p:MousePanel></p:MousePanel>
-		</p:MousePanel>
+		<p:MousePanel styleName="{style.borderSection}" ui:field="borderSection" />
 		<p:MousePanel styleName="{style.menuButton}" ui:field="menuButton">
 			<g:Image resource='{res.dropMenuIcon}' />
 		</p:MousePanel>

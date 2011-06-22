@@ -14,8 +14,6 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class PlaceBookEditorActivity extends AbstractActivity
 {
-	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
-	
 	private final String key;
 	private final PlaceBook placebook;
 	private final PlaceController placeController;
@@ -35,10 +33,6 @@ public class PlaceBookEditorActivity extends AbstractActivity
 		{
 			editor.updatePlaceBook(placebook);
 		}
-		else if(key.equals("new"))
-		{
-			editor.updatePlaceBook(PlaceBook.parse(newPlaceBook));
-		}
 		else
 		{
 			PlaceBookService.getPlaceBook(key, new AbstractCallback()
@@ -50,17 +44,7 @@ public class PlaceBookEditorActivity extends AbstractActivity
 					editor.updatePlaceBook(placebook);				
 				}
 			});
-		}
-		
-//		PlaceBookService.getPaletteItems(new AbstractCallback()
-//		{
-//			@Override
-//			public void success(Request request, Response response)
-//			{
-//				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-//				editor.getPallett.setPalette(items);
-//			}
-//		});	
+		}	
 		
 		panel.setWidget(editor);
 	}

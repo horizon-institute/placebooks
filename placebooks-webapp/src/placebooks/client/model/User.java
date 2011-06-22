@@ -1,6 +1,7 @@
 package placebooks.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
 public class User extends JavaScriptObject
 {
@@ -12,5 +13,13 @@ public class User extends JavaScriptObject
 	/*-{
 		return this.name;
 	}-*/;
-
+	
+	public final native JsArray<LoginDetails> getLoginDetails()
+	/*-{
+		if(!('loginDetails' in this))
+		{
+			this.loginDetails = new Array();
+		}
+		return this.loginDetails;
+	}-*/;
 }

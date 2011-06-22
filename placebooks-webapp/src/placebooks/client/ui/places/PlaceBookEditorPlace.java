@@ -29,6 +29,7 @@ public class PlaceBookEditorPlace extends Place
 		
 	public PlaceBookEditorPlace(final PlaceBook placebook)
 	{
+		super();
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
@@ -39,7 +40,7 @@ public class PlaceBookEditorPlace extends Place
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}
-
+	
 	public String getKey()
 	{
 		return placebookKey;

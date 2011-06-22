@@ -131,7 +131,14 @@ public class PlaceBookCanvas extends FlowPanel
 			{
 				final PlaceBookPanel panel = item.getPanel();
 				final int index = newItem.hasParameter("panel") ? newItem.getParameter("panel") : 0;
-				if (panel.getIndex() != index)
+				if(panel != null)
+				{
+					if (panel.getIndex() != index)
+					{
+						item.setPanel(panels.get(index));
+					}
+				}
+				else
 				{
 					item.setPanel(panels.get(index));
 				}
