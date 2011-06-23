@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
@@ -220,7 +221,7 @@ public class EverytrailHelper
 		// The pictures API doesn't work well, so get pictures via trips...
 		final EverytrailTripsResponse tripsData = EverytrailHelper.Trips(username, password, userId);
 
-		Vector<Node> picturesToReturn = new Vector<Node>();
+		HashMap<String, Node> picturesToReturn = new HashMap<String, Node>();
 		String status_to_return = "error";
 
 		if (tripsData.getStatus().equals("error"))
@@ -241,22 +242,21 @@ public class EverytrailHelper
 				log.debug("Getting pictures for trip: " + tripId);
 				final EverytrailPicturesResponse tripPics = EverytrailHelper.TripPictures(tripId, username, password);
 
-				log.debug("Pictures in trip: " + tripPics.getPicturesMap().size());
-				final Map<String, Node> tripPicList = tripPics.getPicturesMap();
+				log.debug("Pictures in trip: " + tripPics.getPicturesMap().values().size());
+				final HashMap<String, Node> tripPicList = tripPics.getPicturesMap();
 				for (int picturesDataIndex = 0; picturesDataIndex < tripPicList.size(); picturesDataIndex++)
 				{
 					final Node picture_node = tripPicList.get(picturesDataIndex);
 					if (picture_node.getNodeName().equals("picture"))
 					{
-						picturesToReturn.add(picture_node);
+						picturesToReturn.put(tripId, picture_node);
 					}
 					log.debug("Picture: " + picturesDataIndex + " " + picture_node.getTextContent());
 				}
 			}
 		}
 
-		final EverytrailPicturesResponse returnValue = new EverytrailPicturesResponse(status_to_return,
-				picturesToReturn);
+		final EverytrailPicturesResponse returnValue = new EverytrailPicturesResponse(status_to_return, picturesToReturn);
 		return returnValue;
 	}
 
@@ -374,7 +374,7 @@ public class EverytrailHelper
 		}
 
 		final String postResponse = getPostResponseWithParams("trip/pictures", params);
-		final Vector<Node> picturesList = new Vector<Node>();
+		final HashMap<String, Node> picturesList = new HashMap<String, Node>();
 
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData resultStatus = parseResponseStatus("etTripPicturesResponse", doc);
@@ -385,7 +385,7 @@ public class EverytrailHelper
 			for (int pictureNodesIndex = 0; pictureNodesIndex < pictureNodes.getLength(); pictureNodesIndex++)
 			{
 				final Node pictureNode = pictureNodes.item(pictureNodesIndex);
-				picturesList.add(pictureNode);
+				picturesList.put(tripId, pictureNode);
 			}
 		}
 		else
@@ -410,7 +410,7 @@ public class EverytrailHelper
 						try
 						{
 							final Node error_element = error_children.item(child_counter);
-							picturesList.add(error_element);
+							picturesList.put("0", error_element);
 						}
 						catch (final NullPointerException npx)
 						{

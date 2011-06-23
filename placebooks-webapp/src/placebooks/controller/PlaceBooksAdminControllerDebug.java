@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -824,9 +825,8 @@ public class PlaceBooksAdminControllerDebug
 			EverytrailPicturesResponse picturesResponse = 	
 				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword());
 
-			Vector<Node> pictures = picturesResponse.getPicturesMap();
-
-			for (Node picture : pictures)
+			HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+			for (Node picture : pictures.values())
 			{
 				ImageItem imageItem = new ImageItem(testUser, null, null, null);
 				ItemFactory.toImageItem(testUser, picture, imageItem, tripId);

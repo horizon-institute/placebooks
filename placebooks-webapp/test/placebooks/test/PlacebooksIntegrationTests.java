@@ -5,6 +5,7 @@ package placebooks.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -80,14 +81,16 @@ public class PlacebooksIntegrationTests
 
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 
-		Vector<Node> pictures = picturesResponse.getPicturesMap();
+		HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
 
 		ImageItem imageItem = new ImageItem(testUser, null, null, null);
-		ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
+		String id = pictures.keySet().iterator().next();
+		Node n = pictures.get(id);
+		ItemFactory.toImageItem(testUser, n, imageItem, id);
 		//assertEquals(800, imageItem.getImage().getWidth());
 		//assertEquals(479, imageItem.getImage().getHeight());
 
-		ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);
+		ItemFactory.toImageItem(testUser, n, imageItem, id);
 		/*ImageItem saved = (ImageItem)*/ imageItem.saveUpdatedItem();
 	}
 
@@ -112,7 +115,7 @@ public class PlacebooksIntegrationTests
 		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null, null);
 
 		Node trackToUse = tracksResponse.getTracks().lastElement();
-		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace);
+		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1");
 		/*GPSTraceItem saved = (GPSTraceItem)*/ gpsTrace.saveUpdatedItem();
 	}
 

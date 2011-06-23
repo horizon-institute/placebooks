@@ -4,7 +4,7 @@
 package placebooks.model;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.HashMap;
 import org.w3c.dom.Node;
 
 /**
@@ -13,13 +13,13 @@ import org.w3c.dom.Node;
  */
 public class EverytrailPicturesResponse
 {
-	private Map<String, Node> picturesMap;
+	private HashMap<String, Node> picturesMap;
 	private String status;
 
 	/**
 	 * 
 	 */
-	public EverytrailPicturesResponse(final String status, final Map<String, Node> picturesMap)
+	public EverytrailPicturesResponse(final String status, final HashMap<String, Node> picturesMap)
 	{
 		this.status = status;
 		this.picturesMap = picturesMap;
@@ -29,7 +29,7 @@ public class EverytrailPicturesResponse
 	 * Get a map listing pictures with key of trip_id
 	 * @return Map<String, Node>
 	 */
-	public Map<String, Node> getPicturesMap()
+	public HashMap<String, Node> getPicturesMap()
 	{
 		return this.picturesMap;
 	}
