@@ -8,6 +8,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.places.PlaceBookHomePlace;
 import placebooks.client.ui.places.PlaceBookPreviewPlace;
 import placebooks.client.ui.widget.DropMenu;
 import placebooks.client.ui.widget.EditablePanel;
@@ -37,7 +38,6 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -62,7 +62,7 @@ public class PlaceBookEditor extends Composite
 			PlaceBookService.savePlaceBook(canvas.getPlaceBook(), new AbstractCallback()
 			{
 				@Override
-				public void failure(final Request request)
+				public void failure(final Request request, final Response response)
 				{
 					markChanged();
 				}
@@ -84,7 +84,10 @@ public class PlaceBookEditor extends Composite
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
-	HTML account;
+	Panel account;
+	
+	@UiField
+	Label accountLabel;
 
 	@UiField
 	Panel backPanel;
@@ -180,6 +183,15 @@ public class PlaceBookEditor extends Composite
 				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
 				palette.setPalette(items, PlaceBookEditor.this);
 			}
+			
+			@Override
+			public void failure(final Request request, final Response response)
+			{
+				if(response.getStatusCode() == 401)
+				{
+					placeController.goTo(new PlaceBookHomePlace());
+				}
+			}
 		});
 	}
 
@@ -198,7 +210,7 @@ public class PlaceBookEditor extends Composite
 			title.getElement().setInnerText("No Title");
 		}
 
-		account.setText(placebook.getOwner().getName());
+		accountLabel.setText(placebook.getOwner().getName());
 
 		loadingPanel.setVisible(false);
 	}

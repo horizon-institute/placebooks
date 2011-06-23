@@ -101,7 +101,7 @@ public class PlaceBookUserDetails extends Composite
 		PlaceBookService.everytrail(new AbstractCallback()
 		{
 			@Override
-			public void failure(final Request request)
+			public void failure(final Request request, final Response response)
 			{
 				syncPanel.getElement().getStyle().setDisplay(Display.NONE);
 			}

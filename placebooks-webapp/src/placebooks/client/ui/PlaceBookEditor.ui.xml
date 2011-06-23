@@ -146,7 +146,7 @@
 		<g:Image ui:field="dragImage" />	
 		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
 		<g:FlowPanel styleName="{style.titleBar}">
-			<g:HTML styleName="{style.account}" ui:field="account" />
+			<p:MousePanel styleName="{style.account}" ui:field="account"><g:InlineLabel ui:field="accountLabel" /><g:Image resource='{res.bullet_arrow_down}' /></p:MousePanel>
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
 			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			
