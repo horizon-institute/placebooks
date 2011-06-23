@@ -1,15 +1,15 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.PlaceBookCanvas;
-import placebooks.client.ui.PlaceBookItemWidget;
+import placebooks.client.ui.PlaceBookItemWidgetFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 public class DeletePlaceBookMenuItem extends MenuItem
 {
 	private final PlaceBookCanvas canvas;
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemWidgetFrame item;
 
-	public DeletePlaceBookMenuItem(final String title, final PlaceBookCanvas canvas, final PlaceBookItemWidget item)
+	public DeletePlaceBookMenuItem(final String title, final PlaceBookCanvas canvas, final PlaceBookItemWidgetFrame item)
 	{
 		super(title);
 		this.canvas = canvas;
@@ -20,5 +20,6 @@ public class DeletePlaceBookMenuItem extends MenuItem
 	public void run()
 	{
 		canvas.remove(item);
+		item.markChanged();
 	}
 }

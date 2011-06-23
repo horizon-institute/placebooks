@@ -11,21 +11,21 @@ public abstract class MenuItem extends Label
 	public MenuItem(final String title)
 	{
 		super(title);
-		setStyleName(Resources.INSTANCE.style().menuItem());		
+		setStyleName(Resources.INSTANCE.style().menuItem());
 		addClickHandler(new ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				run();
 			}
 		});
 	}
-	
+
 	public boolean isEnabled()
 	{
 		return true;
 	}
-	
+
 	public abstract void run();
-}	
+}

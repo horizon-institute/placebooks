@@ -10,6 +10,11 @@ import com.google.gwt.json.client.JSONObject;
 
 public class PlaceBookService
 {
+	public static void everytrail(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
+	}
+
 	public static void getPaletteItems(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/palette", callback);
@@ -25,25 +30,36 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
 	}
 
-	public static void everytrail(final RequestCallback callback)
+	public static void linkAccount(final String username, final String password, final String service,
+			final AbstractCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
+		serverRequest(getHostURL() + "placebooks/a/addLoginDetails", "username=" + username + "&password=" + password
+				+ "&service=" + service, callback);
 	}
 
 	public static void login(final String email, final String password, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "j_spring_security_check", RequestBuilder.POST, "j_username=" + email + "&j_password=" + password, callback);		
+		serverRequest(	getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password,
+						callback);
 	}
 
 	public static void logout(final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "j_spring_security_logout", callback);		
+		serverRequest(getHostURL() + "j_spring_security_logout", callback);
 	}
-	
+
+	public static void registerAccount(final String name, final String email, final String password,
+			final AbstractCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/createUserAccount", "name=" + name + "&email=" + email
+				+ "&password=" + password, callback);
+	}
+
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/saveplacebook", RequestBuilder.POST, "placebook="
-				+ new JSONObject(placebook).toString(), callback);
+		serverRequest(	getHostURL() + "placebooks/a/saveplacebook",
+						"placebook=" + new JSONObject(placebook).toString(),
+						callback);
 	}
 
 	private static String getHostURL()
@@ -79,5 +95,10 @@ public class PlaceBookService
 	private static void serverRequest(final String url, final RequestCallback callback)
 	{
 		serverRequest(url, RequestBuilder.GET, null, callback);
+	}
+
+	private static void serverRequest(final String url, final String data, final RequestCallback callback)
+	{
+		serverRequest(url, RequestBuilder.POST, data, callback);
 	}
 }

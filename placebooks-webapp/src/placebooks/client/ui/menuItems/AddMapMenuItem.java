@@ -22,27 +22,28 @@ public class AddMapMenuItem extends MenuItem
 	}
 
 	@Override
+	public boolean isEnabled()
+	{
+		return !item.getItem().getClassName().equals("placebooks.model.GPSTraceItem")
+				&& !item.getItem().hasMetadata("mapItemID");
+	}
+
+	@Override
 	public void run()
 	{
 		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
-		for(PlaceBookItemWidget itemFrame: canvas.getItems())
+		for (final PlaceBookItemWidget itemFrame : canvas.getItems())
 		{
-			if(itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
+			if (itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 			{
 				mapItems.add(itemFrame.getItem());
 			}
 		}
 
-		if(mapItems.size() == 1)
+		if (mapItems.size() == 1)
 		{
 			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
-			item.markChanged();			
+			item.markChanged();
 		}
-	}
-
-	@Override
-	public boolean isEnabled()
-	{
-		return !item.getItem().getClassName().equals("placebooks.model.GPSTraceItem") && !item.getItem().hasMetadata("mapItemID");
 	}
 }

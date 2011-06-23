@@ -9,11 +9,6 @@ public class User extends JavaScriptObject
 	{
 	}
 
-	public final native String getName()
-	/*-{
-		return this.name;
-	}-*/;
-	
 	public final native JsArray<LoginDetails> getLoginDetails()
 	/*-{
 		if(!('loginDetails' in this))
@@ -21,5 +16,10 @@ public class User extends JavaScriptObject
 			this.loginDetails = new Array();
 		}
 		return this.loginDetails;
+	}-*/;
+
+	public final native String getName()
+	/*-{
+		return this.name;
 	}-*/;
 }

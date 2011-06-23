@@ -37,7 +37,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			{
 				sb.appendEscaped("Edit PlaceBook: No Title");
 			}
-			else if(value.getKey().equals("new"))
+			else if (value.getKey().equals("new"))
 			{
 				sb.appendEscaped(value.getTitle());
 			}
@@ -102,7 +102,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 	@SuppressWarnings("unchecked")
 	public void setShelf(final Shelf shelf)
 	{
-		if(shelf == null)
+		if (shelf == null)
 		{
 			setRowData(Collections.EMPTY_LIST);
 		}

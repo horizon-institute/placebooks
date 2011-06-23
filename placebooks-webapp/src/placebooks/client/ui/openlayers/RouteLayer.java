@@ -2,10 +2,6 @@ package placebooks.client.ui.openlayers;
 
 public class RouteLayer extends Layer
 {
-	protected RouteLayer()
-	{
-	}
-
 	public final static native RouteLayer create(String name, String url)
 	/*-{
 		return new $wnd.OpenLayers.Layer.Vector(name, {
@@ -27,6 +23,10 @@ public class RouteLayer extends Layer
 		});
 	}-*/;
 
+	protected RouteLayer()
+	{
+	}
+
 	public final native Bounds getDataExtent()
 	/*-{
 		return this.getDataExtent();
@@ -34,7 +34,6 @@ public class RouteLayer extends Layer
 
 	public final native void setUrl(final String url)
 	/*-{
-
 		this.setUrl(url);
 	}-*/;
 }

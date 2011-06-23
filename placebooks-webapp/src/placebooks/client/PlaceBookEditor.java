@@ -19,33 +19,33 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookEditor implements EntryPoint
 {
-//	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
-//
-//	private final PlaceBookList list = new PlaceBookList();
+	// private final PlaceBookCanvas canvas = new PlaceBookCanvas();
+	//
+	// private final PlaceBookList list = new PlaceBookList();
 
-    private Place defaultPlace = new PlaceBookHomePlace();
-    private SimplePanel appWidget = new SimplePanel();
-	
+	private SimplePanel appWidget = new SimplePanel();
+	private Place defaultPlace = new PlaceBookHomePlace();
+
 	@Override
 	public void onModuleLoad()
 	{
 		Resources.INSTANCE.style().ensureInjected();
-		
-        EventBus eventBus = new SimpleEventBus();
-        PlaceController placeController = new PlaceController(eventBus);
 
-        // Start ActivityManager for the main widget with our ActivityMapper
-        ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
-        ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
-        activityManager.setDisplay(appWidget);
+		final EventBus eventBus = new SimpleEventBus();
+		final PlaceController placeController = new PlaceController(eventBus);
 
-        // Start PlaceHistoryHandler with our PlaceHistoryMapper
-        PlaceBookHistoryMapper historyMapper= GWT.create(PlaceBookHistoryMapper.class);
-        PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
-        historyHandler.register(placeController, eventBus, defaultPlace);
+		// Start ActivityManager for the main widget with our ActivityMapper
+		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
+		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
+		activityManager.setDisplay(appWidget);
 
-        RootPanel.get().add(appWidget);
-        // Goes to the place represented on URL else default place
-        historyHandler.handleCurrentHistory();
+		// Start PlaceHistoryHandler with our PlaceHistoryMapper
+		final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
+		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
+		historyHandler.register(placeController, eventBus, defaultPlace);
+
+		RootPanel.get().add(appWidget);
+		// Goes to the place represented on URL else default place
+		historyHandler.handleCurrentHistory();
 	}
 }

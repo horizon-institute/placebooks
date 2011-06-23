@@ -8,21 +8,23 @@ public class LonLat extends JavaScriptObject
 	/*-{
 		return new $wnd.OpenLayers.LonLat(lon, lat);
 	}-*/;
-	
-	protected LonLat() {}
-	
-	public final native LonLat transform(Projection source, Projection dest)
+
+	protected LonLat()
+	{
+	}
+
+	public final native float getLat()
 	/*-{
-		return this.transform(source, dest);
-	}-*/;	
-	
+		return this.lat;
+	}-*/;
+
 	public final native float getLon()
 	/*-{
 		return this.lon;
 	}-*/;
-	
-	public final native float getLat()
+
+	public final native LonLat transform(Projection source, Projection dest)
 	/*-{
-		return this.lat;
+		return this.transform(source, dest);
 	}-*/;
 }

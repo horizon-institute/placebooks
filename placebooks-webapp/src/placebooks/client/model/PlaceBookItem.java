@@ -41,6 +41,32 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native String getHash() /*-{ return this.hash; }-*/;
 
+	public final ImageResource getIcon()
+	{
+		if (is(ItemType.TEXT))
+		{
+			return Resources.INSTANCE.text();
+		}
+		else if (is(ItemType.IMAGE))
+		{
+			return Resources.INSTANCE.picture();
+		}
+		else if (is(ItemType.VIDEO))
+		{
+			return Resources.INSTANCE.movies();
+		}
+		else if (is(ItemType.AUDIO))
+		{
+			return Resources.INSTANCE.music();
+		}
+		else if (is(ItemType.GPS))
+		{
+			return Resources.INSTANCE.map();
+		}
+		else if (is(ItemType.WEB)) { return Resources.INSTANCE.web_page(); }
+		return null;
+	}
+
 	public final native String getKey() /*-{ return this.id; }-*/;
 
 	public final native String getMetadata(String name) /*-{ return this.metadata[name]; }-*/;
@@ -100,35 +126,14 @@ public class PlaceBookItem extends JavaScriptObject
 		}
 	}-*/;
 
-	public final ImageResource getIcon()
-	{
-		if (is(ItemType.TEXT))
+	public final native void removeParameter(String name)
+	/*-{
+		if(('parameters' in this))
 		{
-			return Resources.INSTANCE.text();
+			delete this.parameters[name];
 		}
-		else if (is(ItemType.IMAGE))
-		{
-			return Resources.INSTANCE.picture();
-		}
-		else if (is(ItemType.VIDEO))
-		{
-			return Resources.INSTANCE.movies();
-		}
-		else if (is(ItemType.AUDIO))
-		{
-			return Resources.INSTANCE.music();
-		}		
-		else if (is(ItemType.GPS))
-		{
-			return Resources.INSTANCE.map();
-		}
-		else if (is(ItemType.WEB))
-		{
-			return Resources.INSTANCE.web_page();
-		}
-		return null;
-	}
-	
+	}-*/;
+
 	public final native void setGeometry(String string)
 	/*-{
 		this.geom = string;
@@ -157,12 +162,4 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setSourceURL(String value) /*-{ this.sourceURL = value; }-*/;
 
 	public final native void setText(String newText) /*-{ this.text = newText; }-*/;
-
-	public final native void removeParameter(String name)
-	/*-{
-		if(('parameters' in this))
-		{
-			delete this.parameters[name];
-		}
-	}-*/;
 }

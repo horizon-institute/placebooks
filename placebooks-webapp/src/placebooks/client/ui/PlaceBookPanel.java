@@ -12,33 +12,40 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookPanel extends SimplePanel
 {
+	private final int column;
+
 	private final List<PlaceBookItemWidget> items = new ArrayList<PlaceBookItemWidget>();
 
 	private final int panelIndex;
-	
-	private final int column;
-	
-	private final int row;
-	
+
 	private float panelWidth = 33;
 
-	public PlaceBookPanel(final int index, final int columns)
+	private final int row;
+
+	public PlaceBookPanel(final int index, final int columns, final boolean visible)
 	{
 		this.panelIndex = index;
-		setStyleName(Resources.INSTANCE.style().panel());
 		column = index % columns;
-		row = index / columns; 
-		if (column == 0)
+		row = index / columns;
+		if (visible)
 		{
-			addStyleName(Resources.INSTANCE.style().panelleft());
-		}
-		else if (column == (columns - 1))
-		{
-			addStyleName(Resources.INSTANCE.style().panelright());
+			setStyleName(Resources.INSTANCE.style().panel());
+			if (column == 0)
+			{
+				addStyleName(Resources.INSTANCE.style().panelleft());
+			}
+			else if (column == (columns - 1))
+			{
+				addStyleName(Resources.INSTANCE.style().panelright());
+			}
+			else
+			{
+				addStyleName(Resources.INSTANCE.style().panelcenter());
+			}
 		}
 		else
 		{
-			addStyleName(Resources.INSTANCE.style().panelcenter());
+			setStyleName(Resources.INSTANCE.style().panelInvisible());
 		}
 		setWidth(100f / columns);
 	}
@@ -60,9 +67,33 @@ public class PlaceBookPanel extends SimplePanel
 		return panelIndex;
 	}
 
+	public void reflow()
+	{
+		reflow(null, 0, false);
+	}
+
 	public void remove(final PlaceBookItemWidget item)
 	{
 		items.remove(item);
+	}
+
+	public void resize()
+	{
+		final int panelHeight = getElement().getClientWidth() * 2;
+
+		final int panelTop = ((panelHeight + 20) * row);
+
+		getElement().getStyle().setTop(panelTop, Unit.PX);
+		getElement().getStyle().setHeight(panelHeight, Unit.PX);
+	}
+
+	public void setWidth(final float panelWidth)
+	{
+		this.panelWidth = panelWidth;
+		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
+		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
+
+		resize();
 	}
 
 	boolean isIn(final int x, final int y)
@@ -72,11 +103,6 @@ public class PlaceBookPanel extends SimplePanel
 		final int top = getElement().getOffsetTop();
 		final int height = getElement().getOffsetHeight();
 		return left < x && x < (left + width) && top < y && y < (top + height);
-	}
-
-	public void reflow()
-	{
-		reflow(null, 0, false);
 	}
 
 	void reflow(final PlaceBookItemWidget newItem, final int mousey, final boolean finished)
@@ -91,7 +117,7 @@ public class PlaceBookPanel extends SimplePanel
 		});
 
 		resize();
-		
+
 		int order = 0;
 		int height = getElement().getOffsetTop();
 		final int y = mousey;
@@ -119,33 +145,14 @@ public class PlaceBookPanel extends SimplePanel
 		item.getElement().getStyle().setWidth(panelWidth, Unit.PCT);
 		item.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
 		item.setTop(height);
-		
+
 		item.resize();
 
 		if (finished)
 		{
 			item.setOrder(order);
 		}
-		
-		return item.getContentHeight();
-	}
 
-	public void resize()
-	{
-		int panelHeight = getElement().getClientWidth() * 2;
-		
-		int panelTop = ((panelHeight + 20) * row);
-		
-		getElement().getStyle().setTop(panelTop, Unit.PX);
-		getElement().getStyle().setHeight(panelHeight, Unit.PX);
-	}
-	
-	public void setWidth(float panelWidth)
-	{
-		this.panelWidth = panelWidth;
-		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
-		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-		
-		resize();
+		return item.getContentHeight();
 	}
 }

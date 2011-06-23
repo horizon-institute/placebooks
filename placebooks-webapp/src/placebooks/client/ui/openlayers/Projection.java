@@ -8,6 +8,8 @@ public class Projection extends JavaScriptObject
 	/*-{
 		return new $wnd.OpenLayers.Projection(projection);
 	}-*/;
-	
-	protected Projection() {}
+
+	protected Projection()
+	{
+	}
 }

@@ -164,7 +164,7 @@ public class ItemFactory
 		imageItem.setExternalID("everytrail-" + picture_id);
 		imageItem.addMetadataEntry("title", imageItemTitle);
 		imageItem.addMetadataEntry("description", itemDescription);
-		imageItem.addMetadataEntry("source", "Everytrail");
+		imageItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 	}
 
 	public static VideoItem toVideoItem(final User owner, final VideoEntry youtubeVideo)
@@ -337,7 +337,7 @@ public class ItemFactory
 
 		gpsItem.setGeometry(trackGeom);
 		gpsItem.setExternalID("everytrail-" + track_id);
-		gpsItem.addMetadataEntry("source", "Everytrail");
+		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 
 	}
 }

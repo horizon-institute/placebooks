@@ -30,7 +30,12 @@ public class PaletteItem extends Composite
 	public PaletteItem()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-	}	
+	}
+
+	public Object getName()
+	{
+		return text.getText();
+	}
 
 	public boolean isFolder()
 	{

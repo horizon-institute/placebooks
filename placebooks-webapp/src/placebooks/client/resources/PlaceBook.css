@@ -3,7 +3,34 @@
 body {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 12px;
-}	
+}
+
+a {
+	color: #66D;
+	cursor: pointer;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.dialog {
+	background-color: #FFF;
+	border: 5px solid #999;
+	border-radius: 10px;
+	-moz-box-shadow: 3px 3px 4px #666;
+	-webkit-box-shadow: 3px 3px 4px #666;
+	box-shadow: 3px 3px 6px #666;	
+}
+
+.dialogGlass {
+	background-color: #000;
+	opacity: 0.6;
+}
+
+.panelInvisible {
+	position: absolute;
+}
 
 .panel {
 	position: absolute;
@@ -73,6 +100,7 @@ img {
 	padding: 1px 8px;
 	background: #889;
 	border: 1px solid #889;
+	cursor: default;
 }
 
 .menuItem:HOVER {

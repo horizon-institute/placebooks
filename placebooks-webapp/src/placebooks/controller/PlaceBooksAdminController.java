@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,6 +78,19 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
+		if(user == null)
+		{
+			try
+			{
+			log.info("User not logged in");
+			res.setContentType("application/json");
+			res.getWriter().write("User not logged in");
+			}
+			catch(Exception e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
 		final TypedQuery<PlaceBookItem> q = manager
 				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
 							PlaceBookItem.class);
@@ -87,25 +101,25 @@ public class PlaceBooksAdminController
 		log.info("User " + user.getName());
 		try
 		{
-			final ServletOutputStream sos = res.getOutputStream();
+			final Writer sos = res.getWriter();
 			final ObjectMapper mapper = new ObjectMapper();			
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 
-			sos.print("[");
+			sos.write("[");
 			boolean comma = false;
 			for(PlaceBookItem item: pbs)
 			{
 				if(comma)
 				{
-					sos.print(",");
+					sos.write(",");
 				}
 				else
 				{
 					comma = true;
 				}
-				sos.print(mapper.writeValueAsString(item));
+				sos.write(mapper.writeValueAsString(item));
 			}
-			sos.print("]");
+			sos.write("]");
 
 			//mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);		
 
@@ -116,7 +130,7 @@ public class PlaceBooksAdminController
 		}
 		catch (final Exception e)
 		{
-			log.error(e.toString());
+			log.error(e.getMessage(), e);
 		}
 
 		manager.close();

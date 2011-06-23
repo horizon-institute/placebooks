@@ -24,28 +24,28 @@ public class PlaceBookEditorPlace extends Place
 		}
 	}
 
-	private final String placebookKey;
 	private final PlaceBook placebook;
-		
+	private final String placebookKey;
+
 	public PlaceBookEditorPlace(final PlaceBook placebook)
 	{
 		super();
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
-	
+
 	public PlaceBookEditorPlace(final String placebookKey)
 	{
 		super();
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}
-	
+
 	public String getKey()
 	{
 		return placebookKey;
 	}
-	
+
 	public PlaceBook getPlaceBook()
 	{
 		return placebook;

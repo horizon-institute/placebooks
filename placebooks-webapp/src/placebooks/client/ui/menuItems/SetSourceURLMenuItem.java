@@ -21,7 +21,7 @@ public class SetSourceURLMenuItem extends MenuItem
 		super(title);
 		this.item = item;
 	}
-	
+
 	@Override
 	public void run()
 	{

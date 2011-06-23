@@ -19,19 +19,22 @@ import com.google.gwt.user.client.ui.Widget;
 public class PlaceBookItemWidgetFactory
 {
 	private PlaceBookCanvas canvas;
-	
+
 	public PlaceBookItemWidgetFactory()
 	{
 	}
-	
-	protected void setCanvas(PlaceBookCanvas canvas)
+
+	public PlaceBookItemWidget createItemWidget(final PlaceBookItem item)
 	{
-		this.canvas = canvas;
+		final PlaceBookItemWidget itemWidget = new PlaceBookItemWidget(item);
+		itemWidget.setContentWidget(createWidget(itemWidget));
+		itemWidget.refresh();
+		return itemWidget;
 	}
-	
+
 	protected Widget createWidget(final PlaceBookItemWidget itemWidget)
 	{
-		PlaceBookItem item = itemWidget.getItem();
+		final PlaceBookItem item = itemWidget.getItem();
 		if (item.is(ItemType.TEXT))
 		{
 			final SimplePanel panel = new SimplePanel();
@@ -53,54 +56,55 @@ public class PlaceBookItemWidgetFactory
 					}
 				}
 			});
-			
+
 			return image;
 		}
 		else if (item.is(ItemType.AUDIO))
 		{
 			final Audio audio = Audio.createIfSupported();
 			audio.setControls(true);
-			
+
 			return audio;
 		}
 		else if (item.is(ItemType.VIDEO))
 		{
 			final Video video = Video.createIfSupported();
 			video.setControls(true);
-			
+
 			return video;
 		}
 		else if (item.is(ItemType.GPS))
 		{
+			if (!item.hasParameter("height"))
+			{
+				item.setParameter("height", 5000);
+			}
+
 			// TODO Handle null key
-			final MapWidget panel = new MapWidget(item.getKey());//, canvas);
+			final MapWidget panel = new MapWidget(item.getKey());
 			panel.addLoadHandler(new EventHandler()
 			{
 				@Override
-				protected void handleEvent(Event event)
+				protected void handleEvent(final Event event)
 				{
 					panel.refreshMarkers(canvas.getItems());
 				}
 			});
-			//panel.setWidth("100%");
-			//panel.setHeight("100%");
-					
+			panel.setWidth("100%");
+
 			return panel;
 		}
 		else if (item.is(ItemType.WEB))
 		{
 			final Frame frame = new Frame(item.getSourceURL());
-			
+
 			return frame;
 		}
 		return null;
 	}
-	
-	public PlaceBookItemWidget createItemWidget(PlaceBookItem item)
+
+	protected void setCanvas(final PlaceBookCanvas canvas)
 	{
-		PlaceBookItemWidget itemWidget = new PlaceBookItemWidget(item);
-		itemWidget.setContentWidget(createWidget(itemWidget));
-		itemWidget.refresh();
-		return itemWidget;
+		this.canvas = canvas;
 	}
 }

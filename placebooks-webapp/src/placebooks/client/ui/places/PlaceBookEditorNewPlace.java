@@ -9,8 +9,6 @@ import com.google.gwt.place.shared.Prefix;
 
 public class PlaceBookEditorNewPlace extends Place
 {
-	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
-	
 	@Prefix("create")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditorNewPlace>
 	{
@@ -27,23 +25,25 @@ public class PlaceBookEditorNewPlace extends Place
 		}
 	}
 
+	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
+
 	private final User user;
-		
+
 	public PlaceBookEditorNewPlace()
 	{
 		super();
 		this.user = null;
 	}
-	
+
 	public PlaceBookEditorNewPlace(final User user)
 	{
 		super();
 		this.user = user;
 	}
-		
+
 	public PlaceBook getPlaceBook()
 	{
-		PlaceBook placebook = PlaceBook.parse(newPlaceBook);
+		final PlaceBook placebook = PlaceBook.parse(newPlaceBook);
 		placebook.setOwner(user);
 		return placebook;
 	}

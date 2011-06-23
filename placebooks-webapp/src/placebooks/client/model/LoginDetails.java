@@ -9,7 +9,7 @@ public class LoginDetails extends JavaScriptObject
 	}
 
 	public final native String getID() /*-{ return this.id; }-*/;
-	
+
 	public final native String getService() /*-{ return this.service; }-*/;
 
 	public final native String getUserID() /*-{ return this.userid; }-*/;

@@ -13,25 +13,23 @@ public interface Resources extends ClientBundle
 
 	ImageResource dropMenuIcon();
 
+	ImageResource folder();
+
 	ImageResource image();
 
 	ImageResource map();
 
-	ImageResource music();
-
 	ImageResource movies();
+
+	ImageResource music();
 
 	ImageResource picture();
 
 	ImageResource progress();
-	
+
 	ImageResource progress2();
-	
-	ImageResource zoom_in();
-	
-	ImageResource zoom_out();	
-	
-	ImageResource folder();
+
+	ImageResource progress3();
 
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();
@@ -39,4 +37,8 @@ public interface Resources extends ClientBundle
 	ImageResource text();
 
 	ImageResource web_page();
+
+	ImageResource zoom_in();
+
+	ImageResource zoom_out();
 }

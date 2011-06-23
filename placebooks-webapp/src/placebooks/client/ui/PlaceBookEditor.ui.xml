@@ -154,6 +154,6 @@
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
 		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
-		<pl:PlaceBookPalette styleName="{style.palette}" ui:field="palette" />
+		<pl:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

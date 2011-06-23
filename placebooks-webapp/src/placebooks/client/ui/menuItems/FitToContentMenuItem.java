@@ -14,16 +14,16 @@ public class FitToContentMenuItem extends MenuItem
 	}
 
 	@Override
+	public boolean isEnabled()
+	{
+		return item.getItem().hasParameter("height");
+	}
+
+	@Override
 	public void run()
 	{
 		item.getItem().removeParameter("height");
 		item.getPanel().reflow();
 		item.markChanged();
-	}
-
-	@Override
-	public boolean isEnabled()
-	{
-		return item.getItem().hasParameter("height");
 	}
 }

@@ -57,6 +57,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class EverytrailHelper
 {
+	public final static String SERVICE_NAME = "Everytrail";
+	
 	static class HttpAuthenticator extends Authenticator
 	{
 		private String username, password;
@@ -920,7 +922,7 @@ public class EverytrailHelper
 	 */
 	public static void UpdateEverytrailContent(final EntityManager pm, final User user)
 	{
-		LoginDetails login = user.getLoginDetails("everytrail");
+		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
 		
 		for(Node picture : picturesResponse.getPictures())

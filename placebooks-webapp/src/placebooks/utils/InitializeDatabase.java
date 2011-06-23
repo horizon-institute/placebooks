@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 import placebooks.controller.EMFSingleton;
+import placebooks.controller.EverytrailHelper;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
 
@@ -29,7 +30,7 @@ public class InitializeDatabase
 	
 			final User userTest = new User("Everytrail Test User", "everytrail_test@live.co.uk",
 					encoder.encodePassword("testPass!", null));
-			final LoginDetails loginDetails = new LoginDetails(userTest, "Everytrail", "275539",
+			final LoginDetails loginDetails = new LoginDetails(userTest, EverytrailHelper.SERVICE_NAME, "275539",
 					"placebooks_everytrail_test", "testPass1!");
 			userTest.add(loginDetails);
 	

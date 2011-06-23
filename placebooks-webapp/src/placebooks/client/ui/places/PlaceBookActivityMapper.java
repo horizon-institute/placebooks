@@ -7,33 +7,32 @@ import com.google.gwt.place.shared.PlaceController;
 
 public class PlaceBookActivityMapper implements ActivityMapper
 {
-	private final PlaceController controller; 
-	
-	public PlaceBookActivityMapper(PlaceController controller)
+	private final PlaceController controller;
+
+	public PlaceBookActivityMapper(final PlaceController controller)
 	{
 		super();
 		this.controller = controller;
 	}
 
 	@Override
-	public Activity getActivity(Place place)
+	public Activity getActivity(final Place place)
 	{
-		if(place instanceof PlaceBookEditorPlace)
+		if (place instanceof PlaceBookEditorPlace)
 		{
-			return new PlaceBookEditorActivity(controller, ((PlaceBookEditorPlace)place).getPlaceBook(),((PlaceBookEditorPlace)place).getKey());
+			return new PlaceBookEditorActivity(controller, ((PlaceBookEditorPlace) place).getPlaceBook(),
+					((PlaceBookEditorPlace) place).getKey());
 		}
-		else if(place instanceof PlaceBookHomePlace)
+		else if (place instanceof PlaceBookHomePlace)
 		{
 			return new PlaceBookHomeActivity(controller);
 		}
-		else if(place instanceof PlaceBookEditorNewPlace)
+		else if (place instanceof PlaceBookEditorNewPlace)
 		{
-			return new PlaceBookEditorActivity(controller, ((PlaceBookEditorNewPlace)place).getPlaceBook(), null);
+			return new PlaceBookEditorActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook(), null);
 		}
-		else if(place instanceof PlaceBookPreviewPlace)
-		{
-			return new PlaceBookPreviewActivity(controller, ((PlaceBookPreviewPlace)place).getPlaceBook(),((PlaceBookPreviewPlace)place).getKey());
-		}
+		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity(controller,
+				((PlaceBookPreviewPlace) place).getPlaceBook(), ((PlaceBookPreviewPlace) place).getKey()); }
 		return null;
 	}
 

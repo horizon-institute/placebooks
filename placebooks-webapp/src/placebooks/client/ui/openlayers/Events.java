@@ -4,12 +4,14 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class Events extends JavaScriptObject
 {
-	protected Events() {}
-	
 	public final native static void stop(Event evt, boolean allowDefault)
 	/*-{
 		$wnd.OpenLayers.Event.stop(evt, allowDefault);
 	}-*/;
+
+	protected Events()
+	{
+	}
 
 	public final native void on(JavaScriptObject object)
 	/*-{

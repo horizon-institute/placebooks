@@ -4,8 +4,10 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class Bounds extends JavaScriptObject
 {
-	protected Bounds() {}
-	
+	protected Bounds()
+	{
+	}
+
 	public final native void extend(final Bounds bounds)
 	/*-{
 		this.extend(bounds);

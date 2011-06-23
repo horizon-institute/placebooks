@@ -11,11 +11,13 @@ public class Marker extends JavaScriptObject
 		var icon = new $wnd.OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png',size,offset);
 		return new $wnd.OpenLayers.Marker(lonLat,icon);
 	}-*/;
-	
-	protected Marker() {}
+
+	protected Marker()
+	{
+	}
 
 	public final native Events getEvents()
 	/*-{
 		return this.events;
-	}-*/;	
+	}-*/;
 }

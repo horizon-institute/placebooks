@@ -5,15 +5,18 @@ import com.google.gwt.place.shared.PlaceTokenizer;
 
 public class PlaceBookHomePlace extends Place
 {
-    public static class Tokenizer implements PlaceTokenizer<PlaceBookHomePlace> {
-        @Override
-        public String getToken(PlaceBookHomePlace place) {
-            return null;
-        }
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookHomePlace>
+	{
+		@Override
+		public PlaceBookHomePlace getPlace(final String token)
+		{
+			return new PlaceBookHomePlace();
+		}
 
-        @Override
-        public PlaceBookHomePlace getPlace(String token) {
-            return new PlaceBookHomePlace();
-        }
-    }
+		@Override
+		public String getToken(final PlaceBookHomePlace place)
+		{
+			return null;
+		}
+	}
 }

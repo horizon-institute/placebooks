@@ -4,31 +4,37 @@ import com.google.gwt.resources.client.CssResource;
 
 public interface PlaceBookCSS extends CssResource
 {
+	String canvas();
+
+	String dialog();
+
+	String dialogGlass();
+
 	String dragImage();
 
 	String dragShadow();
 
-	String panel();
+	String glassPanel();
 
 	String listItem();
-	
+
+	String mapLabel();
+
+	String menuItem();
+
+	String panel();
+
 	String panelcenter();
+
+	String panelInvisible();
 
 	String panelleft();
 
 	String panelright();
 
-	String textitem();
-	
-	String glassPanel();
-	
-	String canvas();	
-	
-	String menuItem();
-
 	String popupPanel();
-	
-	String mapLabel();
-	
+
+	String textitem();
+
 	String widget();
 }

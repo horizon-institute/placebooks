@@ -5,8 +5,12 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 
-public abstract class AbstractCallback implements RequestCallback 
+public abstract class AbstractCallback implements RequestCallback
 {
+	public void failure(final Request request)
+	{
+	}
+
 	@Override
 	public void onError(final Request request, final Throwable throwable)
 	{
@@ -27,10 +31,6 @@ public abstract class AbstractCallback implements RequestCallback
 			failure(request);
 		}
 	}
-	
-	public void failure(final Request request)
-	{
-	}
-	
+
 	public abstract void success(final Request request, final Response response);
 }

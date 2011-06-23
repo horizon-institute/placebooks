@@ -18,35 +18,35 @@ public class PlaceBookPreviewActivity extends AbstractActivity
 	private final String key;
 	private final PlaceBook placebook;
 	private final PlaceController placeController;
-	
-	public PlaceBookPreviewActivity(PlaceController controller, PlaceBook placebook, String key)
+
+	public PlaceBookPreviewActivity(final PlaceController controller, final PlaceBook placebook, final String key)
 	{
 		this.key = key;
 		this.placebook = placebook;
 		this.placeController = controller;
 	}
-	
+
 	@Override
-	public void start(AcceptsOneWidget panel, EventBus eventBus)
+	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		final PlaceBookCanvas canvas = new PlaceBookCanvas(placeController, new PlaceBookItemWidgetFactory());
-		if(placebook != null)
+		final PlaceBookCanvas canvas = new PlaceBookCanvas(placeController, new PlaceBookItemWidgetFactory(), false);
+		if (placebook != null)
 		{
 			canvas.updatePlaceBook(placebook);
 		}
 		else
 		{
 			PlaceBookService.getPlaceBook(key, new AbstractCallback()
-			{		
+			{
 				@Override
-				public void success(Request request, Response response)
+				public void success(final Request request, final Response response)
 				{
 					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					canvas.updatePlaceBook(placebook);				
+					canvas.updatePlaceBook(placebook);
 				}
 			});
 		}
-		
+
 		panel.setWidget(canvas);
 	}
 }

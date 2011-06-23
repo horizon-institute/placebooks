@@ -24,15 +24,15 @@ public class PlaceBookPreviewPlace extends Place
 		}
 	}
 
-	private final String placebookKey;
 	private final PlaceBook placebook;
-		
+	private final String placebookKey;
+
 	public PlaceBookPreviewPlace(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
-	
+
 	public PlaceBookPreviewPlace(final String placebookKey)
 	{
 		super();
@@ -44,7 +44,7 @@ public class PlaceBookPreviewPlace extends Place
 	{
 		return placebookKey;
 	}
-	
+
 	public PlaceBook getPlaceBook()
 	{
 		return placebook;

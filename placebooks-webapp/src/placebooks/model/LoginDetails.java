@@ -12,8 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -22,6 +22,10 @@ public class LoginDetails
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
+
+	@JsonIgnore
+	@Temporal(TIMESTAMP)
+	private Date lastSync;
 
 	@JsonIgnore
 	private String password;
@@ -35,10 +39,6 @@ public class LoginDetails
 	private String userid;
 
 	private String username;
-	
-	@JsonIgnore
-	@Temporal(TIMESTAMP)
-	private Date lastSync;
 
 	public LoginDetails(final User user, final String service, final String userid, final String username,
 			final String password)
@@ -58,12 +58,12 @@ public class LoginDetails
 	{
 		return id;
 	}
-	
-	public User getUser()
+
+	public Date getLastSync()
 	{
-		return user;
+		return lastSync;
 	}
-	
+
 	public String getPassword()
 	{
 		return password;
@@ -74,6 +74,11 @@ public class LoginDetails
 		return service;
 	}
 
+	public User getUser()
+	{
+		return user;
+	}
+
 	public String getUserID()
 	{
 		return userid;
@@ -82,5 +87,15 @@ public class LoginDetails
 	public String getUsername()
 	{
 		return username;
+	}
+
+	public void setLastSync()
+	{
+		lastSync = new Date();
+	}
+
+	public void setUserID(final String userID)
+	{
+		this.userid = userID;
 	}
 }

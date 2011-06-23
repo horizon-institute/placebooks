@@ -17,35 +17,35 @@ public class PlaceBookEditorActivity extends AbstractActivity
 	private final String key;
 	private final PlaceBook placebook;
 	private final PlaceController placeController;
-	
-	public PlaceBookEditorActivity(PlaceController controller, PlaceBook placebook, String key)
+
+	public PlaceBookEditorActivity(final PlaceController controller, final PlaceBook placebook, final String key)
 	{
 		this.key = key;
 		this.placebook = placebook;
 		this.placeController = controller;
 	}
-	
+
 	@Override
-	public void start(AcceptsOneWidget panel, EventBus eventBus)
+	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		final PlaceBookEditor editor = new PlaceBookEditor(placeController);
-		if(placebook != null)
+		if (placebook != null)
 		{
 			editor.updatePlaceBook(placebook);
 		}
 		else
 		{
 			PlaceBookService.getPlaceBook(key, new AbstractCallback()
-			{		
+			{
 				@Override
-				public void success(Request request, Response response)
+				public void success(final Request request, final Response response)
 				{
 					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					editor.updatePlaceBook(placebook);				
+					editor.updatePlaceBook(placebook);
 				}
 			});
-		}	
-		
+		}
+
 		panel.setWidget(editor);
 	}
 }

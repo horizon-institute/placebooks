@@ -49,17 +49,17 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 
 	@UiField
 	MousePanel resizeSection;
-	
+
 	@UiField
 	Panel widgetPanel;
 
 	private DropMenu dropMenu;
-	
-	private Widget widget;
 
 	private final List<MenuItem> menuItems = new ArrayList<MenuItem>();
 
 	private SaveTimer saveTimer;
+
+	private Widget widget;
 
 	public PlaceBookItemWidgetFrame(final SaveTimer timer, final PlaceBookItem item)
 	{
@@ -67,28 +67,16 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 		initWidget(uiBinder.createAndBindUi(this));
 		this.saveTimer = timer;
 	}
-	
-	void addMenuItem(final MenuItem menuItem)
-	{
-		menuItems.add(menuItem);
-	}
-	
-	@Override
-	void setContentWidget(final Widget widget)
-	{
-		this.widget = widget;
-		widgetPanel.add(widget);
-	}
 
-	@Override
-	protected Widget getContentWidget()
-	{
-		return widget;
-	}
-	
 	public void markChanged()
 	{
 		saveTimer.markChanged();
+	}
+
+	@Override
+	public void setTop(final int top)
+	{
+		getWidget().getElement().getStyle().setTop(top - 20, Unit.PX);
 	}
 
 	void addDragStartHandler(final MouseDownHandler handler)
@@ -96,16 +84,15 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 		dragSection.addMouseDownHandler(handler);
 	}
 
+	void addMenuItem(final MenuItem menuItem)
+	{
+		menuItems.add(menuItem);
+	}
+
 	void addMouseOutHandler(final MouseOutHandler handler)
 	{
 		frame.addMouseOutHandler(handler);
 	}
-	
-	@Override	
-	public void setTop(final int top)
-	{
-		getWidget().getElement().getStyle().setTop(top - 20, Unit.PX);
-	}	
 
 	void addMouseOverHandler(final MouseOverHandler handler)
 	{
@@ -121,14 +108,6 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 	{
 		return getItem().getIcon();
 	}
-	
-	void setContentHeight(final int heightPX)
-	{
-		final int heightPCT = (int) ((heightPX * HEIGHT_PRECISION) / getPanel().getOffsetHeight());
-		getItem().setParameter("height", heightPCT);
-		saveTimer.markChanged();
-		// Assuming resize() will be called (via reflow on the panel) so don't set height here
-	}	
 
 	@UiHandler("menuButton")
 	void handleMenuClick(final ClickEvent event)
@@ -155,6 +134,21 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 		resizeSection.getElement().getStyle().setOpacity(0);
 		resizeSection.getElement().getStyle().setZIndex(-50);
 		resizeSection.getElement().getStyle().setCursor(Cursor.DEFAULT);
+	}
+
+	void setContentHeight(final int heightPX)
+	{
+		final int heightPCT = (int) ((heightPX * HEIGHT_PRECISION) / getPanel().getOffsetHeight());
+		getItem().setParameter("height", heightPCT);
+		saveTimer.markChanged();
+		// Assuming resize() will be called (via reflow on the panel) so don't set height here
+	}
+
+	@Override
+	void setContentWidget(final Widget widget)
+	{
+		this.widget = widget;
+		widgetPanel.add(widget);
 	}
 
 	void setDropMenu(final DropMenu dropMenu)
@@ -200,5 +194,11 @@ public class PlaceBookItemWidgetFrame extends PlaceBookItemWidget
 	{
 		frame.removeStyleName(Resources.INSTANCE.style().dragShadow());
 		frame.getElement().getStyle().setZIndex(0);
+	}
+
+	@Override
+	protected Widget getContentWidget()
+	{
+		return widget;
 	}
 }

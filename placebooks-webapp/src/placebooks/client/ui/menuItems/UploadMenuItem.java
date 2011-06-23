@@ -1,5 +1,9 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.resources.Resources;
+import placebooks.client.ui.PlaceBookItemWidgetFrame;
+import placebooks.client.ui.widget.MenuItem;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -7,29 +11,25 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-
-import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookItemWidgetFrame;
-import placebooks.client.ui.widget.MenuItem;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 public class UploadMenuItem extends MenuItem
 {
 	private final PlaceBookItemWidgetFrame item;
-	
-	public UploadMenuItem(String title, final PlaceBookItemWidgetFrame item)
+
+	public UploadMenuItem(final String title, final PlaceBookItemWidgetFrame item)
 	{
 		super(title);
-		
+
 		this.item = item;
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -38,7 +38,8 @@ public class UploadMenuItem extends MenuItem
 		final FileUpload upload = new FileUpload();
 		final Hidden hidden = new Hidden("itemKey", item.getItem().getKey());
 		final PopupPanel dialogBox = new PopupPanel(false, true);
-		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4).toLowerCase();
+		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4)
+				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
 
 		final Button closeButton = new Button("Upload", new ClickHandler()

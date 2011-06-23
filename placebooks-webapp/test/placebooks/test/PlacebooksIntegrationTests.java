@@ -130,7 +130,7 @@ public class PlacebooksIntegrationTests
 	}*/
 
 	@Test
-	public void testGetEverytrailData()
+	public void testGetEverytrailData() throws Exception
 	{
 		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
 		pacd.getEverytrailData();

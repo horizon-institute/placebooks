@@ -6,14 +6,14 @@ import placebooks.client.ui.widget.MenuItem;
 public class ShowTrailMenuItem extends MenuItem
 {
 	private final PlaceBookItemWidgetFrame item;
-	
-	public ShowTrailMenuItem(String title, final PlaceBookItemWidgetFrame item)
+
+	public ShowTrailMenuItem(final String title, final PlaceBookItemWidgetFrame item)
 	{
 		super(title);
-		
+
 		this.item = item;
 	}
-	
+
 	@Override
 	public boolean isEnabled()
 	{

@@ -779,20 +779,30 @@ public class PlaceBooksAdminControllerDebug
 		return new ModelAndView("message", "text", "Done");
 	}
 
-
-
-	// TODO: total hack below.
 	@RequestMapping(value = "/admin/everytrail")
-	public void getEverytrailData()
+	public void getEverytrailData() throws Exception
 	{
 		EntityManager entityManager = EMFSingleton.getEntityManager();
-		User testUser = UserManager.getUser(entityManager, "everytrail_test@live.co.uk");
-		LoginDetails details = testUser.getLoginDetails("Everytrail");		
-
+		User testUser = UserManager.getCurrentUser(entityManager);
+		LoginDetails details = testUser.getLoginDetails(EverytrailHelper.SERVICE_NAME);		
+		if(details == null)
+		{
+			return;
+		}
+		
 		EverytrailLoginResponse loginResponse = 
 			EverytrailHelper.UserLogin(details.getUsername(), 
 					details.getPassword());
 
+		if(loginResponse.getStatus().equals("error"))
+		{
+			throw new Exception("Everytrail Login Failed");
+		}
+		
+		entityManager.getTransaction().begin();
+		// Save user id
+		details.setUserID(loginResponse.getValue());
+		entityManager.getTransaction().commit();		
 		EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
 
 		for (Node trip : trips.getTrips())

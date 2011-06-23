@@ -7,9 +7,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 
 public class PaletteBackItem extends PaletteItem
 {
-	private final PaletteFolderItem parent;
+	private final PaletteFolder parent;
 
-	public PaletteBackItem(final String name, final PaletteFolderItem parent, final PlaceBookPalette palette)
+	public PaletteBackItem(final String name, final PaletteFolder parent, final Palette palette)
 	{
 		super();
 		this.parent = parent;
@@ -27,7 +27,7 @@ public class PaletteBackItem extends PaletteItem
 		});
 	}
 
-	public PaletteFolderItem getFolderParent()
+	public PaletteFolder getFolderParent()
 	{
 		return parent;
 	}

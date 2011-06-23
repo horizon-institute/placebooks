@@ -28,8 +28,9 @@ public class EditablePanel extends HTMLPanel implements HasKeyUpHandlers
 		getElement().setAttribute("contentEditable", "true");
 	}
 
+	@Override
 	public HandlerRegistration addKeyUpHandler(final KeyUpHandler keyUpHandler)
 	{
-		return addDomHandler(keyUpHandler, KeyUpEvent.getType());		
+		return addDomHandler(keyUpHandler, KeyUpEvent.getType());
 	}
 }
