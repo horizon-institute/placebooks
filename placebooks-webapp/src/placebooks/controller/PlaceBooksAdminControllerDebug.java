@@ -824,7 +824,7 @@ public class PlaceBooksAdminControllerDebug
 			EverytrailPicturesResponse picturesResponse = 	
 				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword());
 
-			Vector<Node> pictures = picturesResponse.getPictures();
+			Vector<Node> pictures = picturesResponse.getPicturesMap();
 
 			for (Node picture : pictures)
 			{
