@@ -28,6 +28,8 @@ public interface Resources extends ClientBundle
 	ImageResource progress();
 
 	ImageResource progress2();
+	
+	ImageResource bullet_arrow_down();	
 
 	ImageResource progress3();
 

@@ -67,7 +67,7 @@ public class PlaceBookHome extends Composite
 		PlaceBookService.getShelf(new AbstractCallback()
 		{
 			@Override
-			public void failure(final Request request)
+			public void failure(final Request request, final Response response)
 			{
 				showLogin();
 			}
@@ -81,7 +81,7 @@ public class PlaceBookHome extends Composite
 				}
 				catch (final Exception e)
 				{
-					failure(request);
+					failure(request, response);
 				}
 			}
 		});
@@ -118,7 +118,7 @@ public class PlaceBookHome extends Composite
 				}
 				catch (final Exception e)
 				{
-					failure(request);
+					failure(request, response);
 				}
 			}
 		}));

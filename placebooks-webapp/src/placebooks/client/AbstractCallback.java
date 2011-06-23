@@ -7,7 +7,7 @@ import com.google.gwt.http.client.Response;
 
 public abstract class AbstractCallback implements RequestCallback
 {
-	public void failure(final Request request)
+	public void failure(final Request request, final Response response)
 	{
 	}
 
@@ -15,7 +15,7 @@ public abstract class AbstractCallback implements RequestCallback
 	public void onError(final Request request, final Throwable throwable)
 	{
 		GWT.log("Error: " + request.toString(), throwable);
-		failure(request);
+		failure(request, null);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public abstract class AbstractCallback implements RequestCallback
 		}
 		else
 		{
-			failure(request);
+			failure(request, response);
 		}
 	}
 

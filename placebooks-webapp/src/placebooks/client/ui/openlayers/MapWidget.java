@@ -9,11 +9,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapWidget extends SimplePanel
 {
-	private final static Projection latLonProjection = Projection.create("ESPG:4326");
+	private final static Projection LATLON_PROJECTION = Projection.create("ESPG:4326");
 
 	private final static String POINT_PREFIX = "POINT (";
-
-	// private final PlaceBookCanvas canvas;
 
 	private final String id;
 
@@ -37,7 +35,6 @@ public class MapWidget extends SimplePanel
 	{
 		getElement().setId("mapPanel" + id);
 		this.id = id;
-		// this.canvas = canvas;
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		add(interactionLabel);
 		interactionLabel.setVisible(false);
@@ -69,7 +66,7 @@ public class MapWidget extends SimplePanel
 							final float lat = Float.parseFloat(latLong.substring(0, comma));
 							final float lon = Float.parseFloat(latLong.substring(comma + 1));
 							final Marker marker = Marker.create(LonLat.create(lon, lat)
-									.transform(latLonProjection, map.getProjection()));
+									.transform(LATLON_PROJECTION, map.getProjection()));
 							// marker.getEvents().register("click", marker, new EventHandler()
 							// {
 							// @Override
@@ -101,7 +98,7 @@ public class MapWidget extends SimplePanel
 		this.visible = visible;
 		if (map != null)
 		{
-			createRoute();
+			createDataLayers();
 		}
 	}
 
@@ -117,13 +114,11 @@ public class MapWidget extends SimplePanel
 			protected void handleEvent(final Event event)
 			{
 				final LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(),
-																						latLonProjection);
+																						LATLON_PROJECTION);
 				GWT.log("Clicked at " + lonLat.getLat() + "N, " + lonLat.getLon() + "E");
 				if (positionItem != null)
 				{
 					positionItem.getItem().setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
-					// editor.markChanged();
-					// refreshMarkers();
 				}
 			}
 		}.getFunction());
@@ -141,11 +136,11 @@ public class MapWidget extends SimplePanel
 
 		if (url != null)
 		{
-			createRoute();
+			createDataLayers();
 		}
 	}
 
-	private void createRoute()
+	private void createDataLayers()
 	{
 		if (routeLayer != null)
 		{
@@ -157,7 +152,7 @@ public class MapWidget extends SimplePanel
 			map.removeLayer(markerLayer);
 		}
 
-		routeLayer = RouteLayer.create(id, url);
+		routeLayer = RouteLayer.create(id, url, LATLON_PROJECTION);
 		try
 		{
 			if (loadHandler != null)
@@ -192,18 +187,21 @@ public class MapWidget extends SimplePanel
 			if (markerLayer != null)
 			{
 				bounds = markerLayer.getDataExtent();
+				GWT.log("" + bounds);
 			}
 			if (routeLayer != null)
 			{
 				if (bounds == null)
 				{
 					bounds = routeLayer.getDataExtent();
+					GWT.log(""+ bounds);					
 				}
 				else
 				{
 					bounds.extend(routeLayer.getDataExtent());
 				}
 			}
+			GWT.log("" + bounds);			
 			if (bounds != null)
 			{
 				map.zoomToExtent(bounds);

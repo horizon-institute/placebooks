@@ -2,7 +2,7 @@ package placebooks.client.ui.openlayers;
 
 public class RouteLayer extends Layer
 {
-	public final static native RouteLayer create(String name, String url)
+	public final static native RouteLayer create(String name, String url, Projection project)
 	/*-{
 		return new $wnd.OpenLayers.Layer.Vector(name, {
 			protocol : new $wnd.OpenLayers.Protocol.HTTP({
@@ -19,7 +19,7 @@ public class RouteLayer extends Layer
 				strokeWidth : 3,
 				strokeOpacity : 0.7,
 			},
-			projection : new $wnd.OpenLayers.Projection("EPSG:4326")
+			projection : project
 		});
 	}-*/;
 

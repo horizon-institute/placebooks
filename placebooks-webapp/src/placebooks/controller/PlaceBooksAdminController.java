@@ -82,9 +82,11 @@ public class PlaceBooksAdminController
 		{
 			try
 			{
-			log.info("User not logged in");
-			res.setContentType("application/json");
-			res.getWriter().write("User not logged in");
+				log.info("User not logged in");
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);				
+				res.setContentType("application/json");
+				res.getWriter().write("User not logged in");
+				return;
 			}
 			catch(Exception e)
 			{

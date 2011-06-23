@@ -7,6 +7,7 @@ import java.util.List;
 
 import placebooks.client.resources.Resources;
 
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -142,6 +143,7 @@ public class PlaceBookPanel extends SimplePanel
 
 	private int layoutItem(final PlaceBookItemWidget item, final int height, final int order, final boolean finished)
 	{
+		item.getElement().getStyle().setPosition(Position.ABSOLUTE);
 		item.getElement().getStyle().setWidth(panelWidth, Unit.PCT);
 		item.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
 		item.setTop(height);
