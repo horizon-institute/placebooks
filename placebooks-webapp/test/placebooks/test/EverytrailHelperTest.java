@@ -84,7 +84,7 @@ public class EverytrailHelperTest
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(user_id);
 		assertEquals("success", picturesResponse.getStatus());
 		// As default should return 10 pictures starting at 0 and test user has about 4 pictures
-		assertEquals(36, picturesResponse.getPictures().size());
+		assertEquals(36, picturesResponse.getPicturesMap().size());
 	}
 
 	/**

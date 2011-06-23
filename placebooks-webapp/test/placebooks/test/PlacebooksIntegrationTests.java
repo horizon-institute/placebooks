@@ -80,7 +80,7 @@ public class PlacebooksIntegrationTests
 
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 
-		Vector<Node> pictures = picturesResponse.getPictures();
+		Vector<Node> pictures = picturesResponse.getPicturesMap();
 
 		ImageItem imageItem = new ImageItem(testUser, null, null, null);
 		ItemFactory.toImageItem(testUser, pictures.firstElement(), imageItem);

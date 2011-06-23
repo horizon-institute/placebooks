@@ -3,8 +3,8 @@
  */
 package placebooks.model;
 
-import java.util.Vector;
-
+import java.util.Collection;
+import java.util.Map;
 import org.w3c.dom.Node;
 
 /**
@@ -13,23 +13,32 @@ import org.w3c.dom.Node;
  */
 public class EverytrailPicturesResponse
 {
-	private Vector<Node> pictures;
+	private Map<String, Node> picturesMap;
 	private String status;
 
 	/**
 	 * 
 	 */
-	public EverytrailPicturesResponse(final String status, final Vector<Node> pictures)
+	public EverytrailPicturesResponse(final String status, final Map<String, Node> picturesMap)
 	{
 		this.status = status;
-		this.pictures = pictures;
+		this.picturesMap = picturesMap;
 	}
 
-	public Vector<Node> getPictures()
+	/**
+	 * Get a map listing pictures with key of trip_id
+	 * @return Map<String, Node>
+	 */
+	public Map<String, Node> getPicturesMap()
 	{
-		return this.pictures;
+		return this.picturesMap;
 	}
 
+	public Collection<Node> getPictures()
+	{
+		return this.picturesMap.values();
+	}
+	
 	public String getStatus()
 	{
 		return this.status;

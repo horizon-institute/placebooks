@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -231,7 +232,7 @@ public class EverytrailHelper
 		{
 			status_to_return = "success";
 			final Vector<Node> trips = tripsData.getTrips();
-			// log.debug("Got " + trips.size() + " trips, geting pictures...");
+			// log.debug("Got " + trips.size() + " trips, getting pictures...");
 			for (int tripListIndex = 0; tripListIndex < trips.size(); tripListIndex++)
 			{
 				final Node tripNode = trips.elementAt(tripListIndex);
@@ -240,8 +241,8 @@ public class EverytrailHelper
 				log.debug("Getting pictures for trip: " + tripId);
 				final EverytrailPicturesResponse tripPics = EverytrailHelper.TripPictures(tripId, username, password);
 
-				log.debug("Pictures in trip: " + tripPics.getPictures().size());
-				final Vector<Node> tripPicList = tripPics.getPictures();
+				log.debug("Pictures in trip: " + tripPics.getPicturesMap().size());
+				final Map<String, Node> tripPicList = tripPics.getPicturesMap();
 				for (int picturesDataIndex = 0; picturesDataIndex < tripPicList.size(); picturesDataIndex++)
 				{
 					final Node picture_node = tripPicList.get(picturesDataIndex);
@@ -924,11 +925,12 @@ public class EverytrailHelper
 	{
 		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
+		Map<String, Node> pics = picturesResponse.getPicturesMap();
 		
-		for(Node picture : picturesResponse.getPictures())
+		for(String key : pics.keySet() )
 		{
 			ImageItem item = new ImageItem(user, null, null, null);
-			ItemFactory.toImageItem(user, picture, item);
+			ItemFactory.toImageItem(user, pics.get(key), item, key);
 		}
 	}
 	
