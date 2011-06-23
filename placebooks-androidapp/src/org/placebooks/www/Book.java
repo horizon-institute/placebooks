@@ -20,6 +20,11 @@ public class Book {
 	private ArrayList<Point> page1 = new ArrayList<Point>();
 	private ArrayList<Point> page2 = new ArrayList<Point>();
 	private ArrayList<Point> page3 = new ArrayList<Point>();
+	private ArrayList<Point> page4 = new ArrayList<Point>();
+	private ArrayList<Point> page5 = new ArrayList<Point>();
+	private ArrayList<Point> page6 = new ArrayList<Point>();
+
+	private ArrayList<Long> coordinates = new ArrayList<Long>();
 
 
 	/*
@@ -32,6 +37,7 @@ public class Book {
 	ArrayList<AudioItem> audioItems = new ArrayList<AudioItem>();
 	ArrayList<MapImageItem> mapImageItems = new ArrayList<MapImageItem>();
 	ArrayList<WebBundleItem> webBundleItems = new ArrayList<WebBundleItem>();
+	
 
 	public ArrayList<WebBundleItem> getWebBundle(){
 		return this.webBundleItems;
@@ -50,6 +56,16 @@ public class Book {
 	public ArrayList<Point> getPage3(){
 		return page3;
 	}
+	public ArrayList<Point> getPage4(){
+		return page4;
+	}
+	public ArrayList<Point> getPage5(){
+		return page5;
+	}
+	public ArrayList<Point> getPage6(){
+		return page6;
+	}
+	
 	
 	//get the placebook key (ID itself)
 	public String getKey() {
@@ -104,14 +120,29 @@ public class Book {
 			page1.add(pItems);
 		}
 		//add to page 2
-		if(panel == 1){
+		else if(panel == 1){
 			page2.add(pItems);
 
 		}
 		//add to page 3
-		if(panel == 2){
+		else if(panel == 2){
 			page3.add(pItems);
 
+		}
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
 		}
 		
 	}
@@ -136,12 +167,27 @@ public class Book {
 			page1.add(pItems);
 		}
 		//add to page 2
-		if(panel == 1){
+		else if(panel == 1){
 			page2.add(pItems);
 		}
 		//add to page 3
-		if(panel == 2){
+		else if(panel == 2){
 			page3.add(pItems);
+		}
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
 		}
 		
 	}
@@ -165,13 +211,28 @@ public class Book {
 
 		}
 		//add to page 2
-		if(panel == 1){
+		else if(panel == 1){
 			page2.add(pItems);
 
 		}
 		//add to page 3
-		if(panel == 2){
+		else if(panel == 2){
 			page3.add(pItems);
+		}
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
 		}
 		
 	}
@@ -196,15 +257,29 @@ public class Book {
 
 		}
 		//add to page 2
-		if(panel == 1){
+		else if(panel == 1){
 			page2.add(pItems);
 
 		}
 		//add to page 3
-		if(panel == 2){
+		else if(panel == 2){
 			page3.add(pItems);
 		}
-		
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
+		}
 	}
 	
 	for(MapImageItem item: mapImageItems){
@@ -215,21 +290,53 @@ public class Book {
 		int order = item.getOrder();
 		String mapKey = item.getKey();
 		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array, ignores the Z-Value , so its just xy		
+
+		//System.out.println("TCoordinates ARE = " + arrCoordinates[0].toString());
+		
+		/*
+		for (int i=0; i<arrCoordinates.length; i++){
+			coordinates.add(arrCoordinates[i]);
+		}*/
+		/*
+		for(int i=0; i<arrCoordinates.length; i++){
+			test.add(arrCoordinates[i].toString());
+		}*/
+		
 
 		
 		//Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
 		Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
 
-		
+		//add to page 1
 		if(panel == 0){
 			page1.add(pItems);
+			
 		}
-		if(panel == 1){
+		//add to page 2
+		else if(panel == 1){
 			page2.add(pItems);
+			
 		}
-		if(panel == 2){
+		//add to page 3
+		else if(panel == 2){
 			page3.add(pItems);
+			
+		}
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
 		}
 	}
 	
@@ -242,18 +349,40 @@ public class Book {
 		String wbKey = item.getKey();
 		Geometry geom = item.getGeometry();
 		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+		
 
 		//Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
 		Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
 		
+		//add to page 1
 		if(panel == 0){
 			page1.add(pItems);
+			
 		}
-		if(panel == 1){
+		//add to page 2
+		else if(panel == 1){
 			page2.add(pItems);
+		
 		}
-		if(panel == 2){
+		//add to page 3
+		else if(panel == 2){
 			page3.add(pItems);
+		
+		}
+		//add to page 4
+		else if(panel == 3){
+			page4.add(pItems);
+			
+		}
+		//add to page 5
+		else if(panel == 4){
+			page5.add(pItems);
+			
+		}
+		//add to page 6
+		else if(panel == 5){
+			page6.add(pItems);
+			
 		}
 		
 	}
@@ -262,6 +391,9 @@ public class Book {
 	Collections.sort(page1);
 	Collections.sort(page2);
 	Collections.sort(page3);
+	Collections.sort(page4);
+	Collections.sort(page5);
+	Collections.sort(page6);
 	
    return key ;
    

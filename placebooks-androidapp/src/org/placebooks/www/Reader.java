@@ -23,6 +23,7 @@ import org.placebooks.www.Book;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.util.Log;
 import android.view.View;
 
 
@@ -65,10 +66,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import 	android.net.Uri;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+import android.os.Parcelable;
 
 
 //Implement a Listener (added the interface to the base class)
-public class Reader extends Activity {
+public class Reader extends Activity {//implements Parcelable {
 	
 	
 	//TextView to display error if placebook doesn't display properly	
@@ -78,9 +80,15 @@ public class Reader extends Activity {
 	private ScrollView sv;		//scroll view that wraps the linear layout
 	private ScrollView sv2;		//scroll view for page 2
 	private ScrollView sv3;		//scroll view for page 3
+	private ScrollView sv4;		//scroll view for page 4
+	private ScrollView sv5;		//scroll view for page 5
+	private ScrollView sv6;		//scroll view for page 6
 	private LinearLayout ll;	//main linear layout page 1
 	private LinearLayout ll2;	//page 2
 	private LinearLayout ll3;	//page 3
+	private LinearLayout ll4;	//page 4
+	private LinearLayout ll5;	//page 5
+	private LinearLayout ll6;	//page 6
 	private LinearLayout llAudio;	//audio layout
 	
 	//Page flipper and swipe gesture constants
@@ -112,22 +120,40 @@ public class Reader extends Activity {
 	ArrayList<String> page1Type = new ArrayList<String>();
 	ArrayList<String> page2Type = new ArrayList<String>();
 	ArrayList<String> page3Type = new ArrayList<String>();
+	ArrayList<String> page4Type = new ArrayList<String>();
+	ArrayList<String> page5Type = new ArrayList<String>();
+	ArrayList<String> page6Type = new ArrayList<String>();
 	
 	ArrayList<String> page1Data = new ArrayList<String>();
 	ArrayList<String> page2Data = new ArrayList<String>();
 	ArrayList<String> page3Data = new ArrayList<String>();
+	ArrayList<String> page4Data = new ArrayList<String>();
+	ArrayList<String> page5Data = new ArrayList<String>();
+	ArrayList<String> page6Data = new ArrayList<String>();
 	
 	ArrayList<String> page1Url = new ArrayList<String>();
 	ArrayList<String> page2Url = new ArrayList<String>();
 	ArrayList<String> page3Url = new ArrayList<String>();
+	ArrayList<String> page4Url = new ArrayList<String>();
+	ArrayList<String> page5Url = new ArrayList<String>();
+	ArrayList<String> page6Url = new ArrayList<String>();
 	
 	ArrayList<String> page1Keys = new ArrayList<String>();
 	ArrayList<String> page2Keys = new ArrayList<String>();
 	ArrayList<String> page3Keys = new ArrayList<String>();
+	ArrayList<String> page4Keys = new ArrayList<String>();
+	ArrayList<String> page5Keys = new ArrayList<String>();
+	ArrayList<String> page6Keys = new ArrayList<String>();
 	
 	ArrayList<Coordinate[]> page1Geometries = new ArrayList<Coordinate[]>();
 	ArrayList<Coordinate[]> page2Geometries = new ArrayList<Coordinate[]>();
 	ArrayList<Coordinate[]> page3Geometries = new ArrayList<Coordinate[]>();
+	ArrayList<Coordinate[]> page4Geometries = new ArrayList<Coordinate[]>();
+	ArrayList<Coordinate[]> page5Geometries = new ArrayList<Coordinate[]>();
+	ArrayList<Coordinate[]> page6Geometries = new ArrayList<Coordinate[]>();
+	
+
+	
 
 	//Image Variables
 	private ImageView imgView;
@@ -146,6 +172,16 @@ public class Reader extends Activity {
 	
 	//Map Image Variables
 	private ImageView mapImgView;
+	private double c_x1;
+	private double c_y1;
+	private double c_x2;
+	private double c_y2;
+	private double c_x3;
+	private double c_y3;
+	private double c_x4;
+	private double c_y4;
+	private double c_x5;
+	private double c_y5;
 	
 
 	 		 @Override
@@ -160,7 +196,7 @@ public class Reader extends Activity {
 			         */
 			        Intent intent = getIntent();
 			        if(intent != null) packagePath = intent.getStringExtra("packagePath");
-			        	        
+			        
 			        	
 			        //set the content view to the xml reader file
 			        setContentView(R.layout.reader);
@@ -171,7 +207,23 @@ public class Reader extends Activity {
 			        ll2 = (LinearLayout)findViewById(R.id.linearLayout2);
 			        sv3 = (ScrollView)findViewById(R.id.scroller3);	          
 			        ll3 = (LinearLayout)findViewById(R.id.linearLayout3);
+			        sv4 = (ScrollView)findViewById(R.id.scroller4);
+			        ll4 = (LinearLayout)findViewById(R.id.linearLayout4);
+			        sv5 = (ScrollView)findViewById(R.id.scroller5);
+			        ll5 = (LinearLayout)findViewById(R.id.linearLayout5);
+			        sv6 = (ScrollView)findViewById(R.id.scroller6);
+			        ll6 = (LinearLayout)findViewById(R.id.linearLayout6); 
+			        
+			        
 			        gestureDetector = new GestureDetector(new MyGestureDetector());
+			        gestureListener = new View.OnTouchListener() {
+			            public boolean onTouch(View v, MotionEvent event) {
+			                if (gestureDetector.onTouchEvent(event)) {
+			                    return true;
+			                }
+			                return false;
+			            }
+			        };
 			        
 			        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
 			        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
@@ -182,117 +234,212 @@ public class Reader extends Activity {
 
 			        slideRightIn.setDuration(350);
 			        slideRightOut.setDuration(400);
-					      	       	        
+			        
+			        sv.setOnTouchListener(gestureListener);
+			        sv2.setOnTouchListener(gestureListener);
+			        sv3.setOnTouchListener(gestureListener);
+			        sv4.setOnTouchListener(gestureListener);
+			        sv5.setOnTouchListener(gestureListener);
+			        sv6.setOnTouchListener(gestureListener);
+			        
+					      	
+			        
+			        //System.out.println("reader coordinates = " + arr);
+				    //Log.v("MyActivity", "page 1coordinates =" + arr );
+			        
 			        try {
 				        getMyXML();		//call method to parse XML		
 				        
-					  
-				  for (int i=0;i<page1Data.size();i++ ){
-					 
-					  
-					 if(page1Type.get(i).toString().equalsIgnoreCase("Text")){
-						 
-						 displayText(page1Data.get(i).toString(), ll);		//display text (stored in next element of array) on page 1 (ll)
-						
-					 }
-					 else if (page1Type.get(i).toString().equalsIgnoreCase("Image")){
-						 displayImage(page1Data.get(i).toString(), ll);
-						 
-					 }
-					 else if (page1Type.get(i).toString().equalsIgnoreCase("Video")){
-						 displayVideo(page1Data.get(i).toString(), ll);		
-					 }
-					 else if (page1Type.get(i).toString().equalsIgnoreCase("Audio")){
-						 displayAudio(page1Data.get(i).toString(), ll);	
-						 
-					 }
-					 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
-						 displayMapImage(page1Data.get(i).toString(), ll);
-						 
-						/* TextView tv = new TextView(this);
-						 tv.setText(page1Data.get(i).toString());
-						 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-						 ll.addView(tv);
-						 */
-					 }
-					 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-					      displayWebBundle(page1Data.get(i),page1Url.get(i), page1Keys.get(i), ll ); //filename, url, page
-					 }
-					 
-				  	 
-				//	  TextView tv = new TextView(this);
-				//	  tv.setText(page1Types.get(i).toString());
-				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				//	  ll.addView(tv);
-					 
-					 
-				  } 
-				  		  
-				  for (int i=0;i<page2Data.size();i++ ){
-					  
-					  if(page2Type.get(i).toString().equalsIgnoreCase("TEXT")){
-							 displayText(page2Data.get(i).toString(), ll2);		//display text (stored in next element of array) on page 2 (ll2)
-						 }
-						else if (page2Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-							 displayImage(page2Data.get(i).toString(), ll2);
-							
-						 }
-						 else if (page2Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-							 displayVideo(page2Data.get(i).toString(), ll2);	
-							 TextView tv = new TextView(this);
-							 tv.setText("page 2 data = " + page2Data.get(i));
-						     tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-							 ll2.addView(tv);
-						 }
-						 else if (page2Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-							 displayAudio(page2Data.get(i).toString(), ll2);	
-						 }
-						 else if(page2Type.get(i).toString().equalsIgnoreCase("MapImage")){
-							 displayMapImage(page2Data.get(i).toString(), ll2);
+					        /*for (int i = 0; i<coordinates.size(); i++){
+						         TextView tv = new TextView(this);
+								 //tv.setText(coordinates.get(i).toString());
+						         System.out.println(coordinates.get(i));
+								 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+								 ll.addView(tv);
+					        	
+					        }*/
+						  
+						  for (int i=0;i<page1Data.size();i++ ){
+							 
+							  
+							 if(page1Type.get(i).toString().equalsIgnoreCase("Text")){
+								 
+								 displayText(page1Data.get(i).toString(), ll);		//display text (stored in next element of array) on page 1 (ll)
+								
+							 }
+							 else if (page1Type.get(i).toString().equalsIgnoreCase("Image")){
+								 displayImage(page1Data.get(i).toString(), ll);
+								 
+							 }
+							 else if (page1Type.get(i).toString().equalsIgnoreCase("Video")){
+								 displayVideo(page1Data.get(i).toString(), ll);		
+							 }
+							 else if (page1Type.get(i).toString().equalsIgnoreCase("Audio")){
+								 displayAudio(page1Data.get(i).toString(), ll);	
+								 
+							 }
+							 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
+								 displayMapImage(page1Data.get(i).toString(), page1Geometries.get(i), ll);
+								 
+								 
+								 //Coordinate[] arrCo = page1Geometries.get(i);
+							     //System.out.println("page1Coordinates x value= " + arrCo[0].x);
+							     //System.out.println("page1Coordinates y value= " + arrCo[0].y);
 
-						 }
-						 else if (page2Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-						      displayWebBundle(page2Data.get(i),page2Url.get(i), page2Keys.get(i), ll2 ); //filename, url, page
-						 }
-					  
-					  
-				//	  TextView tv = new TextView(this);
-				//	  tv.setText(page2Types.get(i));
-				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				//	  ll2.addView(tv);
-					  
-				  }
-		         for (int i=0;i<page3Data.size();i++ ){
-					 
-					  if(page3Type.get(i).toString().equalsIgnoreCase("TEXT")){
-							 displayText(page3Data.get(i).toString(), ll3);		//display text (stored in next element of array) on page 3 (ll3)
-						 }
-						 else if (page3Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-							 displayImage(page3Data.get(i).toString(), ll3);
-						 }
-						 else if (page3Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-							 displayVideo(page3Data.get(i).toString(), ll3);		
-						 }
-						 else if (page3Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-							 displayAudio(page3Data.get(i).toString(), ll3);	
-						 }
-						 else if(page3Type.get(i).toString().equalsIgnoreCase("MapImage")){
-							 displayMapImage(page3Data.get(i).toString(), ll3);
 
-						 }
-						 else if (page3Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-						      displayWebBundle(page3Data.get(i),page3Url.get(i), page3Keys.get(i), ll3 ); //filename, url, page
-						 }
-					  
-					  
-				//	  TextView tv = new TextView(this);
-				//	  tv.setText(page3Items.get(i));
-				//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-			   //     ll3.addView(tv);
-				  }
+								/* TextView tv = new TextView(this);
+								 tv.setText(page1Data.get(i).toString());
+								 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+								 ll.addView(tv);
+								 */
+							 }
+							 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+							      displayWebBundle(page1Data.get(i),page1Url.get(i), page1Keys.get(i), ll ); //filename, url, page
+							 }
+							 
+						  	 
+						//	  TextView tv = new TextView(this);
+						//	  tv.setText(page1Types.get(i).toString());
+						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						//	  ll.addView(tv);
+							 
+							 
+						  } 
+						  		  
+						  for (int i=0;i<page2Data.size();i++ ){
+							  
+							  if(page2Type.get(i).toString().equalsIgnoreCase("TEXT")){
+									 displayText(page2Data.get(i).toString(), ll2);		//display text (stored in next element of array) on page 2 (ll2)
+								 }
+								else if (page2Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+									 displayImage(page2Data.get(i).toString(), ll2);
+									
+								 }
+								 else if (page2Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+									 displayVideo(page2Data.get(i).toString(), ll2);	
+									 TextView tv = new TextView(this);
+									 tv.setText("page 2 data = " + page2Data.get(i));
+								     tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+									 ll2.addView(tv);
+								 }
+								 else if (page2Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+									 displayAudio(page2Data.get(i).toString(), ll2);	
+								 }
+								 else if(page2Type.get(i).toString().equalsIgnoreCase("MapImage")){
+									 displayMapImage(page2Data.get(i).toString(), page2Geometries.get(i), ll2);
+		
+								 }
+								 else if (page2Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+								      displayWebBundle(page2Data.get(i),page2Url.get(i), page2Keys.get(i), ll2 ); //filename, url, page
+								 }
+							  
+							  
+						//	  TextView tv = new TextView(this);
+						//	  tv.setText(page2Types.get(i));
+						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						//	  ll2.addView(tv);
+							  
+						  }
+				         for (int i=0;i<page3Data.size();i++ ){
+							 
+							  if(page3Type.get(i).toString().equalsIgnoreCase("TEXT")){
+									 displayText(page3Data.get(i).toString(), ll3);		//display text (stored in next element of array) on page 3 (ll3)
+								 }
+								 else if (page3Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+									 displayImage(page3Data.get(i).toString(), ll3);
+								 }
+								 else if (page3Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+									 displayVideo(page3Data.get(i).toString(), ll3);		
+								 }
+								 else if (page3Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+									 displayAudio(page3Data.get(i).toString(), ll3);	
+								 }
+								 else if(page3Type.get(i).toString().equalsIgnoreCase("MapImage")){
+									 displayMapImage(page3Data.get(i).toString(),page3Geometries.get(i), ll3);
+		
+								 }
+								 else if (page3Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+								      displayWebBundle(page3Data.get(i),page3Url.get(i), page3Keys.get(i), ll3 ); //filename, url, page
+								 }
+							  
+							  
+						//	  TextView tv = new TextView(this);
+						//	  tv.setText(page3Items.get(i));
+						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+					   //     ll3.addView(tv);
+						  }
+				         for (int i=0;i<page4Data.size();i++ ){
+							 
+							  if(page4Type.get(i).toString().equalsIgnoreCase("TEXT")){
+									 displayText(page4Data.get(i).toString(), ll4);		//display text (stored in next element of array) on page 3 (ll3)
+								 }
+								 else if (page4Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+									 displayImage(page4Data.get(i).toString(), ll4);
+								 }
+								 else if (page4Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+									 displayVideo(page4Data.get(i).toString(), ll4);		
+								 }
+								 else if (page4Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+									 displayAudio(page4Data.get(i).toString(), ll4);	
+								 }
+								 else if(page4Type.get(i).toString().equalsIgnoreCase("MapImage")){
+									 displayMapImage(page4Data.get(i).toString(), page4Geometries.get(i), ll4);
+		
+								 }
+								 else if (page4Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+								      displayWebBundle(page4Data.get(i),page4Url.get(i), page4Keys.get(i), ll4 ); //filename, url, page
+								 }
+				         }
+				         
+				         for (int i=0;i<page5Data.size();i++ ){
+							 
+							  if(page5Type.get(i).toString().equalsIgnoreCase("TEXT")){
+									 displayText(page5Data.get(i).toString(), ll5);		//display text (stored in next element of array) on page 3 (ll3)
+								 }
+								 else if (page5Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+									 displayImage(page5Data.get(i).toString(), ll5);
+								 }
+								 else if (page5Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+									 displayVideo(page5Data.get(i).toString(), ll5);		
+								 }
+								 else if (page5Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+									 displayAudio(page5Data.get(i).toString(), ll5);	
+								 }
+								 else if(page5Type.get(i).toString().equalsIgnoreCase("MapImage")){
+									 displayMapImage(page5Data.get(i).toString(), page5Geometries.get(i), ll5);
+		
+								 }
+								 else if (page5Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+								      displayWebBundle(page5Data.get(i),page5Url.get(i), page5Keys.get(i), ll5 ); //filename, url, page
+								 }
+				         }
+				         
+				         for (int i=0;i<page6Data.size();i++ ){
+							 
+							  if(page6Type.get(i).toString().equalsIgnoreCase("TEXT")){
+									 displayText(page6Data.get(i).toString(), ll6);		//display text (stored in next element of array) on page 3 (ll3)
+								 }
+								 else if (page6Type.get(i).toString().equalsIgnoreCase("IMAGE")){
+									 displayImage(page6Data.get(i).toString(), ll6);
+								 }
+								 else if (page6Type.get(i).toString().equalsIgnoreCase("VIDEO")){
+									 displayVideo(page6Data.get(i).toString(), ll6);		
+								 }
+								 else if (page6Type.get(i).toString().equalsIgnoreCase("AUDIO")){
+									 displayAudio(page6Data.get(i).toString(), ll6);	
+								 }
+								 else if(page6Type.get(i).toString().equalsIgnoreCase("MapImage")){
+									 displayMapImage(page6Data.get(i).toString(),page6Geometries.get(i), ll6);
+		
+								 }
+								 else if (page6Type.get(i).toString().equalsIgnoreCase("WebBundle")){
+								      displayWebBundle(page6Data.get(i),page6Url.get(i), page6Keys.get(i), ll6 ); //filename, url, page
+								 }
+				         }
 					 
 
 					} catch (Exception e) {
+						
 						orgXmlTxt.setText(e.getMessage());
 					} 
 					
@@ -663,7 +810,7 @@ public class Reader extends Activity {
 		     * Map Image Item
 		     * Method for displaying the map tile image
 		     */
-		    public void displayMapImage(final String mapImage, final LinearLayout page){
+		    public void displayMapImage(final String mapImage, final Coordinate[] c, final LinearLayout page){
 		    	
 			    //locate the file path where the images are stored on the SD CARD. 
 				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
@@ -671,7 +818,7 @@ public class Reader extends Activity {
 
 			    if(mapImage != null){
 					try{ 
-						
+												
 						BitmapFactory.Options options = new BitmapFactory.Options();
 					    options.inSampleSize = 2;
 					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
@@ -681,6 +828,16 @@ public class Reader extends Activity {
 						mapImgView.setLayoutParams(new LayoutParams(500, 500));	
 						page.addView(mapImgView); 
 						
+						c_x1 = c[0].x;
+						c_y1 = c[0].y;
+						c_x2 = c[1].x;
+						c_y2 = c[1].y;
+						c_x3 = c[2].x;
+						c_y3 = c[2].y;
+						c_x4 = c[3].x;
+						c_y4 = c[3].y;
+						c_x5 = c[4].x;
+						c_y5 = c[4].y;
 						
 						
 						
@@ -717,6 +874,18 @@ public class Reader extends Activity {
        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.MapImageViewer");
        	        	 intent.putExtra("mapImage", mapImage);
        	        	 intent.putExtra("packagePath", packagePath);
+       	        	 intent.putExtra("c_x1", c_x1);
+       	        	 intent.putExtra("c_y1", c_y1);
+       	        	 intent.putExtra("c_x2", c_x2);
+       	        	 intent.putExtra("c_y2", c_y2);
+       	        	 intent.putExtra("c_x3", c_x3);
+       	        	 intent.putExtra("c_y3", c_y3);
+       	        	 intent.putExtra("c_x4", c_x4);
+       	        	 intent.putExtra("c_y4", c_y4);
+       	        	 intent.putExtra("c_x5", c_x5);
+       	        	 intent.putExtra("c_y5", c_y5);
+
+
 	     				    overridePendingTransition(0, 0);
        	        	 startActivity(intent);	
        	        	 
@@ -815,6 +984,9 @@ public class Reader extends Activity {
 				page1 = (ArrayList<Point>)book.getPage1();
 				page2 = (ArrayList<Point>)book.getPage2();
 				page3 = (ArrayList<Point>)book.getPage3();
+				page4 = (ArrayList<Point>)book.getPage4();
+				page5 = (ArrayList<Point>)book.getPage5();
+				page6 = (ArrayList<Point>)book.getPage6();
 				
 				
 			    //Pass the data into the data ArrayLists
@@ -823,24 +995,25 @@ public class Reader extends Activity {
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page1Data.add(data);
 		        	page1Type.add(type);
 		        	page1Url.add(url);
 		        	page1Keys.add(itemKey);
-		        	//page1Geometries.add(geomCo);
+		        	page1Geometries.add(geomCo);
+
 				}
 				for(Point item: page2) {
 		        	String data = item.getData();
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page2Data.add(data);
 		        	page2Type.add(type);
 		        	page2Url.add(url);
 		        	page2Keys.add(itemKey);
-		        	//page2Geometries.add(geomCo);
+		        	page2Geometries.add(geomCo);
 
 				}
 				for(Point item: page3) {
@@ -849,15 +1022,56 @@ public class Reader extends Activity {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page3Data.add(data);
 		        	page3Type.add(type);
 		        	page3Url.add(url);
 		        	page3Keys.add(itemKey);
-		        	//page3Geometries.add(geomCo);
+		        	page3Geometries.add(geomCo);
 
 				}
-				
+				for(Point item: page4) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
+		        	String url = item.getUrl();
+		        	//Geometry geom = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	page4Data.add(data);
+		        	page4Type.add(type);
+		        	page4Url.add(url);
+		        	page4Keys.add(itemKey);
+		        	page4Geometries.add(geomCo);
+
+				}
+				for(Point item: page5) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
+		        	String url = item.getUrl();
+		        	//Geometry geom = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	page5Data.add(data);
+		        	page5Type.add(type);
+		        	page5Url.add(url);
+		        	page5Keys.add(itemKey);
+		        	page5Geometries.add(geomCo);
+
+				}
+				for(Point item: page6) {
+		        	String data = item.getData();
+		        	String type = item.getType();
+		        	String itemKey = item.getItemKey();
+		        	String url = item.getUrl();
+		        	//Geometry geom = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	page6Data.add(data);
+		        	page6Type.add(type);
+		        	page6Url.add(url);
+		        	page6Keys.add(itemKey);
+		        	page6Geometries.add(geomCo);
+
+				}
 				
 			
 				in.close();
@@ -870,6 +1084,8 @@ public class Reader extends Activity {
 			 *  Extends SimpleOnGestureListener for implementing my own handling on swipe/fling action
 			 */
 			 class MyGestureDetector extends SimpleOnGestureListener {
+
+
 			        @Override
 			        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			            try {
@@ -950,7 +1166,8 @@ public class Reader extends Activity {
 			     return null;
 			 }
 			 
-	
+			 
+			 
 			
 } //end of class
 

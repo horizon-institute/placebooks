@@ -34,6 +34,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import java.io.File;
+import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,6 +51,19 @@ import java.net.URL;
 import android.os.AsyncTask;
 import android.content.res.Configuration;
 import android.app.AlertDialog;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.DataOutputStream;
+import android.webkit.CookieManager;
+
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.*;
 
 
 
@@ -57,6 +71,7 @@ public class Shelf extends ListActivity {
 	
 	private JSONObject json;
     private String username;
+    private String password;
     ListView lv;
 	
 	//-- Download variables --
@@ -75,13 +90,28 @@ public class Shelf extends ListActivity {
 		        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
 
 		      
-		      
+		        
 		        /*
 		         * get the extras (username) out of the new intent
 		         * retrieve the username.
 		         */
 		        Intent intent = getIntent();
 		        if(intent != null) username = intent.getStringExtra("username");
+		        if(intent != null) password = intent.getStringExtra("password");
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		        
+		      
+		        
 
 		        OnlineCheck oc = new OnlineCheck();		       
 		        /*
@@ -89,7 +119,69 @@ public class Shelf extends ListActivity {
 		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
 		        */       
 		        if (oc.isOnline(this)){
-		        	String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
+		        	
+		        	
+		        	
+		        	
+		        	//Build parameter string
+			        String credentials = "j_username=" + username + "&j_password=" + password;
+			        HttpClient httpclient = new DefaultHttpClient();
+			      /*  try {
+			            
+			        	// Create a local instance of cookie store
+			            CookieStore cookieStore = new BasicCookieStore();
+			            
+			            // Create local HTTP context
+				        HttpContext httpContext = new BasicHttpContext();
+			            // Bind custom cookie store to the local context
+			            httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+			        	
+
+			            
+			            // Send the request
+			            URL url = new URL("http://horizab1.miniserver.com:8080/placebooks/j_spring_security_check");
+			            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			            //URLConnection conn = url.openConnection();
+			            conn.setDoOutput(true);
+			            conn.setRequestMethod("POST"); 
+			            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+			            
+			            //DataOutputStream writer = new DataOutputStream(conn.getOutputStream ());
+			            //writer.writeBytes(credentials);
+			            
+			            //write parameters
+			            writer.write(credentials);
+			            writer.flush();
+			            
+			            // Get the response
+			            StringBuffer answer = new StringBuffer();
+			            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			            
+
+			            
+			            
+			            //System.out.println(conn.getResponseCode() + ": " + conn.getResponseMessage());
+			            String line;
+			            while ((line = reader.readLine()) != null) {
+			                answer.append(line);
+			            }
+			            writer.close();
+			            reader.close();
+			            
+			            //Output the response
+			            System.out.println("answer is =  " + answer.toString() + "\n credentials are = " +credentials);
+			             
+			            
+			        } catch (MalformedURLException ex) {
+			            ex.printStackTrace();
+			        } catch (IOException ex) {
+			            ex.printStackTrace();
+			        }
+		        	
+		        	*/
+		        	
+		        	
+		        	String url =  "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
 		        	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 		          										  
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
