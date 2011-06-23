@@ -13,6 +13,12 @@ public class Map extends JavaScriptObject
 	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
 	//						new $wnd.OpenLayers.Control.Attribution()
 					],
+			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+			maxResolution: 156543.0399,
+			numZoomLevels: 19,
+			units: 'm',
+			projection: new $wnd.OpenLayers.Projection("EPSG:900913"),
+			displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
 		});
 	}-*/;
 
