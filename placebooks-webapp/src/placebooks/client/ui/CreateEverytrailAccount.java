@@ -18,11 +18,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class CreateEverytrailAccount extends Composite
 {
 
-	interface CreateAccountUiBinder extends UiBinder<Widget, CreateEverytrailAccount>
+	interface CreateEverytrailAccountUiBinder extends UiBinder<Widget, CreateEverytrailAccount>
 	{
 	}
 
-	private static CreateAccountUiBinder uiBinder = GWT.create(CreateAccountUiBinder.class);
+	private static CreateEverytrailAccountUiBinder uiBinder = GWT.create(CreateEverytrailAccountUiBinder.class);
 
 	@UiField
 	Button createAccount;
@@ -56,7 +56,7 @@ public class CreateEverytrailAccount extends Composite
 		this.callback = callback;
 	}
 
-	@UiHandler(value = { "name", "email", "password", "passwordConfirm" })
+	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyPressEvent event)
 	{
 		if (username.getText().trim().equals(""))
