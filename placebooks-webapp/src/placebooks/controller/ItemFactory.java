@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
@@ -46,7 +47,7 @@ public class ItemFactory
 	 * @param everytrailPicture
 	 * @param imageItem
 	 */
-	public static void toImageItem(final User testUser, final Node everytrailPicture, ImageItem imageItem)
+	public static void toImageItem(final User testUser, final Node everytrailPicture, ImageItem imageItem, String trip_id)
 	{
 		URL sourceUrl = null;
 		final NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
@@ -57,6 +58,12 @@ public class ItemFactory
 
 		Geometry geom = null;
 
+		if(trip_id!=null)
+		{
+			imageItem.addMetadataEntry("trip", trip_id)	;	
+		}
+		
+		
 		//First look at node attributes to get the unique id
 		for (int attributeIndex = 0; attributeIndex < pictureAttributes.getLength(); attributeIndex++)
 		{
@@ -227,7 +234,7 @@ public class ItemFactory
 	 * @param owner User creating this item
 	 * @param trackItem the track item as a DOM node from EverytrailTracks response
 	 */
-	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem)
+	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id)
 	{
 		trackItem.toString();
 		log.debug(trackItem.getTextContent());
@@ -235,6 +242,12 @@ public class ItemFactory
 		String track_id = "";
 		String track_name = "";
 		Geometry trackGeom = null;
+		
+		if(trip_id!=null)
+		{
+			gpsItem.addMetadataEntry("trip", trip_id)	;	
+		}
+		
 		//First look at node attributes to get the unique id
 		final NamedNodeMap trackAttributes = trackItem.getAttributes();
 		for (int attributeIndex = 0; attributeIndex < trackAttributes.getLength(); attributeIndex++)

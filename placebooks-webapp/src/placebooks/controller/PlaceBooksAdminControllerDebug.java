@@ -817,22 +817,24 @@ public class PlaceBooksAdminControllerDebug
 			{
 
 				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
-				ItemFactory.toGPSTraceItem(testUser, track, gpsItem);
+				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId);
 				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
+			
+			EverytrailPicturesResponse picturesResponse = 	
+				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword());
+
+			Vector<Node> pictures = picturesResponse.getPictures();
+
+			for (Node picture : pictures)
+			{
+				ImageItem imageItem = new ImageItem(testUser, null, null, null);
+				ItemFactory.toImageItem(testUser, picture, imageItem, tripId);
+				imageItem = (ImageItem) imageItem.saveUpdatedItem();
+			}	
+			
 		}
 
-		EverytrailPicturesResponse picturesResponse = 	
-			EverytrailHelper.Pictures(loginResponse.getValue());
-
-		Vector<Node> pictures = picturesResponse.getPictures();
-
-		for (Node picture : pictures)
-		{
-			ImageItem imageItem = new ImageItem(testUser, null, null, null);
-			ItemFactory.toImageItem(testUser, picture, imageItem);
-			imageItem = (ImageItem) imageItem.saveUpdatedItem();
-		}	
 	}
 
 	@RequestMapping(value = "/admin/delete/all_placebooks", 
