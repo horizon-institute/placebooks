@@ -146,11 +146,12 @@ img {
 .dragFrame {
 	position: absolute;
 	margin: 1px;
-	opacity: 0.4;
-	visibility: hidden;		
-	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
-	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+	opacity: 0.6;
+	visibility: hidden;
+	z-index: 100;		
+	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
 }
 
 .glassPanel {

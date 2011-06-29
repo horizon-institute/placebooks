@@ -73,6 +73,10 @@ public class PlaceBookItemWidget
 			{
 				image.setWidth("auto");
 			}
+			else
+			{
+				image.setWidth("100%");
+			}
 			image.setUrl(getItem().getURL());
 		}
 		else if (getItem().is(ItemType.AUDIO))
@@ -133,7 +137,7 @@ public class PlaceBookItemWidget
 		}
 		else
 		{
-			getContentWidget().setHeight("auto");
+			getContentWidget().getElement().getStyle().clearHeight();
 		}
 
 		if (item.is(ItemType.GPS))
