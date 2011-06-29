@@ -12,12 +12,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ImageView;
-
+import java.awt.*;
 
 public class ImageViewer extends Activity {
 	
 	private String image;
 	private String packagePath;
+	
 	
 	@Override
 	 public void onCreate(Bundle savedInstanceState) {

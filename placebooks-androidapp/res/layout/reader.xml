@@ -74,7 +74,8 @@
 	    
 	    
 	    </LinearLayout>
-  </ScrollView>	   
+  </ScrollView>	 
+    
   <ScrollView
     android:id="@+id/scroller3"
     android:orientation="vertical"
@@ -102,9 +103,102 @@
 		android:text="page 3"
 		/>
 	    
-	    
 	    </LinearLayout>
-    </ScrollView>    
+</ScrollView>
+
+
+ <ScrollView
+android:id="@+id/scroller4"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:fadingEdgeLength="6px"
+android:background="@android:color/white"
+>	    
+    <LinearLayout
+  	android:id="@+id/linearLayout4"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal" 
+    android:background="@android:color/white"
+    >
+     <TextView android:id="@+id/text4"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:textSize="15sp"
+	android:layout_marginLeft="5px"
+	android:layout_marginRight="5px"
+	android:textColor="#444"
+	android:typeface="serif"
+	android:text="page 4"
+	/>
+
+    </LinearLayout>
+</ScrollView>
+
+ <ScrollView
+android:id="@+id/scroller5"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:fadingEdgeLength="6px"
+android:background="@android:color/white"
+>	    
+    <LinearLayout
+  	android:id="@+id/linearLayout5"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal" 
+    android:background="@android:color/white"
+    >
+     <TextView android:id="@+id/text5"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:textSize="15sp"
+	android:layout_marginLeft="5px"
+	android:layout_marginRight="5px"
+	android:textColor="#444"
+	android:typeface="serif"
+	android:text="page 5"
+	/>
+    
+    
+    </LinearLayout>
+</ScrollView>
+
+ <ScrollView
+android:id="@+id/scroller6"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:fadingEdgeLength="6px"
+android:background="@android:color/white"
+>	    
+    <LinearLayout
+  	android:id="@+id/linearLayout6"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal" 
+    android:background="@android:color/white"
+    >
+     <TextView android:id="@+id/text6"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:textSize="15sp"
+	android:layout_marginLeft="5px"
+	android:layout_marginRight="5px"
+	android:textColor="#444"
+	android:typeface="serif"
+	android:text="page 6"
+	/>
+    
+    </LinearLayout>
+</ScrollView>
+
+
 </ViewFlipper> 
 </LinearLayout>
 

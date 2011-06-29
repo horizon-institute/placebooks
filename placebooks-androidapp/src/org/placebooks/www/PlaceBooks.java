@@ -27,9 +27,9 @@ public class PlaceBooks extends Activity{
 	
 	private ProgressDialog myDialog = null;
     private EditText etUsername;
-   // private EditText etPassword;
+    private EditText etPassword;
     private String username; 
-	//private String password;  
+	private String password;  
     private Button btnLogin;
     private TextView tv;
 		
@@ -108,7 +108,7 @@ public class PlaceBooks extends Activity{
         //set the 'login' button and 'username and password' textfields    
         btnLogin = (Button) findViewById(R.id.btnLogin);
         etUsername = (EditText) findViewById(R.id.txt_username);
-        //etPassword = (EditText) findViewById(R.id.txt_password);
+        etPassword = (EditText) findViewById(R.id.txt_password);
        // LinearLayout ll = (LinearLayout)findViewById(R.id.linearlayout);
        
         
@@ -120,7 +120,7 @@ public class PlaceBooks extends Activity{
 				   
         				// Check Login	
         		         username = etUsername.getText().toString();
-        		         //password = etPassword.getText().toString();
+        		         password = etPassword.getText().toString();
         		      
         		         
         		        if(username.length() > 0){
@@ -135,6 +135,7 @@ public class PlaceBooks extends Activity{
                         		        	Intent intent = new Intent();
                         	        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
                         	        		intent.putExtra("username", username);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
+                        	        		intent.putExtra("password", password);
                         	        		startActivity(intent);	
                                                 
                                         } catch (Exception e) { }
