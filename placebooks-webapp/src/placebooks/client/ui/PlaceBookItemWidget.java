@@ -9,13 +9,19 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.media.client.Audio;
 import com.google.gwt.media.client.Video;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookItemWidget
+public class PlaceBookItemWidget extends Composite
 {
+	interface RefreshHandler
+	{
+		void refresh(PlaceBookItemWidget itemWidget); 
+	}
+	
 	protected static final double HEIGHT_PRECISION = 10000;
 
 	protected final SimplePanel rootPanel = new SimplePanel();
@@ -28,9 +34,11 @@ public class PlaceBookItemWidget
 
 	private Widget widget;
 
+	//private final RefreshHandler refreshHandler;
+	
 	private final SimplePanel widgetPanel = new SimplePanel();
 
-	PlaceBookItemWidget(final PlaceBookCanvas canvas, final PlaceBookItem item)
+	PlaceBookItemWidget(final PlaceBookCanvas canvas, final PlaceBookItem item) //, final RefreshHandler refreshHandler)
 	{
 		this.item = item;
 		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
@@ -38,6 +46,7 @@ public class PlaceBookItemWidget
 		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 		rootPanel.add(widgetPanel);
 		this.canvas = canvas;
+		//this.refreshHandler = refreshHandler;
 	}
 
 	public void addToCanvas(final PlaceBookCanvas canvas)
@@ -62,6 +71,7 @@ public class PlaceBookItemWidget
 
 	public void refresh()
 	{
+//		refreshHandler.refresh(this);
 		if (getItem().is(ItemType.TEXT))
 		{
 			getContentWidget().getElement().setInnerHTML(item.getText());

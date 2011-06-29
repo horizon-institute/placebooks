@@ -1,12 +1,13 @@
 package placebooks.client.ui.openlayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Element;
 
 public class Map extends JavaScriptObject
 {
-	public final static native Map create(final String id)
+	public final static native Map create(final Element div)
 	/*-{
-		return new $wnd.OpenLayers.Map(id, {
+		return new $wnd.OpenLayers.Map(div, {
 			controls : [
 						new $wnd.OpenLayers.Control.Navigation(),
 	//						new $wnd.OpenLayers.Control.PanZoomBar(),

@@ -1,6 +1,7 @@
-package placebooks.client.ui;
+package placebooks.client.ui.palette;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.PlaceBookItemDragHandler;
 
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;

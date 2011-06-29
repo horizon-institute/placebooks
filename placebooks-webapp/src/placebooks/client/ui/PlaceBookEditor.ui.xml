@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:pl="urn:import:placebooks.client.ui" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
@@ -154,6 +154,6 @@
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
 		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
-		<pl:Palette styleName="{style.palette}" ui:field="palette" />
+		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

@@ -1,6 +1,7 @@
-package placebooks.client.ui;
+package placebooks.client.ui.palette;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.PlaceBookItemDragHandler;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;

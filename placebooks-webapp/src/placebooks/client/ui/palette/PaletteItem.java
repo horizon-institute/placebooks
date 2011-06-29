@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.palette;
 
 import placebooks.client.ui.widget.MousePanel;
 

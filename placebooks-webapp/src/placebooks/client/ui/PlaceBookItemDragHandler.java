@@ -149,7 +149,7 @@ public class PlaceBookItemDragHandler
 	/**
 	 * On mouse down
 	 */
-	void handleDragInitialization(final MouseEvent<?> event, final PlaceBookItem item,
+	public void handleDragInitialization(final MouseEvent<?> event, final PlaceBookItem item,
 			final DragStartHandler dragStartHandler)
 	{
 		if (dragState == DragState.waiting)

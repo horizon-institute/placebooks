@@ -7,6 +7,7 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.palette.Palette;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 import placebooks.client.ui.places.PlaceBookPreviewPlace;
 import placebooks.client.ui.widget.DropMenu;

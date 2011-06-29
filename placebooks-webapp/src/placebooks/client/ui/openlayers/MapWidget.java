@@ -13,8 +13,6 @@ public class MapWidget extends SimplePanel
 
 	private final static String POINT_PREFIX = "POINT (";
 
-	private final String id;
-
 	private final Label interactionLabel = new Label();
 
 	private EventHandler loadHandler;
@@ -27,13 +25,14 @@ public class MapWidget extends SimplePanel
 
 	private RouteLayer routeLayer;
 
+	private final String id;
+	
 	private String url;
 
 	private boolean visible = true;
 
-	public MapWidget(final String id)// , final PlaceBookCanvas canvas)
+	public MapWidget(String id)// , final PlaceBookCanvas canvas)
 	{
-		getElement().setId("mapPanel" + id);
 		this.id = id;
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		add(interactionLabel);
@@ -107,7 +106,7 @@ public class MapWidget extends SimplePanel
 	{
 		super.onLoad();
 
-		map = Map.create("mapPanel" + id);
+		map = Map.create(getElement());
 		final ClickControl control = ClickControl.create(new EventHandler()
 		{
 			@Override
@@ -152,7 +151,7 @@ public class MapWidget extends SimplePanel
 			map.removeLayer(markerLayer);
 		}
 
-		routeLayer = RouteLayer.create(id, url, LATLON_PROJECTION);
+		routeLayer = RouteLayer.create("Route" + id, url, LATLON_PROJECTION);
 		try
 		{
 			if (loadHandler != null)
