@@ -5,20 +5,22 @@ import java.util.Collection;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookCanvas;
+import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.PlaceBookItemWidget;
-import placebooks.client.ui.PlaceBookItemWidgetFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 public class AddMapMenuItem extends MenuItem
 {
 	private final PlaceBookCanvas canvas;
-	private final PlaceBookItemWidgetFrame item;
+	private final SaveContext context;
+	private final PlaceBookItemWidget item;
 
-	public AddMapMenuItem(final String title, final PlaceBookCanvas canvas, final PlaceBookItemWidgetFrame item)
+	public AddMapMenuItem(final SaveContext context, final PlaceBookCanvas canvas, final PlaceBookItemWidget item)
 	{
-		super(title);
+		super("Add to Map");
 		this.canvas = canvas;
 		this.item = item;
+		this.context = context;
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class AddMapMenuItem extends MenuItem
 		if (mapItems.size() == 1)
 		{
 			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
-			item.markChanged();
+			context.markChanged();
 		}
 	}
 }

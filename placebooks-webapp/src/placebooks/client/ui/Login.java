@@ -13,7 +13,9 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -32,7 +34,13 @@ public class Login extends Composite
 	TextBox emailBox;
 
 	@UiField
+	Button loginButton;
+
+	@UiField
 	PasswordTextBox passwordBox;
+
+	@UiField
+	Image progress;
 
 	private AbstractCallback callback;
 
@@ -40,12 +48,19 @@ public class Login extends Composite
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		this.callback = callback;
+		reset();
+	}
+
+	public void reset()
+	{
+		progress.setVisible(false);
+		loginButton.setEnabled(true);
 	}
 
 	@UiHandler("loginButton")
 	void handleLogin(final ClickEvent event)
 	{
-		PlaceBookService.login(emailBox.getText(), passwordBox.getText(), callback);
+		login();
 	}
 
 	@UiHandler("createAccount")
@@ -78,7 +93,27 @@ public class Login extends Composite
 	{
 		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 		{
-			PlaceBookService.login(emailBox.getText(), passwordBox.getText(), callback);
+			login();
 		}
+	}
+
+	private void login()
+	{
+		progress.setVisible(true);
+		loginButton.setEnabled(false);
+		PlaceBookService.login(emailBox.getText(), passwordBox.getText(), new AbstractCallback()
+		{
+			@Override
+			public void failure(final Request request, final Response response)
+			{
+				reset();
+			}
+
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				callback.success(request, response);
+			}
+		});
 	}
 }

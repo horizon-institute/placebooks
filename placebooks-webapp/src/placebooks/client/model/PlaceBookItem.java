@@ -82,6 +82,15 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native int getParameter(String name) /*-{ return this.parameters[name]; }-*/;
 
+	public final native int getParameter(String name, final int defaultValue)
+	/*-{
+		if('parameters' in this && name in this.parameters)
+		{
+			return this.parameters[name];
+		}
+		return defaultValue;
+	}-*/;
+
 	public final String getShortClassName()
 	{
 		final String name = getClassName().toLowerCase();
@@ -95,7 +104,12 @@ public class PlaceBookItem extends JavaScriptObject
 	public final String getURL()
 	{
 		final String shortClass = getShortClassName();
-		if (getKey() != null
+		String key = getKey();
+		if(key == null)
+		{
+			key = getMetadata("originalItemID", null);
+		}
+		if (key != null
 				&& (shortClass.equals("imageitem") || shortClass.equals("gpstraceitem")
 						|| shortClass.equals("audioitem") || shortClass.equals("videoitem"))) { return GWT
 				.getHostPageBaseURL()

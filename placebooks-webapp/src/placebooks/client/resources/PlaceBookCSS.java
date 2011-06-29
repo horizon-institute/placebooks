@@ -10,11 +10,17 @@ public interface PlaceBookCSS extends CssResource
 
 	String dialogGlass();
 
+	String dragFrame();
+
 	String dragImage();
 
-	String dragShadow();
+	String frameWidgetPanel();
 
 	String glassPanel();
+
+	String insert();
+
+	String insertInner();
 
 	String listItem();
 
@@ -36,5 +42,5 @@ public interface PlaceBookCSS extends CssResource
 
 	String textitem();
 
-	String widget();
+	String widgetPanel();
 }

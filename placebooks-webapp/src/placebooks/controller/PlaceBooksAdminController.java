@@ -208,10 +208,10 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
+					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 					final ObjectMapper mapper = new ObjectMapper();
 					final ServletOutputStream sos = res.getOutputStream();
-					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
-							.toString());
+					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
 					sos.flush();
 				}
 				catch (final IOException e)
@@ -377,7 +377,20 @@ public class PlaceBooksAdminController
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User currentUser = UserManager.getCurrentUser(manager);		
+		final User currentUser = UserManager.getCurrentUser(manager);
+		if(currentUser == null)
+		{
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			try
+			{
+				res.getWriter().write("User not logged in");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			return;
+		}
 		manager.getTransaction().begin();
 		try
 		{

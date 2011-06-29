@@ -160,20 +160,20 @@ public class MapWidget extends SimplePanel
 				routeLayer.getEvents().register("loadend", routeLayer, loadHandler.getFunction());
 			}
 			routeLayer.setVisible(visible);
-			map.addLayer(routeLayer);				
+			map.addLayer(routeLayer);
 		}
-		catch(Exception e)
+		catch (final Exception e)
 		{
 			GWT.log(e.getMessage(), e);
 		}
-		
+
 		markerLayer = MarkerLayer.create("markerLayer");
 
 		try
 		{
 			map.addLayer(markerLayer);
 		}
-		catch(Exception e)
+		catch (final Exception e)
 		{
 			GWT.log(e.getMessage(), e);
 		}
@@ -187,21 +187,18 @@ public class MapWidget extends SimplePanel
 			if (markerLayer != null)
 			{
 				bounds = markerLayer.getDataExtent();
-				GWT.log("" + bounds);
 			}
 			if (routeLayer != null)
 			{
 				if (bounds == null)
 				{
 					bounds = routeLayer.getDataExtent();
-					GWT.log(""+ bounds);					
 				}
 				else
 				{
 					bounds.extend(routeLayer.getDataExtent());
 				}
 			}
-			GWT.log("" + bounds);			
 			if (bounds != null)
 			{
 				map.zoomToExtent(bounds);

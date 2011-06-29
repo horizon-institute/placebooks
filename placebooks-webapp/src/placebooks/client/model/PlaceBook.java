@@ -5,9 +5,10 @@ import com.google.gwt.core.client.JsArray;
 
 public class PlaceBook extends JavaScriptObject
 {
-	public static final native PlaceBook parse(final String json) /*-{
-																	return eval('(' + json + ')');
-																	}-*/;
+	public static final native PlaceBook parse(final String json)
+	/*-{
+		return eval('(' + json + ')');
+	}-*/;
 
 	protected PlaceBook()
 	{
@@ -18,25 +19,34 @@ public class PlaceBook extends JavaScriptObject
 		getItems().push(item);
 	}
 
-	public final native String getGeometry() /*-{
-												return this.geom;
-												}-*/;
+	public final native void clearItems()
+	/*-{
+		this.items = new Array();
+	}-*/;
 
-	public final native JsArray<PlaceBookItem> getItems() /*-{
-															if(!('items' in this))
-															{
-															this.items = new Array();
-															}
-															return this.items;
-															}-*/;
+	public final native String getGeometry()
+	/*-{
+		return this.geom;
+	}-*/;
 
-	public final native String getKey() /*-{
-										return this.id;
-										}-*/;
+	public final native JsArray<PlaceBookItem> getItems()
+	/*-{
+		if(!('items' in this))
+		{
+			this.items = new Array();
+		}
+		return this.items;
+	}-*/;
 
-	public final native String getMetadata(String name) /*-{
-														return this.metadata[name];
-														}-*/;
+	public final native String getKey()
+	/*-{
+		return this.id;
+	}-*/;
+
+	public final native String getMetadata(String name)
+	/*-{
+		return this.metadata[name];
+	}-*/;
 
 	public final native User getOwner() /*-{
 										return this.owner;

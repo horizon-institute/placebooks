@@ -2,33 +2,52 @@ package placebooks.client.ui;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.resources.Resources;
 import placebooks.client.ui.openlayers.MapWidget;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.media.client.Audio;
 import com.google.gwt.media.client.Video;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookItemWidget extends Composite
+public class PlaceBookItemWidget
 {
 	protected static final double HEIGHT_PRECISION = 10000;
+
+	protected final SimplePanel rootPanel = new SimplePanel();
+
+	private PlaceBookCanvas canvas;
 
 	private PlaceBookItem item;
 
 	private PlaceBookPanel panel;
 
-	PlaceBookItemWidget(final PlaceBookItem item)
+	private Widget widget;
+
+	private final SimplePanel widgetPanel = new SimplePanel();
+
+	PlaceBookItemWidget(final PlaceBookCanvas canvas, final PlaceBookItem item)
 	{
 		this.item = item;
+		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
+		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+		rootPanel.add(widgetPanel);
+		this.canvas = canvas;
 	}
 
-	public int getContentHeight()
+	public void addToCanvas(final PlaceBookCanvas canvas)
 	{
-		return getContentWidget().getElement().getClientHeight();
+		canvas.add(rootPanel);
+	}
+
+	public int getHeight()
+	{
+		return rootPanel.getElement().getClientHeight();
 	}
 
 	public PlaceBookItem getItem()
@@ -70,6 +89,7 @@ public class PlaceBookItemWidget extends Composite
 		{
 			final MapWidget mapPanel = (MapWidget) getContentWidget();
 			mapPanel.setURL(getItem().getURL(), getItem().getMetadata("routeVisible", "true").equals("true"));
+			mapPanel.refreshMarkers(canvas.getItems());
 		}
 		else if (getItem().is(ItemType.WEB))
 		{
@@ -78,48 +98,54 @@ public class PlaceBookItemWidget extends Composite
 		}
 	}
 
+	public void removeFromCanvas(final PlaceBookCanvas canvas)
+	{
+		canvas.remove(rootPanel);
+	}
+
 	public void setItem(final PlaceBookItem item)
 	{
 		this.item = item;
 		refresh();
 	}
 
-	public void setTop(final int top)
+	public void setPosition(final float left, final int top)
 	{
-		getWidget().getElement().getStyle().setTop(top, Unit.PX);
+		rootPanel.getElement().getStyle().setLeft(left, Unit.PCT);
+		rootPanel.getElement().getStyle().setTop(top, Unit.PX);
 	}
 
 	int getOrder()
 	{
-		if (getItem().hasParameter("order")) { return getItem().getParameter("order"); }
-		return 0;
+		return item.getParameter("order", 0);
 	}
 
-	void resize()
+	void resize(final String width)
 	{
+		rootPanel.setWidth(width);
 		if (getItem().hasParameter("height") && getPanel() != null)
 		{
 			final int height = getItem().getParameter("height");
 			final double heightPCT = height / HEIGHT_PRECISION;
 			final int heightPX = (int) (getPanel().getOffsetHeight() * heightPCT);
 
-			getContentWidget().getElement().getStyle().setHeight(heightPX, Unit.PX);
+			getContentWidget().setHeight(heightPX + "px");
 		}
 		else
 		{
 			getContentWidget().setHeight("auto");
 		}
+
+		if (item.is(ItemType.GPS))
+		{
+			refresh();
+		}
 	}
 
 	void setContentWidget(final Widget widget)
 	{
-		initWidget(widget);
-	}
-
-	void setOrder(final int order)
-	{
-		GWT.log("Order: " + order);
-		getItem().setParameter("order", order);
+		this.widget = widget;
+		widgetPanel.add(widget);
 	}
 
 	void setPanel(final PlaceBookPanel panel)
@@ -138,6 +164,6 @@ public class PlaceBookItemWidget extends Composite
 
 	protected Widget getContentWidget()
 	{
-		return getWidget();
+		return widget;
 	}
 }

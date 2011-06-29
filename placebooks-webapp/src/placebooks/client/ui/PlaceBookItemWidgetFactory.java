@@ -3,8 +3,6 @@ package placebooks.client.ui;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.openlayers.Event;
-import placebooks.client.ui.openlayers.EventHandler;
 import placebooks.client.ui.openlayers.MapWidget;
 
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -18,23 +16,27 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookItemWidgetFactory
 {
-	private PlaceBookCanvas canvas;
-
 	public PlaceBookItemWidgetFactory()
 	{
 	}
 
-	public PlaceBookItemWidget createItemWidget(final PlaceBookItem item)
+	public final PlaceBookItemWidget createPlaceBookItemWidget(final PlaceBookCanvas canvas, final PlaceBookItem item)
 	{
-		final PlaceBookItemWidget itemWidget = new PlaceBookItemWidget(item);
-		itemWidget.setContentWidget(createWidget(itemWidget));
+		final PlaceBookItemWidget itemWidget = createItemWidget(canvas, item);
+		final Widget widget = createWidget(item);
+		setupEventHandlers(itemWidget, widget);
+		itemWidget.setContentWidget(widget);
 		itemWidget.refresh();
 		return itemWidget;
 	}
 
-	protected Widget createWidget(final PlaceBookItemWidget itemWidget)
+	protected PlaceBookItemWidget createItemWidget(final PlaceBookCanvas canvas, final PlaceBookItem item)
 	{
-		final PlaceBookItem item = itemWidget.getItem();
+		return new PlaceBookItemWidget(canvas, item);
+	}
+
+	protected Widget createWidget(final PlaceBookItem item)
+	{
 		if (item.is(ItemType.TEXT))
 		{
 			final SimplePanel panel = new SimplePanel();
@@ -44,33 +46,19 @@ public class PlaceBookItemWidgetFactory
 		}
 		else if (item.is(ItemType.IMAGE))
 		{
-			final Image image = new Image();
-			image.addLoadHandler(new LoadHandler()
-			{
-				@Override
-				public void onLoad(final LoadEvent event)
-				{
-					if (itemWidget.getPanel() != null)
-					{
-						itemWidget.getPanel().reflow();
-					}
-				}
-			});
-
-			return image;
+			return new Image();
 		}
 		else if (item.is(ItemType.AUDIO))
 		{
 			final Audio audio = Audio.createIfSupported();
 			audio.setControls(true);
-
+			audio.setWidth("100%");
 			return audio;
 		}
 		else if (item.is(ItemType.VIDEO))
 		{
 			final Video video = Video.createIfSupported();
 			video.setControls(true);
-
 			return video;
 		}
 		else if (item.is(ItemType.GPS))
@@ -82,14 +70,6 @@ public class PlaceBookItemWidgetFactory
 
 			// TODO Handle null key
 			final MapWidget panel = new MapWidget(item.getKey());
-			panel.addLoadHandler(new EventHandler()
-			{
-				@Override
-				protected void handleEvent(final Event event)
-				{
-					panel.refreshMarkers(canvas.getItems());
-				}
-			});
 			panel.setWidth("100%");
 
 			return panel;
@@ -97,14 +77,28 @@ public class PlaceBookItemWidgetFactory
 		else if (item.is(ItemType.WEB))
 		{
 			final Frame frame = new Frame(item.getSourceURL());
-
 			return frame;
 		}
 		return null;
 	}
 
-	protected void setCanvas(final PlaceBookCanvas canvas)
+	protected void setupEventHandlers(final PlaceBookItemWidget itemWidget, final Widget widget)
 	{
-		this.canvas = canvas;
+		final PlaceBookItem item = itemWidget.getItem();
+		if (item.is(ItemType.IMAGE))
+		{
+			final Image image = (Image) widget;
+			image.addLoadHandler(new LoadHandler()
+			{
+				@Override
+				public void onLoad(final LoadEvent event)
+				{
+					if (itemWidget.getPanel() != null)
+					{
+						itemWidget.getPanel().reflow();
+					}
+				}
+			});
+		}
 	}
 }

@@ -4,14 +4,14 @@ import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.PlaceBookItemWidget;
 import placebooks.client.ui.widget.MenuItem;
 
-public class FitToContentMenuItem extends MenuItem
+public class RemoveMapMenuItem extends MenuItem
 {
 	private final SaveContext context;
 	private final PlaceBookItemWidget item;
 
-	public FitToContentMenuItem(final SaveContext context, final PlaceBookItemWidget item)
+	public RemoveMapMenuItem(final SaveContext context, final PlaceBookItemWidget item)
 	{
-		super("Fit to Content");
+		super("Remove from Map");
 		this.item = item;
 		this.context = context;
 	}
@@ -19,14 +19,14 @@ public class FitToContentMenuItem extends MenuItem
 	@Override
 	public boolean isEnabled()
 	{
-		return item.getItem().hasParameter("height");
+		return item.getItem().hasMetadata("mapItemID");
 	}
 
 	@Override
 	public void run()
 	{
-		item.getItem().removeParameter("height");
-		item.getPanel().reflow();
+		item.getItem().removeMetadata("mapItemID");
+		item.refresh();
 		context.markChanged();
 	}
 }

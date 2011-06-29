@@ -60,15 +60,17 @@ a:hover {
 	background: #CCC;	
 }
 
-.widget {
-	position: relative;
-	margin-top: 25px;
+.widgetPanel {
+	position: absolute;
+	overflow: hidden;
+}
+
+.frameWidgetPanel {
+	overflow: hidden;
+	margin-top: 24px;
+	margin-bottom: 6px;
 	margin-left: 5px;
 	margin-right: 5px;
-	margin-bottom: 3px;
-	z-index: 2;
-	overflow: hidden;
-	min-height: 15px;
 }
 
 .textitem {
@@ -76,7 +78,6 @@ a:hover {
 	-moz-user-select: text;
 	-o-user-select: text;	
 	user-select: text;
-	font-size: 12px;
 }
 
 .mapLabel {
@@ -108,6 +109,21 @@ img {
 	border: 1px solid #AAB;
 }
 
+.insert {
+	position: absolute;
+	visibility: hidden;
+}
+
+.insertInner {
+	border: 2px dashed #999;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	margin: 5px;
+}
+
 .panelleft {
 	border-right: 0px;
 }
@@ -127,7 +143,11 @@ img {
 	cursor: move;
 }
 
-.dragShadow {
+.dragFrame {
+	position: absolute;
+	margin: 1px;
+	opacity: 0.4;
+	visibility: hidden;		
 	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
 	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
 	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);

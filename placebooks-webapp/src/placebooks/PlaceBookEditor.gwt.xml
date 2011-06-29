@@ -9,7 +9,7 @@
 	<inherits name="com.google.gwt.place.Place" />
 
 
-	<script src="http://www.openlayers.org/api/OpenLayers.js" />
+	<script src="../openlayers/OpenLayers.js" />
 	<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" />
 
 	<source path="client" />

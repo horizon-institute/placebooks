@@ -20,16 +20,16 @@ public class Palette extends FlowPanel
 	{
 	}
 
-	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookEditor editor)
+	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookItemDragHandler dragHandler)
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_ITEM), editor));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_IMAGE_ITEM), editor));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_VIDEO_ITEM), editor));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_WEB_ITEM), editor));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_GPS_ITEM), editor));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_AUDIO_ITEM), editor));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_IMAGE_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_VIDEO_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_WEB_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_GPS_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_AUDIO_ITEM), dragHandler));
 
 		for (int index = 0; index < items.length(); index++)
 		{
@@ -38,16 +38,16 @@ public class Palette extends FlowPanel
 			if (item.hasMetadata("source"))
 			{
 				folder = root.getFolder(item.getMetadata("source"));
-				if(item.hasMetadata("tripName"))
+				if (item.hasMetadata("tripName"))
 				{
 					folder = folder.getFolder(item.getMetadata("tripName"));
 				}
-				else if(item.hasMetadata("trip"))
+				else if (item.hasMetadata("trip"))
 				{
 					folder = folder.getFolder(item.getMetadata("trip"));
 				}
 			}
-			folder.add(new PalettePlaceBookItem(items.get(index), editor));
+			folder.add(new PalettePlaceBookItem(items.get(index), dragHandler));
 		}
 
 		setPaletteFolder(root);

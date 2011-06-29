@@ -2,10 +2,8 @@ package placebooks.client.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
@@ -42,8 +40,6 @@ public class PlaceBookCanvas extends FlowPanel
 		this.itemFactory = itemFactory;
 		this.panelsVisible = panelsVisible;
 
-		itemFactory.setCanvas(this);
-
 		setStyleName(Resources.INSTANCE.style().canvas());
 
 		Window.addResizeHandler(new ResizeHandler()
@@ -52,14 +48,19 @@ public class PlaceBookCanvas extends FlowPanel
 			public void onResize(final ResizeEvent event)
 			{
 				reflow();
+				reflow();
 			}
 		});
 	}
 
 	public PlaceBookItemWidget add(final PlaceBookItem item)
 	{
-		placebook.add(item);
 		return addToCanvas(item);
+	}
+
+	public PlaceBookItemWidgetFactory getItemFactory()
+	{
+		return itemFactory;
 	}
 
 	public Iterable<PlaceBookItemWidget> getItems()
@@ -88,8 +89,11 @@ public class PlaceBookCanvas extends FlowPanel
 	public void remove(final PlaceBookItemWidget item)
 	{
 		items.remove(item);
-		super.remove(item);
-		placebook.removeItem(item.getItem());
+		item.removeFromCanvas(this);
+		if (item.getPanel() != null)
+		{
+			item.getPanel().remove(item);
+		}
 	}
 
 	public void updatePlaceBook(final PlaceBook newPlacebook)
@@ -103,56 +107,57 @@ public class PlaceBookCanvas extends FlowPanel
 		if (this.placebook == null)
 		{
 			clear();
-			// TODO Check placebook for num pages & columns
-			for (int index = 0; index < (DEFAULT_PAGES * DEFAULT_COLUMNS); index++)
+			int pages = DEFAULT_PAGES;
+			try
 			{
-				final PlaceBookPanel panel = new PlaceBookPanel(index, DEFAULT_COLUMNS, panelsVisible);
+				pages = Integer.parseInt(newPlacebook.getMetadata("pageCount"));
+			}
+			catch (final Exception e)
+			{
+
+			}
+
+			final int columns = DEFAULT_COLUMNS;
+			try
+			{
+				pages = Integer.parseInt(newPlacebook.getMetadata("columns"));
+			}
+			catch (final Exception e)
+			{
+
+			}
+			for (int index = 0; index < (pages * columns); index++)
+			{
+				final PlaceBookPanel panel = new PlaceBookPanel(index, columns, panelsVisible);
 				panels.add(panel);
 				add(panel);
+			}
+
+			for (int index = 0; index < newPlacebook.getItems().length(); index++)
+			{
+				addToCanvas(newPlacebook.getItems().get(index));
 			}
 		}
 
 		this.placebook = newPlacebook;
 
-		// account.setHTML(placebook.getOwner().getName() + " <small>▼</small>");
-
-		final Map<String, PlaceBookItemWidget> kept = new HashMap<String, PlaceBookItemWidget>();
-		final Collection<PlaceBookItemWidget> removals = new ArrayList<PlaceBookItemWidget>();
-		for (final PlaceBookItemWidget item : items)
+		for (final PlaceBookItemWidget widget : items)
 		{
-			final PlaceBookItem newItem = getItem(newPlacebook, item.getItem().getKey());
-			if (newItem == null)
+			if (widget.getItem().getKey() == null)
 			{
-				item.removeFromParent();
-				removals.add(item);
-			}
-			else
-			{
-				final PlaceBookPanel panel = item.getPanel();
-				final int index = newItem.hasParameter("panel") ? newItem.getParameter("panel") : 0;
-				if (panel != null)
+				final String tempID = widget.getItem().getMetadata("tempID");
+				if (tempID != null)
 				{
-					if (panel.getIndex() != index)
+					for (int index = 0; index < newPlacebook.getItems().length(); index++)
 					{
-						item.setPanel(panels.get(index));
+						final PlaceBookItem item = newPlacebook.getItems().get(index);
+						if (item.hasMetadata("tempID") && item.getMetadata("tempID").equals(tempID))
+						{
+							widget.setItem(item);
+						}
 					}
+					widget.getItem().removeMetadata("tempID");
 				}
-				else
-				{
-					item.setPanel(panels.get(index));
-				}
-				item.setItem(newItem);
-				kept.put(newItem.getKey(), item);
-			}
-		}
-		items.removeAll(removals);
-
-		for (int index = 0; index < placebook.getItems().length(); index++)
-		{
-			final PlaceBookItem item = placebook.getItems().get(index);
-			if (!kept.containsKey(item.getKey()))
-			{
-				addToCanvas(item);
 			}
 		}
 
@@ -161,28 +166,10 @@ public class PlaceBookCanvas extends FlowPanel
 
 	private PlaceBookItemWidget addToCanvas(final PlaceBookItem item)
 	{
-		final PlaceBookItemWidget itemWidget = itemFactory.createItemWidget(item);
-		add(itemWidget);
+		final PlaceBookItemWidget itemWidget = itemFactory.createPlaceBookItemWidget(this, item);
+		itemWidget.addToCanvas(this);
+		itemWidget.setPanel(panels.get(item.getParameter("panel", 0)));
 		items.add(itemWidget);
-		if (item.hasParameter("panel"))
-		{
-			itemWidget.setPanel(panels.get(item.getParameter("panel")));
-		}
-		else
-		{
-			itemWidget.setPanel(panels.get(0));
-		}
 		return itemWidget;
-	}
-
-	private PlaceBookItem getItem(final PlaceBook placebook, final String key)
-	{
-		if (key == null) { return null; }
-		for (int index = 0; index < placebook.getItems().length(); index++)
-		{
-			final PlaceBookItem item = placebook.getItems().get(index);
-			if (key.equals(item.getKey())) { return item; }
-		}
-		return null;
 	}
 }
