@@ -39,9 +39,9 @@ public class Palette extends FlowPanel
 			if (item.hasMetadata("source"))
 			{
 				folder = root.getFolder(item.getMetadata("source"));
-				if (item.hasMetadata("tripName"))
+				if (item.hasMetadata("trip_name"))
 				{
-					folder = folder.getFolder(item.getMetadata("tripName"));
+					folder = folder.getFolder(item.getMetadata("trip_name"));
 				}
 				else if (item.hasMetadata("trip"))
 				{

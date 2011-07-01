@@ -46,8 +46,9 @@ public class ItemFactory
 	 * @param testUser
 	 * @param everytrailPicture
 	 * @param imageItem
+	 * @param tripName 
 	 */
-	public static void toImageItem(final User testUser, final Node everytrailPicture, ImageItem imageItem, String trip_id)
+	public static void toImageItem(final User testUser, final Node everytrailPicture, ImageItem imageItem, String trip_id, String tripName)
 	{
 		URL sourceUrl = null;
 		final NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
@@ -62,7 +63,11 @@ public class ItemFactory
 		{
 			imageItem.addMetadataEntry("trip", trip_id)	;	
 		}
-		
+		if(tripName!=null)
+		{
+			imageItem.addMetadataEntry("trip_name", tripName)	;	
+		}
+				
 		
 		//First look at node attributes to get the unique id
 		for (int attributeIndex = 0; attributeIndex < pictureAttributes.getLength(); attributeIndex++)
@@ -233,8 +238,9 @@ public class ItemFactory
 	 * Convert an Everytrail track to a GPSTraceItem
 	 * @param owner User creating this item
 	 * @param trackItem the track item as a DOM node from EverytrailTracks response
+	 * @param tripName 
 	 */
-	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id)
+	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id, String tripName)
 	{
 		trackItem.toString();
 		log.debug(trackItem.getTextContent());
@@ -247,6 +253,12 @@ public class ItemFactory
 		{
 			gpsItem.addMetadataEntry("trip", trip_id)	;	
 		}
+
+		if(tripName!=null)
+		{
+			gpsItem.addMetadataEntry("trip_name", tripName)	;	
+		}
+
 		
 		//First look at node attributes to get the unique id
 		final NamedNodeMap trackAttributes = trackItem.getAttributes();
