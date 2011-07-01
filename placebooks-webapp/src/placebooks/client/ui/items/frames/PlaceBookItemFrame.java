@@ -31,6 +31,11 @@ public abstract class PlaceBookItemFrame extends Composite
 		});
 	}
 	
+	public void updateFrame()
+	{
+		
+	}
+	
 	protected void itemWidgetResized()
 	{
 		if(panel != null)

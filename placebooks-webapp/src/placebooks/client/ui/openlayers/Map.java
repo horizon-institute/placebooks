@@ -7,6 +7,8 @@ public class Map extends JavaScriptObject
 {
 	public final static native Map create(final Element div)
 	/*-{
+		//$wnd.Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+		
 		return new $wnd.OpenLayers.Map(div, {
 			controls : [
 						new $wnd.OpenLayers.Control.Navigation(),
@@ -14,12 +16,12 @@ public class Map extends JavaScriptObject
 	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
 	//						new $wnd.OpenLayers.Control.Attribution()
 					],
-			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-			maxResolution: 156543.0399,
-			numZoomLevels: 19,
-			units: 'm',
-			projection: new $wnd.OpenLayers.Projection("EPSG:900913"),
-			displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
+//			units: "m",
+//			maxResolution: 156543.0339,
+//			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34, -20037508.34,
+//                                             20037508.34, 20037508.34),
+			projection: "EPSG:900913",
+//			displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
 		});
 	}-*/;
 
@@ -73,13 +75,23 @@ public class Map extends JavaScriptObject
 		this.removeLayer(layer);
 	}-*/;
 
+	public final native void setCenter(final LonLat lonLat)
+	/*-{
+		this.setCenter(lonLat);		
+	}-*/;
+
 	public final native void setCenter(final LonLat lonLat, final int zoom)
 	/*-{
 		this.setCenter(lonLat, zoom);		
 	}-*/;
-
+	
 	public final native void zoomToExtent(final Bounds extent)
 	/*-{
 		this.zoomToExtent(extent);
+	}-*/;
+
+	public final native Projection getDisplayProjection()
+	/*-{
+		return this.displayProjection;
 	}-*/;
 }

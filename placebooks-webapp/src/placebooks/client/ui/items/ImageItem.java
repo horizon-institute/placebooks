@@ -1,10 +1,12 @@
 package placebooks.client.ui.items;
 
+import placebooks.client.model.PlaceBookItem;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.ui.Image;
-
-import placebooks.client.model.PlaceBookItem;
 
 public class ImageItem extends PlaceBookItemWidget
 {
@@ -19,7 +21,17 @@ public class ImageItem extends PlaceBookItemWidget
 			@Override
 			public void onLoad(LoadEvent event)
 			{
-				fireResizeHandler();	
+				fireResized();	
+			}
+		});
+		
+		image.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				fireFocusChanged(true);		
+				event.stopPropagation();
 			}
 		});
 	}

@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeletePlaceBookMenuItem;
 import placebooks.client.ui.menuItems.FitToContentMenuItem;
@@ -56,7 +57,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			return true;
 		}
-		
 	}
 	
 	private final MouseOverHandler highlightOn = new MouseOverHandler()
@@ -81,6 +81,31 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 	private final PlaceBookInteractionHandler interactionHandler;
 
+	private final PlaceBookItemWidget.ChangeHandler changeHandler = new PlaceBookItemWidget.ChangeHandler()
+	{
+		@Override
+		public void itemChanged()
+		{
+			interactionHandler.getContext().markChanged();			
+		}
+	};
+	
+	private final PlaceBookItemWidget.FocusHandler focusHandler = new PlaceBookItemWidget.FocusHandler()
+	{
+		@Override
+		public void itemFocusChanged(boolean focussed)
+		{
+			if(focussed)
+			{
+				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);
+			}
+			else
+			{
+				interactionHandler.setSelected(null);				
+			}
+		}
+	};
+	
 	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
 	public PlaceBookItemPopupFrame(PlaceBookInteractionHandler interactHandler)
@@ -105,6 +130,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			{
 				final int x = menuButton.getElement().getAbsoluteLeft();
 				final int y = menuButton.getElement().getAbsoluteTop() + menuButton.getElement().getClientHeight();
+				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);				
 				interactionHandler.showMenu(menuItems, x, y);
 				event.stopPropagation();				
 			}
@@ -149,7 +175,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		if(highlighted != highlight)
 		{
 			highlighted = highlight;
-		
 			updateFrame();
 		}
 	}
@@ -169,6 +194,14 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 	
 	@Override
+	public void setItemWidget(PlaceBookItemWidget itemWidget)
+	{
+		super.setItemWidget(itemWidget);
+		itemWidget.setFocusHandler(focusHandler);
+		itemWidget.setChangeHandler(changeHandler);
+	}
+
+	@Override
 	public void resize(String left, String top, String width, String height)
 	{
 		super.resize(left, top, width, height);
@@ -179,7 +212,8 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		frame.getElement().getStyle().setHeight(getWidget().getOffsetHeight() + 26, Unit.PX);
 	}	
 
-	private void updateFrame()
+	@Override
+	public void updateFrame()
 	{
 		if (interactionHandler.getSelected() == this)
 		{
@@ -191,7 +225,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
-			frame.getElement().getStyle().setOpacity(0.4);
+			frame.getElement().getStyle().setOpacity(0.6);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		else

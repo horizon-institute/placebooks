@@ -12,4 +12,9 @@ public class Bounds extends JavaScriptObject
 	/*-{
 		this.extend(bounds);
 	}-*/;
+
+	public final native Bounds transform(Projection source, Projection dest)
+	/*-{
+		return this.transform(source, dest);
+	}-*/;
 }

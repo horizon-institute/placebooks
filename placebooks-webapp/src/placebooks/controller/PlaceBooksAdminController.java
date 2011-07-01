@@ -438,20 +438,20 @@ public class PlaceBooksAdminController
 						updateMedia.add(item);
 					}
 				}
-				else if(newItem.getMetadata().get("originalItemID") != null)
-				{
-					final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
-					if(originalItem != null)
-					{
-						item = originalItem;
-						manager.detach(item);
-					}
-					else
-					{
-						updateMedia.add(item);
-					}
-					manager.persist(item);					
-				}
+//				else if(newItem.getMetadata().get("originalItemID") != null)
+//				{
+//					final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
+//					if(originalItem != null)
+//					{
+//						item = originalItem;
+//						manager.detach(item);
+//					}
+//					else
+//					{
+//						updateMedia.add(item);
+//					}
+//					manager.persist(item);					
+//				}
 				else
 				{
 					manager.persist(item);
@@ -853,7 +853,7 @@ public class PlaceBooksAdminController
 			if (g != null)
 			{
 				final String trace = g.getTrace();
-				log.info(trace);
+				//log.info(trace);
 				
 				res.setContentType("text/xml");
 				final PrintWriter p = res.getWriter();

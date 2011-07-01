@@ -103,7 +103,8 @@
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-o-user-select: text;			
-			user-select: text;			
+			user-select: text;	
+			padding-left: 8px;		
 		}
 		
 		.loadingLabel {

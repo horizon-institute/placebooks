@@ -43,4 +43,6 @@ public interface PlaceBookCSS extends CssResource
 	String textitem();
 
 	String widgetPanel();
+
+	String dropMenu();
 }

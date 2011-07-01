@@ -27,19 +27,29 @@ public class PlaceBookItem extends JavaScriptObject
 		}
 	}
 
-	public static final native PlaceBookItem parse(final String json) /*-{ return eval('(' + json + ')'); }-*/;
+	public static final native PlaceBookItem parse(final String json) /*-{
+		return eval('(' + json + ')');
+	}-*/;
 
-	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{ return eval('(' + json + ')'); }-*/;
+	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{
+		return eval('(' + json + ')');
+	}-*/;
 
 	protected PlaceBookItem()
 	{
 	}
 
-	public final native String getClassName() /*-{ return this["@class"]; }-*/;
+	public final native String getClassName() /*-{
+		return this["@class"];
+	}-*/;
 
-	public final native String getGeometry() /*-{ return this.geom; }-*/;
+	public final native String getGeometry() /*-{
+		return this.geom;
+	}-*/;
 
-	public final native String getHash() /*-{ return this.hash; }-*/;
+	public final native String getHash() /*-{
+		return this.hash;
+	}-*/;
 
 	public final ImageResource getIcon()
 	{
@@ -67,25 +77,29 @@ public class PlaceBookItem extends JavaScriptObject
 		return null;
 	}
 
-	public final native String getKey() /*-{ return this.id; }-*/;
+	public final native String getKey() /*-{
+		return this.id;
+	}-*/;
 
-	public final native String getMetadata(String name) /*-{ return this.metadata[name]; }-*/;
+	public final native String getMetadata(String name) /*-{
+		return this.metadata[name];
+	}-*/;
 
 	public final native String getMetadata(String name, final String defaultValue)
 	/*-{
-		if('metadata' in this && name in this.metadata)
-		{
+		if ('metadata' in this && name in this.metadata) {
 			return this.metadata[name];
 		}
 		return defaultValue;
 	}-*/;
 
-	public final native int getParameter(String name) /*-{ return this.parameters[name]; }-*/;
+	public final native int getParameter(String name) /*-{
+		return this.parameters[name];
+	}-*/;
 
 	public final native int getParameter(String name, final int defaultValue)
 	/*-{
-		if('parameters' in this && name in this.parameters)
-		{
+		if ('parameters' in this && name in this.parameters) {
 			return this.parameters[name];
 		}
 		return defaultValue;
@@ -97,35 +111,44 @@ public class PlaceBookItem extends JavaScriptObject
 		return name.substring(name.lastIndexOf(".") + 1);
 	}
 
-	public final native String getSourceURL() /*-{ return this.sourceURL; }-*/;
+	public final native String getSourceURL() /*-{
+		return this.sourceURL;
+	}-*/;
 
-	public final native String getText() /*-{ return this.text; }-*/;
+	public final native String getText() /*-{
+		return this.text;
+	}-*/;
+
+	private boolean isMedia(String shortClass)
+	{
+		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
+				|| shortClass.equals("videoitem");
+	}
 
 	public final String getURL()
 	{
 		final String shortClass = getShortClassName();
 		String key = getKey();
-		if(key == null)
+		if (key == null)
 		{
 			key = getMetadata("originalItemID", null);
 		}
-		if (key != null
-				&& (shortClass.equals("imageitem") || shortClass.equals("gpstraceitem")
-						|| shortClass.equals("audioitem") || shortClass.equals("videoitem"))) { return GWT
-				.getHostPageBaseURL()
-				+ "placebooks/a/admin/serve/"
-				+ getShortClassName()
-				+ "/"
-				+ getKey()
-				+ "?"
-				+ getHash(); }
+		if (key != null && isMedia(shortClass))
+		{
+			return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
+				+ getShortClassName() + "/" + key + "?" + getHash();
+		}
 
 		return getSourceURL();
 	}
 
-	public final native boolean hasMetadata(String name) /*-{ return 'metadata' in this && name in this.metadata; }-*/;
+	public final native boolean hasMetadata(String name) /*-{
+		return 'metadata' in this && name in this.metadata;
+	}-*/;
 
-	public final native boolean hasParameter(String name) /*-{ return 'parameters' in this && name in this.parameters; }-*/;
+	public final native boolean hasParameter(String name) /*-{
+		return 'parameters' in this && name in this.parameters;
+	}-*/;
 
 	public final boolean is(final ItemType type)
 	{
@@ -134,16 +157,14 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native void removeMetadata(String name)
 	/*-{
-		if(('metadata' in this))
-		{
+		if (('metadata' in this)) {
 			delete this.metadata[name];
 		}
 	}-*/;
 
 	public final native void removeParameter(String name)
 	/*-{
-		if(('parameters' in this))
-		{
+		if (('parameters' in this)) {
 			delete this.parameters[name];
 		}
 	}-*/;
@@ -153,12 +174,13 @@ public class PlaceBookItem extends JavaScriptObject
 		this.geom = string;
 	}-*/;
 
-	public final native void setKey(String key) /*-{ this.id = key; }-*/;
+	public final native void setKey(String key) /*-{
+		this.id = key;
+	}-*/;
 
 	public final native void setMetadata(String name, String value)
 	/*-{
-		if(!('metadata' in this))
-		{
+		if (!('metadata' in this)) {
 			this.metadata = new Object();
 		}
 		this.metadata[name] = value;
@@ -166,19 +188,22 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native void setParameter(String name, int value)
 	/*-{
-		if(!('parameters' in this))
-		{
+		if (!('parameters' in this)) {
 			this.parameters = new Object();
 		}
 		this.parameters[name] = value;
 	}-*/;
 
-	public final native void setSourceURL(String value) /*-{ this.sourceURL = value; }-*/;
+	public final native void setSourceURL(String value) /*-{
+		this.sourceURL = value;
+	}-*/;
 
-	public final native void setText(String newText) /*-{ this.text = newText; }-*/;
+	public final native void setText(String newText) /*-{
+		this.text = newText;
+	}-*/;
 
 	public final native void setHash(String hash)
 	/*-{
-		this.hash = hash;		
+		this.hash = hash;
 	}-*/;
 }

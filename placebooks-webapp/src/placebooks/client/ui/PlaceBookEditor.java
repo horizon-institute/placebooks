@@ -23,8 +23,6 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -303,24 +301,6 @@ public class PlaceBookEditor extends Composite
 	void handleAttach(final AttachEvent event)
 	{
 		canvas.reflow();
-	}
-
-	@UiHandler("backPanel")
-	void handleClick(final ClickEvent event)
-	{
-		interactionHandler.hideMenu();
-	}
-
-	@UiHandler("backPanel")
-	void handleMouseMove(final MouseMoveEvent event)
-	{
-		interactionHandler.handleDrag(event);
-	}
-
-	@UiHandler("backPanel")
-	void handleMouseUp(final MouseUpEvent event)
-	{
-		interactionHandler.handleDragEnd(event);
 	}
 
 	@UiHandler("title")

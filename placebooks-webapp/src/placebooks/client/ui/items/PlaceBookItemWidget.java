@@ -11,11 +11,23 @@ public abstract class PlaceBookItemWidget extends Composite
 		public void itemResized();
 	}
 	
+	public static interface FocusHandler
+	{
+		public void itemFocusChanged(final boolean focussed);
+	}
+	
+	public static interface ChangeHandler
+	{
+		public void itemChanged();
+	}	
+		
 	public static final double HEIGHT_PRECISION = 10000;
 
 	protected PlaceBookItem item;
 	
 	private ResizeHandler resizeHandler;
+	private FocusHandler focusHandler;
+	private ChangeHandler changeHandler;	
 
 	PlaceBookItemWidget(final PlaceBookItem item)
 	{
@@ -27,6 +39,16 @@ public abstract class PlaceBookItemWidget extends Composite
 		return item;
 	}
 
+	public void setFocusHandler(FocusHandler focusHandler)
+	{
+		this.focusHandler = focusHandler;
+	}
+	
+	public void setChangeHandler(ChangeHandler changeHandler)
+	{
+		this.changeHandler = changeHandler;
+	}
+		
 	public abstract void refresh();
 
 	int getOrder()
@@ -51,13 +73,30 @@ public abstract class PlaceBookItemWidget extends Composite
 		{
 			item.setHash(newItem.getHash());
 		}
+		refresh();
 	}
 
-	protected void fireResizeHandler()
+	protected void fireResized()
 	{
 		if(resizeHandler != null)
 		{
 			resizeHandler.itemResized();
 		}
 	}
+
+	protected void fireChanged()
+	{
+		if(changeHandler != null)
+		{
+			changeHandler.itemChanged();
+		}
+	}
+	
+	protected void fireFocusChanged(final boolean focussed)
+	{
+		if(focusHandler != null)
+		{
+			focusHandler.itemFocusChanged(focussed);
+		}
+	}	
 }

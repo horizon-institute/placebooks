@@ -11,7 +11,13 @@ import placebooks.client.ui.widget.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -65,6 +71,8 @@ public class PlaceBookInteractionHandler
 
 		final SimplePanel innerPanel = new SimplePanel();
 		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());
+		
+		dropMenu.setStyleName(Resources.INSTANCE.style().dropMenu());
 
 		insert.add(innerPanel);
 		insert.setStyleName(Resources.INSTANCE.style().insert());
@@ -77,11 +85,20 @@ public class PlaceBookInteractionHandler
 	
 	public void setSelected(PlaceBookItemFrame selectedItem)
 	{
-		// TODO
-		this.selected = selectedItem;
+		PlaceBookItemFrame oldSelection = this.selected;
+		selected = selectedItem;
+		if(oldSelection != null)
+		{
+			oldSelection.updateFrame();
+		}
+		if(selected != null)
+		{
+			selected.updateFrame();
+		}
+		hideMenu();
 	}
 
-	public void hideMenu()
+	private void hideMenu()
 	{
 		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 		dropMenu.getElement().getStyle().setOpacity(0);
@@ -119,6 +136,34 @@ public class PlaceBookInteractionHandler
 	{
 		panel.add(dragFrame);
 		panel.add(dropMenu);
+		
+		panel.addDomHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				hideMenu();
+				setSelected(null);
+			}
+		}, ClickEvent.getType());
+		
+		panel.addDomHandler(new MouseMoveHandler()
+		{
+			@Override
+			public void onMouseMove(MouseMoveEvent event)
+			{
+				handleDrag(event);				
+			}
+		}, MouseMoveEvent.getType());
+		
+		panel.addDomHandler(new MouseUpHandler()
+		{
+			@Override
+			public void onMouseUp(MouseUpEvent event)
+			{
+				handleDragEnd(event);				
+			}
+		}, MouseUpEvent.getType());	
 	}
 
 	public void showMenu(final Iterable<? extends MenuItem> items, final int x, final int y)
@@ -138,7 +183,7 @@ public class PlaceBookInteractionHandler
 		dropMenu.getElement().getStyle().setOpacity(1);
 	}
 
-	void handleDrag(final MouseEvent<?> event)
+	private void handleDrag(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragInit)
 		{
@@ -204,7 +249,7 @@ public class PlaceBookInteractionHandler
 		event.stopPropagation();
 	}
 
-	void handleDragEnd(final MouseEvent<?> event)
+	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
 		{
@@ -262,54 +307,4 @@ public class PlaceBookInteractionHandler
 	{
 		return canvas;
 	}
-
-	// void clearFocus(final PlaceBookItemWidgetFrame oldFocus)
-	// {
-	// if(currentFocus != null && currentFocus == oldFocus)
-	// {
-	// currentFocus.hideFrame();
-	// currentFocus = null;
-	// }
-	// }
-	//
-	// void setFocus(final PlaceBookItemWidget newFocus)
-	// {
-	// if(currentFocus != null)
-	// {
-	// currentFocus.hideFrame();
-	// }
-	// this.currentFocus = newFocus;
-	// if(lockFocus == null)
-	// {
-	// currentFocus.showFrame();
-	// }
-	// }
-	//
-	// void lockFocus(final PlaceBookItemWidgetFrame newFocus)
-	// {
-	// if(lockFocus != null && lockFocus != newFocus)
-	// {
-	// lockFocus.hideFrame();
-	// }
-	// lockFocus = newFocus;
-	// if(currentFocus != null && currentFocus != lockFocus)
-	// {
-	// currentFocus.hideFrame();
-	// }
-	// lockFocus.showFrame();
-	// }
-	//
-	// void clearLock(final PlaceBookItemWidgetFrame oldFocus)
-	// {
-	// if(lockFocus != null && lockFocus == oldFocus)
-	// {
-	// lockFocus.hideFrame();
-	// lockFocus = null;
-	// }
-	//
-	// if(currentFocus != null)
-	// {
-	// currentFocus.showFrame();
-	// }
-	// }
 }

@@ -405,5 +405,4 @@ public abstract class PlaceBookItem
 	 * @param newItem
 	 */
 	public abstract PlaceBookItem saveUpdatedItem();
-
 }
