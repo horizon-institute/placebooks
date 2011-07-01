@@ -37,6 +37,7 @@ public class PlaceBookCanvas extends FlowPanel
 			public void onResize(final ResizeEvent event)
 			{
 				reflow();
+				reflow();				
 			}
 		});
 	}

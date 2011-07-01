@@ -175,7 +175,7 @@ public class PlaceBookEditor extends Composite
 				updatePalette();
 			}
 		};
-		timer.scheduleRepeating(10000);
+		timer.scheduleRepeating(50000);
 	}
 
 	public PlaceBookCanvas getCanvas()

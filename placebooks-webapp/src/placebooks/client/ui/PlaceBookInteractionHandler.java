@@ -253,6 +253,16 @@ public class PlaceBookInteractionHandler
 		return null;
 	}
 
+	public SaveContext getContext()
+	{
+		return saveContext;
+	}
+
+	public PlaceBookCanvas getCanvas()
+	{
+		return canvas;
+	}
+
 	// void clearFocus(final PlaceBookItemWidgetFrame oldFocus)
 	// {
 	// if(currentFocus != null && currentFocus == oldFocus)

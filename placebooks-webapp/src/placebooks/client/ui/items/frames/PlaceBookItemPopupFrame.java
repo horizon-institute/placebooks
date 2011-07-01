@@ -5,6 +5,14 @@ import java.util.Collection;
 
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.menuItems.AddMapMenuItem;
+import placebooks.client.ui.menuItems.DeletePlaceBookMenuItem;
+import placebooks.client.ui.menuItems.FitToContentMenuItem;
+import placebooks.client.ui.menuItems.HideTrailMenuItem;
+import placebooks.client.ui.menuItems.RemoveMapMenuItem;
+import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
+import placebooks.client.ui.menuItems.ShowTrailMenuItem;
+import placebooks.client.ui.menuItems.UploadMenuItem;
 import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.dom.client.Style.Overflow;
@@ -120,6 +128,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			}
 		});		
 		rootPanel.add(widgetPanel);
+		
+		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems.add(new DeletePlaceBookMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new RemoveMapMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new UploadMenuItem(this));
 	}
 
 	void add(final MenuItem menuItem)
