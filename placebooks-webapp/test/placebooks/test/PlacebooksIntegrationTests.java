@@ -6,6 +6,7 @@ package placebooks.test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mortbay.log.Log;
 import org.w3c.dom.Node;
 
 import placebooks.controller.EMFSingleton;
@@ -82,16 +84,22 @@ public class PlacebooksIntegrationTests
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
 
 		HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+		assertEquals(36, pictures.size());
+		HashMap<String, String> pictureTrip = picturesResponse.getPictureTrips();
+		HashMap<String, String> tripNames = picturesResponse.getTripNames();
 
 		ImageItem imageItem = new ImageItem(testUser, null, null, null);
-		String id = pictures.keySet().iterator().next();
+		Set<String> keys = pictures.keySet();
+		String id = keys.iterator().next();
 		Node n = pictures.get(id);
-		ItemFactory.toImageItem(testUser, n, imageItem, id);
+		String tripId = pictureTrip.get(id);
+		String tripName =  tripNames.get(pictureTrip.get(id));
+		ItemFactory.toImageItem(testUser, n, imageItem, tripId, tripName);
 		//assertEquals(800, imageItem.getImage().getWidth());
 		//assertEquals(479, imageItem.getImage().getHeight());
 
-		ItemFactory.toImageItem(testUser, n, imageItem, id);
-		/*ImageItem saved = (ImageItem)*/ imageItem.saveUpdatedItem();
+		//ItemFactory.toImageItem(testUser, n, imageItem, pictureTrip.get(id), tripNames.get(pictureTrip.get(id)));
+		imageItem.saveUpdatedItem();
 	}
 
 	@Test
@@ -115,7 +123,7 @@ public class PlacebooksIntegrationTests
 		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null, null);
 
 		Node trackToUse = tracksResponse.getTracks().lastElement();
-		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1");
+		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
 		/*GPSTraceItem saved = (GPSTraceItem)*/ gpsTrace.saveUpdatedItem();
 	}
 
@@ -135,6 +143,7 @@ public class PlacebooksIntegrationTests
 	@Test
 	public void testGetEverytrailData() throws Exception
 	{
+		User testUser = UserManager.getUser(pm, "everytrail_test@live.co.uk");
 		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
 		pacd.getEverytrailData();
 	}

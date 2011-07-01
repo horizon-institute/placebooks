@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import placebooks.model.AudioItem;
 import placebooks.model.EverytrailLoginResponse;
@@ -808,8 +809,38 @@ public class PlaceBooksAdminControllerDebug
 
 		for (Node trip : trips.getTrips())
 		{
+			// Get trip ID
 			final NamedNodeMap tripAttr = trip.getAttributes();
 			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
+			
+			//Get other trip attributes...
+			String tripName = "";
+			String tripGPX = "";
+			String tripKML = "";
+			//Then look at the properties in the child nodes to get url, title, description, etc.
+			final NodeList tripProperties = trip.getChildNodes();
+			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
+			{
+				final Node item = tripProperties.item(propertyIndex);
+				final String itemName = item.getNodeName();
+				//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+				if (itemName.equals("name"))
+				{
+					log.debug("Trip name is: " + item.getTextContent());
+					tripName = item.getTextContent();
+				}
+				if (itemName.equals("gpx"))
+				{
+					log.debug("Trip GPX is: " + item.getTextContent());
+					tripGPX = item.getTextContent();
+				}
+				if (itemName.equals("name"))
+				{
+					log.debug("Trip KML is: " + item.getTextContent());
+					tripKML = item.getTextContent();
+				}
+				
+			}
 			log.debug("Getting tracks for trip: " + tripId);
 			EverytrailTracksResponse tracks = 
 				EverytrailHelper.Tracks(tripId, details.getUsername(), 
@@ -818,23 +849,22 @@ public class PlaceBooksAdminControllerDebug
 			{
 
 				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
-				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId);
+				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId, tripName);
+				gpsItem.setTrace(tripGPX);
 				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
 			
 			EverytrailPicturesResponse picturesResponse = 	
-				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword());
+				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword(), tripName);
 
-			HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+			HashMap<String, Node> pictures = picturesResponse.getPicturesMap();		
 			for (Node picture : pictures.values())
 			{
 				ImageItem imageItem = new ImageItem(testUser, null, null, null);
-				ItemFactory.toImageItem(testUser, picture, imageItem, tripId);
+				ItemFactory.toImageItem(testUser, picture, imageItem, tripId, tripName);
 				imageItem = (ImageItem) imageItem.saveUpdatedItem();
 			}	
-			
 		}
-
 	}
 
 	@RequestMapping(value = "/admin/delete/all_placebooks", 
