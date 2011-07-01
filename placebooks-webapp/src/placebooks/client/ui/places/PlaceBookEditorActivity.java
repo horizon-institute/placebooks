@@ -31,7 +31,7 @@ public class PlaceBookEditorActivity extends AbstractActivity
 		final PlaceBookEditor editor = new PlaceBookEditor(placeController);
 		if (placebook != null)
 		{
-			editor.updatePlaceBook(placebook);
+			editor.setPlaceBook(placebook);
 		}
 		else
 		{
@@ -41,7 +41,7 @@ public class PlaceBookEditorActivity extends AbstractActivity
 				public void success(final Request request, final Response response)
 				{
 					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					editor.updatePlaceBook(placebook);
+					editor.setPlaceBook(placebook);
 				}
 			});
 		}

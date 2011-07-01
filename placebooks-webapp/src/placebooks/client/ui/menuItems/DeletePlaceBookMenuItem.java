@@ -2,17 +2,17 @@ package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
-import placebooks.client.ui.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 public class DeletePlaceBookMenuItem extends MenuItem
 {
 	private final PlaceBookCanvas canvas;
 	private final SaveContext context;
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemFrame item;
 
 	public DeletePlaceBookMenuItem(final SaveContext context, final PlaceBookCanvas canvas,
-			final PlaceBookItemWidget item)
+			final PlaceBookItemFrame item)
 	{
 		super("Delete");
 		this.canvas = canvas;

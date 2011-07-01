@@ -176,4 +176,9 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setSourceURL(String value) /*-{ this.sourceURL = value; }-*/;
 
 	public final native void setText(String newText) /*-{ this.text = newText; }-*/;
+
+	public final native void setHash(String hash)
+	/*-{
+		this.hash = hash;		
+	}-*/;
 }

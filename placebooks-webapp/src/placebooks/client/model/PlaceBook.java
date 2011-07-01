@@ -48,6 +48,15 @@ public class PlaceBook extends JavaScriptObject
 		return this.metadata[name];
 	}-*/;
 
+	public final native String getMetadata(String name, final String defaultValue)
+	/*-{
+		if('metadata' in this && name in this.metadata)
+		{
+			return this.metadata[name];
+		}
+		return defaultValue;
+	}-*/;
+	
 	public final native User getOwner() /*-{
 										return this.owner;
 										}-*/;
