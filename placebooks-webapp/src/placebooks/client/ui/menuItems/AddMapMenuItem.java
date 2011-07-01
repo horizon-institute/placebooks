@@ -6,16 +6,16 @@ import java.util.Collection;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
-import placebooks.client.ui.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 public class AddMapMenuItem extends MenuItem
 {
 	private final PlaceBookCanvas canvas;
 	private final SaveContext context;
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemFrame item;
 
-	public AddMapMenuItem(final SaveContext context, final PlaceBookCanvas canvas, final PlaceBookItemWidget item)
+	public AddMapMenuItem(final SaveContext context, final PlaceBookCanvas canvas, final PlaceBookItemFrame item)
 	{
 		super("Add to Map");
 		this.canvas = canvas;
@@ -34,7 +34,7 @@ public class AddMapMenuItem extends MenuItem
 	public void run()
 	{
 		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
-		for (final PlaceBookItemWidget itemFrame : canvas.getItems())
+		for (final PlaceBookItemFrame itemFrame : canvas.getItems())
 		{
 			if (itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 			{

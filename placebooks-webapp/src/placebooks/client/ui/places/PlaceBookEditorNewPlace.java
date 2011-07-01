@@ -21,7 +21,7 @@ public class PlaceBookEditorNewPlace extends Place
 		@Override
 		public String getToken(final PlaceBookEditorNewPlace place)
 		{
-			return null;
+			return "";
 		}
 	}
 

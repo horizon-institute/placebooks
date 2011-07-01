@@ -2,7 +2,7 @@ package placebooks.client.ui.menuItems;
 
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
-import placebooks.client.ui.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,9 +16,9 @@ import com.google.gwt.user.client.ui.TextBox;
 public class SetSourceURLMenuItem extends MenuItem
 {
 	private final SaveContext context;
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemFrame item;
 
-	public SetSourceURLMenuItem(final SaveContext context, final PlaceBookItemWidget item)
+	public SetSourceURLMenuItem(final SaveContext context, final PlaceBookItemFrame item)
 	{
 		super("Set URL");
 		this.item = item;
@@ -44,7 +44,7 @@ public class SetSourceURLMenuItem extends MenuItem
 				if (!textBox.getValue().equals(item.getItem().getSourceURL()))
 				{
 					item.getItem().setSourceURL(textBox.getValue());
-					item.refresh();
+					item.getItemWidget().refresh();
 					context.markChanged();
 				}
 			}

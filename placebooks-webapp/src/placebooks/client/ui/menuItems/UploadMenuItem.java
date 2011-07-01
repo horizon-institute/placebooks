@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
@@ -21,9 +21,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 public class UploadMenuItem extends MenuItem
 {
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemFrame item;
 
-	public UploadMenuItem(final PlaceBookItemWidget item)
+	public UploadMenuItem(final PlaceBookItemFrame item)
 	{
 		super("Upload");
 
@@ -81,7 +81,7 @@ public class UploadMenuItem extends MenuItem
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
 				GWT.log("Submit complete: " + event.getResults());
-				item.refresh();
+				item.getItemWidget().refresh();
 				dialogBox.hide();
 			}
 		});

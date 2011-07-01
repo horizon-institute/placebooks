@@ -1,5 +1,6 @@
 package placebooks.client.ui.widget;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -10,28 +11,24 @@ import com.google.gwt.event.dom.client.HasKeyUpHandlers;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Widget;
 
-public class EditablePanel extends HTMLPanel implements HasKeyUpHandlers, HasFocusHandlers, HasBlurHandlers
-{
-	public EditablePanel(final SafeHtml safeHtml)
+public class RichTextArea extends Widget implements HasKeyUpHandlers, HasFocusHandlers, HasBlurHandlers
+{	
+	public RichTextArea()
 	{
-		super(safeHtml);
-		getElement().setAttribute("contentEditable", "true");
+		super();
+		Element div = DOM.createDiv();
+		setElement(div);
+		div.setAttribute("contentEditable", "true");
+		div.getStyle().setProperty("textAlign", "justify");
 	}
-
-	public EditablePanel(final String html)
+	
+	public RichTextArea(final String html)
 	{
-		super(html);
-		getElement().setAttribute("contentEditable", "true");
-		getElement().getStyle().setProperty("textAlign", "justify");
-	}
-
-	public EditablePanel(final String tag, final String html)
-	{
-		super(tag, html);
-		getElement().setAttribute("contentEditable", "true");
+		this();
+		getElement().setInnerHTML(html);
 	}
 
 	@Override

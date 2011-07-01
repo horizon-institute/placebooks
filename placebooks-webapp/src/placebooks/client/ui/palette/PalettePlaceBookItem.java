@@ -1,7 +1,9 @@
 package placebooks.client.ui.palette;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookItemDragHandler;
+import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -13,7 +15,7 @@ public class PalettePlaceBookItem extends PaletteItem
 {
 	private final PlaceBookItem item;
 
-	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookItemDragHandler dragHandler)
+	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
 	{
 		super();
 
@@ -29,12 +31,12 @@ public class PalettePlaceBookItem extends PaletteItem
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				dragHandler.handleDragInitialization(event, createItem(), null);
+				dragHandler.setupDrag(event, createItem(), null);
 			}
 		});
 	}
 
-	private PlaceBookItem createItem()
+	private PlaceBookItemWidget createItem()
 	{
 		final PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
 		if (newItem.getKey() != null)
@@ -43,6 +45,6 @@ public class PalettePlaceBookItem extends PaletteItem
 			newItem.setKey(null);
 		}
 		newItem.setMetadata("tempID", HTMLPanel.createUniqueId());
-		return newItem;
+		return PlaceBookItemWidgetFactory.createItemWidget(newItem, true);
 	}
 }
