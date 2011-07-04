@@ -135,8 +135,16 @@ public class PlaceBookItem extends JavaScriptObject
 		}
 		if (key != null && isMedia(shortClass))
 		{
-			return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
-				+ getShortClassName() + "/" + key + "?" + getHash();
+			if(getHash() != null)
+			{
+				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
+					+ getShortClassName() + "/" + key + "?" + getHash();
+			}
+			else
+			{
+				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
+				+ getShortClassName() + "/" + key;				
+			}
 		}
 
 		return getSourceURL();

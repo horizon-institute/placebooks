@@ -11,7 +11,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -816,7 +815,7 @@ public class PlaceBooksAdminControllerDebug
 			//Get other trip attributes...
 			String tripName = "";
 			String tripGPX = "";
-			String tripKML = "";
+//			String tripKML = "";
 			//Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
@@ -834,12 +833,11 @@ public class PlaceBooksAdminControllerDebug
 					log.debug("Trip GPX is: " + item.getTextContent());
 					tripGPX = item.getTextContent();
 				}
-				if (itemName.equals("name"))
-				{
-					log.debug("Trip KML is: " + item.getTextContent());
-					tripKML = item.getTextContent();
-				}
-				
+//				if (itemName.equals("name"))
+//				{
+//					log.debug("Trip KML is: " + item.getTextContent());
+//					tripKML = item.getTextContent();
+//				}
 			}
 			log.debug("Getting tracks for trip: " + tripId);
 			EverytrailTracksResponse tracks = 
@@ -850,7 +848,14 @@ public class PlaceBooksAdminControllerDebug
 
 				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
 				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId, tripName);
-				gpsItem.setTrace(tripGPX);
+				try
+				{
+					gpsItem.readTrace(CommunicationHelper.getConnection(new URL(tripGPX)).getInputStream());
+				}
+				catch(Exception e)
+				{
+					log.info(tripGPX + ": " + e.getMessage(), e);
+				}
 				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
 			

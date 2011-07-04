@@ -114,7 +114,7 @@ public class GPSTraceItem extends PlaceBookItem
 		return trace;
 	}
 
-	public void setTrace(final String trace)
+	private void setTrace(final String trace)
 	{
 		this.trace = trace;
 	}

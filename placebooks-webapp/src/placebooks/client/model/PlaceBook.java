@@ -1,5 +1,7 @@
 package placebooks.client.model;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -16,7 +18,7 @@ public class PlaceBook extends JavaScriptObject
 
 	public final void add(final PlaceBookItem item)
 	{
-		getItems().push(item);
+		getItemsInternal().push(item);
 	}
 
 	public final native void clearItems()
@@ -29,7 +31,19 @@ public class PlaceBook extends JavaScriptObject
 		return this.geom;
 	}-*/;
 
-	public final native JsArray<PlaceBookItem> getItems()
+	public final Iterable<PlaceBookItem> getItems()
+	{
+		return new Iterable<PlaceBookItem>()
+		{
+			@Override
+			public Iterator<PlaceBookItem> iterator()
+			{
+				return new JSIterator<PlaceBookItem>(getItemsInternal());
+			}
+		};
+	}
+	
+	private final native JsArray<PlaceBookItem> getItemsInternal()
 	/*-{
 		if(!('items' in this))
 		{
@@ -65,7 +79,7 @@ public class PlaceBook extends JavaScriptObject
 															return 'metadata' in this && name in this.metadata;
 															}-*/;
 
-	public final native void removeItem(PlaceBookItem item) /*-{
+	public final native void remove(PlaceBookItem item) /*-{
 															var idx = this.items.indexOf(item);
 															if (idx != -1) {
 															this.items.splice(idx, 1);

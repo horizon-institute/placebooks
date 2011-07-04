@@ -7,7 +7,6 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
 import placebooks.client.ui.palette.Palette;
 import placebooks.client.ui.places.PlaceBookEditorPlace;
@@ -60,12 +59,6 @@ public class PlaceBookEditor extends Composite
 		public void run()
 		{
 			savingPanel.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
-
-			placebook.clearItems();
-			for (final PlaceBookItemFrame item : canvas.getItems())
-			{
-				placebook.getItems().push(item.getItem());
-			}
 
 			// changed = false;
 			// saving = true;

@@ -80,6 +80,18 @@ a:hover {
 	overflow: hidden;
 }
 
+.toolbar {
+	position: absolute;
+	font: 13px/27px Arial,sans-serif;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 30px;
+	color: #CCC;
+	background: #2D2D2D;
+	overflow: none;		
+}	
+
 .frameWidgetPanel {
 	overflow: hidden;
 	margin-top: 24px;

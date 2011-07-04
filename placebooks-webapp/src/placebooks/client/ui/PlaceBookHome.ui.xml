@@ -7,7 +7,7 @@
 		.userPanel {
 			position: absolute;
 			left: 0px;
-			top:30px;
+			top: 50px;
 			bottom: 0px;
 			width: 200px;
 		}
@@ -16,11 +16,12 @@
 			position: absolute;
 			left: 200px;
 			right: 0px;
-			top: 0px;
+			top: 30px;
 			bottom: 0px;			
 		}
 	</ui:style>
 	<g:HTMLPanel>
+		<p:PlaceBookToolbar />
 		<g:FlowPanel styleName="{style.userPanel}" ui:field="userPanel">
 		</g:FlowPanel>
 		

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -438,24 +439,27 @@ public class PlaceBooksAdminController
 						updateMedia.add(item);
 					}
 				}
-//				else if(newItem.getMetadata().get("originalItemID") != null)
-//				{
-//					final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
-//					if(originalItem != null)
-//					{
-//						item = originalItem;
-//						manager.detach(item);
-//					}
-//					else
-//					{
-//						updateMedia.add(item);
-//					}
-//					manager.persist(item);					
-//				}
 				else
 				{
 					manager.persist(item);
-					updateMedia.add(item);
+					
+					if(newItem.getMetadata().get("originalItemID") != null)
+					{
+						final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
+						if(originalItem != null)
+						{
+							// We want to keep the metadata & parameters from the new item
+							final Map<String, String> meta = new HashMap<String, String>(item.getMetadata());
+							final Map<String, Integer> para = new HashMap<String, Integer>(item.getParameters());
+							item.update(originalItem);
+							item.setMedataData(meta);
+							item.setParameters(para);
+						}
+					}
+					else
+					{
+						updateMedia.add(item);
+					}
 				}
 				
 				if(item.getOwner() == null)
@@ -477,8 +481,9 @@ public class PlaceBooksAdminController
 			{
 				placebook.setTimestamp(new Date());
 			}
-				
-			placebook = manager.merge(placebook);									
+							
+			placebook = manager.merge(placebook);
+			//placebook.calcBoundary();
 			manager.getTransaction().commit();
 
 			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
@@ -497,7 +502,10 @@ public class PlaceBooksAdminController
 					else if(item instanceof GPSTraceItem)
 					{
 						final GPSTraceItem gpsItem = (GPSTraceItem)item;
-						gpsItem.readTrace(gpsItem.getSourceURL().openStream());
+						if(gpsItem.getSourceURL() != null)
+						{
+							gpsItem.readTrace(gpsItem.getSourceURL().openStream());
+						}
 					}
 					else if(item instanceof WebBundleItem)
 					{
@@ -853,7 +861,7 @@ public class PlaceBooksAdminController
 			if (g != null)
 			{
 				final String trace = g.getTrace();
-				//log.info(trace);
+				log.info(trace);
 				
 				res.setContentType("text/xml");
 				final PrintWriter p = res.getWriter();

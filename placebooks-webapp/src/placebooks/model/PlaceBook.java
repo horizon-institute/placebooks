@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -35,9 +34,6 @@ import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.PrecisionModel;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
@@ -283,29 +279,23 @@ public class PlaceBook
 
 	public void calcBoundary()
 	{
-		// Note: we are assuming here that PlaceBook/PlaceBookItem 
-		// geometries are basic types and don't include MultiLineString,
-		// MultiPoint or MultiPolygon types
-		final Set<Geometry> gs = new HashSet<Geometry>();
-		int srid = 0;
+		Geometry bounds = null;
 		for (PlaceBookItem item : getItems())
 		{
 			final Geometry g = item.getGeometry();
 			if (g != null)
 			{
-				gs.add(g);
-				srid = g.getSRID();
+				if(bounds != null)
+				{			
+					bounds = g.union(bounds).getBoundary();
+				}
+				else
+				{
+					bounds = g;
+				}
 			}
 		}
 
-		if (!gs.isEmpty())
-		{
-			// Assume SRID for all elements is identical
-			this.geom = 
-				(new GeometryCollection((GeometryCollection[])gs.toArray(), 
-									new GeometryFactory(new PrecisionModel(), 
-														srid))
-				).getBoundary();
-		}
+		geom = bounds.getBoundary();
 	}
 }

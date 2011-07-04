@@ -210,10 +210,7 @@ public abstract class MediaItem extends PlaceBookItem
 		super.updateItem(item);
 		if(item instanceof MediaItem)
 		{
-			MediaItem mediaItem = (MediaItem) item;
-			// Overwrite existing file by saving new file in the existing folder with the 
-			// existing name 
-			// Check it exists first though
+			final MediaItem mediaItem = (MediaItem) item;
 			if(mediaItem.getPath() == null)
 			{
 				return;
@@ -222,23 +219,19 @@ public abstract class MediaItem extends PlaceBookItem
 			{
 				return;
 			}
-			log.debug("Looking for " + mediaItem.getPath());			
-			if (new File(mediaItem.getPath()).exists())
+			log.debug("Looking for " + mediaItem.getPath());
+			final File mediaFile = new File(mediaItem.getPath());
+			if (mediaFile.exists())
 			{
-				if (new File(this.getPath()).exists() || new File(this.getPath()).mkdirs())
+				// TODO Remove old file?
+				
+				try
 				{
-					final File dataFile = new File(mediaItem.getPath());
-					FileInputStream fis;
-					try
-					{
-						fis = new FileInputStream(dataFile);
-						writeDataToDisk(new File(this.getPath()).getName(), fis);
-						fis.close();
-					}
-					catch (Exception e)
-					{
-						log.error(e.getMessage());
-					}
+					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
+				}
+				catch (Exception e)
+				{
+					log.error(e.getMessage());
 				}
 			}
 		}
@@ -284,5 +277,4 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		return returnItem;
 	}
-	
 }

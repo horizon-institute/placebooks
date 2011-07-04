@@ -1,5 +1,6 @@
 package placebooks.client.ui.items;
 
+import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -67,6 +68,7 @@ public abstract class PlaceBookItemWidget extends Composite
 		{
 			item.setKey(newItem.getKey());
 			item.removeMetadata("tempID");
+			newItem.removeMetadata("tempID");
 		}
 		
 		if(newItem.getHash() != null)
@@ -74,6 +76,11 @@ public abstract class PlaceBookItemWidget extends Composite
 			item.setHash(newItem.getHash());
 		}
 		refresh();
+	}
+	
+	public void setPlaceBook(final PlaceBook placebook)
+	{
+		
 	}
 
 	protected void fireResized()

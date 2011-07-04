@@ -36,7 +36,6 @@ public class PlaceBookCanvas extends FlowPanel
 			@Override
 			public void onResize(final ResizeEvent event)
 			{
-				reflow();
 				reflow();				
 			}
 		});
@@ -65,14 +64,29 @@ public class PlaceBookCanvas extends FlowPanel
 		}
 	}
 	
-	public void add(final PlaceBookItemFrame item)
+	private final void refreshItemPlaceBook()
+	{
+		for(PlaceBookItemFrame item: items)
+		{
+			item.getItemWidget().setPlaceBook(placebook);
+		}	
+	}
+	
+	private void addImpl(final PlaceBookItemFrame item)
 	{
 		items.add(item);
 		super.add(item);
-		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));
+		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));		
+	}
+	
+	public void add(final PlaceBookItemFrame item)
+	{
+		addImpl(item);
+		placebook.add(item.getItem());
+		refreshItemPlaceBook();
 	}
 
-	public void remove(final PlaceBookItemFrame item)
+	private void removeImpl(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
 		super.remove(item);
@@ -80,6 +94,13 @@ public class PlaceBookCanvas extends FlowPanel
 		{
 			item.getPanel().remove(item);
 		}
+	}
+	
+	public void remove(final PlaceBookItemFrame item)
+	{
+		removeImpl(item);
+		placebook.remove(item.getItem());
+		refreshItemPlaceBook();		
 	}
 
 	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
@@ -99,15 +120,15 @@ public class PlaceBookCanvas extends FlowPanel
 		return null;
 	}
 	
-	public void setPlaceBook(final PlaceBook newPlacebook, final PlaceBookItemFrameFactory factory, boolean panelsVisible)
+	public void setPlaceBook(final PlaceBook newPlaceBook, final PlaceBookItemFrameFactory factory, boolean panelsVisible)
 	{
 		assert placebook == null;
-		this.placebook = newPlacebook;		
+		this.placebook = newPlaceBook;	
 		clear();
 		int pages = DEFAULT_PAGES;
 		try
 		{
-			pages = Integer.parseInt(newPlacebook.getMetadata("pageCount"));
+			pages = Integer.parseInt(newPlaceBook.getMetadata("pageCount"));
 		}
 		catch (final Exception e)
 		{
@@ -116,7 +137,7 @@ public class PlaceBookCanvas extends FlowPanel
 		final int columns = DEFAULT_COLUMNS;
 		try
 		{
-			pages = Integer.parseInt(newPlacebook.getMetadata("columns"));
+			pages = Integer.parseInt(newPlaceBook.getMetadata("columns"));
 		}
 		catch (final Exception e)
 		{
@@ -129,37 +150,38 @@ public class PlaceBookCanvas extends FlowPanel
 			add(panel);
 		}
 
-		for (int index = 0; index < newPlacebook.getItems().length(); index++)
+		for (PlaceBookItem item: newPlaceBook.getItems())
 		{
-			add(factory.createFrame(newPlacebook.getItems().get(index)));
+			addImpl(factory.createFrame(item));
 		}
+
+		reflow();
+		
+		refreshItemPlaceBook();
+		
+		reflow();		
 	}
 	
-	public void updatePlaceBook(final PlaceBook newPlacebook)
+	public void updatePlaceBook(final PlaceBook newPlaceBook)
 	{
-		this.placebook = newPlacebook;
+		this.placebook = newPlaceBook;
 
-		for (int index = 0; index < newPlacebook.getItems().length(); index++)
+		for (PlaceBookItem item: newPlaceBook.getItems())
 		{
-			final PlaceBookItem item = newPlacebook.getItems().get(index);
 			final PlaceBookItemFrame frame = getFrame(item);
 			if(frame != null)
 			{
 				frame.getItemWidget().update(item);
 			}
 		}
+		
+		placebook.clearItems();
+		for (final PlaceBookItemFrame item : items)
+		{
+			placebook.add(item.getItem());
+		}
 
+		refreshItemPlaceBook();		
 		reflow();
 	}
-
-//	private PlaceBookItemFrame addToCanvas(final PlaceBookItem item)
-//	{
-//		final PlaceBookItemFrame itemFrame = factory.createFrame(); //PlaceBookItemWidget(this, item);
-//		itemFrame.setItemWidget(PlaceBookItemWidgetFactory.createItemWidget(item, editable));
-//		//itemWidget.addToCanvas(this);
-//		//itemWidget.setPanel(panels.get(item.getParameter("panel", 0)));
-//		items.add(itemFrame);
-//		add(itemFrame);
-//		return itemFrame;
-//	}
 }
