@@ -21,6 +21,8 @@ public interface Resources extends ClientBundle
 	
 	ImageResource placebook();	
 
+	ImageResource landscape();
+	
 	ImageResource add();
 	
 	ImageResource book();	

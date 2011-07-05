@@ -4,16 +4,49 @@
 	xmlns:p="urn:import:placebooks.client.ui"
 	>
 	<ui:style>		
+		.title 
+		{
+			font-size: 60px;
+		}
+		
+		.image 
+		{
+			width: 100%;
+		}
+		
+		.overImage 
+		{
+			background: rgba(255,255,255,0.5);
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+		}
+		
+		.overImageTitle
+		{
+			font-style: mako, sans-serif;
+			font-size: 26px;
+			font-weight: bold;
+			margin: 20px 0 10px 0;
+			color: #384967;
+		}		
 	</ui:style>
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
 	<g:FlowPanel>
 		<p:PlaceBookToolbar ui:field="toolbar" />
 
 		<g:FlowPanel styleName="{res.style.content}">
-			<g:HTMLPanel>
-				<h1 style="font-size: 60px;">PLACEBOOKS</h1>
+			<g:FlowPanel>
+				<g:Label styleName="{style.title}">PLACEBOOKS</g:Label>
+				<g:FlowPanel>
+					<g:Image resource='{res.landscape}' styleName="{style.image}" />
+					<g:FlowPanel styleName="{style.overImage}"><g:Label styleName="{style.overImageTitle}">CREATE, SHARE, DOWNLOAD &amp; ENJOY</g:Label><g:Label>PlaceBooks enable you to create digital booklets about your favourite places and share them with your friends and other PlaceBook users.</g:Label></g:FlowPanel>				
+				</g:FlowPanel>
+
+				<g:HTMLPanel>
 				<h4>WELCOME TO THE WORLD AS SEEN THROUGH YOUR EYES</h4>
-				<p>PlaceBooks enable you to create digital booklets about your favourite places and share them with your friends and other PlaceBook users.</p>
+				<p></p>
 				<p>Key features:</p>
 				<ul>
 				<li>Add digital content to your booklets, including geo-tagged content (maps, routes, videos, photos, audio, and text).</li>
@@ -21,7 +54,8 @@
 				<li>Take PlaceBooks with you on your smart phone and use them to guide you around new and interesting places.</li>				
 				</ul>
 				<p>If you would like to add geo-tagged content to your PlaceBooks we recommend EveryTrails</p>
-			</g:HTMLPanel>
+				</g:HTMLPanel>
+			</g:FlowPanel>
 			<g:FlowPanel ui:field="searchBar"><g:TextBox>Sea</g:TextBox><g:Button>Search PlaceBooks</g:Button></g:FlowPanel>
 		</g:FlowPanel>		
 	</g:FlowPanel>
