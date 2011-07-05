@@ -14,6 +14,12 @@
 			width: 100%;
 		}
 		
+		.previewPanel
+		{
+			width: 50%;
+			float: left;
+		}	
+		
 		.overImage 
 		{
 			background: rgba(255,255,255,0.5);
@@ -56,7 +62,9 @@
 				<p>If you would like to add geo-tagged content to your PlaceBooks we recommend EveryTrails</p>
 				</g:HTMLPanel>
 			</g:FlowPanel>
-			<g:FlowPanel ui:field="searchBar"><g:TextBox>Sea</g:TextBox><g:Button>Search PlaceBooks</g:Button></g:FlowPanel>
+			<g:FlowPanel ui:field="searchBar"><g:TextBox>Search</g:TextBox><g:Button>Search PlaceBooks</g:Button></g:FlowPanel>
+			<g:FlowPanel styleName="{style.previewPanel}"></g:FlowPanel>
+			<g:FlowPanel styleName="{style.previewPanel}"></g:FlowPanel>			
 		</g:FlowPanel>		
 	</g:FlowPanel>
 </ui:UiBinder> 

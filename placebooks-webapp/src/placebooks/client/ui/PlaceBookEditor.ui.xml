@@ -119,7 +119,8 @@
 			-webkit-user-select: none;	
 			-moz-user-select: none;
 			-o-user-select: none;			
-			user-select: none;			
+			user-select: none;
+			overflow: hidden;			
 		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
