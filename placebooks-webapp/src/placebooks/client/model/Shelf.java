@@ -1,5 +1,7 @@
 package placebooks.client.model;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -11,7 +13,19 @@ public class Shelf extends JavaScriptObject
 	{
 	}
 
-	public final native JsArray<PlaceBookEntry> getEntries() /*-{ return this.entries; }-*/;
+	private final native JsArray<PlaceBookEntry> getEntriesImpl() /*-{ return this.entries; }-*/;
 
+	public final Iterable<PlaceBookEntry> getEntries()
+	{
+		return new Iterable<PlaceBookEntry>()
+		{			
+			@Override
+			public Iterator<PlaceBookEntry> iterator()
+			{
+				return new JSIterator<PlaceBookEntry>(getEntriesImpl());
+			}
+		};
+	}
+	
 	public final native User getUser() /*-{ return this.user; }-*/;
 }

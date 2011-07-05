@@ -17,31 +17,33 @@
 			position: absolute;
 			width: 16px;
 			height: 16px;
-			border: 1px solid #447;
-			background-color: #669;
+			background-color: #447;
 			padding: 2px;
 		}
+		
+		.menuButton:HOVER {
+			background-color: #669;
+		}		
 		
 		.dragSection {
 			left: 0px;
 			top: 0px;
 			position: absolute;
-			right: 21px;
+			right: 20px;
 			height: 20px;
-			border: 1px solid #447;
-			background-color: #669;
+			background-color: #447;
 			min-height: 10px;
 			cursor:move;
 		}
 		
 		.borderSection {
 			position: absolute;
-			top: 22px;
+			top: 20px;
 			bottom: 5px;
 			left: 0px;
 			right: 0px;
-			border-left: 1px solid #447;
-			border-right: 1px solid #447;
+			border-left: 2px solid #447;
+			border-right: 2px solid #447;
 		}
 		
 		.resizeSection {

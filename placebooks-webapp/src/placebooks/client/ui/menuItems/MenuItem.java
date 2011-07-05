@@ -1,4 +1,4 @@
-package placebooks.client.ui.widget;
+package placebooks.client.ui.menuItems;
 
 import placebooks.client.resources.Resources;
 
@@ -25,6 +25,11 @@ public abstract class MenuItem extends Label
 	public boolean isEnabled()
 	{
 		return true;
+	}
+	
+	public void refresh()
+	{
+		setVisible(isEnabled());
 	}
 
 	public abstract void run();

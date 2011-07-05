@@ -11,34 +11,46 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CreateEverytrailAccount extends Composite
+public class LoginDialog extends Composite
 {
 
-	interface CreateEverytrailAccountUiBinder extends UiBinder<Widget, CreateEverytrailAccount>
+	interface LoginDialogUiBinder extends UiBinder<Widget, LoginDialog>
 	{
 	}
 
-	private static CreateEverytrailAccountUiBinder uiBinder = GWT.create(CreateEverytrailAccountUiBinder.class);
+	private static LoginDialogUiBinder uiBinder = GWT.create(LoginDialogUiBinder.class);
 
 	@UiField
-	Button createAccount;
+	Label titleLabel;
+	
+	@UiField
+	Button submit;
 
 	@UiField
 	PasswordTextBox password;
 
 	@UiField
 	TextBox username;
+	
+	@UiField
+	Label usernameLabel;
 
 	private AbstractCallback callback;
 
-	public CreateEverytrailAccount()
+	public LoginDialog(String title, String submitText, String usernameText, String loginName, String passName)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		createAccount.setEnabled(false);
+		submit.setEnabled(false);
+		submit.setText(submitText);
+		titleLabel.setText(title);
+		username.setName(loginName);
+		password.setName(passName);
+		usernameLabel.setText(usernameText);
 	}
 
 	public String getPassword()
@@ -61,23 +73,23 @@ public class CreateEverytrailAccount extends Composite
 	{
 		if (username.getText().trim().equals(""))
 		{
-			createAccount.setEnabled(false);
+			submit.setEnabled(false);
 			return;
 		}
 
 		if (password.getText().trim().equals(""))
 		{
-			createAccount.setEnabled(false);
+			submit.setEnabled(false);
 			return;
 		}
 
-		createAccount.setEnabled(true);
+		submit.setEnabled(true);
 	}
 
-	@UiHandler("createAccount")
+	@UiHandler("submit")
 	void createAccount(final ClickEvent event)
 	{
-		createAccount.setEnabled(false);
+		submit.setEnabled(false);
 		PlaceBookService.linkAccount(username.getText(), password.getText(), "Everytrail", callback);
 	}
 }

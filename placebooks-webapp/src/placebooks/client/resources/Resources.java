@@ -18,7 +18,15 @@ public interface Resources extends ClientBundle
 	ImageResource image();
 
 	ImageResource map();
+	
+	ImageResource placebook();	
 
+	ImageResource add();
+	
+	ImageResource book();	
+	
+	ImageResource book_open();	
+	
 	ImageResource movies();
 
 	ImageResource music();

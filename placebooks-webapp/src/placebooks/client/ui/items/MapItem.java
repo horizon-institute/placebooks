@@ -12,19 +12,14 @@ import placebooks.client.ui.openlayers.LonLat;
 import placebooks.client.ui.openlayers.Map;
 import placebooks.client.ui.openlayers.Marker;
 import placebooks.client.ui.openlayers.MarkerLayer;
-import placebooks.client.ui.openlayers.Projection;
 import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	private final static Projection LATLON_PROJECTION = Projection.create("ESPG:4326");
-
 	private static final String MARKER_URL = GWT.getHostPageBaseURL() + "images/marker.png";
 
 	private final static String POINT_PREFIX = "POINT (";
@@ -40,7 +35,7 @@ public class MapItem extends PlaceBookItemWidget
 		}
 	};
 
-	private Map map;
+	private Map map = null;
 
 	private MarkerLayer markerLayer;
 
@@ -61,16 +56,15 @@ public class MapItem extends PlaceBookItemWidget
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		panel.add(interactionLabel);
 		panel.setWidth("100%");
-		interactionLabel.setVisible(true);
-		interactionLabel.setText("Blah");
-		interactionLabel.addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				createRoute();
-			}
-		});
+		panel.setHeight("300px");
+		// interactionLabel.addClickHandler(new ClickHandler()
+		// {
+		// @Override
+		// public void onClick(final ClickEvent event)
+		// {
+		// createRoute();
+		// }
+		// });
 
 		if (!item.hasParameter("height"))
 		{
@@ -103,35 +97,45 @@ public class MapItem extends PlaceBookItemWidget
 		refreshMarkers();
 	}
 
+	@Override
+	protected void onAttach()
+	{
+		super.onAttach();
+		createMap();
+	}
+
 	private void createMap()
 	{
-		map = Map.create(panel.getElement());
-		final ClickControl control = ClickControl.create(new EventHandler()
+		if(map == null)
 		{
-			@Override
-			protected void handleEvent(final Event event)
+			map = Map.create(panel.getElement());
+			final ClickControl control = ClickControl.create(new EventHandler()
 			{
-				final LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(),
-																						LATLON_PROJECTION);
-				if (positionItem != null)
+				@Override
+				protected void handleEvent(final Event event)
 				{
-					GWT.log("Clicked at " + lonLat);
-					positionItem.setGeometry(POINT_PREFIX + lonLat.getLon() + " " + lonLat.getLat() + ")");
+					final LonLat lonLat = map.getLonLatFromPixel(event.getXY()).transform(map.getProjection(),
+																							map.getDisplayProjection());
+					if (positionItem != null)
+					{
+						GWT.log("Clicked at " + lonLat);
+						positionItem.setGeometry(POINT_PREFIX + lonLat.getLon() + " " + lonLat.getLat() + ")");
+					}
+	
+					fireChanged();
+					fireFocusChanged(true);
+					refreshMarkers();
 				}
-
-				fireChanged();
-				fireFocusChanged(true);
-				refreshMarkers();
-			}
-		}.getFunction());
-		map.addControl(control);
-		control.activate();
-
-		map.addLayer(GoogleLayer.create("glayer"));
-		// map.addLayer(OSMLayer.create("Osmarender"));
-
-		markerLayer = MarkerLayer.create("markerLayer");
-		map.addLayer(markerLayer);
+			}.getFunction());
+			map.addControl(control);
+			control.activate();
+	
+			map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
+			// map.addLayer(OSMLayer.create("Osmarender"));
+	
+			markerLayer = MarkerLayer.create("markerLayer");
+			map.addLayer(markerLayer);
+		}
 
 		createRoute();
 	}
@@ -146,7 +150,7 @@ public class MapItem extends PlaceBookItemWidget
 		}
 
 		GWT.log("Map URL: " + getItem().getURL());
-		routeLayer = RouteLayer.create("Route", getItem().getURL(), LATLON_PROJECTION);
+		routeLayer = RouteLayer.create("Route", getItem().getURL(), map.getDisplayProjection());
 		try
 		{
 			if (loadHandler != null)
@@ -165,7 +169,7 @@ public class MapItem extends PlaceBookItemWidget
 
 	private Bounds getLayerBounds()
 	{
-		Bounds bounds = markerLayer.getDataExtent().transform(LATLON_PROJECTION, map.getProjection());
+		Bounds bounds = markerLayer.getDataExtent();
 		if (routeLayer != null)
 		{
 			final Bounds routeBounds = routeLayer.getDataExtent();
@@ -197,7 +201,9 @@ public class MapItem extends PlaceBookItemWidget
 			}
 			else
 			{
-				map.setCenter(LonLat.create(-1.10f, 52.58f).transform(LATLON_PROJECTION, map.getProjection()), 12);
+				map.setCenter(	LonLat.create(-1.10f, 52.58f)
+										.transform(map.getDisplayProjection(), map.getProjection()),
+								12);
 			}
 		}
 		catch (final Exception e)
@@ -208,6 +214,8 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void refreshMarkers()
 	{
+		if (placebook == null) { return; }
+
 		positionItem = null;
 		interactionLabel.setVisible(false);
 		for (final PlaceBookItem item : placebook.getItems())
@@ -222,8 +230,8 @@ public class MapItem extends PlaceBookItemWidget
 						final LonLat lonlat = LonLat.create(geometry.substring(	POINT_PREFIX.length(),
 																				geometry.length() - 1));
 						final Marker marker = Marker.create(MARKER_URL,
-															lonlat.clone().transform(LATLON_PROJECTION, map.getProjection()),
-															32, 32);
+															lonlat.clone().transform(map.getDisplayProjection(),
+																						map.getProjection()), 32, 32);
 						markerLayer.addMarker(marker);
 						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
 					}

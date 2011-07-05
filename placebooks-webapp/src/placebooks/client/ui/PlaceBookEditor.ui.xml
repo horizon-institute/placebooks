@@ -1,10 +1,10 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pb="urn:import:placebooks.client.ui"
 	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
-			top: 30px;
+			top: 40px;
 			left: 0px;
 			right: 120px;
 			bottom: 0px;
@@ -25,7 +25,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 30px;
+			top: 40px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -56,7 +56,7 @@
 
 		.savingLabel {
 			color: white;
-			font-family: Verdana, Arial, sans-serif;
+			font-family: Mako, sans-serif;
 			font-size: 15px;
 			padding-left: 15px;
 			vertical-align: top;
@@ -75,20 +75,7 @@
 			display: none;
 			z-index: 55;
 		}
-
-		.titleBar {
-			position: absolute;
-			font: 13px/27px Arial,sans-serif;
-			top: 0px;
-			left: 0px;
-			right: 0px;
-			height: 30px;
-			color: #CCC;
-			box-shadow: 2px 2px 2px 333;	
-			background: #2D2D2D;
-			overflow: none;		
-		}
-		
+	
 		.populate {
 			position: absolute;
 			text-align: center;
@@ -124,6 +111,7 @@
 		
 		.zoomImage {
 			margin: 2px;
+			margin-top: 12px;
 			float:right;
 		}
 		
@@ -137,8 +125,8 @@
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
-		<g:FlowPanel styleName="{style.titleBar}">
-			<p:MousePanel styleName="{style.account}" ui:field="account"><g:InlineLabel ui:field="accountLabel" /><g:Image resource='{res.dropMenuIcon}' /></p:MousePanel>
+		<g:FlowPanel styleName="{res.style.toolbar}">
+			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
 			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			

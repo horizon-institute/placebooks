@@ -3,7 +3,6 @@ package placebooks.client.ui.menuItems;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

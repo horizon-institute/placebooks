@@ -12,15 +12,20 @@
 		.content {
 			padding: 10px;
 		}
+		
+		.button {
+			float: right;
+			margin: 10px 0;
+		}
 	</ui:style>
 	<g:FlowPanel>
-		<g:Label styleName="{style.title}">Link Everytrail Account</g:Label>
+		<g:Label ui:field="titleLabel" styleName="{style.title}">Link Everytrail Account</g:Label>
 		<g:FlowPanel styleName="{style.content}">
-			<g:Label>UserName:</g:Label>
+			<g:Label ui:field="usernameLabel">UserName:</g:Label>
 			<g:TextBox ui:field="username" />
 			<g:Label>Password:</g:Label>
 			<g:PasswordTextBox ui:field="password" />
-			<g:SimplePanel><g:Button ui:field="createAccount">Link Everytrail Account</g:Button></g:SimplePanel>
+			<g:SimplePanel><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

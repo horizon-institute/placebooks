@@ -1,29 +1,28 @@
 package placebooks.client.ui.places;
 
 import placebooks.client.model.Shelf;
-import placebooks.client.ui.PlaceBookHome;
+import placebooks.client.ui.PlaceBookLibrary;
 
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
-public class PlaceBookHomeActivity extends AbstractActivity
+public class PlaceBookLibraryActivity extends AbstractActivity
 {
-	private final PlaceController controller;
+	private final PlaceController placeController;
 	private final Shelf shelf;
-
-	public PlaceBookHomeActivity(final PlaceController controller, final Shelf shelf)
+	
+	public PlaceBookLibraryActivity(PlaceController placeController, Shelf shelf)
 	{
-		super();
-		this.controller = controller;
 		this.shelf = shelf;
+		this.placeController = placeController;
 	}
 
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		final PlaceBookHome home = new PlaceBookHome(controller, shelf);
-		panel.setWidget(home);
+		PlaceBookLibrary library = new PlaceBookLibrary(placeController, shelf);
+		panel.setWidget(library);
 	}
 }

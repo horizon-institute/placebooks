@@ -9,7 +9,7 @@ import com.google.gwt.place.shared.Prefix;
 
 public class PlaceBookBrowsePlace extends Place
 {
-	@Prefix("browse")
+	@Prefix("search")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookBrowsePlace>
 	{
 		@Override

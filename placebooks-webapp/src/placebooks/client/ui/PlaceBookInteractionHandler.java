@@ -6,7 +6,7 @@ import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
-import placebooks.client.ui.widget.MenuItem;
+import placebooks.client.ui.menuItems.MenuItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -166,7 +166,7 @@ public class PlaceBookInteractionHandler
 		}, MouseUpEvent.getType());	
 	}
 
-	public void showMenu(final Iterable<? extends MenuItem> items, final int x, final int y)
+	public void showMenu(final Iterable<? extends MenuItem> items, final int x, final int y, boolean alignRight)
 	{
 		dropMenu.clear();
 		for (final MenuItem item : items)
@@ -177,8 +177,13 @@ public class PlaceBookInteractionHandler
 			}
 		}
 
+		int left = x;
+		if(alignRight)
+		{
+			left -= dropMenu.getOffsetWidth();
+		}
 		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
+		dropMenu.getElement().getStyle().setLeft(left, Unit.PX);
 		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		dropMenu.getElement().getStyle().setOpacity(1);
 	}

@@ -3,7 +3,6 @@ package placebooks.client.ui.menuItems;
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.widget.MenuItem;
 
 public class DeletePlaceBookMenuItem extends MenuItem
 {

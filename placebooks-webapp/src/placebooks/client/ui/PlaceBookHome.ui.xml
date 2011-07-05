@@ -3,30 +3,15 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:p="urn:import:placebooks.client.ui"
 	>
-	<ui:style>
-		.userPanel {
-			position: absolute;
-			left: 0px;
-			top: 50px;
-			bottom: 0px;
-			width: 200px;
-		}
-		
-		.content {
-			position: absolute;
-			left: 200px;
-			right: 0px;
-			top: 30px;
-			bottom: 0px;			
-		}
+	<ui:style>		
 	</ui:style>
-	<g:HTMLPanel>
-		<p:PlaceBookToolbar />
-		<g:FlowPanel styleName="{style.userPanel}" ui:field="userPanel">
-		</g:FlowPanel>
-		
-		<g:FlowPanel styleName="{style.content}">
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
+	<g:FlowPanel>
+		<p:PlaceBookToolbar ui:field="toolbar" />
+
+		<g:FlowPanel styleName="{res.style.content}">
 			<g:HTMLPanel>
+				<h1 style="font-size: 60px;">PLACEBOOKS</h1>
 				<h4>WELCOME TO THE WORLD AS SEEN THROUGH YOUR EYES</h4>
 				<p>PlaceBooks enable you to create digital booklets about your favourite places and share them with your friends and other PlaceBook users.</p>
 				<p>Key features:</p>
@@ -37,8 +22,7 @@
 				</ul>
 				<p>If you would like to add geo-tagged content to your PlaceBooks we recommend EveryTrails</p>
 			</g:HTMLPanel>
-			<g:FlowPanel ui:field="searchBar"></g:FlowPanel>
-			<p:PlaceBookList ui:field="placebookList" />		
+			<g:FlowPanel ui:field="searchBar"><g:TextBox>Sea</g:TextBox><g:Button>Search PlaceBooks</g:Button></g:FlowPanel>
 		</g:FlowPanel>		
-	</g:HTMLPanel>
+	</g:FlowPanel>
 </ui:UiBinder> 

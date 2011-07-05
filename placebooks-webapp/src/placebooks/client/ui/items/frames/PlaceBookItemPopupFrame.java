@@ -10,11 +10,11 @@ import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeletePlaceBookMenuItem;
 import placebooks.client.ui.menuItems.FitToContentMenuItem;
 import placebooks.client.ui.menuItems.HideTrailMenuItem;
+import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.menuItems.RemoveMapMenuItem;
 import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
-import placebooks.client.ui.widget.MenuItem;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
@@ -128,10 +128,10 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			@Override
 			public void onClick(ClickEvent event)
 			{
-				final int x = menuButton.getElement().getAbsoluteLeft();
+				final int x = menuButton.getElement().getAbsoluteLeft() + menuButton.getElement().getClientWidth();
 				final int y = menuButton.getElement().getAbsoluteTop() + menuButton.getElement().getClientHeight();
 				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);				
-				interactionHandler.showMenu(menuItems, x, y);
+				interactionHandler.showMenu(menuItems, x, y, true);
 				event.stopPropagation();				
 			}
 		}, ClickEvent.getType());

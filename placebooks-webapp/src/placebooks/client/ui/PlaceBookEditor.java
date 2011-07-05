@@ -1,18 +1,15 @@
 package placebooks.client.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
+import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.palette.Palette;
 import placebooks.client.ui.places.PlaceBookEditorPlace;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 import placebooks.client.ui.places.PlaceBookPreviewPlace;
-import placebooks.client.ui.widget.MenuItem;
 import placebooks.client.ui.widget.RichTextArea;
 
 import com.google.gwt.core.client.GWT;
@@ -88,10 +85,7 @@ public class PlaceBookEditor extends Composite
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
-	Panel account;
-
-	@UiField
-	Label accountLabel;
+	PlaceBookToolbarLogin account;
 
 	@UiField
 	Panel backPanel;
@@ -155,8 +149,18 @@ public class PlaceBookEditor extends Composite
 		
 		factory.setInteractionHandler(interactionHandler);
 
-		Window.setTitle("PlaceBook Editor");
+		Window.setTitle("PlaceBooks Editor");
 
+		account.add(new MenuItem("Print Preview")
+		{
+			
+			@Override
+			public void run()
+			{
+				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));				
+			}
+		});
+		
 		updatePalette();
 		final Timer timer = new Timer()
 		{
@@ -220,16 +224,16 @@ public class PlaceBookEditor extends Composite
 		
 		if (newPlacebook.hasMetadata("title"))
 		{
-			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
+			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBooks Editor");
 			title.getElement().setInnerText(newPlacebook.getMetadata("title"));
 		}
 		else
 		{
-			Window.setTitle("PlaceBook Editor");
+			Window.setTitle("PlaceBooks Editor");
 			title.getElement().setInnerText("No Title");
 		}
 
-		accountLabel.setText(newPlacebook.getOwner().getName());
+		account.setUser(newPlacebook.getOwner());
 
 		loadingPanel.setVisible(false);
 		canvas.reflow();
@@ -259,36 +263,36 @@ public class PlaceBookEditor extends Composite
 			title.getElement().setInnerText("No Title");
 		}
 
-		accountLabel.setText(newPlacebook.getOwner().getName());
+		account.setUser(newPlacebook.getOwner());
 		canvas.reflow();		
 	}
 
-	@UiHandler("account")
-	void handleAccountMenu(final ClickEvent event)
-	{
-		final List<MenuItem> items = new ArrayList<MenuItem>();
-		items.add(new MenuItem("Print Preview")
-		{
-
-			@Override
-			public void run()
-			{
-				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));
-			}
-		});
-
-		items.add(new MenuItem("Logout")
-		{
-			@Override
-			public void run()
-			{
-				Window.open(GWT.getHostPageBaseURL() + "j_spring_security_logout", "_self", "");
-			}
-		});
-
-		interactionHandler.showMenu(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
-		event.stopPropagation();
-	}
+//	@UiHandler("account")
+//	void handleAccountMenu(final ClickEvent event)
+//	{
+//		final List<MenuItem> items = new ArrayList<MenuItem>();
+//		items.add(new MenuItem("Print Preview")
+//		{
+//
+//			@Override
+//			public void run()
+//			{
+//				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));
+//			}
+//		});
+//
+//		items.add(new MenuItem("Logout")
+//		{
+//			@Override
+//			public void run()
+//			{
+//				Window.open(GWT.getHostPageBaseURL() + "j_spring_security_logout", "_self", "");
+//			}
+//		});
+//
+//		interactionHandler.showMenu(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
+//		event.stopPropagation();
+//	}
 
 	@UiHandler("backPanel")
 	void handleAttach(final AttachEvent event)
