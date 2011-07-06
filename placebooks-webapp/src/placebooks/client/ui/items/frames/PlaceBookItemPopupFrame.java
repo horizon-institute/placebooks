@@ -180,19 +180,19 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
-	protected void onAttach()
+	protected void doAttachChildren()
 	{
-		super.onAttach();
-		((Panel) getParent()).add(frame);
+		super.doAttachChildren();
+		((Panel) getParent()).add(frame);		
 	}
 
 	@Override
-	protected void onDetach()
+	protected void doDetachChildren()
 	{
-		super.onDetach();
+		super.doDetachChildren();
 		frame.removeFromParent();
 	}
-	
+
 	@Override
 	public void setItemWidget(PlaceBookItemWidget itemWidget)
 	{

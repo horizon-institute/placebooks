@@ -279,7 +279,6 @@ public class PlaceBookEditor extends Composite
 			PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 			
-
 			interactionHandler.reset();
 			
 			placeController.goTo(new PlaceBookEditorPlace(placebook));
