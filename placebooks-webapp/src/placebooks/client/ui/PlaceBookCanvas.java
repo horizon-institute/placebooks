@@ -107,12 +107,14 @@ public class PlaceBookCanvas extends FlowPanel
 	{
 		for(PlaceBookItemFrame frame: items)
 		{
-			if(frame.getItem().getKey() != null && frame.getItem().getKey().equals(item.getKey()))
+			if(frame.getItem().getKey() != null)
 			{
-				return frame;
+				if(frame.getItem().getKey().equals(item.getKey()))
+				{	
+					return frame;
+				}
 			}
-			
-			if (item.hasMetadata("tempID") && item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID")))
+			else if (item.hasMetadata("tempID") && item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID")))
 			{
 				return frame;
 			}			
@@ -152,13 +154,10 @@ public class PlaceBookCanvas extends FlowPanel
 
 		for (PlaceBookItem item: newPlaceBook.getItems())
 		{
-			addImpl(factory.createFrame(item));
+			addImpl(factory.createFrame(item));		
 		}
 
-		reflow();
-		
-		refreshItemPlaceBook();
-		
+		refreshItemPlaceBook();	
 		reflow();		
 	}
 	

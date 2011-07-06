@@ -22,9 +22,9 @@
 		<g:Label ui:field="titleLabel" styleName="{style.title}">Link Everytrail Account</g:Label>
 		<g:FlowPanel styleName="{style.content}">
 			<g:Label ui:field="usernameLabel">UserName:</g:Label>
-			<g:TextBox ui:field="username" />
+			<g:TextBox ui:field="username"  name="pb_username" />
 			<g:Label>Password:</g:Label>
-			<g:PasswordTextBox ui:field="password" />
+			<g:PasswordTextBox ui:field="password" name="pb_password" />
 			<g:SimplePanel><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
 		</g:FlowPanel>
 	</g:FlowPanel>

@@ -4,6 +4,7 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -19,6 +20,11 @@ public abstract class PlaceBookItemFrame extends Composite
 		this.itemWidget = itemWidget;
 
 		widgetPanel.clear();
+		if(itemWidget.getParent() != null)
+		{
+			GWT.log("Item has parent");
+			itemWidget.removeFromParent();
+		}
 		widgetPanel.add(itemWidget);
 		itemWidget.refresh();
 		itemWidget.setResizeHandler(new PlaceBookItemWidget.ResizeHandler()
@@ -30,7 +36,7 @@ public abstract class PlaceBookItemFrame extends Composite
 			}
 		});
 	}
-	
+
 	public void updateFrame()
 	{
 		

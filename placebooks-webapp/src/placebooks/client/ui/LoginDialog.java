@@ -1,10 +1,7 @@
 package placebooks.client.ui;
 
-import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,17 +37,18 @@ public class LoginDialog extends Composite
 	@UiField
 	Label usernameLabel;
 
-	private AbstractCallback callback;
-
-	public LoginDialog(String title, String submitText, String usernameText, String loginName, String passName)
+	public LoginDialog(String title, String submitText, String usernameText)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		submit.setEnabled(false);
 		submit.setText(submitText);
 		titleLabel.setText(title);
-		username.setName(loginName);
-		password.setName(passName);
 		usernameLabel.setText(usernameText);
+	}
+	
+	public void addClickHandler(final ClickHandler clickHandler)
+	{
+		submit.addClickHandler(clickHandler);
 	}
 
 	public String getPassword()
@@ -61,11 +59,6 @@ public class LoginDialog extends Composite
 	public String getUsername()
 	{
 		return username.getText();
-	}
-
-	public void setCallback(final AbstractCallback callback)
-	{
-		this.callback = callback;
 	}
 
 	@UiHandler(value = { "username", "password" })
@@ -85,11 +78,11 @@ public class LoginDialog extends Composite
 
 		submit.setEnabled(true);
 	}
-
-	@UiHandler("submit")
-	void createAccount(final ClickEvent event)
-	{
-		submit.setEnabled(false);
-		PlaceBookService.linkAccount(username.getText(), password.getText(), "Everytrail", callback);
-	}
+//
+//	@UiHandler("submit")
+//	void createAccount(final ClickEvent event)
+//	{
+//		submit.setEnabled(false);
+//
+//	}
 }

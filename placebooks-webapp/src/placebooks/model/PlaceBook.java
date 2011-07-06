@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -42,8 +41,11 @@ public class PlaceBook
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBook.class.getName());
 
-	public static final int STATE_UNPUBLISHED = 0;
-	public static final int STATE_PUBLISHED = 1;
+	public enum State
+	{
+		UNPUBLISHED,
+		PUBLISHED
+	}
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
@@ -71,7 +73,7 @@ public class PlaceBook
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
-	private int state = -1;
+	private State state = State.UNPUBLISHED;
 	
 	//@JsonIgnore
 	//private Permissions readPermissions;
@@ -79,7 +81,7 @@ public class PlaceBook
 	// Make a new PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
 	{
-		this.state = STATE_UNPUBLISHED;
+		this.state = State.UNPUBLISHED;
 		this.owner = owner;
 		if (owner != null)
 		{
@@ -113,16 +115,21 @@ public class PlaceBook
 		if (this.owner != null)
 			this.owner.add(this);
 
-		this.geom = (Geometry)p.getGeometry().clone();
+		if(p.getGeometry() != null)
+		{
+			this.geom = (Geometry)p.getGeometry().clone();
+		}
+		else
+		{
+			this.geom = null;
+		}
 		this.timestamp = (Date)p.getTimestamp().clone();
 		
 		index.setPlaceBook(this);
 
 		// Note: search index should be built up as this PlaceBook is cloned
 
-		final Set<Map.Entry<String, String>> s = p.getMetadata().entrySet();
-		for (Map.Entry<String, String> entry : s)
-			this.addMetadataEntry(entry.getKey(), entry.getValue());
+		this.metadata = new HashMap<String, String>(p.getMetadata());
 
         for (PlaceBookItem item : p.getItems())
 		{
@@ -132,11 +139,11 @@ public class PlaceBook
         log.info("Created copy of PlaceBook; old key = " + p.getKey());
     }
 
-	public void setState(int state)
+	public void setState(State state)
 	{
 		this.state = state;
 	}
-	public int getState()
+	public State getState()
 	{
 		return state;
 	}

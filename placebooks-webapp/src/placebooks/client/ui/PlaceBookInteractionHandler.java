@@ -312,4 +312,10 @@ public class PlaceBookInteractionHandler
 	{
 		return canvas;
 	}
+
+	public void reset()
+	{
+		dragFrame.removeFromParent();
+		dropMenu.removeFromParent();		
+	}
 }

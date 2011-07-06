@@ -65,6 +65,7 @@ public class PlaceBookToolbar extends FlowPanel
 	
 	public void setPlaceController(final PlaceController placeController)
 	{
+		login.setPlaceController(placeController);
 		this.placeController = placeController;
 	}
 

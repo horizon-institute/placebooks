@@ -4,6 +4,7 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
 import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.palette.Palette;
@@ -18,8 +19,8 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceController;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends Composite
@@ -129,7 +131,7 @@ public class PlaceBookEditor extends Composite
 		this.placeController = placeController;
 
 		canvasPanel.add(canvas);
-
+		
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
 			@Override
@@ -153,11 +155,39 @@ public class PlaceBookEditor extends Composite
 
 		account.add(new MenuItem("Print Preview")
 		{
-			
 			@Override
 			public void run()
 			{
 				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));				
+			}
+		});
+		account.add(new MenuItem("Publish")
+		{
+			@Override
+			public void run()
+			{
+				final PopupPanel dialogBox = new PopupPanel();
+				dialogBox.setGlassEnabled(true);
+				dialogBox.setAnimationEnabled(true);
+				final PlaceBookPublish publish = new PlaceBookPublish(placeController, canvas);
+				publish.addClickHandler(new ClickHandler()
+				{
+					@Override
+					public void onClick(ClickEvent event)
+					{
+						dialogBox.hide();
+					}
+				});
+				dialogBox.add(publish);
+				
+				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
+				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
+				dialogBox.setAutoHideEnabled(true);
+
+				dialogBox.getElement().getStyle().setZIndex(1000);
+				dialogBox.show();
+				dialogBox.center();
+				dialogBox.getElement().getStyle().setTop(50, Unit.PX);
 			}
 		});
 		
@@ -239,64 +269,46 @@ public class PlaceBookEditor extends Composite
 		canvas.reflow();
 	}
 
-	
 	private void updatePlaceBook(final PlaceBook newPlacebook)
 	{
 		if (placebook != null
 				&& (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
 		{
-			placeController.goTo(new PlaceBookEditorPlace(newPlacebook));
-		}
-		
-		placebook = newPlacebook;
-		
-		canvas.updatePlaceBook(newPlacebook);
-		
-		if (newPlacebook.hasMetadata("title"))
-		{
-			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
-			title.getElement().setInnerText(newPlacebook.getMetadata("title"));
+			canvas.updatePlaceBook(newPlacebook);
+			
+			PlaceBook placebook = canvas.getPlaceBook();
+			placebook.setKey(newPlacebook.getKey());
+			
+
+			interactionHandler.reset();
+			
+			placeController.goTo(new PlaceBookEditorPlace(placebook));
 		}
 		else
 		{
-			Window.setTitle("PlaceBook Editor");
-			title.getElement().setInnerText("No Title");
+			placebook = newPlacebook;
+			canvas.updatePlaceBook(newPlacebook);
+			
+			if (newPlacebook.hasMetadata("title"))
+			{
+				Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
+				title.getElement().setInnerText(newPlacebook.getMetadata("title"));
+			}
+			else
+			{
+				Window.setTitle("PlaceBook Editor");
+				title.getElement().setInnerText("No Title");
+			}
+	
+			account.setUser(newPlacebook.getOwner());
+			canvas.reflow();
 		}
-
-		account.setUser(newPlacebook.getOwner());
-		canvas.reflow();		
 	}
 
-//	@UiHandler("account")
-//	void handleAccountMenu(final ClickEvent event)
-//	{
-//		final List<MenuItem> items = new ArrayList<MenuItem>();
-//		items.add(new MenuItem("Print Preview")
-//		{
-//
-//			@Override
-//			public void run()
-//			{
-//				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));
-//			}
-//		});
-//
-//		items.add(new MenuItem("Logout")
-//		{
-//			@Override
-//			public void run()
-//			{
-//				Window.open(GWT.getHostPageBaseURL() + "j_spring_security_logout", "_self", "");
-//			}
-//		});
-//
-//		interactionHandler.showMenu(items, account.getAbsoluteLeft(), account.getAbsoluteTop() + account.getOffsetHeight());
-//		event.stopPropagation();
-//	}
-
-	@UiHandler("backPanel")
-	void handleAttach(final AttachEvent event)
+	@Override
+	protected void onAttach()
 	{
+		super.onAttach();
 		canvas.reflow();
 	}
 

@@ -120,8 +120,8 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
 		widgetPanel.addDomHandler(highlightOff, MouseOutEvent.getType());
 		
-		frame.addMouseOverHandler(highlightOn);
-		frame.addMouseOutHandler(highlightOff);
+		frame.addDomHandler(highlightOn, MouseOverEvent.getType());
+		frame.addDomHandler(highlightOff, MouseOutEvent.getType());
 		
 		menuButton.addDomHandler(new ClickHandler()
 		{
@@ -136,23 +136,23 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			}
 		}, ClickEvent.getType());
 		
-		dragSection.addMouseDownHandler(new MouseDownHandler()
+		dragSection.addDomHandler(new MouseDownHandler()
 		{
 			@Override
 			public void onMouseDown(MouseDownEvent event)
 			{
 				interactionHandler.setupDrag(event, getItemWidget(), PlaceBookItemPopupFrame.this);			
 			}
-		});
+		}, MouseDownEvent.getType());
 		
-		resizeSection.addMouseDownHandler(new MouseDownHandler()
+		resizeSection.addDomHandler(new MouseDownHandler()
 		{
 			@Override
 			public void onMouseDown(MouseDownEvent event)
 			{
 				interactionHandler.setupResize(event, PlaceBookItemPopupFrame.this);			
 			}
-		});		
+		}, MouseDownEvent.getType());		
 		rootPanel.add(widgetPanel);
 		
 		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
@@ -209,7 +209,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		frame.getElement().getStyle().setProperty("width", width);
 
 		frame.getElement().getStyle().setTop(getWidget().getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(getWidget().getOffsetHeight() + 26, Unit.PX);
+		frame.getElement().getStyle().setHeight(getWidget().getOffsetHeight() + 25, Unit.PX);
 	}	
 
 	@Override
@@ -225,7 +225,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
-			frame.getElement().getStyle().setOpacity(0.6);
+			frame.getElement().getStyle().setOpacity(0.8);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		else

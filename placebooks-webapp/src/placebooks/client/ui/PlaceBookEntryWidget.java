@@ -3,6 +3,7 @@ package placebooks.client.ui;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.places.PlaceBookEditorPlace;
+import placebooks.client.ui.places.PlaceBookPreviewPlace;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,10 +19,27 @@ public class PlaceBookEntryWidget extends FlowPanel
 
 	public PlaceBookEntryWidget(final PlaceController placeController, final PlaceBookEntry entry)
 	{
-		label.setText(entry.getTitle());
+		if(entry.getState().equals("PUBLISHED"))
+		{
+			label.setText(entry.getTitle() + " (Published)");					
+		}
+		else
+		{
+			label.setText(entry.getTitle());
+		}
+		
+
 		setStyleName(Resources.INSTANCE.style().placebookEntry());		
 		label.setStyleName(Resources.INSTANCE.style().placebookEntryText());
-		setTitle("Edit " + entry.getTitle());	
+		if(entry.getState().equals("PUBLISHED"))
+		{
+			setTitle("View " + entry.getTitle());					
+		}
+		else
+		{
+			setTitle("Edit " + entry.getTitle());
+		}		
+
 
 		add(image);
 		add(label);
@@ -31,7 +49,14 @@ public class PlaceBookEntryWidget extends FlowPanel
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				placeController.goTo(new PlaceBookEditorPlace(entry.getKey()));
+				if(entry.getState().equals("PUBLISHED"))
+				{
+					placeController.goTo(new PlaceBookPreviewPlace(entry.getKey()));					
+				}
+				else
+				{
+					placeController.goTo(new PlaceBookEditorPlace(entry.getKey()));
+				}
 			}
 		}, ClickEvent.getType());
 	}

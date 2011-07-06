@@ -6,7 +6,8 @@
 	<ui:style>		
 		.title 
 		{
-			font-size: 60px;
+			font-size: 70px;
+			margin-left: 10px;
 		}
 		
 		.image 
@@ -22,11 +23,17 @@
 		
 		.overImage 
 		{
-			background: rgba(255,255,255,0.5);
+			background: rgba(255,255,255,0.6);
 			position: absolute;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
+			padding: 10px 20px;			
+		}
+		
+		.imagePanel
+		{
+			position: relative;
 		}
 		
 		.overImageTitle
@@ -34,7 +41,7 @@
 			font-style: mako, sans-serif;
 			font-size: 26px;
 			font-weight: bold;
-			margin: 20px 0 10px 0;
+			margin-bottom: 10px;
 			color: #384967;
 		}		
 	</ui:style>
@@ -45,9 +52,9 @@
 		<g:FlowPanel styleName="{res.style.content}">
 			<g:FlowPanel>
 				<g:Label styleName="{style.title}">PLACEBOOKS</g:Label>
-				<g:FlowPanel>
-					<g:Image resource='{res.landscape}' styleName="{style.image}" />
-					<g:FlowPanel styleName="{style.overImage}"><g:Label styleName="{style.overImageTitle}">CREATE, SHARE, DOWNLOAD &amp; ENJOY</g:Label><g:Label>PlaceBooks enable you to create digital booklets about your favourite places and share them with your friends and other PlaceBook users.</g:Label></g:FlowPanel>				
+				<g:FlowPanel styleName="{style.imagePanel}">
+					<g:Image url="images/landscape.jpg" styleName="{style.image}" />
+					<g:FlowPanel styleName="{style.overImage}"><g:Label styleName="{style.overImageTitle}">CREATE, SHARE, DOWNLOAD AND ENJOY</g:Label><g:Label>PlaceBooks enable you to create digital booklets about your favourite places and share them with your friends and other PlaceBook users.</g:Label></g:FlowPanel>				
 				</g:FlowPanel>
 
 				<g:HTMLPanel>

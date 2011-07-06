@@ -18,7 +18,7 @@
 			width: 16px;
 			height: 16px;
 			background-color: #447;
-			padding: 2px;
+			padding: 3px;
 		}
 		
 		.menuButton:HOVER {
@@ -29,8 +29,8 @@
 			left: 0px;
 			top: 0px;
 			position: absolute;
-			right: 20px;
-			height: 20px;
+			right: 22px;
+			height: 22px;
 			background-color: #447;
 			min-height: 10px;
 			cursor:move;
@@ -59,14 +59,14 @@
 
 	<ui:with field='res' type='placebooks.client.resources.Resources' />
 
-	<p:MousePanel styleName="{style.itemFrame}" ui:field="frame">
+	<g:FlowPanel styleName="{style.itemFrame}" ui:field="frame">
 		<g:SimplePanel styleName="{style.borderSection}" ui:field="borderSection" />
-		<p:MousePanel styleName="{style.menuButton}" ui:field="menuButton">
+		<g:SimplePanel styleName="{style.menuButton}" ui:field="menuButton">
 			<g:Image resource='{res.dropMenuIcon}' />
-		</p:MousePanel>
-		<p:MousePanel styleName="{style.dragSection}" ui:field="dragSection">
-		</p:MousePanel>
-		<p:MousePanel styleName="{style.resizeSection}" ui:field="resizeSection">
-		</p:MousePanel>
-	</p:MousePanel>
+		</g:SimplePanel>
+		<g:SimplePanel styleName="{style.dragSection}" ui:field="dragSection">
+		</g:SimplePanel>
+		<g:SimplePanel styleName="{style.resizeSection}" ui:field="resizeSection">
+		</g:SimplePanel>
+	</g:FlowPanel>
 </ui:UiBinder> 

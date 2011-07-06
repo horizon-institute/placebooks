@@ -25,6 +25,11 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/placebook/" + key, callback);
 	}
 
+	public static void getPlaceBookItem(final String key, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/placebookitem/" + key, callback);
+	}
+
 	public static void getShelf(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
@@ -46,6 +51,12 @@ public class PlaceBookService
 	public static void logout(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "j_spring_security_logout", callback);
+	}
+
+	public static void publishPlaceBook(final PlaceBook placebook, final RequestCallback callback)
+	{
+		serverRequest(	getHostURL() + "placebooks/a/publishplacebook",
+						"placebook=" + new JSONObject(placebook).toString(), callback);
 	}
 
 	public static void registerAccount(final String name, final String email, final String password,

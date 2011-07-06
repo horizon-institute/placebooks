@@ -55,25 +55,14 @@
 		}
 
 		.savingLabel {
-			color: white;
-			font-family: Mako, sans-serif;
-			font-size: 15px;
-			padding-left: 15px;
-			vertical-align: top;
+			line-height: 40px;
+			padding: 0 15px;
 		}
 
 		.savingPanel {
-			position: absolute;
-			top: 30px;
-			right: 120px;
-			height: 15px;
-			background: #555;
-			border-left: 1px solid #333;
-			border-bottom: 1px solid #333;			
-			border-bottom-left-radius: 5px;
-			padding: 5px 20px 10px 15px;
+			float: right;
+			height: 40px;
 			display: none;
-			z-index: 55;
 		}
 	
 		.populate {
@@ -130,10 +119,10 @@
 			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
-			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			
+			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>						
 			<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
-		</g:FlowPanel>
-		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
+		</g:FlowPanel>		
 		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>

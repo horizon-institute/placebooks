@@ -10,6 +10,7 @@ import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.menuItems.MenuItem;
+import placebooks.client.ui.places.PlaceBookHomePlace;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -22,6 +23,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -35,6 +37,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	}
 
 	private static boolean loginAttempt = false;
+	private static boolean everytrailsUpdate = false;
+	private LoginDetails everytrailDetails = null;
 	private final Label divider = new Label(" | ");
 	private final FlowPanel dropMenu = new FlowPanel();
 
@@ -43,7 +47,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		@Override
 		public void onMouseOut(final MouseOutEvent event)
 		{
-			hideMenuTimer.schedule(1000);
+			hideMenuTimer.schedule(500);
 		}
 	};
 	private final Timer hideMenuTimer = new Timer()
@@ -59,6 +63,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	
 	private final Label loginLabel = new Label("LOGIN");
 
+	private PlaceController placeController;
+	
 	private Shelf shelf;
 
 	private final RequestCallback shelfCallback = new AbstractCallback()
@@ -89,6 +95,11 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 	private User user;
 
+	public void setPlaceController(PlaceController placeController)
+	{
+		this.placeController  = placeController;
+	}
+	
 	public PlaceBookToolbarLogin()
 	{
 		super();
@@ -120,37 +131,44 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			@Override
 			public boolean isEnabled()
 			{
-				if(user == null)
-				{
-					return false;
-				}
-				for(LoginDetails details: user.getLoginDetails())
-				{
-					if(details.getService().equals("Everytrail"))
-					{
-						return false;
-					}
-				}
-				return true;
+				return everytrailDetails == null;
 			}
 
 			@Override
 			public void run()
 			{
+				hideMenu();
 				final PopupPanel dialogBox = new PopupPanel();
 				dialogBox.setGlassEnabled(true);
 				dialogBox.setAnimationEnabled(true);
 				final LoginDialog account = new LoginDialog("Link Everytrail Account", "Link Account",
-						"Everytrail Username:", "et_email", "et_pass");
-				account.setCallback(new AbstractCallback()
-				{
-					@Override
-					public void success(final Request request, final Response response)
-					{
-						dialogBox.hide();
-						PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);
-					}
-				});
+						"Everytrail Username:");
+				account.addClickHandler(new ClickHandler()
+						{
+							
+							@Override
+							public void onClick(ClickEvent event)
+							{
+								dialogBox.hide();
+								PlaceBookService.linkAccount(account.getUsername(), account.getPassword(), "Everytrail", new AbstractCallback()
+								{
+									@Override
+									public void success(Request request, Response response)
+									{
+										everytrailsUpdate = true;
+										PlaceBookService.everytrail(new AbstractCallback()
+										{
+											@Override
+											public void success(Request request, Response response)
+											{
+												// TODO Auto-generated method stub
+												
+											}
+										});
+									}
+								});
+							}
+						});
 				dialogBox.add(account);
 				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
 				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
@@ -158,7 +176,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 				dialogBox.center();
 				dialogBox.show();
-
 			}
 		});
 
@@ -167,12 +184,13 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			@Override
 			public void run()
 			{
+				hideMenu();				
 				PlaceBookService.logout(new AbstractCallback()
 				{
 					@Override
 					public void success(final Request request, final Response response)
 					{
-						setShelf(null);
+						placeController.goTo(new PlaceBookHomePlace(null));
 					}
 				});
 			}
@@ -188,14 +206,14 @@ public class PlaceBookToolbarLogin extends FlowPanel
 					final PopupPanel dialogBox = new PopupPanel();
 					dialogBox.setGlassEnabled(true);
 					dialogBox.setAnimationEnabled(true);
-					final LoginDialog account = new LoginDialog("Login", "Login", "Email:", "pb_email", "pb_pass");
-					account.setCallback(new AbstractCallback()
+					final LoginDialog account = new LoginDialog("Login", "Login", "Email:");
+					account.addClickHandler(new ClickHandler()
 					{
 						@Override
-						public void success(final Request request, final Response response)
+						public void onClick(ClickEvent event)
 						{
 							dialogBox.hide();
-							PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);
+							PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);							
 						}
 					});
 					dialogBox.add(account);
@@ -285,9 +303,30 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			divider.setVisible(false);
 			signupLabel.setVisible(false);
 			loginLabel.setText(user.getName());
+			
+			for(LoginDetails details: user.getLoginDetails())
+			{
+				if(details.getService().equals("Everytrail"))
+				{
+					everytrailDetails = details;
+					if(!everytrailsUpdate)
+					{
+						everytrailsUpdate = true;
+						PlaceBookService.everytrail(new AbstractCallback()
+						{
+							@Override
+							public void success(Request request, Response response)
+							{							
+							}
+						});
+					}
+				}
+			}
 		}
 		else
 		{
+			everytrailDetails = null;
+			
 			divider.setVisible(true);
 			signupLabel.setVisible(true);
 			loginLabel.setText("LOGIN");
@@ -317,7 +356,14 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	{
 		this.shelf = shelf;
 
-		setUser(shelf.getUser());
+		if(shelf == null)
+		{
+			setUser(null);
+		}
+		else
+		{
+			setUser(shelf.getUser());
+		}
 
 		if (shelfListener != null)
 		{

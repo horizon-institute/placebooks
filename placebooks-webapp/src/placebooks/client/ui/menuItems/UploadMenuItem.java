@@ -1,11 +1,16 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.AbstractCallback;
+import placebooks.client.PlaceBookService;
+import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -48,7 +53,15 @@ public class UploadMenuItem extends MenuItem
 			{
 				// dialogBox.hide();
 				form.submit();
-				// TODO Working indicator
+				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
+				{					
+					@Override
+					public void success(Request request, Response response)
+					{
+						PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getItemWidget().update(placebookItem);						
+					}
+				});
 			}
 		});
 

@@ -9,7 +9,6 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.user.client.ui.HTMLPanel;
 
 public class PalettePlaceBookItem extends PaletteItem
 {
@@ -44,7 +43,7 @@ public class PalettePlaceBookItem extends PaletteItem
 			newItem.setMetadata("originalItemID", newItem.getKey());
 			newItem.setKey(null);
 		}
-		newItem.setMetadata("tempID", HTMLPanel.createUniqueId());
+		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
 		return PlaceBookItemWidgetFactory.createItemWidget(newItem, true);
 	}
 }

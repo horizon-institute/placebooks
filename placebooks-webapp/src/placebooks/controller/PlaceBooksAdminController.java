@@ -9,15 +9,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -54,7 +49,6 @@ import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.model.WebBundleItem;
 import placebooks.model.json.Shelf;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -69,34 +63,217 @@ import com.vividsolutions.jts.io.WKTReader;
 @Controller
 public class PlaceBooksAdminController
 {
-	private static final Logger log = 
-		Logger.getLogger(PlaceBooksAdminController.class.getName());
+	// Helper class for passing around general PlaceBookItem data
+	public static class ItemData
+	{
+		private Geometry geometry;
+		private User owner;
+		private URL sourceURL;
+
+		public ItemData()
+		{
+		}
+
+		public Geometry getGeometry()
+		{
+			return geometry;
+		}
+
+		public User getOwner()
+		{
+			return owner;
+		}
+
+		public URL getSourceURL()
+		{
+			return sourceURL;
+		}
+
+		public boolean processItemData(final EntityManager pm, final String field, final String value)
+		{
+			if (field.equals("owner"))
+			{
+				setOwner(UserManager.getUser(pm, value));
+			}
+			else if (field.equals("sourceurl"))
+			{
+				try
+				{
+					setSourceURL(new URL(value));
+				}
+				catch (final java.net.MalformedURLException e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else if (field.equals("geometry"))
+			{
+				try
+				{
+					setGeometry(new WKTReader().read(value));
+				}
+				catch (final ParseException e)
+				{
+					log.error(e.toString());
+				}
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
+
+		private void setGeometry(final Geometry geometry)
+		{
+			this.geometry = geometry;
+		}
+
+		private void setOwner(final User owner)
+		{
+			this.owner = owner;
+		}
+
+		private void setSourceURL(final URL sourceURL)
+		{
+			this.sourceURL = sourceURL;
+		}
+	}
+
+	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
 
 	private static final int MEGABYTE = 1048576;
+
+	@RequestMapping(value = "/account", method = RequestMethod.GET)
+	public String accountPage()
+	{
+		return "account";
+	}
+
+	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
+	public String addLoginDetails(@RequestParam final String username, @RequestParam final String password,
+			@RequestParam final String service)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+
+		try
+		{
+			manager.getTransaction().begin();
+			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
+			manager.persist(loginDetails);
+			user.add(loginDetails);
+			manager.getTransaction().commit();
+		}
+		catch (final Exception e)
+		{
+			log.error("Error creating user", e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling login detail creation");
+			}
+			manager.close();
+		}
+
+		return "redirect:/index.html";
+	}
+
+	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
+	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
+			@RequestParam final String password)
+	{
+		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+		final User user = new User(name, email, encoder.encodePassword(password, null));
+
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			manager.getTransaction().begin();
+			manager.persist(user);
+			manager.getTransaction().commit();
+		}
+		catch (final Exception e)
+		{
+			log.error("Error creating user", e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling back user creation");
+			}
+			manager.close();
+		}
+
+		return "redirect:/index.html";
+	}
+
+	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
+	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		res.setContentType("application/json");
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		try
+		{
+			final User user = UserManager.getCurrentUser(entityManager);
+			if (user == null)
+			{
+
+			}
+			else
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					final ServletOutputStream sos = res.getOutputStream();
+					mapper.writeValue(sos, user);
+					log.info("User: " + mapper.writeValueAsString(user));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		finally
+		{
+			if (entityManager.getTransaction().isActive())
+			{
+				entityManager.getTransaction().rollback();
+			}
+			entityManager.close();
+		}
+	}
 
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
 	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
-		if(user == null)
+		if (user == null)
 		{
 			try
 			{
 				log.info("User not logged in");
-				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);				
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				res.setContentType("application/json");
 				res.getWriter().write("User not logged in");
 				return;
 			}
-			catch(Exception e)
+			catch (final Exception e)
 			{
 				log.error(e.getMessage(), e);
 			}
 		}
 		final TypedQuery<PlaceBookItem> q = manager
-				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
-							PlaceBookItem.class);
+				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
+								PlaceBookItem.class);
 		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
@@ -105,14 +282,14 @@ public class PlaceBooksAdminController
 		try
 		{
 			final Writer sos = res.getWriter();
-			final ObjectMapper mapper = new ObjectMapper();			
+			final ObjectMapper mapper = new ObjectMapper();
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 
 			sos.write("[");
 			boolean comma = false;
-			for(PlaceBookItem item: pbs)
+			for (final PlaceBookItem item : pbs)
 			{
-				if(comma)
+				if (comma)
 				{
 					sos.write(",");
 				}
@@ -124,10 +301,10 @@ public class PlaceBooksAdminController
 			}
 			sos.write("]");
 
-			//mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);		
+			// mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 
 			res.setContentType("application/json");
-			log.info("Palette Items: " + mapper.writeValueAsString(pbs));			
+			log.info("Palette Items: " + mapper.writeValueAsString(pbs));
 			sos.flush();
 			sos.close();
 		}
@@ -137,6 +314,41 @@ public class PlaceBooksAdminController
 		}
 
 		manager.close();
+	}
+
+	@RequestMapping(value = "/placebookitem/{key}", method = RequestMethod.GET)
+	public void getPlaceBookItemJSON(final HttpServletResponse res, @PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final PlaceBookItem item = manager.find(PlaceBookItem.class, key);
+			if (item != null)
+			{
+				try
+				{
+					final ObjectMapper mapper = new ObjectMapper();
+					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+					final ServletOutputStream sos = res.getOutputStream();
+					res.setContentType("application/json");
+					mapper.writeValue(sos, item);
+					log.info("PlacebookItem: " + mapper.writeValueAsString(item));
+					sos.flush();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
 	}
 
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
@@ -151,7 +363,7 @@ public class PlaceBooksAdminController
 				try
 				{
 					final ObjectMapper mapper = new ObjectMapper();
-					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);					
+					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 					final ServletOutputStream sos = res.getOutputStream();
 					res.setContentType("application/json");
 					mapper.writeValue(sos, placebook);
@@ -227,342 +439,21 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/account", method = RequestMethod.GET)
-	public String accountPage()
-	{
-		return "account";
-	}
-
-	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
-	public String createUserAccount(@RequestParam final String name, @RequestParam final String email,
-			@RequestParam final String password)
-	{
-		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-		final User user = new User(name, email, encoder.encodePassword(password, null));
-
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			manager.getTransaction().begin();
-			manager.persist(user);
-			manager.getTransaction().commit();
-		}
-		catch (final Exception e)
-		{
-			log.error("Error creating user", e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-				log.error("Rolling back user creation");
-			}
-			manager.close();
-		}
-
-		return "redirect:/index.html";
-	}
-
-	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
-	public String addLoginDetails(@RequestParam final String username,
-			@RequestParam final String password, @RequestParam final String service)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
-		
-		try
-		{
-			manager.getTransaction().begin();
-			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
-			manager.persist(loginDetails);
-			user.add(loginDetails);			
-			manager.getTransaction().commit();
-		}
-		catch (final Exception e)
-		{
-			log.error("Error creating user", e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-				log.error("Rolling login detail creation");
-			}
-			manager.close();
-		}
-
-		return "redirect:/index.html";
-	}
-	
-	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
-	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
-	{
-		res.setContentType("application/json");
-		final EntityManager entityManager = EMFSingleton.getEntityManager();
-		try
-		{
-			final User user = UserManager.getCurrentUser(entityManager);
-			if (user == null)
-			{
-
-			}
-			else
-			{
-				try
-				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					mapper.writeValue(sos, user);
-					log.info("User: " + mapper.writeValueAsString(user));
-					sos.flush();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.getMessage(), e);
-				}
-			}
-		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-			entityManager.close();
-		}
-	}
-	
-
-	private boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
-	{
-		for (final PlaceBookItem item : items)
-		{
-			if (findItem.getKey().equals(item.getKey())) { return true; }
-		}
-		return false;
-	}
-	
-	private PlaceBook get(EntityManager manager, String key)
-	{
-		try
-		{
-			if (key != null)
-			{
-				return manager.find(PlaceBook.class, key);
-			}
-		}
-		catch(Exception e)
-		{
-			log.warn(e.getMessage(), e);
-		}
-		return null;
-	}
-	
-	private void setProxy()
-	{
-		Properties properties = PropertiesSingleton.get(getClass().getClassLoader());
-		if(new Boolean(properties.getProperty(PropertiesSingleton.PROXY_ACTIVE, "false")))
-		{
-			System.getProperties().put( "proxySet", "true" );
-			System.getProperties().put( "proxyHost", properties.getProperty(PropertiesSingleton.PROXY_HOST));
-			System.getProperties().put( "proxyPort", properties.getProperty(PropertiesSingleton.PROXY_PORT) );					
-		}
-	}
-
-	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
-	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
-	{
-		log.info("Save Placebook: " + json);
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User currentUser = UserManager.getCurrentUser(manager);
-		if(currentUser == null)
-		{
-			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			try
-			{
-				res.getWriter().write("User not logged in");
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			return;
-		}
-		manager.getTransaction().begin();
-		try
-		{
-			PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-			final PlaceBook dbPlacebook = get(manager, placebook.getKey());
-			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
-			if (dbPlacebook != null)
-			{
-				// Remove any items that are no longer used
-				for (final PlaceBookItem item : dbPlacebook.getItems())
-				{
-					if (!containsItem(item, placebook.getItems()))
-					{
-						manager.remove(item);
-					}
-				}
-
-				dbPlacebook.setItems(placebook.getItems());
-				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
-				{
-					dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
-				}
-	
-				dbPlacebook.setGeometry(placebook.getGeometry());				
-				placebook = dbPlacebook;
-			}
-			
-			final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placebook.getItems());
-			placebook.setItems(new ArrayList<PlaceBookItem>());
-			for (final PlaceBookItem newItem : newItems)
-			{
-				// Update existing item if possible
-				PlaceBookItem item = newItem;
-				if(item.getKey() != null)
-				{
-					PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
-					if(oldItem != null)
-					{
-						item = oldItem;
-					}
-														
-					if(newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-					{
-						item.setSourceURL(newItem.getSourceURL());
-						updateMedia.add(item);
-					}
-				}
-				else
-				{
-					manager.persist(item);
-					
-					if(newItem.getMetadata().get("originalItemID") != null)
-					{
-						final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata().get("originalItemID"));
-						if(originalItem != null)
-						{
-							// We want to keep the metadata & parameters from the new item
-							final Map<String, String> meta = new HashMap<String, String>(item.getMetadata());
-							final Map<String, Integer> para = new HashMap<String, Integer>(item.getParameters());
-							item.update(originalItem);
-							item.setMedataData(meta);
-							item.setParameters(para);
-						}
-					}
-					else
-					{
-						updateMedia.add(item);
-					}
-				}
-				
-				if(item.getOwner() == null)
-				{
-					item.setOwner(currentUser);
-				}
-				
-				item.update(newItem);
-				
-				placebook.addItem(item);
-			}
-
-			if(placebook.getOwner() == null)
-			{
-				placebook.setOwner(currentUser);
-			}
-			
-			if(placebook.getTimestamp() == null)
-			{
-				placebook.setTimestamp(new Date());
-			}
-							
-			placebook = manager.merge(placebook);
-			//placebook.calcBoundary();
-			manager.getTransaction().commit();
-
-			log.info("Saved Placebook:" + mapper.writeValueAsString(placebook));
-			
-			manager.getTransaction().begin();
-			setProxy();			
-			for(PlaceBookItem item: updateMedia)
-			{
-				try
-				{
-					if(item instanceof MediaItem)
-					{
-						final MediaItem mediaItem = (MediaItem)item;
-						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), mediaItem.getSourceURL().openStream());
-					}
-					else if(item instanceof GPSTraceItem)
-					{
-						final GPSTraceItem gpsItem = (GPSTraceItem)item;
-						if(gpsItem.getSourceURL() != null)
-						{
-							gpsItem.readTrace(gpsItem.getSourceURL().openStream());
-						}
-					}
-					else if(item instanceof WebBundleItem)
-					{
-						//final WebBundleItem webItem = (WebBundleItem)item;
-						// TODO
-					}
-				}
-				catch(Exception e)
-				{
-					log.info(e.getMessage(), e);
-				}
-			}
-			manager.getTransaction().commit();			
-			
-			res.setContentType("application/json");				
-			final ServletOutputStream sos = res.getOutputStream();
-			final PlaceBook resultPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-			log.info("Saved Placebook:" + mapper.writeValueAsString(resultPlacebook));
-			mapper.writeValue(sos, resultPlacebook);
-			sos.flush();			
-		}
-		catch (final Throwable e)
-		{
-			log.warn(e.getMessage(), e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-			}
-			manager.close();
-		}
-	}
-
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
-										  final HttpServletResponse res,
-				   @PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("owner") final String owner)
 	{
-		if (owner.trim().isEmpty())
-			return null;
+		if (owner.trim().isEmpty()) { return null; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = 
-			pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", 
-						   User.class);
+		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
 		uq.setParameter("email", owner.trim());
 		try
 		{
 			final User user = uq.getSingleResult();
 
-			final TypedQuery<PlaceBook> q = 
-				pm.createQuery(
-					"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-					PlaceBook.class
-				);
+			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
+															PlaceBook.class);
 
 			q.setParameter("user", user);
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -599,21 +490,16 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, 
-									final HttpServletResponse res,
-		  	   @PathVariable("key") final String key)
+	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
 		final PlaceBook p = pm.find(PlaceBook.class, key);
 		final File zipFile = PlaceBooksAdminHelper.makePackage(p);
-		if (zipFile == null)
-		{
-			return new ModelAndView("message", "text", 
-									"Making and compressing package");
-		}
-			
-		try 
+		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
+
+		try
 		{
 			// Serve up file from disk
 			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -630,8 +516,7 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/zip");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" 
-						  + p.getKey() + ".zip\"");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" + p.getKey() + ".zip\"");
 			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
@@ -650,27 +535,118 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	
+	@RequestMapping(value = "/publishplacebook", method = RequestMethod.POST)
+	public void publishPlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
+	{
+		log.info("Publish Placebook: " + json);
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User currentUser = UserManager.getCurrentUser(manager);
+		if (currentUser == null)
+		{
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			try
+			{
+				res.getWriter().write("User not logged in");
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		try
+		{
+			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
+			log.info("Published Placebook:" + mapper.writeValueAsString(result));
+			final PlaceBook published = PlaceBooksAdminHelper.publishPlaceBook(manager, result);
+
+			res.setContentType("application/json");
+			final ServletOutputStream sos = res.getOutputStream();
+			log.info("Published Placebook:" + mapper.writeValueAsString(published));
+			mapper.writeValue(sos, published);
+			sos.flush();
+		}
+		catch (final Throwable e)
+		{
+			log.warn(e.getMessage(), e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}
+			manager.close();
+		}
+	}
+
+	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
+	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
+	{
+		log.info("Save Placebook: " + json);
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User currentUser = UserManager.getCurrentUser(manager);
+		if (currentUser == null)
+		{
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			try
+			{
+				res.getWriter().write("User not logged in");
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		try
+		{
+			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
+			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
+
+			res.setContentType("application/json");
+			final ServletOutputStream sos = res.getOutputStream();
+			log.info("Saved Placebook:" + mapper.writeValueAsString(result));
+			mapper.writeValue(sos, result);
+			sos.flush();
+		}
+		catch (final Throwable e)
+		{
+			log.warn(e.getMessage(), e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}
+			manager.close();
+		}
+	}
+
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
 	public ModelAndView searchGET(@PathVariable("terms") final String terms)
 	{
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
 
-
 		final StringBuffer out = new StringBuffer();
-		for (final Map.Entry<PlaceBook, Integer> entry : 
-			 PlaceBooksAdminHelper.search(terms))
+		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(terms))
 		{
-			out.append("key=" + entry.getKey().getKey() + ", score=" 
-					   + entry.getValue() + "<br>");
+			out.append("key=" + entry.getKey().getKey() + ", score=" + entry.getValue() + "<br>");
 		}
 
 		timeEnd = System.nanoTime();
 		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
 
-		return new ModelAndView("message", "text", "search results:<br>" 
-								+ out.toString());
+		return new ModelAndView("message", "text", "search results:<br>" + out.toString());
 	}
 
 	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
@@ -688,15 +664,213 @@ public class PlaceBooksAdminController
 		}
 
 		return searchGET(out.toString());
-	}	
-	
-	@RequestMapping(value = "/admin/add_item/upload", 
-					method = RequestMethod.POST)
+	}
+
+	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", method = RequestMethod.GET)
+	public ModelAndView serveGPSTraceItem(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		log.info("Serving GPS Trace for " + key);
+
+		try
+		{
+			final GPSTraceItem g = em.find(GPSTraceItem.class, key);
+
+			if (g != null)
+			{
+				final String trace = g.getTrace();
+				log.info(trace);
+
+				res.setContentType("text/xml");
+				final PrintWriter p = res.getWriter();
+				p.print(trace);
+				p.close();
+			}
+			else
+			{
+				throw new Exception("GPSTrace is null");
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
+	public ModelAndView serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		log.info("Serving Image Item " + key);
+
+		try
+		{
+			final ImageItem i = em.find(ImageItem.class, key);
+
+			if (i != null && i.getPath() != null)
+			{
+				try
+				{
+					final File image = new File(i.getPath());
+					final ImageInputStream iis = ImageIO.createImageInputStream(image);
+					final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+					String fmt = "png";
+					while (readers.hasNext())
+					{
+						final ImageReader read = readers.next();
+						fmt = read.getFormatName();
+					}
+
+					final OutputStream out = res.getOutputStream();
+					ImageIO.write(ImageIO.read(image), fmt, out);
+					out.close();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/serve/{type}item/{key}", method = RequestMethod.GET)
+	public void streamMediaItem(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("type") final String type, @PathVariable("key") final String key)
+	{
+		String path = null;
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		try
+		{
+			final MediaItem m = em.find(MediaItem.class, key);
+
+			if (m != null && m.getPath() != null)
+			{
+				path = m.getPath();
+			}
+			else
+			{
+				throw new Exception("Error getting media file, invalid key");
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		if (path == null) { return; }
+
+		try
+		{
+			String type_ = null;
+			if (type.trim().equalsIgnoreCase("video"))
+			{
+				type_ = "video";
+			}
+			else if (type.trim().equalsIgnoreCase("audio"))
+			{
+				type_ = "audio";
+			}
+			else
+			{
+				throw new Exception("Unrecognised media item type");
+			}
+
+			final File file = new File(path);
+
+			final String[] split = PlaceBooksAdminHelper.getExtension(path);
+			if (split == null) { throw new Exception("Error getting file suffix"); }
+
+			final ServletOutputStream sos = res.getOutputStream();
+			final long contentLength = file.length();
+			res.setContentType(type_ + "/" + split[1]);
+			res.addHeader("Accept-Ranges", "bytes");
+			res.addHeader("Content-Length", Long.toString(contentLength));
+
+			final FileInputStream fis = new FileInputStream(file);
+			final BufferedInputStream bis = new BufferedInputStream(fis);
+
+			final String range = req.getHeader("Range");
+			long startByte = 0;
+			long endByte = contentLength - 1;
+			if (range != null)
+			{
+				if (range.startsWith("bytes="))
+				{
+					try
+					{
+						final String[] rangeItems = range.substring(6).split("-");
+						startByte = Long.parseLong(rangeItems[0]);
+						endByte = Long.parseLong(rangeItems[1]);
+					}
+					catch (final Exception e)
+					{
+
+					}
+				}
+			}
+
+			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+
+			final int bufferLen = 2048;
+			final byte data[] = new byte[bufferLen];
+			int length;
+			bis.skip(startByte);
+			try
+			{
+				while ((length = bis.read(data, 0, bufferLen)) != -1)
+				{
+					sos.write(data, 0, length);
+				}
+				sos.flush();
+			}
+			finally
+			{
+				fis.close();
+				sos.close();
+			}
+		}
+		catch (final Throwable e)
+		{
+			// Enumeration headers = req.getHeaderNames();
+			// while(headers.hasMoreElements())
+			// {
+			// String header = (String)headers.nextElement();
+			// log.info(header + ": " + req.getHeader(header));
+			// }
+			log.error("Error serving " + type + " " + key);
+		}
+	}
+
+	@RequestMapping(value = "/admin/add_item/upload", method = RequestMethod.POST)
 	public ModelAndView uploadFile(final HttpServletRequest req)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final ItemData itemData = new ItemData();
-		
+
 		try
 		{
 			FileItem fileData = null;
@@ -704,23 +878,22 @@ public class PlaceBooksAdminController
 			String type = null;
 			String itemKey = null;
 			String placebookKey = null;
-			
+
 			manager.getTransaction().begin();
 			@SuppressWarnings("unchecked")
-			final List<FileItem> items = 
-				new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
-			for (FileItem item: items)
-			{	
+			final List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
+			for (final FileItem item : items)
+			{
 				if (item.isFormField())
 				{
-					String value = Streams.asString(item.getInputStream());
-					if(!itemData.processItemData(manager, item.getFieldName(), value))
+					final String value = Streams.asString(item.getInputStream());
+					if (!itemData.processItemData(manager, item.getFieldName(), value))
 					{
-						if(item.getFieldName().equals("key"))
+						if (item.getFieldName().equals("key"))
 						{
 							placebookKey = value;
 						}
-						else if(item.getFieldName().equals("itemKey"))
+						else if (item.getFieldName().equals("itemKey"))
 						{
 							itemKey = value;
 						}
@@ -728,12 +901,13 @@ public class PlaceBooksAdminController
 				}
 				else
 				{
-					name = item.getName();					
+					name = item.getName();
 					fileData = item;
-					String[] split = 
-						PlaceBooksAdminHelper.getExtension(item.getFieldName());
+					final String[] split = PlaceBooksAdminHelper.getExtension(item.getFieldName());
 					if (split == null)
+					{
 						continue;
+					}
 
 					type = split[0];
 
@@ -756,76 +930,62 @@ public class PlaceBooksAdminController
 
 					if (dLimit != null && iden != null)
 					{
-						int maxSize = Integer.parseInt(PropertiesSingleton
-							.get(PlaceBooksAdminHelper.class.getClassLoader())
-							.getProperty(iden, dLimit)
-						);
-						if ((item.getSize() / MEGABYTE) > maxSize)
-						{
-							throw new Exception("File too big, limit = " 
-												+ Integer.toString(maxSize) 
-												+ "Mb");
-						}
+						final int maxSize = Integer.parseInt(PropertiesSingleton.get(	PlaceBooksAdminHelper.class
+																								.getClassLoader())
+								.getProperty(iden, dLimit));
+						if ((item.getSize() / MEGABYTE) > maxSize) { throw new Exception("File too big, limit = "
+								+ Integer.toString(maxSize) + "Mb"); }
 					}
 				}
 			}
 
-			if(itemData.getOwner() == null)
+			if (itemData.getOwner() == null)
 			{
 				itemData.setOwner(UserManager.getCurrentUser(manager));
 			}
-			
+
 			PlaceBookItem item = null;
-			if(itemKey != null)
+			if (itemKey != null)
 			{
 				item = manager.find(PlaceBookItem.class, itemKey);
 			}
-			else if(placebookKey != null)
+			else if (placebookKey != null)
 			{
-				PlaceBook placebook = 
-					manager.find(PlaceBook.class, placebookKey);
-				
-				if(type.equals("gpstrace"))
+				final PlaceBook placebook = manager.find(PlaceBook.class, placebookKey);
+
+				if (type.equals("gpstrace"))
 				{
-					item = new GPSTraceItem(itemData.getOwner(), 
-											itemData.getGeometry(), 
-											itemData.getSourceURL(), null);
+					item = new GPSTraceItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
-					((GPSTraceItem)item).readTrace(fileData.getInputStream());
+					((GPSTraceItem) item).readTrace(fileData.getInputStream());
 				}
-				else if(type.equals("image"))
+				else if (type.equals("image"))
 				{
-					item = new ImageItem(itemData.getOwner(), 
-										 itemData.getGeometry(), 
-										 itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);			
-				}
-				else if(type.equals("video"))
-				{
-					item = new VideoItem(itemData.getOwner(), 
-										 itemData.getGeometry(), 
-										 itemData.getSourceURL(), null);
+					item = new ImageItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 				}
-				else if(type.equals("audio"))
+				else if (type.equals("video"))
 				{
-					item = new AudioItem(itemData.getOwner(), 
-										 itemData.getGeometry(), 
-										 itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);					
-				}					
+					item = new VideoItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);
+				}
+				else if (type.equals("audio"))
+				{
+					item = new AudioItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item.setPlaceBook(placebook);
+				}
 			}
-			
-			if(item instanceof MediaItem)
+
+			if (item instanceof MediaItem)
 			{
 				manager.getTransaction().commit();
-				((MediaItem)item).writeDataToDisk(name, fileData.getInputStream());
-				manager.getTransaction().begin();				
-			}	
-			
+				((MediaItem) item).writeDataToDisk(name, fileData.getInputStream());
+				manager.getTransaction().begin();
+			}
+
 			manager.getTransaction().commit();
-			
-			return new ModelAndView("message", "text", "Success");					
+
+			return new ModelAndView("message", "text", "Success");
 		}
 		catch (final Exception e)
 		{
@@ -842,289 +1002,5 @@ public class PlaceBooksAdminController
 		}
 
 		return new ModelAndView("message", "text", "Failed");
-	}
-
-	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView serveGPSTraceItem(final HttpServletRequest req, 
-								   	      final HttpServletResponse res,
-								   	      @PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-
-		log.info("Serving GPS Trace for " + key);
-		
-		try
-		{
-			final GPSTraceItem g = em.find(GPSTraceItem.class, key);
-
-			if (g != null)
-			{
-				final String trace = g.getTrace();
-				log.info(trace);
-				
-				res.setContentType("text/xml");
-				final PrintWriter p = res.getWriter();
-				p.print(trace);
-				p.close();
-			}
-			else
-				throw new Exception("GPSTrace is null");
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			em.close();
-		}
-
-		return null;
-	}
-
-	@RequestMapping(value = "/admin/serve/imageitem/{key}", 
-					method = RequestMethod.GET)
-	public ModelAndView serveImageItem(final HttpServletRequest req, 
-								   	   final HttpServletResponse res,
-								   	   @PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving Image Item " + key);
-
-		try
-		{
-			final ImageItem i = em.find(ImageItem.class, key);
-
-			if (i != null && i.getPath() != null)
-			{
-				try
-				{
-					File image = new File(i.getPath());
-					ImageInputStream iis = 
-						ImageIO.createImageInputStream(image);
-					Iterator<ImageReader> readers = 
-						ImageIO.getImageReaders(iis);
-					String fmt = "png";
-					while (readers.hasNext()) 
-					{
-						ImageReader read = readers.next();
-						fmt = read.getFormatName();
-					}
-
-					OutputStream out = res.getOutputStream();
-					ImageIO.write(ImageIO.read(image), fmt, out);
-					out.close();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			em.close();
-		}
-
-		return null;
-	}
-
-	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
-					method = RequestMethod.GET)
-	public void streamMediaItem(final HttpServletRequest req, 
-								   	    final HttpServletResponse res,
-									    @PathVariable("type") final String type,
-								   	    @PathVariable("key") final String key)
-	{
-		String path = null;
-		final EntityManager em = EMFSingleton.getEntityManager();
-
-		try
-		{
-			final MediaItem m = em.find(MediaItem.class, key);
-
-			if (m != null && m.getPath() != null)
-			{
-				path = m.getPath();
-			}
-			else
-				throw new Exception("Error getting media file, invalid key");
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			em.close();
-		}
-
-		if (path == null)
-		{
-			return;
-		}
-
-		try
-		{
-			String type_ = null;
-			if (type.trim().equalsIgnoreCase("video"))
-				type_ = "video";
-			else if (type.trim().equalsIgnoreCase("audio"))
-				type_ = "audio";
-			else
-				throw new Exception("Unrecognised media item type");
-
-			final File file = new File(path);
-
-			final String[] split = PlaceBooksAdminHelper.getExtension(path);
-			if (split == null)
-				throw new Exception("Error getting file suffix");
-
-			
-			final ServletOutputStream sos = res.getOutputStream();
-			final long contentLength = file.length();			
-			res.setContentType(type_ + "/" + split[1]);
-			res.addHeader("Accept-Ranges", "bytes");
-			res.addHeader("Content-Length", Long.toString(contentLength));
-
-			final FileInputStream fis = new FileInputStream(file);
-			final BufferedInputStream bis = new BufferedInputStream(fis);
-
-			final String range = req.getHeader("Range");
-			long startByte = 0;
-			long endByte = contentLength -1;
-			if(range != null)
-			{
-				if(range.startsWith("bytes="))
-				{
-					try
-					{
-						String[] rangeItems = range.substring(6).split("-");
-						startByte = Long.parseLong(rangeItems[0]);
-						endByte = Long.parseLong(rangeItems[1]);
-					}
-					catch(Exception e)
-					{
-						
-					}
-				}
-			}
-			
-			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
-			
-			final int bufferLen = 2048; 
-			final byte data[] = new byte[bufferLen];
-			int length;
-			bis.skip(startByte);
-			try
-			{
-				while ((length = bis.read(data, 0, bufferLen)) != -1)
-				{
-					sos.write(data, 0, length);	
-				}
-				sos.flush();
-			}
-			finally
-			{				
-				fis.close();
-				sos.close();
-			}
-		}
-		catch (final Throwable e)
-		{
-//			Enumeration headers = req.getHeaderNames();
-//			while(headers.hasMoreElements())
-//			{
-//				String header = (String)headers.nextElement();
-//				log.info(header + ": " + req.getHeader(header));
-//			}
-			log.error("Error serving " + type + " " + key);
-		}
-	}
-	
-
-	
-	// Helper class for passing around general PlaceBookItem data
-	public static class ItemData
-	{
-		private Geometry geometry;
-		private User owner;
-		private URL sourceURL;
-
-		public ItemData()
-		{
-		}
-
-		public Geometry getGeometry()
-		{
-			return geometry;
-		}
-
-		public User getOwner()
-		{
-			return owner;
-		}
-
-		public URL getSourceURL()
-		{
-			return sourceURL;
-		}
-
-		private void setGeometry(final Geometry geometry)
-		{
-			this.geometry = geometry;
-		}
-
-		private void setOwner(final User owner)
-		{
-			this.owner = owner;
-		}
-
-		private void setSourceURL(final URL sourceURL)
-		{
-			this.sourceURL = sourceURL;
-		}
-		
-		public boolean processItemData(final EntityManager pm, 
-											   final String field,
-											   final String value)
-		{
-			if (field.equals("owner"))
-			{
-				setOwner(UserManager.getUser(pm, value));
-			}
-			else if (field.equals("sourceurl"))
-			{
-				try
-				{
-					setSourceURL(new URL(value));
-				}
-				catch (final java.net.MalformedURLException e)
-				{
-					log.error(e.toString());
-				}
-			}
-			else if (field.equals("geometry"))
-			{
-				try
-				{
-					setGeometry(new WKTReader().read(value));
-				}
-				catch (final ParseException e)
-				{
-					log.error(e.toString());
-				}
-			}
-			else
-			{
-				return false;
-			}
-			return true;
-		}
 	}
 }

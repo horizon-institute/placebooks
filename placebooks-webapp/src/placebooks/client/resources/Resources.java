@@ -20,8 +20,10 @@ public interface Resources extends ClientBundle
 	ImageResource map();
 	
 	ImageResource placebook();	
-
-	ImageResource landscape();
+	
+	ImageResource arrow_left();
+	
+	ImageResource arrow_right();	
 	
 	ImageResource add();
 	

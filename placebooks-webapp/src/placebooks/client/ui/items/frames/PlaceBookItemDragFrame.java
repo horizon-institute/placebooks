@@ -14,6 +14,5 @@ public class PlaceBookItemDragFrame extends PlaceBookItemFrameWidget
 
 		frame.add(widgetPanel);
 		frame.setStyleName(Resources.INSTANCE.style().dragFrame());
-		
 	}
 }

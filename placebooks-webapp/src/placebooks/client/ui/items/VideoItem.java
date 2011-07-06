@@ -12,6 +12,8 @@ public class VideoItem extends PlaceBookItemWidget
 	{
 		super(item);
 		video = Video.createIfSupported();
+		video.setControls(true);
+		video.setWidth("100%");		
 		initWidget(video);
 	}
 

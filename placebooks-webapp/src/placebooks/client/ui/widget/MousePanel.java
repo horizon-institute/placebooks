@@ -19,22 +19,13 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlowPanel;
 
-public class MousePanel extends ComplexPanel implements HasMouseOverHandlers, HasMouseMoveHandlers, HasClickHandlers,
+public class MousePanel extends FlowPanel implements HasMouseOverHandlers, HasMouseMoveHandlers, HasClickHandlers,
 		HasMouseDownHandlers, HasMouseUpHandlers, HasMouseOutHandlers
 {
 	public MousePanel()
 	{
-		setElement(DOM.createDiv());
-	}
-
-	@Override
-	public void add(final Widget widget)
-	{
-		add(widget, getElement());
 	}
 
 	@Override
