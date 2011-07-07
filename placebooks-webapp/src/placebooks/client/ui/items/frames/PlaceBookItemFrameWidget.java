@@ -26,10 +26,8 @@ public abstract class PlaceBookItemFrameWidget extends PlaceBookItemFrame
 	@UiField
 	Panel resizeSection;
 	
-	public PlaceBookItemFrameWidget()
+	protected Widget createFrame()
 	{
-		super();
-
-		uiBinder.createAndBindUi(this);
+		return uiBinder.createAndBindUi(this);
 	}
 }

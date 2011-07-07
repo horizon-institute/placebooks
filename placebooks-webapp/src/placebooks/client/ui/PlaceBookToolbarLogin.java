@@ -12,6 +12,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -36,7 +37,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		void shelfChanged(Shelf shelf);
 	}
 
-	private static boolean loginAttempt = false;
 	private static boolean everytrailsUpdate = false;
 	private LoginDetails everytrailDetails = null;
 	private final Label divider = new Label(" | ");
@@ -72,15 +72,15 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		@Override
 		public void failure(final Request request, final Response response)
 		{
-			setShelf(null);
+			setShelfInternal(null);
 		}
 
 		@Override
 		public void success(final Request request, final Response response)
 		{
 			try
-			{
-				setShelf(Shelf.parse(response.getText()));
+			{		
+				setShelfInternal(Shelf.parse(response.getText()));
 			}
 			catch (final Exception e)
 			{
@@ -103,11 +103,14 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	public PlaceBookToolbarLogin()
 	{
 		super();
+		
 		setStyleName(Resources.INSTANCE.style().toolbarLogin());
 		add(loginLabel);
 		add(divider);
 		add(signupLabel);
 		add(dropMenu);
+		
+		getElement().getStyle().setDisplay(Display.NONE);
 
 		loginLabel.setStyleName(Resources.INSTANCE.style().toolbarItem());
 		divider.getElement().getStyle().setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
@@ -294,12 +297,17 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	{
 		this.shelfListener = shelfListener;
 	}
-
-	public void setUser(final User user)
+	
+	private void setUserInternal(final User user)
 	{
-		this.user = user;
+		if(this.user == user)
+		{
+			return;
+		}
+		this.user = user;	
 		if (user != null)
 		{
+			getElement().getStyle().setDisplay(Display.BLOCK);			
 			divider.setVisible(false);
 			signupLabel.setVisible(false);
 			loginLabel.setText(user.getName());
@@ -325,17 +333,25 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		}
 		else
 		{
+			getElement().getStyle().setDisplay(Display.BLOCK);
 			everytrailDetails = null;
 			
 			divider.setVisible(true);
 			signupLabel.setVisible(true);
 			loginLabel.setText("LOGIN");
+		}
+	}
 
-			if (!loginAttempt)
-			{
-				loginAttempt = true;
-				PlaceBookService.getShelf(shelfCallback);
-			}
+	public void setUser(final User user)
+	{	
+		if(user == null)
+		{
+			PlaceBookService.getShelf(shelfCallback);
+			getElement().getStyle().setDisplay(Display.NONE);
+		}
+		else
+		{
+			setUserInternal(user);
 		}
 	}
 
@@ -352,22 +368,40 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		hideMenuTimer.cancel();
 	}
 
-	void setShelf(final Shelf shelf)
+	private void setShelfInternal(final Shelf shelf)
 	{
+		getElement().getStyle().setDisplay(Display.BLOCK);		
+		if(this.shelf == shelf)
+		{
+			return;
+		}
 		this.shelf = shelf;
 
 		if(shelf == null)
 		{
-			setUser(null);
+			setUserInternal(null);
 		}
 		else
 		{
-			setUser(shelf.getUser());
+			setUserInternal(shelf.getUser());
 		}
 
 		if (shelfListener != null)
 		{
 			shelfListener.shelfChanged(shelf);
+		}
+	}
+	
+	public void setShelf(final Shelf shelf)
+	{
+		if(shelf == null)
+		{
+			PlaceBookService.getShelf(shelfCallback);
+			getElement().getStyle().setDisplay(Display.NONE);
+		}
+		else
+		{
+			setShelfInternal(shelf);
 		}
 	}
 }

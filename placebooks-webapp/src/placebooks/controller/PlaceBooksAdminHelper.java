@@ -83,7 +83,7 @@ public final class PlaceBooksAdminHelper
 			}
 			catch (final IOException e)
 			{
-				log.error(e.toString());
+				log.error(e.toString(), e);
 				return null;
 			}
 		}
@@ -135,7 +135,7 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final IOException e)
 		{
-			log.error(e.toString());
+			log.error(e.toString(), e);
 			return null;
 		}
 
@@ -514,7 +514,7 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Throwable e)
 		{
-			log.error(e.toString());
+			log.error(e.toString(), e);
 		}
 
 		return null;

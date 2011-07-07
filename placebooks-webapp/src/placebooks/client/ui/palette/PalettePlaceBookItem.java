@@ -1,6 +1,7 @@
 package placebooks.client.ui.palette;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.PlaceBookInteractionHandler;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
@@ -24,7 +25,16 @@ public class PalettePlaceBookItem extends PaletteItem
 
 		panel.getElement().getStyle().setCursor(Cursor.MOVE);
 
-		image.setResource(item.getIcon());
+		if(item.is(ItemType.IMAGE) && item.getKey() != null)
+		{
+			image.setUrl(item.getURL());
+			image.setHeight("auto");
+			image.setWidth("64px");
+		}
+		else
+		{
+			image.setResource(item.getIcon());
+		}
 		panel.addMouseDownHandler(new MouseDownHandler()
 		{
 			@Override

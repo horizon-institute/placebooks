@@ -49,9 +49,12 @@ public class PlaceBookLibrary extends Composite
 	private void setShelf(Shelf shelf)
 	{
 		placebooks.clear();
-		for(PlaceBookEntry entry: shelf.getEntries())
+		if(shelf != null)
 		{
-			placebooks.add(new PlaceBookEntryWidget(toolbar.getPlaceController(), entry));
-		}	
+			for(PlaceBookEntry entry: shelf.getEntries())
+			{
+				placebooks.add(new PlaceBookEntryWidget(toolbar.getPlaceController(), entry));
+			}
+		}
 	}
 }

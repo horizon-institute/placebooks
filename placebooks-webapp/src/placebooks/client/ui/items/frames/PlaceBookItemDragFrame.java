@@ -8,7 +8,7 @@ public class PlaceBookItemDragFrame extends PlaceBookItemFrameWidget
 	public PlaceBookItemDragFrame()
 	{
 		super();
-		initWidget(frame);
+		initWidget(createFrame());
 		
 		widgetPanel.setStyleName(Resources.INSTANCE.style().frameWidgetPanel());
 

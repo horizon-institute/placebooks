@@ -111,10 +111,11 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public PlaceBookItemPopupFrame(PlaceBookInteractionHandler interactHandler)
 	{
 		super();
-		this.interactionHandler = interactHandler;
 		final SimplePanel rootPanel = new SimplePanel();
 		initWidget(rootPanel);
 		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		createFrame();
+		this.interactionHandler = interactHandler;
 		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
 		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
@@ -180,17 +181,10 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
-	protected void doAttachChildren()
+	protected void onLoad()
 	{
-		super.doAttachChildren();
+		super.onLoad();		
 		((Panel) getParent()).add(frame);		
-	}
-
-	@Override
-	protected void doDetachChildren()
-	{
-		super.doDetachChildren();
-		frame.removeFromParent();
 	}
 
 	@Override

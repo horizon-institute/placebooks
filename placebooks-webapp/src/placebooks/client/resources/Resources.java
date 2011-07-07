@@ -29,6 +29,20 @@ public interface Resources extends ClientBundle
 	
 	ImageResource book();	
 	
+	ImageResource chrome();
+	
+	ImageResource television();
+	
+	ImageResource video();
+	
+	ImageResource audio();	
+	
+	ImageResource everytrail();
+	
+	ImageResource youtube();	
+	
+	ImageResource phone_Android();
+	
 	ImageResource book_open();	
 	
 	ImageResource movies();

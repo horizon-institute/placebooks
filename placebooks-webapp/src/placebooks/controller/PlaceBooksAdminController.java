@@ -524,7 +524,7 @@ public class PlaceBooksAdminController
 		}
 		catch (final IOException e)
 		{
-			log.error(e.toString());
+			log.error(e.toString(), e);
 			return new ModelAndView("message", "text", "Error sending package");
 		}
 		finally

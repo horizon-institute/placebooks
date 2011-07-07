@@ -44,6 +44,12 @@
 			margin-bottom: 10px;
 			color: #384967;
 		}		
+		
+		.listItem {
+			margin-left: 10px;
+			line-height: 16px;
+			vertical-align: top;
+		}
 	</ui:style>
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
 	<g:FlowPanel>
@@ -70,6 +76,15 @@
 				</g:HTMLPanel>
 			</g:FlowPanel>
 			<g:FlowPanel ui:field="searchBar"><g:TextBox>Search</g:TextBox><g:Button>Search PlaceBooks</g:Button></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.chrome}" /><g:InlineLabel styleName="{style.listItem}">Chrome</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.youtube}" /><g:InlineLabel styleName="{style.listItem}">Youtube</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.everytrail}" /><g:InlineLabel styleName="{style.listItem}">Everytrail</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.phone_Android}" /><g:InlineLabel styleName="{style.listItem}">Android SmartPhone</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.video}" /><g:InlineLabel styleName="{style.listItem}">Video Format MP4</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel><g:Image resource="{res.audio}" /><g:InlineLabel styleName="{style.listItem}">Audio Format MP3</g:InlineLabel></g:FlowPanel>
+			<g:HTMLPanel>
+				
+			</g:HTMLPanel>
 			<g:FlowPanel styleName="{style.previewPanel}"></g:FlowPanel>
 			<g:FlowPanel styleName="{style.previewPanel}"></g:FlowPanel>			
 		</g:FlowPanel>		
