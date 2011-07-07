@@ -6,7 +6,8 @@ import placebooks.client.model.PlaceBookItem;
 
 public class WebBundleItem extends PlaceBookItemWidget
 {
-	Frame frame = new Frame("http://www.google.co.uk");
+	private final Frame frame = new Frame("http://www.google.co.uk");
+	private String url;	
 	
 	WebBundleItem(PlaceBookItem item)
 	{
@@ -17,8 +18,10 @@ public class WebBundleItem extends PlaceBookItemWidget
 	@Override
 	public void refresh()
 	{
-		// TODO Auto-generated method stub
-
+		if(url == null || !url.equals(getItem().getURL()))
+		{
+			url = getItem().getURL();
+			frame.setUrl(url);
+		}
 	}
-
 }

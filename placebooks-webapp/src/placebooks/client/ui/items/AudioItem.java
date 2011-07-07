@@ -7,6 +7,7 @@ import placebooks.client.model.PlaceBookItem;
 public class AudioItem extends PlaceBookItemWidget
 {
 	private final Audio audio;
+	private String url;
 
 	AudioItem(PlaceBookItem item)
 	{
@@ -20,6 +21,10 @@ public class AudioItem extends PlaceBookItemWidget
 	@Override
 	public void refresh()
 	{
-		audio.setSrc(getItem().getURL());
+		if(url == null || !url.equals(getItem().getURL()))
+		{
+			url = getItem().getURL();
+			audio.setSrc(url);
+		}
 	}
 }
