@@ -65,6 +65,15 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.*;
 
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.Header;
+import java.io.ByteArrayOutputStream;
+import android.view.KeyEvent;
+
 
 
 public class Shelf extends ListActivity {
@@ -97,20 +106,9 @@ public class Shelf extends ListActivity {
 		         */
 		        Intent intent = getIntent();
 		        if(intent != null) username = intent.getStringExtra("username");
-		        if(intent != null) password = intent.getStringExtra("password");
+		        //if(intent != null) password = intent.getStringExtra("password");
 		        
-		        
-		        
-		        
-		        
-		        
-		        
-		        
-		        
-		        
-		        
-		        
-		      
+		        System.out.println("username =====" + username);
 		        
 
 		        OnlineCheck oc = new OnlineCheck();		       
@@ -120,69 +118,9 @@ public class Shelf extends ListActivity {
 		        */       
 		        if (oc.isOnline(this)){
 		        	
-		        	
-		        	
-		        	
-		        	//Build parameter string
-			        String credentials = "j_username=" + username + "&j_password=" + password;
-			        HttpClient httpclient = new DefaultHttpClient();
-			      /*  try {
-			            
-			        	// Create a local instance of cookie store
-			            CookieStore cookieStore = new BasicCookieStore();
-			            
-			            // Create local HTTP context
-				        HttpContext httpContext = new BasicHttpContext();
-			            // Bind custom cookie store to the local context
-			            httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-			        	
-
-			            
-			            // Send the request
-			            URL url = new URL("http://horizab1.miniserver.com:8080/placebooks/j_spring_security_check");
-			            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			            //URLConnection conn = url.openConnection();
-			            conn.setDoOutput(true);
-			            conn.setRequestMethod("POST"); 
-			            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-			            
-			            //DataOutputStream writer = new DataOutputStream(conn.getOutputStream ());
-			            //writer.writeBytes(credentials);
-			            
-			            //write parameters
-			            writer.write(credentials);
-			            writer.flush();
-			            
-			            // Get the response
-			            StringBuffer answer = new StringBuffer();
-			            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			            
-
-			            
-			            
-			            //System.out.println(conn.getResponseCode() + ": " + conn.getResponseMessage());
-			            String line;
-			            while ((line = reader.readLine()) != null) {
-			                answer.append(line);
-			            }
-			            writer.close();
-			            reader.close();
-			            
-			            //Output the response
-			            System.out.println("answer is =  " + answer.toString() + "\n credentials are = " +credentials);
-			             
-			            
-			        } catch (MalformedURLException ex) {
-			            ex.printStackTrace();
-			        } catch (IOException ex) {
-			            ex.printStackTrace();
-			        }
-		        	
-		        	*/
-		        	
-		        	
-		        	String url =  "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/"+ username;
-		        	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+			    	String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
+		        	System.out.println("URL ===== " + url);
+			    	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 		          										  
 		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
 		        	DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
@@ -191,7 +129,8 @@ public class Shelf extends ListActivity {
 			        TextView tv = new TextView(this);
 			        tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
 			        ll.addView(tv);
-		          	
+
+		
 		        }
 		        else if (!oc.isOnline(this)) {		//do a check if there is a shelf file on the sdcard
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
@@ -229,8 +168,8 @@ public class Shelf extends ListActivity {
 			        	item.setDescription(e.getString("description"));	//book description
 			        	item.setPackagePath(e.getString("packagePath"));
 			        	
-			        	
-			        	item.setOwner(u.getString("name"));  //book owner name e.g stuart
+			        	//taken out for now
+			        	//item.setOwner(u.getString("name"));  //book owner name e.g stuart
 			        		
 			        	 item.dl_listener = new OnClickListener(){
 				        	public void  onClick  (View  v){
@@ -369,7 +308,8 @@ public class Shelf extends ListActivity {
 
 	 public void downloadPlaceBook(String theKey, String downloadPath) {
 		 String dlPath = downloadPath;
-	     String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
+	     //String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
+		 String url = "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/" + theKey;
 		 new DownloadFileAsync(dlPath).execute(url);	
 		
 		 //Toast msg = Toast.makeText(Shelf.this, "Message " + theKey, Toast.LENGTH_LONG);
@@ -541,14 +481,14 @@ public class Shelf extends ListActivity {
 				}
 
 			   
-			   /*
-			    * A method that checks if an SDCard is present on the mobile device
-			    */  
-			   /*public static boolean isSdPresent() {
-				   
-				   return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-				   
+			   //quit app on back press
+			   @Override
+			   public boolean onKeyDown(int keyCode, KeyEvent event) {
+			       if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			           Log.d(this.getClass().getName(), "back button pressed");
+			          this.finish();
+			       }
+			       return super.onKeyDown(keyCode, event);
 			   }
-			   */
 
 }	//end of public shelf

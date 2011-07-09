@@ -24,6 +24,17 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 		this.co = co;
 	}
+	
+	public Point(String data, int panel, int order, String type, String itemKey){
+		this.data = data;
+		this.panel = panel;
+		this.order = order;
+		this.type = type;
+		this.itemKey = itemKey;
+		//this.co = co;
+	}
+	
+	
 	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, String url){
 		this.data = data;
 		this.panel = panel;

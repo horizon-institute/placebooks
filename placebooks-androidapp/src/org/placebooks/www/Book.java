@@ -1,10 +1,13 @@
 package org.placebooks.www;
 
-import java.util.ArrayList;
 import java.util.*;
 //import java.util.Iterator;
 //import java.util.ListIterator;
 import java.util.Collections;
+
+import android.util.Log;
+import android.widget.TextView;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -103,286 +106,353 @@ public class Book {
 	public String toString(){
 		
 	for(TextItem item: textItems) {
-		String text = item.getText();
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		String textKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 
-  	  	//Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
-  	  	Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
+		try{
+			
+			Geometry geom;
+			Coordinate[] arrCoordinates;
 
+			String text = item.getText();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String textKey = item.getKey();
+			
+			//if (item.getGeometry() != null){}
+			
+			
+			
+			
+			
+			
+			
+			
+			//Geometry geom = item.getGeometry();
+			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+	
+			
+	  	  	//Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
+	  	  	Point pItems = new Point(text, panel, order, type, textKey);//, arrCoordinates);
+	
+			
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+	
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+	
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
 		
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
-
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
-
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
-			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
-			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
-			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 		
 	}
 	
 	for(ImageItem item: imageItems) {
-		String filename = item.getFilename();
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		//String url = item.getURL();
-		String imageKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-
 		
-  	  	//Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
-  	  	Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
-
-
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
+		try{
+			String filename = item.getFilename();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			//String url = item.getURL();
+			String imageKey = item.getKey();
+			//Geometry geom = item.getGeometry();
+			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+	
 			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
+	  	  	//Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
+	  	  	Point pItems = new Point(filename, panel, order, type, imageKey);//, arrCoordinates);//, url
+	
+	
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
 			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
-			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 		
 	}
 	
 	for(VideoItem item: videoItems) {
-		String filename = item.getFilename();
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		String videoKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 		
-  	  	//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
-  	  	Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
-
-		
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
-
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
-
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
+		try{
+			String filename = item.getFilename();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String videoKey = item.getKey();
+			//try{
+			//Geometry geom = item.getGeometry();
+			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+			//}
+			//catch (NullPointerException e){
+				//Log.
+			//}
+	  	  	//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
+	  	  	Point pItems = new Point(filename, panel, order, type, videoKey);//, arrCoordinates);
+	
 			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+	
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+	
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
 			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
-			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 		
 	}
 	
 	for(AudioItem item: audioItems) {
-		String filename = item.getFilename();
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		String audioKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-
 		
-  	  	//Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
-  	  	Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
-
-		
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
-
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
-
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
+		try{
+			String filename = item.getFilename();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String audioKey = item.getKey();
+			//Geometry geom = item.getGeometry();
+			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+	
 			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
+	  	  	//Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
+	  	  	Point pItems = new Point(filename, panel, order, type, audioKey);//, arrCoordinates);
+	
 			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+	
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+	
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
 			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 	}
 	
 	for(MapImageItem item: mapImageItems){
-		String filename = item.getFilename();
-		//GET GEOMETRY
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		String mapKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array, ignores the Z-Value , so its just xy		
-
-		//System.out.println("TCoordinates ARE = " + arrCoordinates[0].toString());
 		
-		/*
-		for (int i=0; i<arrCoordinates.length; i++){
-			coordinates.add(arrCoordinates[i]);
-		}*/
-		/*
-		for(int i=0; i<arrCoordinates.length; i++){
-			test.add(arrCoordinates[i].toString());
-		}*/
-		
-
-		
-		//Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
-		Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
-
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
+		try{
+			String filename = item.getFilename();
+			//GET GEOMETRY
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String mapKey = item.getKey();
+			Geometry geom = item.getGeometry();
+			Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array, ignores the Z-Value , so its just xy		
+	
+			//System.out.println("TCoordinates ARE = " + arrCoordinates[0].toString());
 			
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
+			/*
+			for (int i=0; i<arrCoordinates.length; i++){
+				coordinates.add(arrCoordinates[i]);
+			}*/
+			/*
+			for(int i=0; i<arrCoordinates.length; i++){
+				test.add(arrCoordinates[i].toString());
+			}*/
 			
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
+	
 			
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
+			//Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
+			Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
+	
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+				
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+				
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+				
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
 			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
-			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
-			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 	}
 	
 	for(WebBundleItem item: webBundleItems){
-		String filename = item.getFilename();
-		String url = item.getURL();
-		String type = item.getType();
-		int panel = item.getPanel();
-		int order = item.getOrder();
-		String wbKey = item.getKey();
-		Geometry geom = item.getGeometry();
-		Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 		
-
-		//Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
-		Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
-		
-		//add to page 1
-		if(panel == 0){
-			page1.add(pItems);
+		try{
+			String filename = item.getFilename();
+			String url = item.getURL();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String wbKey = item.getKey();
+			Geometry geom = item.getGeometry();
+			Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 			
-		}
-		//add to page 2
-		else if(panel == 1){
-			page2.add(pItems);
-		
-		}
-		//add to page 3
-		else if(panel == 2){
-			page3.add(pItems);
-		
-		}
-		//add to page 4
-		else if(panel == 3){
-			page4.add(pItems);
+	
+			//Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+			Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
 			
-		}
-		//add to page 5
-		else if(panel == 4){
-			page5.add(pItems);
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+				
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
 			
-		}
-		//add to page 6
-		else if(panel == 5){
-			page6.add(pItems);
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
 			
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
+			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
 		}
 		
 	}
@@ -395,7 +465,7 @@ public class Book {
 	Collections.sort(page5);
 	Collections.sort(page6);
 	
-   return key ;
+   return key;	//placebooks key id
    
  
     }

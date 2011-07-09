@@ -59,7 +59,7 @@ public class MapImageViewer extends Activity {
 	        Intent intent = getIntent();
 	        if(intent != null) mapImage = intent.getStringExtra("mapImage");
 	        if(intent != null) packagePath = intent.getStringExtra("packagePath");
-	        if(intent != null) c_x1 = intent .getDoubleExtra("c_x1", c_x1);
+	     /*   if(intent != null) c_x1 = intent .getDoubleExtra("c_x1", c_x1);
 	        if(intent != null) c_y1 = intent .getDoubleExtra("c_y1", c_y1);
 	        if(intent != null) c_x2 = intent .getDoubleExtra("c_x2", c_x2);
 	        if(intent != null) c_y2 = intent .getDoubleExtra("c_y2", c_y2);
@@ -75,7 +75,7 @@ public class MapImageViewer extends Activity {
 	        System.out.println("x= " + c_x3 + " y= " + c_y3);
 	        System.out.println("x= " + c_x4 + " y= " + c_y4);
 	        System.out.println("x= " + c_x5 + " y= " + c_y5);
-
+*/
 	        
 	      //locate the file path where the images are stored on the SD CARD. 
 			String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
