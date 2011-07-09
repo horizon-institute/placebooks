@@ -114,7 +114,7 @@ public class GPSTraceItem extends PlaceBookItem
 		return trace;
 	}
 
-	public void setTrace(final String trace)
+	private void setTrace(final String trace)
 	{
 		this.trace = trace;
 	}
@@ -128,7 +128,11 @@ public class GPSTraceItem extends PlaceBookItem
 		super.updateItem(item);
 		if(item instanceof GPSTraceItem)
 		{
-			setTrace(((GPSTraceItem) item).getTrace());
+			GPSTraceItem gpsitem = (GPSTraceItem)item; 
+			if(gpsitem.getTrace() != null && !gpsitem.getTrace().trim().equals(""))
+			{
+				setTrace(((GPSTraceItem) item).getTrace());
+			}
 		}
 	}
 

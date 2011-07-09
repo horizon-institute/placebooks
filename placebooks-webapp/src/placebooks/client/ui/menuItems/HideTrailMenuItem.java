@@ -1,17 +1,19 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.PlaceBookItemWidgetFrame;
-import placebooks.client.ui.widget.MenuItem;
+import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class HideTrailMenuItem extends MenuItem
 {
-	private final PlaceBookItemWidgetFrame item;
+	private final SaveContext context;
+	private final PlaceBookItemFrame item;
 
-	public HideTrailMenuItem(final String title, final PlaceBookItemWidgetFrame item)
+	public HideTrailMenuItem(final SaveContext context, final PlaceBookItemFrame item)
 	{
-		super(title);
+		super("Hide Trail");
 
 		this.item = item;
+		this.context = context;
 	}
 
 	@Override
@@ -25,7 +27,7 @@ public class HideTrailMenuItem extends MenuItem
 	public void run()
 	{
 		item.getItem().setMetadata("routeVisible", "false");
-		item.markChanged();
-		item.refresh();
+		item.getItemWidget().refresh();
+		context.markChanged();
 	}
 }

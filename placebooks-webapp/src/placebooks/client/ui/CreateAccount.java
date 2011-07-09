@@ -5,7 +5,7 @@ import placebooks.client.PlaceBookService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -63,7 +63,7 @@ public class CreateAccount extends Composite
 	}
 
 	@UiHandler(value = { "name", "email", "password", "passwordConfirm" })
-	void checkValid(final KeyPressEvent event)
+	void checkValid(final KeyUpEvent event)
 	{
 		if (name.getText().trim().equals(""))
 		{

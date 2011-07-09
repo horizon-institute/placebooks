@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -35,9 +33,6 @@ import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.PrecisionModel;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
@@ -46,8 +41,11 @@ public class PlaceBook
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBook.class.getName());
 
-	public static final int STATE_UNPUBLISHED = 0;
-	public static final int STATE_PUBLISHED = 1;
+	public enum State
+	{
+		UNPUBLISHED,
+		PUBLISHED
+	}
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
@@ -75,7 +73,7 @@ public class PlaceBook
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
-	private int state = -1;
+	private State state = State.UNPUBLISHED;
 	
 	//@JsonIgnore
 	//private Permissions readPermissions;
@@ -83,7 +81,7 @@ public class PlaceBook
 	// Make a new PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
 	{
-		this.state = STATE_UNPUBLISHED;
+		this.state = State.UNPUBLISHED;
 		this.owner = owner;
 		if (owner != null)
 		{
@@ -117,16 +115,21 @@ public class PlaceBook
 		if (this.owner != null)
 			this.owner.add(this);
 
-		this.geom = (Geometry)p.getGeometry().clone();
+		if(p.getGeometry() != null)
+		{
+			this.geom = (Geometry)p.getGeometry().clone();
+		}
+		else
+		{
+			this.geom = null;
+		}
 		this.timestamp = (Date)p.getTimestamp().clone();
 		
 		index.setPlaceBook(this);
 
 		// Note: search index should be built up as this PlaceBook is cloned
 
-		final Set<Map.Entry<String, String>> s = p.getMetadata().entrySet();
-		for (Map.Entry<String, String> entry : s)
-			this.addMetadataEntry(entry.getKey(), entry.getValue());
+		this.metadata = new HashMap<String, String>(p.getMetadata());
 
         for (PlaceBookItem item : p.getItems())
 		{
@@ -136,11 +139,11 @@ public class PlaceBook
         log.info("Created copy of PlaceBook; old key = " + p.getKey());
     }
 
-	public void setState(int state)
+	public void setState(State state)
 	{
 		this.state = state;
 	}
-	public int getState()
+	public State getState()
 	{
 		return state;
 	}
@@ -283,29 +286,23 @@ public class PlaceBook
 
 	public void calcBoundary()
 	{
-		// Note: we are assuming here that PlaceBook/PlaceBookItem 
-		// geometries are basic types and don't include MultiLineString,
-		// MultiPoint or MultiPolygon types
-		final Set<Geometry> gs = new HashSet<Geometry>();
-		int srid = 0;
+		Geometry bounds = null;
 		for (PlaceBookItem item : getItems())
 		{
 			final Geometry g = item.getGeometry();
 			if (g != null)
 			{
-				gs.add(g);
-				srid = g.getSRID();
+				if(bounds != null)
+				{			
+					bounds = g.union(bounds).getBoundary();
+				}
+				else
+				{
+					bounds = g;
+				}
 			}
 		}
 
-		if (!gs.isEmpty())
-		{
-			// Assume SRID for all elements is identical
-			this.geom = 
-				(new GeometryCollection((GeometryCollection[])gs.toArray(), 
-									new GeometryFactory(new PrecisionModel(), 
-														srid))
-				).getBoundary();
-		}
+		geom = bounds.getBoundary();
 	}
 }

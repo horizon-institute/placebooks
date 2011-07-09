@@ -1,12 +1,16 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.AbstractCallback;
+import placebooks.client.PlaceBookService;
+import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookItemWidgetFrame;
-import placebooks.client.ui.widget.MenuItem;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -21,11 +25,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 public class UploadMenuItem extends MenuItem
 {
-	private final PlaceBookItemWidgetFrame item;
+	private final PlaceBookItemFrame item;
 
-	public UploadMenuItem(final String title, final PlaceBookItemWidgetFrame item)
+	public UploadMenuItem(final PlaceBookItemFrame item)
 	{
-		super(title);
+		super("Upload");
 
 		this.item = item;
 	}
@@ -42,14 +46,13 @@ public class UploadMenuItem extends MenuItem
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
 
-		final Button closeButton = new Button("Upload", new ClickHandler()
+		final Button uploadButton = new Button("Upload", new ClickHandler()
 		{
 			@Override
 			public void onClick(final ClickEvent event)
 			{
 				// dialogBox.hide();
 				form.submit();
-				// TODO Working indicator
 			}
 		});
 
@@ -71,7 +74,7 @@ public class UploadMenuItem extends MenuItem
 			@Override
 			public void onSubmit(final SubmitEvent event)
 			{
-				GWT.log("Submitted");
+				GWT.log("Uploading File");
 
 			}
 		});
@@ -80,15 +83,24 @@ public class UploadMenuItem extends MenuItem
 			@Override
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
-				GWT.log("Submit complete: " + event.getResults());
-				item.refresh();
+				GWT.log("Upload Complete: " + event.getResults());
+				item.getItemWidget().refresh();
 				dialogBox.hide();
+				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
+				{					
+					@Override
+					public void success(Request request, Response response)
+					{
+						PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getItemWidget().update(placebookItem);						
+					}
+				});				
 			}
 		});
 
 		panel.add(upload);
 		panel.add(hidden);
-		panel.add(closeButton);
+		panel.add(uploadButton);
 		panel.add(cancelButton);
 
 		dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());

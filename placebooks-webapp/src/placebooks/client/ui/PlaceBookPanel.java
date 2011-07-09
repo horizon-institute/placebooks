@@ -6,16 +6,30 @@ import java.util.Comparator;
 import java.util.List;
 
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPanel extends SimplePanel
 {
+	protected static final double HEIGHT_PRECISION = 10000;	
+	
+	private static final Comparator<PlaceBookItemFrame> orderComparator = new Comparator<PlaceBookItemFrame>()
+	{
+		@Override
+		public int compare(final PlaceBookItemFrame o1, final PlaceBookItemFrame o2)
+		{
+			return o1.getItem().getParameter("order", 0) - o2.getItem().getParameter("order", 0);
+		}
+	};
+
 	private final int column;
 
-	private final List<PlaceBookItemWidget> items = new ArrayList<PlaceBookItemWidget>();
+	private final List<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
 
 	private final int panelIndex;
 
@@ -51,15 +65,16 @@ public class PlaceBookPanel extends SimplePanel
 		setWidth(100f / columns);
 	}
 
-	public void add(final PlaceBookItemWidget item)
+	public void add(final PlaceBookItemFrame item)
 	{
-		if (item.getOrder() > items.size())
+		final int order = item.getItem().getParameter("order", items.size());
+		if (order >= items.size())
 		{
 			items.add(item);
 		}
 		else
 		{
-			items.add(item.getOrder(), item);
+			items.add(order, item);
 		}
 	}
 
@@ -70,10 +85,20 @@ public class PlaceBookPanel extends SimplePanel
 
 	public void reflow()
 	{
-		reflow(null, 0, false);
+		Collections.sort(items, orderComparator);
+
+		resize();
+
+		int order = 0;
+		int top = getElement().getOffsetTop();
+		for (final PlaceBookItemFrame item : items)
+		{
+			top += layoutItem(item, top);
+			order++;
+		}
 	}
 
-	public void remove(final PlaceBookItemWidget item)
+	public void remove(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
 	}
@@ -85,7 +110,7 @@ public class PlaceBookPanel extends SimplePanel
 		final int panelTop = ((panelHeight + 20) * row);
 
 		getElement().getStyle().setTop(panelTop, Unit.PX);
-		getElement().getStyle().setHeight(panelHeight, Unit.PX);
+		setHeight(panelHeight + "px");
 	}
 
 	public void setWidth(final float panelWidth)
@@ -101,60 +126,103 @@ public class PlaceBookPanel extends SimplePanel
 	{
 		final int left = getElement().getOffsetLeft();
 		final int width = getElement().getOffsetWidth();
-		final int top = getElement().getOffsetTop();
+		final int top = getElement().getOffsetTop() - 20;
 		final int height = getElement().getOffsetHeight();
 		return left < x && x < (left + width) && top < y && y < (top + height);
 	}
 
-	void reflow(final PlaceBookItemWidget newItem, final int mousey, final boolean finished)
+	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
 	{
-		Collections.sort(items, new Comparator<PlaceBookItemWidget>()
-		{
-			@Override
-			public int compare(final PlaceBookItemWidget o1, final PlaceBookItemWidget o2)
-			{
-				return o1.getOrder() - o2.getOrder();
-			}
-		});
+		Collections.sort(items, orderComparator);
 
 		resize();
 
+		newItem.getItem().setParameter("panel", panelIndex);
+
 		int order = 0;
-		int height = getElement().getOffsetTop();
-		final int y = mousey;
-		for (final PlaceBookItemWidget item : items)
+		int top = getElement().getOffsetTop();
+		boolean inserted = false;
+		for (final PlaceBookItemFrame item : items)
 		{
-			if (newItem != null && y > height && y < height + item.getContentHeight())
+			if (!inserted && inserty < top + item.getItemWidget().getOffsetHeight())
 			{
-				height += layoutItem(newItem, height, order, finished);
+				top += height;
+
+				newItem.getItem().setParameter("order", order);
+
+				inserted = true;
 
 				order++;
 			}
-			height += layoutItem(item, height, order, finished);
+			top += layoutItem(item, top);
+
+			item.getItem().setParameter("order", order);
 
 			order++;
 		}
 
-		if (newItem != null && y > height)
+		if (!inserted)
 		{
-			layoutItem(newItem, height, order, finished);
+			newItem.getItem().setParameter("order", order);
 		}
 	}
 
-	private int layoutItem(final PlaceBookItemWidget item, final int height, final int order, final boolean finished)
+	void reflow(final Widget insert, final int inserty, final int height)
 	{
-		item.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		item.getElement().getStyle().setWidth(panelWidth, Unit.PCT);
-		item.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-		item.setTop(height);
+		Collections.sort(items, orderComparator);
 
-		item.resize();
+		resize();
 
-		if (finished)
+		int top = getElement().getOffsetTop();
+		Widget insertTemp = insert;
+		for (final PlaceBookItemFrame item : items)
 		{
-			item.setOrder(order);
+			if (insertTemp != null && inserty < top + item.getItemWidget().getOffsetHeight())
+			{
+				top += layoutInsert(insertTemp, top, height);
+
+				insertTemp = null;
+			}
+			top += layoutItem(item, top);
 		}
 
-		return item.getContentHeight();
+		if (insertTemp != null && inserty > top)
+		{
+			layoutInsert(insertTemp, top, height);
+		}
+	}
+
+	private int layoutInsert(final Widget insert, final int top, final int height)
+	{
+		insert.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		insert.getElement().getStyle().setTop(top, Unit.PX);
+		insert.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
+
+		insert.setWidth(panelWidth + "%");
+		insert.setHeight(height + "px");
+
+		return insert.getOffsetHeight();
+	}
+
+	private int layoutItem(final PlaceBookItemFrame item, final int top)
+	{
+		String heightString;
+		
+		if (item.getItem().hasParameter("height") && item.getPanel() != null)
+		{
+			final int height = item.getItem().getParameter("height");
+			final double heightPCT = height / HEIGHT_PRECISION;
+			final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
+
+			heightString = heightPX + "px";
+		}
+		else
+		{
+			heightString = "";
+		}
+
+		item.resize(column * panelWidth + "%", top + "px", panelWidth + "%", heightString);
+		
+		return item.getOffsetHeight();
 	}
 }

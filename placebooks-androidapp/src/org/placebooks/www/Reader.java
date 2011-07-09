@@ -110,51 +110,48 @@ public class Reader extends Activity {//implements Parcelable {
     private String packagePath;
 	
 	
-	ArrayList<Point> page1 = new ArrayList<Point>();
-	ArrayList<Point> page2 = new ArrayList<Point>();
-	ArrayList<Point> page3 = new ArrayList<Point>();
-	ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
-	ArrayList<Point> page5 = new ArrayList<Point>();
-	ArrayList<Point> page6 = new ArrayList<Point>();
+	private ArrayList<Point> page1 = new ArrayList<Point>();
+	private ArrayList<Point> page2 = new ArrayList<Point>();
+	private ArrayList<Point> page3 = new ArrayList<Point>();
+	private ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
+	private ArrayList<Point> page5 = new ArrayList<Point>();
+	private ArrayList<Point> page6 = new ArrayList<Point>();
 	
-	ArrayList<String> page1Type = new ArrayList<String>();
-	ArrayList<String> page2Type = new ArrayList<String>();
-	ArrayList<String> page3Type = new ArrayList<String>();
-	ArrayList<String> page4Type = new ArrayList<String>();
-	ArrayList<String> page5Type = new ArrayList<String>();
-	ArrayList<String> page6Type = new ArrayList<String>();
+	private ArrayList<String> page1Type = new ArrayList<String>();
+	private ArrayList<String> page2Type = new ArrayList<String>();
+	private ArrayList<String> page3Type = new ArrayList<String>();
+	private ArrayList<String> page4Type = new ArrayList<String>();
+	private ArrayList<String> page5Type = new ArrayList<String>();
+	private ArrayList<String> page6Type = new ArrayList<String>();
 	
-	ArrayList<String> page1Data = new ArrayList<String>();
-	ArrayList<String> page2Data = new ArrayList<String>();
-	ArrayList<String> page3Data = new ArrayList<String>();
-	ArrayList<String> page4Data = new ArrayList<String>();
-	ArrayList<String> page5Data = new ArrayList<String>();
-	ArrayList<String> page6Data = new ArrayList<String>();
+	private ArrayList<String> page1Data = new ArrayList<String>();
+	private ArrayList<String> page2Data = new ArrayList<String>();
+	private ArrayList<String> page3Data = new ArrayList<String>();
+	private ArrayList<String> page4Data = new ArrayList<String>();
+	private ArrayList<String> page5Data = new ArrayList<String>();
+	private ArrayList<String> page6Data = new ArrayList<String>();
 	
-	ArrayList<String> page1Url = new ArrayList<String>();
-	ArrayList<String> page2Url = new ArrayList<String>();
-	ArrayList<String> page3Url = new ArrayList<String>();
-	ArrayList<String> page4Url = new ArrayList<String>();
-	ArrayList<String> page5Url = new ArrayList<String>();
-	ArrayList<String> page6Url = new ArrayList<String>();
+	private ArrayList<String> page1Url = new ArrayList<String>();
+	private ArrayList<String> page2Url = new ArrayList<String>();
+	private ArrayList<String> page3Url = new ArrayList<String>();
+	private ArrayList<String> page4Url = new ArrayList<String>();
+	private ArrayList<String> page5Url = new ArrayList<String>();
+	private ArrayList<String> page6Url = new ArrayList<String>();
 	
-	ArrayList<String> page1Keys = new ArrayList<String>();
-	ArrayList<String> page2Keys = new ArrayList<String>();
-	ArrayList<String> page3Keys = new ArrayList<String>();
-	ArrayList<String> page4Keys = new ArrayList<String>();
-	ArrayList<String> page5Keys = new ArrayList<String>();
-	ArrayList<String> page6Keys = new ArrayList<String>();
+	private ArrayList<String> page1Keys = new ArrayList<String>();
+	private ArrayList<String> page2Keys = new ArrayList<String>();
+	private ArrayList<String> page3Keys = new ArrayList<String>();
+	private ArrayList<String> page4Keys = new ArrayList<String>();
+	private ArrayList<String> page5Keys = new ArrayList<String>();
+	private ArrayList<String> page6Keys = new ArrayList<String>();
 	
-	ArrayList<Coordinate[]> page1Geometries = new ArrayList<Coordinate[]>();
-	ArrayList<Coordinate[]> page2Geometries = new ArrayList<Coordinate[]>();
-	ArrayList<Coordinate[]> page3Geometries = new ArrayList<Coordinate[]>();
-	ArrayList<Coordinate[]> page4Geometries = new ArrayList<Coordinate[]>();
-	ArrayList<Coordinate[]> page5Geometries = new ArrayList<Coordinate[]>();
-	ArrayList<Coordinate[]> page6Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page1Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page2Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page3Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page4Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page5Geometries = new ArrayList<Coordinate[]>();
+	private ArrayList<Coordinate[]> page6Geometries = new ArrayList<Coordinate[]>();
 	
-
-	
-
 	//Image Variables
 	private ImageView imgView;
 	
@@ -182,6 +179,10 @@ public class Reader extends Activity {//implements Parcelable {
 	private double c_y4;
 	private double c_x5;
 	private double c_y5;
+	//private ArrayList<Double> mapCoordinatesLong = new ArrayList<Double>();
+	//private ArrayList<Double> mapCoordinatesLat = new ArrayList<Double>();
+	//private Double[] mapCoordinatesLat;
+	//private Double[] mapCoordinatesLong;
 	
 
 	 		 @Override
@@ -279,8 +280,8 @@ public class Reader extends Activity {//implements Parcelable {
 								 
 							 }
 							 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
-								 //displayMapImage(page1Data.get(i).toString(), page1Geometries.get(i), ll);
-								 displayMapImage(page1Data.get(i).toString(), ll);
+								 displayMapImage(page1Data.get(i).toString(), page1Geometries.get(i), ll);
+								 //displayMapImage(page1Data.get(i).toString(), ll);
 								 
 								 //Coordinate[] arrCo = page1Geometries.get(i);
 							     //System.out.println("page1Coordinates x value= " + arrCo[0].x);
@@ -326,8 +327,8 @@ public class Reader extends Activity {//implements Parcelable {
 									 displayAudio(page2Data.get(i).toString(), ll2);	
 								 }
 								 else if(page2Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 //displayMapImage(page2Data.get(i).toString(), page2Geometries.get(i), ll2);
-									 displayMapImage(page2Data.get(i).toString(), ll2);
+									 displayMapImage(page2Data.get(i).toString(), page2Geometries.get(i), ll2);
+									 //displayMapImage(page2Data.get(i).toString(), ll2);
 								 }
 								 else if (page2Type.get(i).toString().equalsIgnoreCase("WebBundle")){
 								      displayWebBundle(page2Data.get(i),page2Url.get(i), page2Keys.get(i), ll2 ); //filename, url, page
@@ -355,8 +356,8 @@ public class Reader extends Activity {//implements Parcelable {
 									 displayAudio(page3Data.get(i).toString(), ll3);	
 								 }
 								 else if(page3Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 //displayMapImage(page3Data.get(i).toString(),page3Geometries.get(i), ll3);
-									displayMapImage(page3Data.get(i).toString(), ll3);
+									 displayMapImage(page3Data.get(i).toString(),page3Geometries.get(i), ll3);
+									//displayMapImage(page3Data.get(i).toString(), ll3);
 								 }
 								 else if (page3Type.get(i).toString().equalsIgnoreCase("WebBundle")){
 								      displayWebBundle(page3Data.get(i),page3Url.get(i), page3Keys.get(i), ll3 ); //filename, url, page
@@ -383,8 +384,8 @@ public class Reader extends Activity {//implements Parcelable {
 									 displayAudio(page4Data.get(i).toString(), ll4);	
 								 }
 								 else if(page4Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									// displayMapImage(page4Data.get(i).toString(), page4Geometries.get(i), ll4);
-									 displayMapImage(page4Data.get(i).toString(), ll4);
+									displayMapImage(page4Data.get(i).toString(), page4Geometries.get(i), ll4);
+									//displayMapImage(page4Data.get(i).toString(), ll4);
 		
 								 }
 								 else if (page4Type.get(i).toString().equalsIgnoreCase("WebBundle")){
@@ -407,8 +408,8 @@ public class Reader extends Activity {//implements Parcelable {
 									 displayAudio(page5Data.get(i).toString(), ll5);	
 								 }
 								 else if(page5Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 //displayMapImage(page5Data.get(i).toString(), page5Geometries.get(i), ll5);
-									 displayMapImage(page5Data.get(i).toString(), ll5);
+									 displayMapImage(page5Data.get(i).toString(), page5Geometries.get(i), ll5);
+									 //displayMapImage(page5Data.get(i).toString(), ll5);
 		
 								 }
 								 else if (page5Type.get(i).toString().equalsIgnoreCase("WebBundle")){
@@ -431,8 +432,8 @@ public class Reader extends Activity {//implements Parcelable {
 									 displayAudio(page6Data.get(i).toString(), ll6);	
 								 }
 								 else if(page6Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 //displayMapImage(page6Data.get(i).toString(),page6Geometries.get(i), ll6);
-									 displayMapImage(page6Data.get(i).toString(),ll6);
+									 displayMapImage(page6Data.get(i).toString(),page6Geometries.get(i), ll6);
+									 //displayMapImage(page6Data.get(i).toString(),ll6);
 								 }
 								 else if (page6Type.get(i).toString().equalsIgnoreCase("WebBundle")){
 								      displayWebBundle(page6Data.get(i),page6Url.get(i), page6Keys.get(i), ll6 ); //filename, url, page
@@ -812,7 +813,7 @@ public class Reader extends Activity {//implements Parcelable {
 		     * Map Image Item
 		     * Method for displaying the map tile image
 		     */
-		    public void displayMapImage(final String mapImage,/* final Coordinate[] c,*/ final LinearLayout page){
+		    public void displayMapImage(final String mapImage, final Coordinate[] c, final LinearLayout page){
 		    	
 			    //locate the file path where the images are stored on the SD CARD. 
 				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
@@ -829,7 +830,13 @@ public class Reader extends Activity {//implements Parcelable {
 					    //mapImgView.setImageBitmap(bm);
 						mapImgView.setLayoutParams(new LayoutParams(500, 500));	
 						page.addView(mapImgView); 
-					/*	
+						
+						/*
+						for (int i=0; i<c.length; i++){
+							mapCoordinatesLong[i] = (c[i].x);
+							mapCoordinatesLat[i] = (c[i].y);
+						}*/
+						
 						c_x1 = c[0].x;
 						c_y1 = c[0].y;
 						c_x2 = c[1].x;
@@ -841,7 +848,7 @@ public class Reader extends Activity {//implements Parcelable {
 						c_x5 = c[4].x;
 						c_y5 = c[4].y;
 						
-					*/	
+						
 						
 			    	} catch (OutOfMemoryError E) {
 				    // release some (all) of the above objects
@@ -876,7 +883,8 @@ public class Reader extends Activity {//implements Parcelable {
        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.MapImageViewer");
        	        	 intent.putExtra("mapImage", mapImage);
        	        	 intent.putExtra("packagePath", packagePath);
-       	        /*	 intent.putExtra("c_x1", c_x1);
+       	        	 
+       	        	 intent.putExtra("c_x1", c_x1);
        	        	 intent.putExtra("c_y1", c_y1);
        	        	 intent.putExtra("c_x2", c_x2);
        	        	 intent.putExtra("c_y2", c_y2);
@@ -886,6 +894,11 @@ public class Reader extends Activity {//implements Parcelable {
        	        	 intent.putExtra("c_y4", c_y4);
        	        	 intent.putExtra("c_x5", c_x5);
        	        	 intent.putExtra("c_y5", c_y5);
+       	        	 
+       	        	 //intent.putExtra("", c);
+       	        	 /*Double[] arrDouble = new Double[mapCoordinates.size()];
+       	        	 for (int i=0; i<)
+       	        	 intent.putExtra("double array", arrDouble);
        	         */
 
 	     				    overridePendingTransition(0, 0);
@@ -1001,12 +1014,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page1Data.add(data);
 		        	page1Type.add(type);
 		        	page1Url.add(url);
 		        	page1Keys.add(itemKey);
-		        	//page1Geometries.add(geomCo);
+		        	page1Geometries.add(geomCo);
 
 				}
 				for(Point item: page2) {
@@ -1014,12 +1027,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String type = item.getType();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page2Data.add(data);
 		        	page2Type.add(type);
 		        	page2Url.add(url);
 		        	page2Keys.add(itemKey);
-		        	//page2Geometries.add(geomCo);
+		        	page2Geometries.add(geomCo);
 
 				}
 				for(Point item: page3) {
@@ -1028,12 +1041,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page3Data.add(data);
 		        	page3Type.add(type);
 		        	page3Url.add(url);
 		        	page3Keys.add(itemKey);
-		        	//page3Geometries.add(geomCo);
+		        	page3Geometries.add(geomCo);
 
 				}
 				for(Point item: page4) {
@@ -1042,12 +1055,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page4Data.add(data);
 		        	page4Type.add(type);
 		        	page4Url.add(url);
 		        	page4Keys.add(itemKey);
-		        	//page4Geometries.add(geomCo);
+		        	page4Geometries.add(geomCo);
 
 				}
 				for(Point item: page5) {
@@ -1056,12 +1069,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page5Data.add(data);
 		        	page5Type.add(type);
 		        	page5Url.add(url);
 		        	page5Keys.add(itemKey);
-		        	//page5Geometries.add(geomCo);
+		        	page5Geometries.add(geomCo);
 
 				}
 				for(Point item: page6) {
@@ -1070,12 +1083,12 @@ public class Reader extends Activity {//implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
-		        	//Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	Coordinate[] geomCo = item.getGeometryCoordinates();
 		        	page6Data.add(data);
 		        	page6Type.add(type);
 		        	page6Url.add(url);
 		        	page6Keys.add(itemKey);
-		        	//page6Geometries.add(geomCo);
+		        	page6Geometries.add(geomCo);
 
 				}
 				

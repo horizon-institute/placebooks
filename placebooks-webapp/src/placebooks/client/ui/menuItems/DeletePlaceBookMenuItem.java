@@ -1,25 +1,28 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.PlaceBookCanvas;
-import placebooks.client.ui.PlaceBookItemWidgetFrame;
-import placebooks.client.ui.widget.MenuItem;
+import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class DeletePlaceBookMenuItem extends MenuItem
 {
 	private final PlaceBookCanvas canvas;
-	private final PlaceBookItemWidgetFrame item;
+	private final SaveContext context;
+	private final PlaceBookItemFrame item;
 
-	public DeletePlaceBookMenuItem(final String title, final PlaceBookCanvas canvas, final PlaceBookItemWidgetFrame item)
+	public DeletePlaceBookMenuItem(final SaveContext context, final PlaceBookCanvas canvas,
+			final PlaceBookItemFrame item)
 	{
-		super(title);
+		super("Delete");
 		this.canvas = canvas;
 		this.item = item;
+		this.context = context;
 	}
 
 	@Override
 	public void run()
 	{
 		canvas.remove(item);
-		item.markChanged();
+		context.markChanged();
 	}
 }

@@ -1,5 +1,7 @@
 package placebooks.client.model;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -9,7 +11,19 @@ public class User extends JavaScriptObject
 	{
 	}
 
-	public final native JsArray<LoginDetails> getLoginDetails()
+	public final Iterable<LoginDetails> getLoginDetails()
+	{
+		return new Iterable<LoginDetails>()
+		{
+			@Override
+			public Iterator<LoginDetails> iterator()
+			{
+				return new JSIterator<LoginDetails>(getLoginDetailsImpl());
+			}
+		};
+	}
+	
+	private final native JsArray<LoginDetails> getLoginDetailsImpl()
 	/*-{
 		if(!('loginDetails' in this))
 		{

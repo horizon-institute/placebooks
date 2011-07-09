@@ -1,12 +1,16 @@
-@page { size: landscape; }
+@page {
+	size: landscape;
+}
 
 body {
-	font-family: Verdana, Arial, sans-serif;
+	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
+	margin: 0px;
+	overflow: hidden;	
 }
 
 a {
-	color: #66D;
+	color: #66d;
 	cursor: pointer;
 }
 
@@ -14,13 +18,50 @@ a:hover {
 	text-decoration: underline;
 }
 
+.toolbarMenu {
+	position: absolute;
+	opacity: 0;
+	visibility: hidden;
+	z-index: 30;
+	-webkit-transition: opacity .5s linear, visibility .5s linear;
+	transition: opacity .5s linear, visibility .5s linear;
+	background: #000;
+	font-size: 14px;
+	-moz-box-shadow: 3px 3px 4px #222;
+	-webkit-box-shadow: 3px 3px 4px #222;
+	box-shadow: 3px 3px 6px #222;
+}
+
+.toolbarMenuItem {
+	padding: 1px 8px;
+	cursor: default;
+}
+
+.toolbarMenuItem:HOVER {
+	background: #555;
+}
+.dropMenu {
+	position: absolute;
+	opacity: 0;
+	visibility: hidden;
+	z-index: 30;
+	border: 2px solid #000;
+	padding: 2px;
+	-webkit-transition: opacity .5s linear, visibility .5s linear;
+	transition: opacity .5s linear, visibility .5s linear;
+	background: #fff;
+	-moz-box-shadow: 3px 3px 4px #222;
+	-webkit-box-shadow: 3px 3px 4px #222;
+	box-shadow: 3px 3px 6px #222;
+}
+
 .dialog {
-	background-color: #FFF;
+	background-color: #fff;
 	border: 5px solid #999;
 	border-radius: 10px;
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
-	box-shadow: 3px 3px 6px #666;	
+	box-shadow: 3px 3px 6px #666;
 }
 
 .dialogGlass {
@@ -35,7 +76,7 @@ a:hover {
 .panel {
 	position: absolute;
 	border: 1px solid #000;
-	background-color: #FFF;
+	background-color: #fff;
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
 	box-shadow: 3px 3px 6px #666;
@@ -57,26 +98,58 @@ a:hover {
 }
 
 .listItem:HOVER {
-	background: #CCC;	
+	background: #ccc;
 }
 
-.widget {
-	position: relative;
-	margin-top: 25px;
+.widgetPanel {
+	position: absolute;
+	overflow: hidden;
+}
+
+.content {
+	margin: auto;
+	width: 800px;
+}
+
+.toolbar {
+	font: 18px/40px mako, sans-serif;
+	height: 40px;
+	color: #ccc;
+	background: #2d2d2d;
+	background: -webkit-linear-gradient(top, #2d2d2d, #111);
+	border-bottom: 1px solid #84817a;
+}
+
+.toolbarItem {
+	float: left;
+	margin-left: 50px;
+	padding: 0 10px;
+	cursor: default;
+}
+
+.toolbarItem:HOVER {
+	background-color: #555;
+	color: #FFF;
+}
+
+.toolbarLogin {
+	float: right;
+	margin-right: 50px;
+}
+
+.frameWidgetPanel {
+	overflow: hidden;
+	margin-top: 24px;
+	margin-bottom: 6px;
 	margin-left: 5px;
 	margin-right: 5px;
-	margin-bottom: 3px;
-	z-index: 2;
-	overflow: hidden;
-	min-height: 15px;
 }
 
 .textitem {
 	-webkit-user-select: text;
 	-moz-user-select: text;
-	-o-user-select: text;	
+	-o-user-select: text;
 	user-select: text;
-	font-size: 12px;
 }
 
 .mapLabel {
@@ -98,14 +171,29 @@ img {
 
 .menuItem {
 	padding: 1px 8px;
-	background: #889;
-	border: 1px solid #889;
+	border-radius: 5px;
 	cursor: default;
+	border: 1px solid #fff;
 }
 
 .menuItem:HOVER {
-	background: #99A;
-	border: 1px solid #AAB;
+	background: #cce;
+	border: 1px solid #bbc;
+}
+
+.insert {
+	position: absolute;
+	visibility: hidden;
+}
+
+.insertInner {
+	border: 2px dashed #999;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	margin: 5px;
 }
 
 .panelleft {
@@ -113,24 +201,23 @@ img {
 }
 
 .panelright {
-	border-left: 1px dashed #CCC;
+	border-left: 1px dashed #ccc;
 }
 
 .panelcenter {
 	border-right: 0px;
-	border-left: 1px dashed #CCC;
+	border-left: 1px dashed #ccc;
 }
 
-.dragImage {
-	z-index: 20;
+.dragFrame {
 	position: absolute;
-	cursor: move;
-}
-
-.dragShadow {
-	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
-	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+	margin: 1px;
+	opacity: 0.6;
+	visibility: hidden;
+	z-index: 100;
+	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
 }
 
 .glassPanel {
@@ -145,4 +232,25 @@ img {
 	padding: 3px 5px;
 	z-index: 50;
 	background-color: #669;
+}
+
+.placebookEntry {
+	display: inline-block;
+	padding: 5px;
+	margin: 10px auto;
+	width: 120px;
+	text-align: center;
+	border-radius: 16px;			
+}
+		
+.placebookEntry:HOVER {
+	background-color: #667;
+}
+		
+.placebookEntryText {
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0px 7px;
+	font-family: mako, sans-serif;
+	font-size: 16px;
 }

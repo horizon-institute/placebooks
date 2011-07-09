@@ -18,7 +18,33 @@ public interface Resources extends ClientBundle
 	ImageResource image();
 
 	ImageResource map();
-
+	
+	ImageResource placebook();	
+	
+	ImageResource arrow_left();
+	
+	ImageResource arrow_right();	
+	
+	ImageResource add();
+	
+	ImageResource book();	
+	
+	ImageResource chrome();
+	
+	ImageResource television();
+	
+	ImageResource video();
+	
+	ImageResource audio();	
+	
+	ImageResource everytrail();
+	
+	ImageResource youtube();	
+	
+	ImageResource phone_Android();
+	
+	ImageResource book_open();	
+	
 	ImageResource movies();
 
 	ImageResource music();
@@ -28,8 +54,6 @@ public interface Resources extends ClientBundle
 	ImageResource progress();
 
 	ImageResource progress2();
-	
-	ImageResource bullet_arrow_down();	
 
 	ImageResource progress3();
 

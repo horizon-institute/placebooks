@@ -33,11 +33,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 			// Add the name and address.
 			sb.appendHtmlConstant("<div>");
-			if (value.getTitle() == null)
-			{
-				sb.appendEscaped("Edit PlaceBook: No Title");
-			}
-			else if (value.getKey().equals("new"))
+			if (value.getKey().equals("new"))
 			{
 				sb.appendEscaped(value.getTitle());
 			}
@@ -110,9 +106,9 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 		{
 			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 			entries.add(newPlaceBook);
-			for (int index = 0; index < shelf.getEntries().length(); index++)
+			for (PlaceBookEntry entry: entries)
 			{
-				entries.add(shelf.getEntries().get(index));
+				entries.add(entry);
 			}
 			setRowData(entries);
 		}

@@ -2,8 +2,6 @@ package placebooks.model;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -12,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -157,33 +154,33 @@ public class WebBundleItem extends PlaceBookItem
 	public void updateItem(PlaceBookItem item)
 	{
 		super.updateItem(item);
-		if(item instanceof WebBundleItem)
-		{
-			MediaItem updatedItem = (MediaItem) item;
-			//Overwrite existing file by saving new file in the existing folder with the existing name
-			// Check it exists first though
-			if (new File(updatedItem.getPath()).exists())
-			{
-				if (new File(this.getWebBundlePath()).exists() || new File(this.getWebBundlePath()).mkdirs())
-				{
-					final File dataFile = new File(updatedItem.getPath());
-					FileInputStream fis;
-					FileOutputStream fos;
-					try
-					{
-						fis = new FileInputStream(dataFile);
-						fos = new FileOutputStream(new File(this.getWebBundlePath()).getName());
-						IOUtils.copy(fis, fos);
-						fis.close();
-						fos.close();
-					}
-					catch (Exception e)
-					{
-						log.error(e.getMessage());
-					}
-				}
-			}
-		}
+//		if(item instanceof WebBundleItem)
+//		{
+//			MediaItem updatedItem = (MediaItem) item;
+//			//Overwrite existing file by saving new file in the existing folder with the existing name
+//			// Check it exists first though
+//			if (new File(updatedItem.getPath()).exists())
+//			{
+//				if (new File(this.getWebBundlePath()).exists() || new File(this.getWebBundlePath()).mkdirs())
+//				{
+//					final File dataFile = new File(updatedItem.getPath());
+//					FileInputStream fis;
+//					FileOutputStream fos;
+//					try
+//					{
+//						fis = new FileInputStream(dataFile);
+//						fos = new FileOutputStream(new File(this.getWebBundlePath()).getName());
+//						IOUtils.copy(fis, fos);
+//						fis.close();
+//						fos.close();
+//					}
+//					catch (Exception e)
+//					{
+//						log.error(e.getMessage());
+//					}
+//				}
+//			}
+//		}
 	}
 	
 	

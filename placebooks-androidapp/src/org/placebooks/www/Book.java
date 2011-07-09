@@ -111,6 +111,7 @@ public class Book {
 			
 			Geometry geom;
 			Coordinate[] arrCoordinates;
+			Point pItems;
 
 			String text = item.getText();
 			String type = item.getType();
@@ -118,22 +119,17 @@ public class Book {
 			int order = item.getOrder();
 			String textKey = item.getKey();
 			
-			//if (item.getGeometry() != null){}
-			
-			
-			
-			
-			
-			
-			
-			
-			//Geometry geom = item.getGeometry();
-			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-	
-			
-	  	  	//Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
-	  	  	Point pItems = new Point(text, panel, order, type, textKey);//, arrCoordinates);
-	
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+		  	  	pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
+			}
+			else{
+				//else it does not have coordinates
+		  	  	//Point pItems = new Point(text, panel, order, type, textKey, arrCoordinates);
+		  	  	pItems = new Point(text, panel, order, type, textKey);
+			}
 			
 			//add to page 1
 			if(panel == 0){
@@ -176,18 +172,27 @@ public class Book {
 	for(ImageItem item: imageItems) {
 		
 		try{
+			Geometry geom;
+			Coordinate[] arrCoordinates;
+			Point pItems;
+			
 			String filename = item.getFilename();
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			//String url = item.getURL();
 			String imageKey = item.getKey();
-			//Geometry geom = item.getGeometry();
-			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-	
 			
-	  	  	//Point pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
-	  	  	Point pItems = new Point(filename, panel, order, type, imageKey);//, arrCoordinates);//, url
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+				pItems = new Point(filename, panel, order, type, imageKey, arrCoordinates);//, url
+			}
+			else{
+				//else it has no coordinates
+				pItems = new Point(filename, panel, order, type, imageKey);//, arrCoordinates);//, url	
+			}
 	
 	
 			//add to page 1
@@ -229,21 +234,29 @@ public class Book {
 	for(VideoItem item: videoItems) {
 		
 		try{
+			Geometry geom;
+			Coordinate[] arrCoordinates;
+			Point pItems;
+			
 			String filename = item.getFilename();
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			String videoKey = item.getKey();
-			//try{
-			//Geometry geom = item.getGeometry();
-			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-			//}
-			//catch (NullPointerException e){
-				//Log.
-			//}
-	  	  	//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
-	  	  	Point pItems = new Point(filename, panel, order, type, videoKey);//, arrCoordinates);
-	
+			
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+
+		  	    pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
+			}
+			else{
+				//it has no coordinates
+				//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
+		  	    pItems = new Point(filename, panel, order, type, videoKey);//, arrCoordinates);
+			}
+	  	  
 			
 			//add to page 1
 			if(panel == 0){
@@ -286,18 +299,29 @@ public class Book {
 	for(AudioItem item: audioItems) {
 		
 		try{
+			Geometry geom;
+			Coordinate[] arrCoordinates;
+			Point pItems;
+			
 			String filename = item.getFilename();
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			String audioKey = item.getKey();
-			//Geometry geom = item.getGeometry();
-			//Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
-	
 			
-	  	  	//Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
-	  	  	Point pItems = new Point(filename, panel, order, type, audioKey);//, arrCoordinates);
-	
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+		
+	  	  		//Point pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
+	  	  		pItems = new Point(filename, panel, order, type, audioKey, arrCoordinates);
+			}
+			else{
+				//it has no coordinates
+		  	  	pItems = new Point(filename, panel, order, type, audioKey);
+			}
+			
 			
 			//add to page 1
 			if(panel == 0){
@@ -339,30 +363,32 @@ public class Book {
 	for(MapImageItem item: mapImageItems){
 		
 		try{
+			
+			Geometry geom;
+			Coordinate[] arrCoordinates;
+			Point pItems;
+			
 			String filename = item.getFilename();
-			//GET GEOMETRY
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			String mapKey = item.getKey();
-			Geometry geom = item.getGeometry();
-			Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array, ignores the Z-Value , so its just xy		
-	
+			
+			if (item.getGeometry() != null){
+				//then it is a map with coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array, ignores the Z-Value , so its just xy		
+		
+				pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
+
+			}
+			else{
+				//it is a map without coordinates
+				pItems = new Point(filename, panel, order, type, mapKey);
+
+			}
 			//System.out.println("TCoordinates ARE = " + arrCoordinates[0].toString());
 			
-			/*
-			for (int i=0; i<arrCoordinates.length; i++){
-				coordinates.add(arrCoordinates[i]);
-			}*/
-			/*
-			for(int i=0; i<arrCoordinates.length; i++){
-				test.add(arrCoordinates[i].toString());
-			}*/
-			
-	
-			
-			//Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
-			Point pItems = new Point(filename, panel, order, type, mapKey, arrCoordinates);
 	
 			//add to page 1
 			if(panel == 0){
@@ -405,18 +431,29 @@ public class Book {
 	for(WebBundleItem item: webBundleItems){
 		
 		try{
+			Geometry geom;
+			Coordinate[] arrCoordinates;
+			Point pItems;
+			
 			String filename = item.getFilename();
 			String url = item.getURL();
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			String wbKey = item.getKey();
-			Geometry geom = item.getGeometry();
-			Coordinate[] arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 			
-	
-			//Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
-			Point pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+				
+				pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+			}
+			else{
+				//no coordinates
+				pItems = new Point(filename, panel, order, type, wbKey, url);
+			}
+			
 			
 			//add to page 1
 			if(panel == 0){

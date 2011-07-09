@@ -1,13 +1,16 @@
 package placebooks.client.model;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
 public class PlaceBook extends JavaScriptObject
 {
-	public static final native PlaceBook parse(final String json) /*-{
-																	return eval('(' + json + ')');
-																	}-*/;
+	public static final native PlaceBook parse(final String json)
+	/*-{
+		return eval('(' + json + ')');
+	}-*/;
 
 	protected PlaceBook()
 	{
@@ -15,29 +18,59 @@ public class PlaceBook extends JavaScriptObject
 
 	public final void add(final PlaceBookItem item)
 	{
-		getItems().push(item);
+		getItemsInternal().push(item);
 	}
 
-	public final native String getGeometry() /*-{
-												return this.geom;
-												}-*/;
+	public final native void clearItems()
+	/*-{
+		this.items = new Array();
+	}-*/;
 
-	public final native JsArray<PlaceBookItem> getItems() /*-{
-															if(!('items' in this))
-															{
-															this.items = new Array();
-															}
-															return this.items;
-															}-*/;
+	public final native String getGeometry()
+	/*-{
+		return this.geom;
+	}-*/;
 
-	public final native String getKey() /*-{
-										return this.id;
-										}-*/;
+	public final Iterable<PlaceBookItem> getItems()
+	{
+		return new Iterable<PlaceBookItem>()
+		{
+			@Override
+			public Iterator<PlaceBookItem> iterator()
+			{
+				return new JSIterator<PlaceBookItem>(getItemsInternal());
+			}
+		};
+	}
+	
+	private final native JsArray<PlaceBookItem> getItemsInternal()
+	/*-{
+		if(!('items' in this))
+		{
+			this.items = new Array();
+		}
+		return this.items;
+	}-*/;
 
-	public final native String getMetadata(String name) /*-{
-														return this.metadata[name];
-														}-*/;
+	public final native String getKey()
+	/*-{
+		return this.id;
+	}-*/;
 
+	public final native String getMetadata(String name)
+	/*-{
+		return this.metadata[name];
+	}-*/;
+
+	public final native String getMetadata(String name, final String defaultValue)
+	/*-{
+		if('metadata' in this && name in this.metadata)
+		{
+			return this.metadata[name];
+		}
+		return defaultValue;
+	}-*/;
+	
 	public final native User getOwner() /*-{
 										return this.owner;
 										}-*/;
@@ -46,7 +79,7 @@ public class PlaceBook extends JavaScriptObject
 															return 'metadata' in this && name in this.metadata;
 															}-*/;
 
-	public final native void removeItem(PlaceBookItem item) /*-{
+	public final native void remove(PlaceBookItem item) /*-{
 															var idx = this.items.indexOf(item);
 															if (idx != -1) {
 															this.items.splice(idx, 1);

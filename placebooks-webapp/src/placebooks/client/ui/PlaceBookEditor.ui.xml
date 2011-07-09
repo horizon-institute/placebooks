@@ -1,10 +1,10 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:pl="urn:import:placebooks.client.ui" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pb="urn:import:placebooks.client.ui"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
-			top: 21px;
+			top: 40px;
 			left: 0px;
 			right: 120px;
 			bottom: 0px;
@@ -25,7 +25,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 21px;
+			top: 40px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -33,16 +33,7 @@
 			background: #556;	
 			overflow: auto;
 		}
-		
-		.dropMenu {
-			position: absolute;
-			opacity: 0;
-			z-index: 30;
-			border: 1px solid #779;
-			-webkit-transition: opacity .5s linear, visibility .5s linear;
-			transition: opacity .5s linear, visibility .5s linear;
-		}
-		
+			
 		.loadingPanel {
 			position: absolute;
 			text-align: center;
@@ -64,38 +55,16 @@
 		}
 
 		.savingLabel {
-			color: white;
-			font-family: Verdana, Arial, sans-serif;
-			font-size: 15px;
-			padding-left: 15px;
-			vertical-align: top;
+			line-height: 40px;
+			padding: 0 15px;
 		}
 
 		.savingPanel {
-			position: absolute;
-			top: 21px;
-			right: 120px;
-			height: 15px;
-			background: #555;
-			border-left: 1px solid #333;
-			border-bottom: 1px solid #333;			
-			border-bottom-left-radius: 5px;
-			padding: 5px 20px 10px 15px;
+			float: right;
+			height: 40px;
 			display: none;
-			z-index: 55;
 		}
-
-		.titleBar {
-			position: absolute;
-			top: 0px;
-			left: 0px;
-			right: 0px;
-			height: 20px;
-			border-bottom: 1px solid grey;
-			box-shadow: 2px 2px 2px 333;	
-			overflow: none;		
-		}
-		
+	
 		.populate {
 			position: absolute;
 			text-align: center;
@@ -110,7 +79,8 @@
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-o-user-select: text;			
-			user-select: text;			
+			user-select: text;	
+			padding-left: 8px;		
 		}
 		
 		.loadingLabel {
@@ -130,6 +100,7 @@
 		
 		.zoomImage {
 			margin: 2px;
+			margin-top: 12px;
 			float:right;
 		}
 		
@@ -137,23 +108,22 @@
 			-webkit-user-select: none;	
 			-moz-user-select: none;
 			-o-user-select: none;			
-			user-select: none;			
+			user-select: none;
+			overflow: hidden;			
 		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
-		<g:Image ui:field="dragImage" />	
-		<p:DropMenu styleName="{style.dropMenu}" ui:field="dropMenu" />
-		<g:FlowPanel styleName="{style.titleBar}">
-			<p:MousePanel styleName="{style.account}" ui:field="account"><g:InlineLabel ui:field="accountLabel" /><g:Image resource='{res.bullet_arrow_down}' /></p:MousePanel>
+		<g:FlowPanel styleName="{res.style.toolbar}">
+			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
 			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
-			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>			
-			<p:EditablePanel ui:field="title" styleName="{style.titleLabel}" />			
-		</g:FlowPanel>
-		<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>		
+			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+			<g:FlowPanel styleName="{style.savingPanel}" ui:field="savingPanel"><g:Image resource='{res.progress2}' /><g:InlineLabel styleName="{style.savingLabel}">Saving</g:InlineLabel></g:FlowPanel>						
+			<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
+		</g:FlowPanel>		
 		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
-		<pl:Palette styleName="{style.palette}" ui:field="palette" />
+		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

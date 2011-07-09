@@ -12,4 +12,14 @@ public class Projection extends JavaScriptObject
 	protected Projection()
 	{
 	}
+
+	public final native String getUnits()
+	/*-{
+		return this.getUnits();
+	}-*/;
+	
+	public final native String getCode()
+	/*-{
+		return this.getCode();
+	}-*/;	
 }

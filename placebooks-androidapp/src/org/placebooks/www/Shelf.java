@@ -7,6 +7,7 @@ import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipException;
 //import java.util.zip.ZipException;
 
 import org.json.JSONArray;
@@ -81,7 +82,7 @@ public class Shelf extends ListActivity {
 	private JSONObject json;
     private String username;
     private String password;
-    ListView lv;
+    private ListView lv;
 	
 	//-- Download variables --
 	private static String placebooksfolder = new String("/PlaceBooks");
@@ -238,19 +239,6 @@ public class Shelf extends ListActivity {
 	 } //end of onCreate
 	 
 	 /*
-	  * Check for an Internet connection and return true if there is Internet
-	  */
-	/* public boolean isOnline() {
-		    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-		        return true;
-		    }
-		    return false;
-		}
-		*/
-	 
-	 /*
 	  * Method for downloading the shelf JSON file to the SDCard for caching.
 	  * Used for the initial download and also caching.
 	  */
@@ -306,14 +294,15 @@ public class Shelf extends ListActivity {
 
 		}	 
 
+	 /*
+	  * Download the zip file package
+	  */
 	 public void downloadPlaceBook(String theKey, String downloadPath) {
 		 String dlPath = downloadPath;
 	     //String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
 		 String url = "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/" + theKey;
 		 new DownloadFileAsync(dlPath).execute(url);	
 		
-		 //Toast msg = Toast.makeText(Shelf.this, "Message " + theKey, Toast.LENGTH_LONG);
- 		//msg.show();
 	    }
 	 		
 			 @Override
@@ -392,8 +381,7 @@ public class Shelf extends ListActivity {
 			                FileOutputStream fileOutput = new FileOutputStream(file);
 
 			                //this will be used in reading the data from the internet
-			                InputStream inputStream = urlConnection.getInputStream();
-			                
+			                InputStream inputStream = urlConnection.getInputStream();         
 			                               
 			                //this is the total size of the file
 			                int totalSize = urlConnection.getContentLength();
@@ -404,7 +392,6 @@ public class Shelf extends ListActivity {
 			                byte[] buffer = new byte[1024];
 			                int bufferLength = 0; //used to store a temporary size of the buffer
 
-			                
 			                while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
 			              	  
 			                    //add the data in the buffer to the file in the file output stream (the file on the sd card
@@ -424,11 +411,25 @@ public class Shelf extends ListActivity {
 			                // location of the downloaded .zip file on the sd card AND unzip file path (where to unzip)
 			                String zipFileLocation = (SDCardRoot +placebooksfolder + "/" +filename);
 			                //String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped" + packagePath) ;
-			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped/" + packagePath);	//NEW VERSION it doesn't need the package path - it just gets it from the zipped package structure. Old stable version needs packagePath
+			                String unzipPath = (SDCardRoot +placebooksfolder + "/unzipped/");// + packagePath);	//NEW VERSION it doesn't need the package path - it just gets it from the zipped package structure. Old stable version needs packagePath
 			                // pass these values to the unzipper method in the decompress class
-			                Decompress unzipper=new Decompress(zipFileLocation, unzipPath);			                
+			           //     Decompress unzipper=new Decompress(zipFileLocation, unzipPath);			                
+			                File fIn = new File(zipFileLocation);
+			        	    File fOut = new File(unzipPath);
 			                
-			                			    
+				                try {
+				        		    Decompress.unzip(fIn, fOut);
+				        	    }
+				        		catch (ZipException e) 
+				        		{
+				        		      // TODO Auto-generated catch block
+				        		        e.printStackTrace();
+				        		} catch (IOException e) {
+				        		       // TODO Auto-generated catch block
+				        		     e.printStackTrace();
+				        		}
+				      			                
+			                
 			                if(downloadedSize==totalSize)   filepath=file.getPath();
 			                reload();
 			                //onRestart();

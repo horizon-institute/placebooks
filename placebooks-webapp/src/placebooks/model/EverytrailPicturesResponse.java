@@ -14,15 +14,20 @@ import org.w3c.dom.Node;
 public class EverytrailPicturesResponse
 {
 	private HashMap<String, Node> picturesMap;
+	private HashMap<String, String> pictureTrips;
+	private HashMap<String, String> tripNames;
 	private String status;
 
 	/**
 	 * 
 	 */
-	public EverytrailPicturesResponse(final String status, final HashMap<String, Node> picturesMap)
+	public EverytrailPicturesResponse(final String status, final HashMap<String, Node> picturesMap, 
+			 final HashMap<String, String> pictureTrips,  final HashMap<String, String> tripNames)
 	{
 		this.status = status;
 		this.picturesMap = picturesMap;
+		this.pictureTrips = pictureTrips;
+		this.tripNames = tripNames;
 	}
 
 	/**
@@ -34,6 +39,17 @@ public class EverytrailPicturesResponse
 		return this.picturesMap;
 	}
 
+	public HashMap<String, String> getPictureTrips()
+	{
+		return this.pictureTrips;
+	}
+	
+	public HashMap<String, String> getTripNames()
+	{
+		return this.tripNames;
+	}
+	
+	
 	public Collection<Node> getPictures()
 	{
 		return this.picturesMap.values();

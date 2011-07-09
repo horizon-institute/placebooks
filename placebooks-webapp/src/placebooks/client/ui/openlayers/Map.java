@@ -1,22 +1,22 @@
 package placebooks.client.ui.openlayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Element;
 
 public class Map extends JavaScriptObject
 {
-	public final static native Map create(final String id)
+	public final static native Map create(final Element div)
 	/*-{
-		return new $wnd.OpenLayers.Map(id, {
+		return new $wnd.OpenLayers.Map(div, {
 			controls : [
 						new $wnd.OpenLayers.Control.Navigation(),
 	//						new $wnd.OpenLayers.Control.PanZoomBar(),
 	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
 	//						new $wnd.OpenLayers.Control.Attribution()
 					],
-			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-			maxResolution: 156543.0399,
-			numZoomLevels: 19,
-			units: 'm',
+			units: "m",
+			maxResolution: 156543.0339,
+			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
 			projection: new $wnd.OpenLayers.Projection("EPSG:900913"),
 			displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
 		});
@@ -36,6 +36,11 @@ public class Map extends JavaScriptObject
 		this.addLayer(layer);
 	}-*/;
 
+	public final native Bounds getMaxExtent()
+	/*-{
+		return this.maxExtent;
+	}-*/;
+	
 	public final native Events getEvents()
 	/*-{
 		return this.events;
@@ -72,13 +77,23 @@ public class Map extends JavaScriptObject
 		this.removeLayer(layer);
 	}-*/;
 
+	public final native void setCenter(final LonLat lonLat)
+	/*-{
+		this.setCenter(lonLat);		
+	}-*/;
+
 	public final native void setCenter(final LonLat lonLat, final int zoom)
 	/*-{
 		this.setCenter(lonLat, zoom);		
 	}-*/;
-
+	
 	public final native void zoomToExtent(final Bounds extent)
 	/*-{
 		this.zoomToExtent(extent);
+	}-*/;
+
+	public final native Projection getDisplayProjection()
+	/*-{
+		return this.displayProjection;
 	}-*/;
 }
