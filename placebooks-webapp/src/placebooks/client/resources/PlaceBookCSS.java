@@ -52,6 +52,8 @@ public interface PlaceBookCSS extends CssResource
 	
 	String toolbarItem();
 	
+	String toolbarItemDisabled();	
+	
 	String toolbarLogin();
 
 	String placebookEntry();

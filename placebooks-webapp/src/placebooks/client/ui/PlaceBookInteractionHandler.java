@@ -134,7 +134,7 @@ public class PlaceBookInteractionHandler
 	
 	public void setupUIElements(final Panel panel)
 	{
-		panel.add(dragFrame);
+		panel.add(dragFrame.getRootPanel());
 		panel.add(dropMenu);
 		
 		panel.addDomHandler(new ClickHandler()
@@ -202,10 +202,10 @@ public class PlaceBookInteractionHandler
 				}
 				dragFrame.setItemWidget(dragItem);
 				dragState = DragState.dragging;
-				dragFrame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-				dragFrame.setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
+				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
+				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
 
-				offsetx = dragFrame.getOffsetWidth() / 2;
+				offsetx = dragFrame.getRootPanel().getOffsetWidth() / 2;
 				offsety = 10;
 			}
 		}
@@ -221,8 +221,8 @@ public class PlaceBookInteractionHandler
 
 		if (dragState == DragState.dragging)
 		{
-			dragFrame.getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
-			dragFrame.getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
+			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
+			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
 
 			final PlaceBookPanel newPanel = getPanel(event);
 			if (oldPanel != newPanel && oldPanel != null)
@@ -243,7 +243,7 @@ public class PlaceBookInteractionHandler
 		else if(dragState == DragState.resizing)
 		{
 			final int y = event.getClientY();
-			final int heightPX = y - dragItemFrame.getElement().getAbsoluteTop();
+			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop();
 			final int canvasHeight = canvas.getPanels().iterator().next().getOffsetHeight();
 			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight); 
 
@@ -260,7 +260,7 @@ public class PlaceBookInteractionHandler
 		{
 			GWT.log("Drag End");
 			// TODO Move to dragFrame detach
-			dragFrame.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 
 			final PlaceBookPanel newPanel = getPanel(event);
@@ -311,11 +311,5 @@ public class PlaceBookInteractionHandler
 	public PlaceBookCanvas getCanvas()
 	{
 		return canvas;
-	}
-
-	public void reset()
-	{
-		dragFrame.removeFromParent();
-		dropMenu.removeFromParent();		
 	}
 }

@@ -4,11 +4,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
 
 public abstract class PlaceBookItemFrameWidget extends PlaceBookItemFrame
 {
-	interface PlaceBookItemFrameWidgetUiBinder extends UiBinder<Widget, PlaceBookItemFrameWidget>
+	interface PlaceBookItemFrameWidgetUiBinder extends UiBinder<Panel, PlaceBookItemFrameWidget>
 	{
 	}
 
@@ -26,7 +25,7 @@ public abstract class PlaceBookItemFrameWidget extends PlaceBookItemFrame
 	@UiField
 	Panel resizeSection;
 	
-	protected Widget createFrame()
+	protected Panel createFrame()
 	{
 		return uiBinder.createAndBindUi(this);
 	}

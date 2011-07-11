@@ -16,7 +16,7 @@ import placebooks.client.ui.widget.RichTextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,42 +39,79 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends Composite
 {
+	public enum SaveState {
+		saved,
+		not_saved,
+		saving,
+		save_error
+	}
+	
 	public class SaveContext extends Timer
 	{
+//		private SaveState state = SaveState.saved;
 		private static final int saveDelay = 2000;
-
-		// private boolean changed = false;
-		// private boolean saving = false;
-		// private boolean waiting = false;
 
 		public void markChanged()
 		{
 			cancel();
 			schedule(saveDelay);
+			setState(SaveState.not_saved);
 			// changed = true;
 		}
+		
+		private void setState(SaveState state)
+		{
+//			this.state = state;
+			switch (state)
+			{
+				case saved:
+					saveStatusPanel.setText("Saved");
+					saveStatusPanel.hideImage();
+					saveStatusPanel.setEnabled(false);
+					break;
+
+				case not_saved:
+					saveStatusPanel.setText("Save");
+					saveStatusPanel.hideImage();					
+					saveStatusPanel.setEnabled(true);
+					break;
+					
+				case saving:
+					saveStatusPanel.setText("Saving");
+					saveStatusPanel.setResource(Resources.INSTANCE.progress2());
+					saveStatusPanel.setEnabled(false);
+					break;					
+
+				case save_error:
+					saveStatusPanel.setText("Error Saving");			
+					saveStatusPanel.setResource(Resources.INSTANCE.save());
+					saveStatusPanel.setEnabled(true);
+					break;						
+					
+				default:
+					break;
+			}
+		}
+		
 
 		@Override
 		public void run()
 		{
-			savingPanel.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
-
-			// changed = false;
-			// saving = true;
+			setState(SaveState.saving);
 			PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
 			{
 				@Override
 				public void failure(final Request request, final Response response)
 				{
 					markChanged();
-					savingPanel.getElement().getStyle().setDisplay(Display.NONE);
+					setState(SaveState.save_error);
 				}
 
 				@Override
 				public void success(final Request request, final Response response)
 				{
 					updatePlaceBook(PlaceBook.parse(response.getText()));
-					savingPanel.getElement().getStyle().setDisplay(Display.NONE);
+					setState(SaveState.saved);
 				}
 			});
 		}
@@ -102,7 +139,7 @@ public class PlaceBookEditor extends Composite
 	Palette palette;
 
 	@UiField
-	Panel savingPanel;
+	PlaceBookToolbarItem saveStatusPanel;
 
 	@UiField
 	RichTextArea title;
@@ -151,6 +188,9 @@ public class PlaceBookEditor extends Composite
 		
 		factory.setInteractionHandler(interactionHandler);
 
+		saveStatusPanel.getElement().getStyle().setFloat(Float.RIGHT);
+		saveContext.setState(SaveState.saved);
+		
 		Window.setTitle("PlaceBooks Editor");
 
 		account.add(new MenuItem("Print Preview")
@@ -278,8 +318,6 @@ public class PlaceBookEditor extends Composite
 			
 			PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
-			
-			interactionHandler.reset();
 			
 			placeController.goTo(new PlaceBookEditorPlace(placebook));
 		}

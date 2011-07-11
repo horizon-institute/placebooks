@@ -127,6 +127,13 @@ a:hover {
 	cursor: default;
 }
 
+.toolbarItemDisabled {
+	float: left;
+	margin-left: 50px;
+	padding: 0 10px;
+	cursor: default;
+}
+
 .toolbarItem:HOVER {
 	background-color: #555;
 	color: #FFF;

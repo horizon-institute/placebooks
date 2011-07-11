@@ -35,6 +35,8 @@ public interface Resources extends ClientBundle
 	
 	ImageResource video();
 	
+	ImageResource save();
+	
 	ImageResource audio();	
 	
 	ImageResource everytrail();

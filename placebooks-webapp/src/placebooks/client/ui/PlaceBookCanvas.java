@@ -75,7 +75,6 @@ public class PlaceBookCanvas extends FlowPanel
 	private void addImpl(final PlaceBookItemFrame item)
 	{
 		items.add(item);
-		super.add(item);
 		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));		
 	}
 	
@@ -89,11 +88,7 @@ public class PlaceBookCanvas extends FlowPanel
 	private void removeImpl(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
-		super.remove(item);
-		if (item.getPanel() != null)
-		{
-			item.getPanel().remove(item);
-		}
+		item.setPanel(null);
 	}
 	
 	public void remove(final PlaceBookItemFrame item)

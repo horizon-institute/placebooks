@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeletePlaceBookMenuItem;
@@ -27,7 +28,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
@@ -111,8 +111,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public PlaceBookItemPopupFrame(PlaceBookInteractionHandler interactHandler)
 	{
 		super();
-		final SimplePanel rootPanel = new SimplePanel();
-		initWidget(rootPanel);
+		rootPanel = new SimplePanel();
 		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
 		createFrame();
 		this.interactionHandler = interactHandler;
@@ -180,12 +179,12 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 	}
 
-	@Override
-	protected void onLoad()
-	{
-		super.onLoad();		
-		((Panel) getParent()).add(frame);		
-	}
+//	@Override
+//	protected void onLoad()
+//	{
+//		super.onLoad();		
+//		((Panel) getParent()).add(frame);		
+//	}
 
 	@Override
 	public void setItemWidget(PlaceBookItemWidget itemWidget)
@@ -196,14 +195,29 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
+	public void setPanel(PlaceBookPanel newPanel)
+	{
+		if (panel == newPanel) { return; }
+		if (panel != null)
+		{
+			panel.remove(frame);
+		}
+		super.setPanel(newPanel);
+		if (panel != null)
+		{
+			panel.add(frame);
+		}	
+	}
+
+	@Override
 	public void resize(String left, String top, String width, String height)
 	{
 		super.resize(left, top, width, height);
 		frame.getElement().getStyle().setProperty("left", left);
 		frame.getElement().getStyle().setProperty("width", width);
 
-		frame.getElement().getStyle().setTop(getWidget().getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(getWidget().getOffsetHeight() + 25, Unit.PX);
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
 	}	
 
 	@Override
@@ -217,14 +231,14 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 		else if (highlighted)
 		{
-			getElement().getStyle().setZIndex(20);
+			rootPanel.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
 			frame.getElement().getStyle().setOpacity(0.8);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		else
 		{
-			getElement().getStyle().setZIndex(1);
+			rootPanel.getElement().getStyle().setZIndex(1);
 			frame.getElement().getStyle().setZIndex(0);
 			frame.getElement().getStyle().setOpacity(0);
 			frame.getElement().getStyle().setVisibility(Visibility.HIDDEN);

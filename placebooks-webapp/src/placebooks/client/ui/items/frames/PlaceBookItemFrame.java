@@ -5,13 +5,14 @@ import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public abstract class PlaceBookItemFrame extends Composite
+public abstract class PlaceBookItemFrame
 {
 	protected PlaceBookItemWidget itemWidget;
 
+	protected Panel rootPanel;
 	protected PlaceBookPanel panel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
@@ -32,12 +33,12 @@ public abstract class PlaceBookItemFrame extends Composite
 
 	public void resize(final String left, final String top, final String width, final String height)
 	{
-		if (left.equals(getElement().getStyle().getLeft()) && top.equals(getElement().getStyle().getTop())
-				&& width.equals(getElement().getStyle().getWidth())
+		if (left.equals(rootPanel.getElement().getStyle().getLeft()) && top.equals(rootPanel.getElement().getStyle().getTop())
+				&& width.equals(rootPanel.getElement().getStyle().getWidth())
 				&& height.equals(itemWidget.getElement().getStyle().getHeight())) { return; }
-		getElement().getStyle().setProperty("left", left);
-		getElement().getStyle().setProperty("top", top);
-		getElement().getStyle().setProperty("width", width);
+		rootPanel.getElement().getStyle().setProperty("left", left);
+		rootPanel.getElement().getStyle().setProperty("top", top);
+		rootPanel.getElement().getStyle().setProperty("width", width);
 		itemWidget.getElement().getStyle().setProperty("height", height);
 	}
 
@@ -63,17 +64,24 @@ public abstract class PlaceBookItemFrame extends Composite
 		});
 	}
 
+	public Panel getRootPanel()
+	{
+		return rootPanel;
+	}
+	
 	public void setPanel(final PlaceBookPanel newPanel)
 	{
 		if (panel == newPanel) { return; }
-		if (this.panel != null)
+		if (panel != null)
 		{
 			panel.remove(this);
+			panel.remove(rootPanel);
 		}
 		panel = newPanel;
 		if (panel != null)
 		{
 			panel.add(this);
+			panel.add(rootPanel);
 			getItem().setParameter("panel", panel.getIndex());
 		}
 	}

@@ -11,10 +11,10 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookPanel extends SimplePanel
+public class PlaceBookPanel extends FlowPanel
 {
 	protected static final double HEIGHT_PRECISION = 10000;	
 	
@@ -221,8 +221,8 @@ public class PlaceBookPanel extends SimplePanel
 			heightString = "";
 		}
 
-		item.resize(column * panelWidth + "%", top + "px", panelWidth + "%", heightString);
+		item.resize("0px", top + "px", "100%", heightString);
 		
-		return item.getOffsetHeight();
+		return item.getRootPanel().getOffsetHeight();
 	}
 }
