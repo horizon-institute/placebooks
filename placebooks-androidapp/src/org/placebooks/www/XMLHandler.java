@@ -30,12 +30,15 @@ public class XMLHandler extends DefaultHandler {
 	MapImageItem mimitem;
 	WebBundleItem wbitem;
 	
-	StringBuilder url,text,filename, panel, order, geometry;
+	StringBuilder url,text,filename, panel, order, geometry;//, timestamp;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
+
 
 	/*
 	 * fields
 	 */
-
+	 private boolean in_key = false;
+	// private boolean in_timestamp = false;
+	
 	 private boolean in_placebooksText = false;
 	 private boolean in_textGeometry = false;
 	 private boolean in_textUrl = false;
@@ -76,8 +79,6 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_webBundleOrder = false;
 	 
 	 
-	 private boolean in_key = false;
-
 	 public Book getParsedData() {
 		 //return the book;
 		 return myBook;
@@ -112,6 +113,7 @@ public class XMLHandler extends DefaultHandler {
 			 this.in_key = true;	
 			 String attr = atts.getValue("key");
              myBook.setKey(attr);
+                          
 		 }
 
 		 else if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {

@@ -19,11 +19,13 @@ import android.content.Context;
 
 
 
-
 public class MapImageViewer extends Activity {
 	
+	private MapCanvas mapCanvas;
 	private String mapImage;
 	private String packagePath;
+	
+	//private double[] c;
 	private double c_x1;	//lat1
 	private double c_y1;	//lon1
 	private double c_x2;	//lat2
@@ -34,41 +36,50 @@ public class MapImageViewer extends Activity {
 	private double c_y4;	//lon4
 	private double c_x5;	//lat5
 	private double c_y5;	//lon5
-	int imagePixels;	//number of pixels in the map image
-	int tl_x;		//top-left-x
-	int tl_y;		//top-left-y
-	int tr_x;		//top-right-x
-	int tr_y;		//top-right-y
-	int bl_x;		//bottom-left-x
-	int bl_y;		//bottom-left-y
-	int br_x;		//bottom-right-x
-	int br_y;		//bottom-right-y
 	
-	double lat_test = 52.631111;
-	double long_test = 1.281111;
+	private int imageHeight;
+	private int imageWidth;
+	private int imagePixels;	//number of pixels in the map image
+	private int tl_x;		//top-left-x
+	private int tl_y;		//top-left-y
+	private int tr_x;		//top-right-x
+	private int tr_y;		//top-right-y
+	private int bl_x;		//bottom-left-x
+	private int bl_y;		//bottom-left-y
+	private int br_x;		//bottom-right-x
+	private int br_y;		//bottom-right-y
+	
+	//private double lat_test = 52.631111;
+	//private double long_test = 1.281111;
+	private int lat_test = 300;	//mousehold heath in PIXELS
+	private int long_test = 500;
 
 	
 	@Override
 	 public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);	//icicle
-
 	        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
-	        setContentView(R.layout.mapimageview);
+	        
+	        //mapCanvas = new MapCanvas(this);
+	        //setContentView(mapCanvas);
+	        
+	        //setContentView(R.layout.mapimageview);
 	        
 	    	// get the extras (video filename) out of the new intent
 	        Intent intent = getIntent();
 	        if(intent != null) mapImage = intent.getStringExtra("mapImage");
 	        if(intent != null) packagePath = intent.getStringExtra("packagePath");
-	        if(intent != null) c_x1 = intent .getDoubleExtra("c_x1", c_x1);
-	        if(intent != null) c_y1 = intent .getDoubleExtra("c_y1", c_y1);
-	        if(intent != null) c_x2 = intent .getDoubleExtra("c_x2", c_x2);
-	        if(intent != null) c_y2 = intent .getDoubleExtra("c_y2", c_y2);
-	        if(intent != null) c_x3 = intent .getDoubleExtra("c_x3", c_x3);
-	        if(intent != null) c_y3 = intent .getDoubleExtra("c_y3", c_y3);
-	        if(intent != null) c_x4 = intent .getDoubleExtra("c_x4", c_x4);
-	        if(intent != null) c_y4 = intent .getDoubleExtra("c_y4", c_y4);
-	        if(intent != null) c_x5 = intent .getDoubleExtra("c_x5", c_x5);
-	        if(intent != null) c_y5 = intent .getDoubleExtra("c_y5", c_y5);
+	        if(intent != null) c_x1 = intent.getDoubleExtra("c_x1", c_x1);
+	        if(intent != null) c_y1 = intent.getDoubleExtra("c_y1", c_y1);
+	        if(intent != null) c_x2 = intent.getDoubleExtra("c_x2", c_x2);
+	        if(intent != null) c_y2 = intent.getDoubleExtra("c_y2", c_y2);
+	        if(intent != null) c_x3 = intent.getDoubleExtra("c_x3", c_x3);
+	        if(intent != null) c_y3 = intent.getDoubleExtra("c_y3", c_y3);
+	        if(intent != null) c_x4 = intent.getDoubleExtra("c_x4", c_x4);
+	        if(intent != null) c_y4 = intent.getDoubleExtra("c_y4", c_y4);
+	        if(intent != null) c_x5 = intent.getDoubleExtra("c_x5", c_x5);
+	        if(intent != null) c_y5 = intent.getDoubleExtra("c_y5", c_y5);
+	        
 	        
 	        System.out.println("x= " + c_x1 + " y= " + c_y1);
 	        System.out.println("x= " + c_x2 + " y= " + c_y2);
@@ -77,26 +88,12 @@ public class MapImageViewer extends Activity {
 	        System.out.println("x= " + c_x5 + " y= " + c_y5);
 
 	        
-	      //locate the file path where the images are stored on the SD CARD. 
-			String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+	        String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
 	        
-	    	WebView image = new WebView(this);
-
 	    	
 	    	BitmapFactory.Options options = new BitmapFactory.Options();
 		    options.inSampleSize = 1;
-		    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
-	
-	        //image.setImageBitmap(bm); 
-		    //image.setAdjustViewBounds(true);
-		    //image.setScaleType(ScaleType.FIT_CENTER);
-		    image.loadUrl("file://" + myMapImagePath);
-		    
-            image.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-            image.getSettings().setBuiltInZoomControls(true);
-		    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		    setContentView(image);
-		    
+		    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);	    
 		    
 		    
 		    // calculate the pixels in the image
@@ -154,11 +151,29 @@ public class MapImageViewer extends Activity {
 		    Location location = locationManager.getLastKnownLocation(provider);
 		    updateWithNewLocation(location);
 		    
-		    locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);
+		    locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);		    
 		    
+		    //draw the map on the canvas with the location
+	        mapCanvas = new MapCanvas(this, myMapImagePath, lat_test, long_test );	//context, directory (path+filename),  ,pixel(lat), pixel(long), 
+		    setContentView(mapCanvas);
+		    
+	    	//WebView image = new WebView(this);
+
+	        //image.setImageBitmap(bm); 
+		    //image.setAdjustViewBounds(true);
+		    //image.setScaleType(ScaleType.FIT_CENTER);
+		    /*image.loadUrl("file://" + myMapImagePath);
+		    
+            image.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+            image.getSettings().setBuiltInZoomControls(true);
+		    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+		    setContentView(image);
+		    */
 		    
 	        
-	}
+	} //end of onCreate
+	
+	
 	
 	
 		private void updateWithNewLocation(Location location){

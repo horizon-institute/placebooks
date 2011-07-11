@@ -70,7 +70,7 @@
    			 android:layout_width="fill_parent" 
    			android:layout_height="30px"
    			/>
-   			
+ <!--   			
    	 <TextView android:id="@+id/txtRegister"
   	  android:text="don't have an account? \ncreate an account.."
 	  android:layout_width="fill_parent" 
@@ -81,7 +81,7 @@
       android:onClick="onClick"
 	  android:clickable="true"
 	  />
-   			
+ --> 			
    			
    	</LinearLayout>		 
 	
