@@ -25,16 +25,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.util.Log;
 import android.view.View;
-
-
 import android.widget.TextView;
 import android.widget.ImageView;	//for images and for the map (i guess) since the map is now going to be just an image
 import android.widget.VideoView;
 import android.widget.MediaController;
 import android.widget.ImageButton;
 import android.widget.Button;
-
-
 import android.widget.ScrollView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -66,11 +62,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import 	android.net.Uri;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
-import android.os.Parcelable;
+
+//import android.os.Parcel;
+//import android.os.Parcelable;
+ 
 
 
 //Implement a Listener (added the interface to the base class)
-public class Reader extends Activity {//implements Parcelable {
+public class Reader extends Activity { // implements Parcelable {
 	
 	
 	//TextView to display error if placebook doesn't display properly	
@@ -179,12 +178,10 @@ public class Reader extends Activity {//implements Parcelable {
 	private double c_y4;
 	private double c_x5;
 	private double c_y5;
-	//private ArrayList<Double> mapCoordinatesLong = new ArrayList<Double>();
-	//private ArrayList<Double> mapCoordinatesLat = new ArrayList<Double>();
-	//private Double[] mapCoordinatesLat;
-	//private Double[] mapCoordinatesLong;
+	public Coordinate[] arrMapCoordinates;
 	
-
+	
+	
 	 		 @Override
 	     	 public void onCreate(Bundle savedInstanceState) {
 			        super.onCreate(savedInstanceState);	//icicle
@@ -818,6 +815,8 @@ public class Reader extends Activity {//implements Parcelable {
 			    //locate the file path where the images are stored on the SD CARD. 
 				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
 			    mapImgView = new ImageView(this);
+			    
+			    arrMapCoordinates = c;	//copy the array to arrMapCoordinates[]
 
 			    if(mapImage != null){
 					try{ 
@@ -837,6 +836,7 @@ public class Reader extends Activity {//implements Parcelable {
 							mapCoordinatesLat[i] = (c[i].y);
 						}*/
 						
+						//map images are polygons with 5 coordinates (of lat/long)
 						c_x1 = c[0].x;
 						c_y1 = c[0].y;
 						c_x2 = c[1].x;
@@ -875,6 +875,8 @@ public class Reader extends Activity {//implements Parcelable {
 				mapImgView.setOnClickListener(new OnClickListener() {
 		             @Override
 		             public void onClick(View v) {
+		            	 
+		            	Reader r = new Reader(); 
 		            	 
 		            	 Intent intent = new Intent();
 	     				 	overridePendingTransition(0, 0);

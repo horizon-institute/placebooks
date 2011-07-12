@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 //import java.text.ParseException;
 
 
-public class Item {
+public abstract class Item {
 	
 	//attributes
 	private String key;

@@ -30,7 +30,7 @@ public class XMLHandler extends DefaultHandler {
 	MapImageItem mimitem;
 	WebBundleItem wbitem;
 	
-	StringBuilder url,text,filename, panel, order, geometry;//, timestamp;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
+	StringBuilder url,text,filename, panel, order, geometry, name;//, timestamp;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
 
 
 	/*
@@ -77,6 +77,12 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_webBundleUrl = false;
 	 private boolean in_webBundlePanel = false;
 	 private boolean in_webBundleOrder = false;
+	 
+	 private boolean in_placebooksGPSTrace = false;
+	 private boolean in_gpsTraceName = false;
+	 private boolean in_gpsTraceGeometry = false;
+	 private boolean in_gpsTracePanel = false;
+	 private boolean in_gpsTraceOrder = false;
 	 
 	 
 	 public Book getParsedData() {
@@ -170,6 +176,15 @@ public class XMLHandler extends DefaultHandler {
              wbitem.setKey(attr);
 		 }
 		 
+		 else if (localName.equalsIgnoreCase("placebooks.model.GPSTraceItem")){
+			 this.in_placebooksGPSTrace = true;
+			 gpsitem = new GPSTraceItem();
+			 gpsitem.setType("GPSTrace");	//NEWLY ADDED
+			 
+			 String attr = atts.getValue("key");
+			 gpsitem.setKey(attr);
+		 }
+		 
 		 
 		 else if (localName.equalsIgnoreCase("text")) {
 			 if(this.in_placebooksText){
@@ -237,6 +252,10 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_webBundlePanel= true;
 				 panel = new StringBuilder();
 			 }
+			 else if(this.in_placebooksGPSTrace){
+				 this.in_gpsTracePanel = true;
+				 panel = new StringBuilder();
+			 }
 			 
 			 
 		 } //end of else if panel
@@ -265,6 +284,10 @@ public class XMLHandler extends DefaultHandler {
 			  
 			  else if (this.in_placebooksWebBundle){
 				  this.in_webBundleOrder = true;
+				  order = new StringBuilder();
+			  }
+			  else if (this.in_placebooksGPSTrace){
+				  this.in_gpsTraceOrder = true;
 				  order = new StringBuilder();
 			  }
 			  
@@ -299,6 +322,23 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 
 		 } //end of else if geometry
+		 
+	    else if(localName.equalsIgnoreCase("metadata")){
+	    //this is just for the metadata in gpstraceitem for now (the title)
+	    	if(this.in_placebooksGPSTrace){
+	    		this.in_gpsTraceName = true;
+	    		name = new StringBuilder();
+	    	}	    
+	    }
+		 /*
+	    else if(localName.equalsIgnoreCase("wpt")){
+	    	this.in_gpsTraceGeometry = true;
+	    	//geometry = new StringBuilder();
+	    	String geom;
+	    	geom = atts.getValue("lat") + ", " + atts.getValue("lon");
+	    }
+	    */
+
 		 
 			  	
 	 }
@@ -344,6 +384,11 @@ public class XMLHandler extends DefaultHandler {
 			 this.in_placebooksWebBundle = false;
 			 this.myBook.webBundleItems.add(wbitem);
 			 wbitem = null;
+		 }
+		 else if (localName.equalsIgnoreCase("placebooks.model.GPSTraceItem")){
+			 this.in_placebooksGPSTrace = false;
+			 this.myBook.gpsTraceItems.add(gpsitem);
+			 gpsitem = null;
 		 }
 
 		 
@@ -437,6 +482,12 @@ public class XMLHandler extends DefaultHandler {
 				 panel = null;
 			 }
 			 
+			 else if(this.in_placebooksGPSTrace){
+				 this.in_gpsTracePanel = false;
+				 gpsitem.setPanel(Integer.parseInt(panel.toString()));
+				 panel = null;
+			 }
+			 
 		 }
 		 
 		 else if (localName.equalsIgnoreCase("order")){
@@ -471,6 +522,12 @@ public class XMLHandler extends DefaultHandler {
 				 wbitem.setOrder(Integer.parseInt(order.toString()));
 				 order = null;
 			 }
+			 else if(this.in_placebooksGPSTrace){
+				 this.in_gpsTraceOrder = false;
+				 gpsitem.setOrder(Integer.parseInt(order.toString()));
+				 order = null;
+			 }
+			 
 		 }//end of else if order
 		 
 		 else if (localName.equalsIgnoreCase("geometry")){
@@ -554,6 +611,25 @@ public class XMLHandler extends DefaultHandler {
 			 }	 
 				 
 		}
+		 
+		  else if(localName.equalsIgnoreCase("metadata")){
+
+			   if(this.in_placebooksGPSTrace){
+			    		this.in_gpsTraceName = false;
+			    		gpsitem.setName(name.toString());
+			    		name = null;
+			    	}	    
+		 }
+		 /*
+	     else if(localName.equalsIgnoreCase("wpt")){
+			    	this.in_gpsTraceGeometry = false;
+			    	//geometry = new StringBuilder();
+		}
+		 */
+		 
+		 
+ 
+		 
  
 	 }
 	 
@@ -662,6 +738,18 @@ public class XMLHandler extends DefaultHandler {
 		 else if(this.in_webBundleOrder){
 			 order.append(ch, start, length).toString();
 		 }
+		 
+		 //gps trace item
+		 else if (this.in_gpsTraceName){
+			 name.append(ch, start, length).toString();
+		 }
+		 else if (this.in_gpsTracePanel){
+			 panel.append(ch, start, length).toString();
+		 }
+		 else if (this.in_gpsTraceOrder){
+			 order.append(ch, start, length).toString();
+		 }
+		 //get the geometries too
 		 
 		 
 	 } //end of void characters
