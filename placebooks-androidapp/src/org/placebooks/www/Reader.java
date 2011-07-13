@@ -116,40 +116,6 @@ public class Reader extends Activity { // implements Parcelable {
 	private ArrayList<Point> page5 = new ArrayList<Point>();
 	private ArrayList<Point> page6 = new ArrayList<Point>();
 	
-	private ArrayList<String> page1Type = new ArrayList<String>();
-	private ArrayList<String> page2Type = new ArrayList<String>();
-	private ArrayList<String> page3Type = new ArrayList<String>();
-	private ArrayList<String> page4Type = new ArrayList<String>();
-	private ArrayList<String> page5Type = new ArrayList<String>();
-	private ArrayList<String> page6Type = new ArrayList<String>();
-	
-	private ArrayList<String> page1Data = new ArrayList<String>();
-	private ArrayList<String> page2Data = new ArrayList<String>();
-	private ArrayList<String> page3Data = new ArrayList<String>();
-	private ArrayList<String> page4Data = new ArrayList<String>();
-	private ArrayList<String> page5Data = new ArrayList<String>();
-	private ArrayList<String> page6Data = new ArrayList<String>();
-	
-	private ArrayList<String> page1Url = new ArrayList<String>();
-	private ArrayList<String> page2Url = new ArrayList<String>();
-	private ArrayList<String> page3Url = new ArrayList<String>();
-	private ArrayList<String> page4Url = new ArrayList<String>();
-	private ArrayList<String> page5Url = new ArrayList<String>();
-	private ArrayList<String> page6Url = new ArrayList<String>();
-	
-	private ArrayList<String> page1Keys = new ArrayList<String>();
-	private ArrayList<String> page2Keys = new ArrayList<String>();
-	private ArrayList<String> page3Keys = new ArrayList<String>();
-	private ArrayList<String> page4Keys = new ArrayList<String>();
-	private ArrayList<String> page5Keys = new ArrayList<String>();
-	private ArrayList<String> page6Keys = new ArrayList<String>();
-	
-	private ArrayList<Coordinate[]> page1Geometries = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> page2Geometries = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> page3Geometries = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> page4Geometries = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> page5Geometries = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> page6Geometries = new ArrayList<Coordinate[]>();
 	
 	//Image Variables
 	private ImageView imgView;
@@ -247,201 +213,7 @@ public class Reader extends Activity { // implements Parcelable {
 			        
 			        try {
 				        getMyXML();		//call method to parse XML		
-				        
-					        /*for (int i = 0; i<coordinates.size(); i++){
-						         TextView tv = new TextView(this);
-								 //tv.setText(coordinates.get(i).toString());
-						         System.out.println(coordinates.get(i));
-								 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-								 ll.addView(tv);
-					        	
-					        }*/
-						  
-						  for (int i=0;i<page1Data.size();i++ ){
-							 
-							  
-							 if(page1Type.get(i).toString().equalsIgnoreCase("Text")){
-								 
-								 displayText(page1Data.get(i).toString(), ll);		//display text (stored in next element of array) on page 1 (ll)
-								
-							 }
-							 else if (page1Type.get(i).toString().equalsIgnoreCase("Image")){
-								 displayImage(page1Data.get(i).toString(), ll);
-								 
-							 }
-							 else if (page1Type.get(i).toString().equalsIgnoreCase("Video")){
-								 displayVideo(page1Data.get(i).toString(), ll);		
-							 }
-							 else if (page1Type.get(i).toString().equalsIgnoreCase("Audio")){
-								 displayAudio(page1Data.get(i).toString(), ll);	
-								 
-							 }
-							 else if(page1Type.get(i).toString().equalsIgnoreCase("MapImage")){
-								 displayMapImage(page1Data.get(i).toString(), page1Geometries.get(i), ll);
-								 //displayMapImage(page1Data.get(i).toString(), ll);
-								 
-								 //Coordinate[] arrCo = page1Geometries.get(i);
-							     //System.out.println("page1Coordinates x value= " + arrCo[0].x);
-							     //System.out.println("page1Coordinates y value= " + arrCo[0].y);
-
-
-								/* TextView tv = new TextView(this);
-								 tv.setText(page1Data.get(i).toString());
-								 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-								 ll.addView(tv);
-								 */
-							 }
-							 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-							      displayWebBundle(page1Data.get(i),page1Url.get(i), page1Keys.get(i), ll ); //filename, url, page
-							 }
-							 else if (page1Type.get(i).toString().equalsIgnoreCase("GPSTrace")){
-								Toast msg = Toast.makeText(Reader.this, "data= \n" + page1Data.get(i) + "\n key= " + page1Keys.get(i), Toast.LENGTH_LONG);
-								msg.show();
-							 }
-							 
-							 
-						  	 
-						//	  TextView tv = new TextView(this);
-						//	  tv.setText(page1Types.get(i).toString());
-						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-						//	  ll.addView(tv);
-							 
-							 
-						  } 
-						  		  
-						  for (int i=0;i<page2Data.size();i++ ){
-							  
-							  if(page2Type.get(i).toString().equalsIgnoreCase("TEXT")){
-									 displayText(page2Data.get(i).toString(), ll2);		//display text (stored in next element of array) on page 2 (ll2)
-								 }
-								else if (page2Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-									 displayImage(page2Data.get(i).toString(), ll2);
-									
-								 }
-								 else if (page2Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-									 displayVideo(page2Data.get(i).toString(), ll2);	
-									 TextView tv = new TextView(this);
-									 tv.setText("page 2 data = " + page2Data.get(i));
-								     tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-									 ll2.addView(tv);
-								 }
-								 else if (page2Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-									 displayAudio(page2Data.get(i).toString(), ll2);	
-								 }
-								 else if(page2Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 displayMapImage(page2Data.get(i).toString(), page2Geometries.get(i), ll2);
-									 //displayMapImage(page2Data.get(i).toString(), ll2);
-								 }
-								 else if (page2Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-								      displayWebBundle(page2Data.get(i),page2Url.get(i), page2Keys.get(i), ll2 ); //filename, url, page
-								 }
-							  
-							  
-						//	  TextView tv = new TextView(this);
-						//	  tv.setText(page2Types.get(i));
-						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-						//	  ll2.addView(tv);
-							  
-						  }
-				         for (int i=0;i<page3Data.size();i++ ){
-							 
-							  if(page3Type.get(i).toString().equalsIgnoreCase("TEXT")){
-									 displayText(page3Data.get(i).toString(), ll3);		//display text (stored in next element of array) on page 3 (ll3)
-								 }
-								 else if (page3Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-									 displayImage(page3Data.get(i).toString(), ll3);
-								 }
-								 else if (page3Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-									 displayVideo(page3Data.get(i).toString(), ll3);		
-								 }
-								 else if (page3Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-									 displayAudio(page3Data.get(i).toString(), ll3);	
-								 }
-								 else if(page3Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 displayMapImage(page3Data.get(i).toString(),page3Geometries.get(i), ll3);
-									//displayMapImage(page3Data.get(i).toString(), ll3);
-								 }
-								 else if (page3Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-								      displayWebBundle(page3Data.get(i),page3Url.get(i), page3Keys.get(i), ll3 ); //filename, url, page
-								 }
-							  
-							  
-						//	  TextView tv = new TextView(this);
-						//	  tv.setText(page3Items.get(i));
-						//	  tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-					   //     ll3.addView(tv);
-						  }
-				         for (int i=0;i<page4Data.size();i++ ){
-							 
-							  if(page4Type.get(i).toString().equalsIgnoreCase("TEXT")){
-									 displayText(page4Data.get(i).toString(), ll4);		//display text (stored in next element of array) on page 3 (ll3)
-								 }
-								 else if (page4Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-									 displayImage(page4Data.get(i).toString(), ll4);
-								 }
-								 else if (page4Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-									 displayVideo(page4Data.get(i).toString(), ll4);		
-								 }
-								 else if (page4Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-									 displayAudio(page4Data.get(i).toString(), ll4);	
-								 }
-								 else if(page4Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									displayMapImage(page4Data.get(i).toString(), page4Geometries.get(i), ll4);
-									//displayMapImage(page4Data.get(i).toString(), ll4);
-		
-								 }
-								 else if (page4Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-								      displayWebBundle(page4Data.get(i),page4Url.get(i), page4Keys.get(i), ll4 ); //filename, url, page
-								 }
-				         }
-				         
-				         for (int i=0;i<page5Data.size();i++ ){
-							 
-							  if(page5Type.get(i).toString().equalsIgnoreCase("TEXT")){
-									 displayText(page5Data.get(i).toString(), ll5);		//display text (stored in next element of array) on page 3 (ll3)
-								 }
-								 else if (page5Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-									 displayImage(page5Data.get(i).toString(), ll5);
-								 }
-								 else if (page5Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-									 displayVideo(page5Data.get(i).toString(), ll5);		
-								 }
-								 else if (page5Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-									 displayAudio(page5Data.get(i).toString(), ll5);	
-								 }
-								 else if(page5Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 displayMapImage(page5Data.get(i).toString(), page5Geometries.get(i), ll5);
-									 //displayMapImage(page5Data.get(i).toString(), ll5);
-		
-								 }
-								 else if (page5Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-								      displayWebBundle(page5Data.get(i),page5Url.get(i), page5Keys.get(i), ll5 ); //filename, url, page
-								 }
-				         }
-				         
-				         for (int i=0;i<page6Data.size();i++ ){
-							 
-							  if(page6Type.get(i).toString().equalsIgnoreCase("TEXT")){
-									 displayText(page6Data.get(i).toString(), ll6);		//display text (stored in next element of array) on page 3 (ll3)
-								 }
-								 else if (page6Type.get(i).toString().equalsIgnoreCase("IMAGE")){
-									 displayImage(page6Data.get(i).toString(), ll6);
-								 }
-								 else if (page6Type.get(i).toString().equalsIgnoreCase("VIDEO")){
-									 displayVideo(page6Data.get(i).toString(), ll6);		
-								 }
-								 else if (page6Type.get(i).toString().equalsIgnoreCase("AUDIO")){
-									 displayAudio(page6Data.get(i).toString(), ll6);	
-								 }
-								 else if(page6Type.get(i).toString().equalsIgnoreCase("MapImage")){
-									 displayMapImage(page6Data.get(i).toString(),page6Geometries.get(i), ll6);
-									 //displayMapImage(page6Data.get(i).toString(),ll6);
-								 }
-								 else if (page6Type.get(i).toString().equalsIgnoreCase("WebBundle")){
-								      displayWebBundle(page6Data.get(i),page6Url.get(i), page6Keys.get(i), ll6 ); //filename, url, page
-								 }
-				         }
-					 
+				        				 
 
 					} catch (Exception e) {
 						
@@ -1017,85 +789,199 @@ public class Reader extends Activity { // implements Parcelable {
 				
 			    //Pass the data into the data ArrayLists
 				for(Point item: page1) {
-		        	String data = item.getData();
-		        	String type = item.getType();
+					
+					String type = item.getType();
+					String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page1Data.add(data);
-		        	page1Type.add(type);
-		        	page1Url.add(url);
-		        	page1Keys.add(itemKey);
-		        	page1Geometries.add(geomCo);
+					
+					if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll );
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}
+					
+					
 
 				}
 				for(Point item: page2) {
-		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page2Data.add(data);
-		        	page2Type.add(type);
-		        	page2Url.add(url);
-		        	page2Keys.add(itemKey);
-		        	page2Geometries.add(geomCo);
+		        	
+		        	if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll2);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll2);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll2);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll2);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll2);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll2);
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}
+		        
 
 				}
 				for(Point item: page3) {
-		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-		        	//Geometry geom = item.getGeometryCoordinates();
+					//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page3Data.add(data);
-		        	page3Type.add(type);
-		        	page3Url.add(url);
-		        	page3Keys.add(itemKey);
-		        	page3Geometries.add(geomCo);
+
+		        	if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll3);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll3);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll3);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll3);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll3);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll3);
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}		        	
+		        	
 
 				}
 				for(Point item: page4) {
-		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page4Data.add(data);
-		        	page4Type.add(type);
-		        	page4Url.add(url);
-		        	page4Keys.add(itemKey);
-		        	page4Geometries.add(geomCo);
+
+		        	if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll4);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll4);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll4);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll4);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll4);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll4);
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}	
+		        	
 
 				}
 				for(Point item: page5) {
-		        	String data = item.getData();
 		        	String type = item.getType();
+		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page5Data.add(data);
-		        	page5Type.add(type);
-		        	page5Url.add(url);
-		        	page5Keys.add(itemKey);
-		        	page5Geometries.add(geomCo);
+	
+		        	if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll5);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll5);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll5);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll5);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll5);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll5);
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}	
 
 				}
 				for(Point item: page6) {
-		        	String data = item.getData();
 		        	String type = item.getType();
+					String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	page6Data.add(data);
-		        	page6Type.add(type);
-		        	page6Url.add(url);
-		        	page6Keys.add(itemKey);
-		        	page6Geometries.add(geomCo);
+
+		        	if (type.equalsIgnoreCase("Text")){
+						displayText(data, ll6);
+					}
+					else if (type.equalsIgnoreCase("Image")){
+						displayImage(data.toString(), ll6);
+					}
+					else if (type.equalsIgnoreCase("Video")){
+						displayVideo(data, ll6);
+					}
+					else if (type.equalsIgnoreCase("Audio")){
+						displayAudio(data, ll6);	
+					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						displayMapImage(data, geomCo, ll6);
+					}
+					else if (type.equalsIgnoreCase("WebBundle")){
+						 displayWebBundle(data,url, itemKey, ll6);
+					}
+					else if (type.equalsIgnoreCase("GPSTrace")){
+						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						msg.show();
+					}
 
 				}
 				
