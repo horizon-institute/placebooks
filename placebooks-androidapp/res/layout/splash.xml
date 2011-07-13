@@ -5,6 +5,18 @@
     android:fillViewport="true"
     android:fadingEdgeLength="6px"
     android:background="@android:color/white"
-    android:text="Loading"
+    android:text="Loading.."
    >
+   
+   
+   <TextView android:id="@+id/txtLoading"
+  	  android:text="Loading.."
+	  android:layout_width="fill_parent" 
+      android:layout_height="50px" 
+	  android:textColor="#C0C0C0"
+      android:textSize="12sp"
+	  />
+   
+   
+   
    </LinearLayout>

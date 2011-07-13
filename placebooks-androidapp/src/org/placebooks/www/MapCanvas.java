@@ -25,18 +25,22 @@ public class MapCanvas extends ImageView {
 
 	
 	// Constructor (context, map image path, pixel for lat, pixel  for long) - these pixels will keep changing in relation to the gps
-	public MapCanvas(Context context, String dir, int px_lat, int px_lon){
-		super(context);	
+//	public MapCanvas(Context context, /*String dir,*/ int px_lat, int px_lon){
+//		super(context);	
 		
-		mContext = context;
-		this.directory = dir;
-		this.px_lat = px_lat;
-		this.px_lon = px_lon;	
+//		mContext = context;
+		//this.directory = dir;
+//		this.px_lat = px_lat;
+//		this.px_lon = px_lon;	
 		//Toast msg = Toast.makeText(mContext, "values passed are: \n" + px_lat + "\n and: " + px_lon, Toast.LENGTH_LONG);
 		//msg.show();
 		
+//	}
+	public MapCanvas(Context c){
+		super(c);
+		mContext = c.getApplicationContext();
 	}
-	
+
 	
 	public void setLat(int lat){
 		px_lat = lat;
@@ -82,6 +86,8 @@ public class MapCanvas extends ImageView {
 		
 		
 	}
+	
+	
 
 }
 

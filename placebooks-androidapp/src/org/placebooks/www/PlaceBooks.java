@@ -37,6 +37,12 @@ import android.webkit.WebView;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import android.content.Context;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.widget.Toast;
+
 
 //Log In needs to be a one time thing - store the credential vars in the shared preferences..
 
@@ -49,13 +55,15 @@ public class PlaceBooks extends Activity{
 	private String password;  
     private Button btnLogin;
     private TextView tv;
+    private String strUserName;
+    private String strPassword;
 		
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash);
-        
+        //setContentView(R.layout.splash);
+
         
         /*check if an SDCard exists. If it does then check if the PlaceBooks dir exists.
          * If it does not exist then create it. If there is no SDCard then alert user they need one.
@@ -92,16 +100,19 @@ public class PlaceBooks extends Activity{
          *  Get the app's shared preferences - check if a user connected their account to the app
          */
         SharedPreferences login_app_preferences = this.getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
-        String strUserName = login_app_preferences.getString("username", "");
-        String strPassword = login_app_preferences.getString("password", "");
+        strUserName = login_app_preferences.getString("username", "");
+        strPassword = login_app_preferences.getString("password", "");
         if (strUserName != ""){
-        	Intent intent = new Intent();
-     		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
-     		intent.putExtra("username", strUserName);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
-     		//intent.putExtra("password", password);
-     		startActivity(intent);	
-     		endThisActivity();	//kill the placebooks activity
+
+		        	Intent intent = new Intent();
+		     		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
+		     		intent.putExtra("username", strUserName);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
+		     		//intent.putExtra("password", password);
+		     		startActivity(intent);	
+		     		endThisActivity();	//kill the placebooks activity
+
         }
+        
         else{	//first time using the app on the phone so let user log in..
         
 	        // load up the layout
@@ -134,7 +145,7 @@ public class PlaceBooks extends Activity{
 	        		         
 	        		        if(username.length() > 0 && password.length() >0){
 	        	        		
-	        		        	//progress dialog for user feedback
+	        		        	//progress dialog for logging in (gives user feedback)
 	        		        	myDialog = ProgressDialog.show( PlaceBooks.this, " " , " Logging in.. ", true);				   	 
 	        		        	
 	        		        	new Thread() {

@@ -294,6 +294,11 @@ public class Reader extends Activity { // implements Parcelable {
 							 else if (page1Type.get(i).toString().equalsIgnoreCase("WebBundle")){
 							      displayWebBundle(page1Data.get(i),page1Url.get(i), page1Keys.get(i), ll ); //filename, url, page
 							 }
+							 else if (page1Type.get(i).toString().equalsIgnoreCase("GPSTrace")){
+								Toast msg = Toast.makeText(Reader.this, "data= \n" + page1Data.get(i) + "\n key= " + page1Keys.get(i), Toast.LENGTH_LONG);
+								msg.show();
+							 }
+							 
 							 
 						  	 
 						//	  TextView tv = new TextView(this);

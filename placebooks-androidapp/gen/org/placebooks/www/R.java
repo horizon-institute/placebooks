@@ -85,6 +85,7 @@ public final class R {
         public static final int text4=0x7f060014;
         public static final int text5=0x7f060017;
         public static final int text6=0x7f06001a;
+        public static final int txtLoading=0x7f060020;
         public static final int txtShelf=0x7f06001f;
         public static final int txt_password=0x7f060003;
         public static final int txt_username=0x7f060002;

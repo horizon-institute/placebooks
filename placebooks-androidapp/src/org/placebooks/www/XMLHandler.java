@@ -323,7 +323,7 @@ public class XMLHandler extends DefaultHandler {
 			 
 		 } //end of else if geometry
 		 
-	    else if(localName.equalsIgnoreCase("metadata")){
+	    else if(localName.equalsIgnoreCase("title")){
 	    //this is just for the metadata in gpstraceitem for now (the title)
 	    	if(this.in_placebooksGPSTrace){
 	    		this.in_gpsTraceName = true;
@@ -612,8 +612,7 @@ public class XMLHandler extends DefaultHandler {
 				 
 		}
 		 
-		  else if(localName.equalsIgnoreCase("metadata")){
-
+		  else if(localName.equalsIgnoreCase("title")){
 			   if(this.in_placebooksGPSTrace){
 			    		this.in_gpsTraceName = false;
 			    		gpsitem.setName(name.toString());
