@@ -37,6 +37,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
 	public static final String IDEN_WGET = "webbundleitem.wget";
+	public static final String IDEN_WGET_TIMEOUT = "webbundleitem.wget_timeout";	
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
 	public static final String PROXY_ACTIVE = "proxy.active";
 	public static final String PROXY_HOST = "proxy.host";

@@ -389,15 +389,18 @@ public final class PlaceBooksAdminHelper
 	{
 
 		final StringBuffer wgetCmd = new StringBuffer();
-		wgetCmd.append(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_WGET, ""));
+		wgetCmd.append(PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_WGET, ""));
 
 		if (wgetCmd.equals("")) { return false; }
 
-		wgetCmd.append(" -U \"");
-		wgetCmd.append(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_USER_AGENT, ""));
-		wgetCmd.append("\" ");
+		// TODO: User Agent string does not work for some reason
+		/*wgetCmd.append(" -U \"");
+		wgetCmd.append(PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_USER_AGENT, ""));
+		wgetCmd.append("\" ");*/
 
 		final String webBundlePath = wbi.generateWebBundlePath();
 
@@ -407,41 +410,20 @@ public final class PlaceBooksAdminHelper
 
 		if (new File(webBundlePath).exists() || new File(webBundlePath).mkdirs())
 		{
-			try
-			{
-				final Process p = Runtime.getRuntime().exec(wgetCmd.toString());
-
-				final BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-				String line = "";
-				while ((line = stderr.readLine()) != null)
-				{
-					log.error("[wget output] " + line);
-				}
-
-				log.info("Waiting for process...");
-				try
-				{
-					p.waitFor();
-				}
-				catch (final InterruptedException e)
-				{
-					log.error(e.toString());
-				}
-				log.info("... Process ended");
-
-				final String urlStr = wbi.getSourceURL().toString();
-				final int protocol = urlStr.indexOf("://");
-				wbi.setWebBundlePath(webBundlePath);
-				wbi.setWebBundleName(urlStr.substring(protocol + 3, urlStr.length()));
-				log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
-
-			}
-			catch (final IOException e)
-			{
-				log.error(e.toString());
-				return false;
-			}
+			final int timeout = 
+				Integer.parseInt(PropertiesSingleton
+									.get(PlaceBooksAdminHelper.class.getClassLoader())
+									.getProperty(
+										PropertiesSingleton.IDEN_WGET_TIMEOUT, 
+										"10000")
+				);
+			final ExecTimer t = new ExecTimer(timeout, wgetCmd.toString());
+			t.start();
+			final String urlStr = wbi.getSourceURL().toString();
+			final int protocol = urlStr.indexOf("://");
+			wbi.setWebBundlePath(webBundlePath);
+			wbi.setWebBundleName(urlStr.substring(protocol + 3, urlStr.length()));
+			log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
 
 			return true;
 		}
