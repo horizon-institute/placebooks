@@ -69,30 +69,36 @@ public final class PlaceBooksAdminHelper
 	{
 		
 		// Mapping
-		try
+		// TODO: PlaceBook can only have 1 MapImageItem for the moment
+		if (!p.hasPlaceBookItemClass(MapImageItem.class))
 		{
-			final File mapGeom = TileHelper.getMap(p);
-			em.getTransaction().begin();
-			MapImageItem mii = new MapImageItem(null, null, null, null);
-			p.addItem(mii);
-			mii.setPlaceBook(p);
-			mii.setOwner(p.getOwner());
-			mii.setGeometry(p.getGeometry());
-			mii.setPath(mapGeom.getPath());
-			em.getTransaction().commit();
-		}		
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			if (em.getTransaction().isActive())
+			try
 			{
-				em.getTransaction().rollback();
-				log.error("Rolling current persist transaction back");
+				final File mapGeom = TileHelper.getMap(p);
+				em.getTransaction().begin();
+				MapImageItem mii = new MapImageItem(null, null, null, null);
+				p.addItem(mii);
+				mii.setPlaceBook(p);
+				mii.setOwner(p.getOwner());
+				mii.setGeometry(p.getGeometry());
+				mii.setPath(mapGeom.getPath());
+				em.getTransaction().commit();
+			}		
+			catch (final Throwable e)
+			{
+				log.error(e.getMessage(), e);
+			}
+			finally
+			{
+				if (em.getTransaction().isActive())
+				{
+					em.getTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
 			}
 		}
+		else
+			log.info("PlaceBook already has MapImageItem");
 
 		final String out = placeBookToXML(p);
 

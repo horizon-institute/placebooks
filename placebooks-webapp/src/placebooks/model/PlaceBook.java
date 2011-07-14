@@ -217,6 +217,18 @@ public class PlaceBook
 		return Collections.unmodifiableList(items);
 	}
 
+	// Bit of a dirty hack
+	public boolean hasPlaceBookItemClass(final Class clazz)
+	{
+		for (PlaceBookItem pbi : getItems())
+		{
+			if (pbi.getClass().getName().equals(clazz.getName()))
+				return true;
+		}
+
+		return false;
+	}
+
 	public String getKey()
 	{
 		return id;

@@ -5,6 +5,7 @@ import placebooks.model.jaxb.GPX10.Gpx;
 import placebooks.model.jaxb.GPX11.GpxType;
 import placebooks.model.jaxb.GPX11.TrksegType;
 import placebooks.model.jaxb.GPX11.WptType;
+import placebooks.model.jaxb.GPX11.RteType;
 import placebooks.model.jaxb.GPX11.TrkType;
 
 import placebooks.controller.EMFSingleton;
@@ -161,33 +162,36 @@ public class GPSTraceItem extends PlaceBookItem
 												  new StringReader(this.trace))
 				);
 			gpx = root.getValue();
-			List<TrkType> tracks = gpx.getTrk();
-			for (TrkType track : tracks) 
+			for (TrkType track : gpx.getTrk()) 
 			{
 				for (TrksegType seg : track.getTrkseg())
 				{
 					for (WptType wpt : seg.getTrkpt())
 					{
-						try
-						{
-							Geometry g = 
-								wktReader.read(
-									"POINT (" + wpt.getLat().floatValue() 
-									+ " "
-									+ wpt.getLon().floatValue() + ")");
-							if (g != null)
-							{
-								if (bounds == null)
-									bounds = g;
-								else
-									bounds = g.union(bounds);
-							}
-						}
-						catch (final Throwable e)
-						{
-							log.error(e.toString());
-						}
+						minLat = Math.min(minLat, wpt.getLat().floatValue());
+						maxLat = Math.max(maxLat, wpt.getLat().floatValue());
+						minLon = Math.min(minLon, wpt.getLon().floatValue());
+						maxLon = Math.max(maxLon, wpt.getLon().floatValue());
 					}
+				}
+			}
+			// Wpt
+			for (WptType wpt : gpx.getWpt())
+			{
+				minLat = Math.min(minLat, wpt.getLat().floatValue());
+				maxLat = Math.max(maxLat, wpt.getLat().floatValue());
+				minLon = Math.min(minLon, wpt.getLon().floatValue());
+				maxLon = Math.max(maxLon, wpt.getLon().floatValue());
+			}
+			// Rte
+			for (RteType rte : gpx.getRte())
+			{
+				for (WptType wpt : rte.getRtept())
+				{
+					minLat = Math.min(minLat, wpt.getLat().floatValue());
+					maxLat = Math.max(maxLat, wpt.getLat().floatValue());
+					minLon = Math.min(minLon, wpt.getLon().floatValue());
+					maxLon = Math.max(maxLon, wpt.getLon().floatValue());
 				}
 			}
 
