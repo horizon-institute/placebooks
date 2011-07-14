@@ -89,7 +89,7 @@
 	<c:forEach var="item" items="${pb.items}">
 		<div style='border:1px dotted;padding:5px'>
 		${item.class}: ${item.key}, owner=${item.owner.email}, 
-		timestamp=${item.timestamp} 
+		timestamp=${item.timestamp}, geometry=${item.geometry}
 		[<a href='../delete_placebookitem/${item.key}'>delete</a>]
 		
 		<form action='../add_placebookitem_mapping/metadata' method='POST'>

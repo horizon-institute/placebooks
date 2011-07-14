@@ -490,14 +490,19 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	public ModelAndView makePackage(final HttpServletRequest req, 
+									final HttpServletResponse res,
+									@PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
 		final PlaceBook p = pm.find(PlaceBook.class, key);
-		final File zipFile = PlaceBooksAdminHelper.makePackage(p);
-		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
+		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
+		if (zipFile == null) 
+		{
+			return new ModelAndView("message", "text", 
+									"Making and compressing package");
+		}
 
 		try
 		{
@@ -516,7 +521,8 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/zip");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" + p.getKey() + ".zip\"");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" 
+												 + p.getKey() + ".zip\"");
 			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
@@ -636,12 +642,15 @@ public class PlaceBooksAdminController
 	{
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
-
+		
+		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
-		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(terms))
+		for (final Map.Entry<PlaceBook, Integer> entry : 
+			 PlaceBooksAdminHelper.search(em, terms))
 		{
 			out.append("key=" + entry.getKey().getKey() + ", score=" + entry.getValue() + "<br>");
 		}
+		em.close();
 
 		timeEnd = System.nanoTime();
 		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
@@ -955,7 +964,7 @@ public class PlaceBooksAdminController
 
 				if (type.equals("gpstrace"))
 				{
-					item = new GPSTraceItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
+					item = new GPSTraceItem(itemData.getOwner(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 					((GPSTraceItem) item).readTrace(fileData.getInputStream());
 				}

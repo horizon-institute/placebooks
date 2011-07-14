@@ -13,7 +13,7 @@
 <hr>
 <form action='admin/add_placebook' method='POST'>
 New empty PlaceBook
-	<input type='hidden' value='POINT(52.5189367988799 -4.04983520507812)' name='geometry'>
+	<input type='hidden' value='' name='geometry'>
 	<input type='hidden' value='stuart@tropic.org.uk' name='owner'>
 	<input type="submit" value="New">
 </form>

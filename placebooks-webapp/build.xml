@@ -11,10 +11,15 @@
 	<property name="warlib.dir" value="${war.dir}/WEB-INF/lib" />
 	<property name="lib.dir" value="lib" />
 	<property name="src.dir" value="src" />
+	<property name="xsd.dir" value="xsd" />
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
+	<property name="GPX10.package" 
+			  value="${basepackage.name}.model.jaxb.GPX10" />
+	<property name="GPX11.package" 
+			  value="${basepackage.name}.model.jaxb.GPX11" />
 	<property name="placebooks.props" 
 			  value="${src.dir}/placebooks.properties" />
 	<property name="log4j.props" value="${src.dir}/log4j.properties" />
@@ -68,6 +73,25 @@
 		</copy>
 	</target>
 
+	<target name="jaxb" description="Generate Java bindings from GPX XSD">
+		<!-- GPS 1.0 spec -->
+		<java classname="com.sun.tools.internal.xjc.XJCFacade">
+            <arg value="-p" />
+            <arg value="${GPX10.package}" />
+            <arg value="${xsd.dir}/gpx-1.0.xsd" />
+			<arg value="-d" />
+			<arg value="${src.dir}" />
+	    </java>
+		<!-- GPS 1.1 spec -->
+		<java classname="com.sun.tools.internal.xjc.XJCFacade">
+            <arg value="-p" />
+            <arg value="${GPX11.package}" />
+            <arg value="${xsd.dir}/gpx-1.1.xsd" />
+			<arg value="-d" />
+			<arg value="${src.dir}" />
+	    </java>
+	</target>
+
 	<target name="compile" depends="makedirs"
 			description="Compile classes into web archive dir">
 		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
@@ -78,7 +102,8 @@
 		</javac>
 	</target>
 
-	<target name="compile-gwt" depends="compile" description="Compile GWT web interface">
+	<target name="compile-gwt" depends="compile" 
+			description="Compile GWT web interface">
 		<java classpathref="classpath.gwt" failonerror="true" fork="true"
 	        classname="com.google.gwt.dev.Compiler"> 
 	        <arg line="-war ${war.dir}"/> 
