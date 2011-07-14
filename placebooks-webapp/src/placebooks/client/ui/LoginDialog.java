@@ -2,6 +2,8 @@ package placebooks.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -61,6 +63,20 @@ public class LoginDialog extends Composite
 		return username.getText();
 	}
 
+	public void focus()
+	{
+		username.setFocus(true);
+	}
+	
+	@UiHandler("password")
+	void submitOnReturn(final KeyPressEvent event)
+	{
+		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
+		{
+			submit.click();
+		}
+	}
+	
 	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyUpEvent event)
 	{

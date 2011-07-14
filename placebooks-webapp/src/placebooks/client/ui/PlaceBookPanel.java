@@ -12,6 +12,7 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPanel extends FlowPanel
@@ -36,6 +37,8 @@ public class PlaceBookPanel extends FlowPanel
 	private float panelWidth = 33;
 
 	private final int row;
+	
+	private final FlowPanel innerPanel = new FlowPanel();
 
 	public PlaceBookPanel(final int index, final int columns, final boolean visible)
 	{
@@ -63,8 +66,17 @@ public class PlaceBookPanel extends FlowPanel
 			setStyleName(Resources.INSTANCE.style().panelInvisible());
 		}
 		setWidth(100f / columns);
+		
+		innerPanel.setStyleName(Resources.INSTANCE.style().innerPanel());
+		
+		add(innerPanel);
 	}
 
+	public Panel getInnerPanel()
+	{
+		return innerPanel;
+	}
+	
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -90,7 +102,7 @@ public class PlaceBookPanel extends FlowPanel
 		resize();
 
 		int order = 0;
-		int top = getElement().getOffsetTop();
+		int top = 0;
 		for (final PlaceBookItemFrame item : items)
 		{
 			top += layoutItem(item, top);
@@ -140,7 +152,7 @@ public class PlaceBookPanel extends FlowPanel
 		newItem.getItem().setParameter("panel", panelIndex);
 
 		int order = 0;
-		int top = getElement().getOffsetTop();
+		int top = 0;
 		boolean inserted = false;
 		for (final PlaceBookItemFrame item : items)
 		{
@@ -173,7 +185,7 @@ public class PlaceBookPanel extends FlowPanel
 
 		resize();
 
-		int top = getElement().getOffsetTop();
+		int top = 0;
 		Widget insertTemp = insert;
 		for (final PlaceBookItemFrame item : items)
 		{

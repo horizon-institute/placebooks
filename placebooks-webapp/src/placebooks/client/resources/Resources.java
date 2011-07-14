@@ -23,6 +23,8 @@ public interface Resources extends ClientBundle
 	
 	ImageResource arrow_left();
 	
+	ImageResource error();
+	
 	ImageResource arrow_right();	
 	
 	ImageResource add();

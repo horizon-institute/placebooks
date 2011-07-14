@@ -17,6 +17,8 @@ public class Palette extends FlowPanel
 	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 	private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
+	//private PaletteFolder currentFolder = null;
+	
 	public Palette()
 	{
 	}
@@ -51,17 +53,14 @@ public class Palette extends FlowPanel
 			folder.add(new PalettePlaceBookItem(items.get(index), dragHandler));
 		}
 
+		
+		
 		setPaletteFolder(root);
 	}
 
 	public void setPaletteFolder(final PaletteFolder folder)
 	{
 		clear();
-		if (folder.getParent() != null)
-		{
-			// TODO Show back button
-		}
-
 		for (final PaletteItem paletteItem : folder)
 		{
 			add(paletteItem);

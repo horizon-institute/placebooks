@@ -75,13 +75,13 @@ public abstract class PlaceBookItemFrame
 		if (panel != null)
 		{
 			panel.remove(this);
-			panel.remove(rootPanel);
+			panel.getInnerPanel().remove(rootPanel);
 		}
 		panel = newPanel;
 		if (panel != null)
 		{
 			panel.add(this);
-			panel.add(rootPanel);
+			panel.getInnerPanel().add(rootPanel);
 			getItem().setParameter("panel", panel.getIndex());
 		}
 	}

@@ -42,8 +42,6 @@ public class PlaceBookToolbarItem extends FlowPanel
 
 		add(image);
 		add(label);
-		image.getElement().getStyle().setMarginRight(5, Unit.PX);
-		image.getElement().getStyle().setMarginBottom(-2, Unit.PX);
 		setEnabled(true);
 	}
 
@@ -76,6 +74,8 @@ public class PlaceBookToolbarItem extends FlowPanel
 		{
 			image.setVisible(true);
 			image.setResource(imageResource);
+			image.getElement().getStyle().setMarginRight(5, Unit.PX);
+			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);			
 		}
 		else
 		{

@@ -73,6 +73,7 @@ public class PlaceBookEditor extends Composite
 				case not_saved:
 					saveStatusPanel.setText("Save");
 					saveStatusPanel.hideImage();					
+					//saveStatusPanel.setResource(Resources.INSTANCE.save());					
 					saveStatusPanel.setEnabled(true);
 					break;
 					
@@ -84,7 +85,7 @@ public class PlaceBookEditor extends Composite
 
 				case save_error:
 					saveStatusPanel.setText("Error Saving");			
-					saveStatusPanel.setResource(Resources.INSTANCE.save());
+					saveStatusPanel.setResource(Resources.INSTANCE.error());
 					saveStatusPanel.setEnabled(true);
 					break;						
 					
@@ -110,8 +111,15 @@ public class PlaceBookEditor extends Composite
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					updatePlaceBook(PlaceBook.parse(response.getText()));
-					setState(SaveState.saved);
+					try
+					{
+						updatePlaceBook(PlaceBook.parse(response.getText()));
+						setState(SaveState.saved);						
+					}
+					catch(Exception e)
+					{
+						failure(request, response);
+					}
 				}
 			});
 		}
