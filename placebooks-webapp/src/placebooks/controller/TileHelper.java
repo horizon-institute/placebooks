@@ -97,9 +97,11 @@ public final class TileHelper
 		return getMap(pi.getGeometry());
 	}
 
+	// Geometry *must* be a boundary, i.e., four points
 	public static final File getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException
 	{
+		log.info("getMap() geometry = " + g);
 		int layer = 5;
 		int incX = 1000;
 		int incY = 1000;
@@ -150,10 +152,10 @@ public final class TileHelper
 
 		// 0 = TL, 1 = BR
 		Coordinate[] bbox_ = new Coordinate[2];
-		bbox_[0] = new Coordinate(Double.MAX_VALUE, Double.MAX_VALUE);
-		bbox_[1] = new Coordinate(Double.MIN_VALUE, Double.MIN_VALUE);
+		bbox_[0] = new Coordinate(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+		bbox_[1] = new Coordinate(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 
-		final Coordinate[] coords = g.getBoundary().getCoordinates();
+		final Coordinate[] coords = g.getCoordinates();
 		for (int i = 0; i < coords.length; ++i)
 		{
 			bbox_[0].x = Math.min(coords[i].x, bbox_[0].x);

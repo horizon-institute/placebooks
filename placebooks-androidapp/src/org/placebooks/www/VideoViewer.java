@@ -18,7 +18,7 @@ public class VideoViewer extends Activity {
 	
  private String videoFile;
  private String packagePath;
- private VideoView video;
+ private VideoView videoView;
  private MediaController ctlr;
 	
 	
@@ -43,18 +43,18 @@ public class VideoViewer extends Activity {
 	        try{
 				if (clip.exists()) {
 	
-						video = new VideoView(VideoViewer.this);
-						video.setVideoPath(clip.getAbsolutePath());
+						videoView = new VideoView(VideoViewer.this);
+						videoView.setVideoPath(clip.getAbsolutePath());
 	
-						video.setLayoutParams(new Gallery.LayoutParams(
+						videoView.setLayoutParams(new Gallery.LayoutParams(
 								LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	
 						ctlr=new MediaController(VideoViewer.this);
-						ctlr.setMediaPlayer(video);
-						video.setMediaController(ctlr);
-						video.requestFocus();
-						video.start();
-	                    setContentView(video);
+						ctlr.setMediaPlayer(videoView);
+						videoView.setMediaController(ctlr);
+						videoView.requestFocus();
+						videoView.start();
+	                    setContentView(videoView);
 		        
 		        
 				}
@@ -75,5 +75,18 @@ public class VideoViewer extends Activity {
 					setContentView(txtView);
 			}
 	 }
+	 
+	 @Override
+     public void onDestroy() {
+       super.onDestroy();
+	      videoView = null;
+	      packagePath = null;
+	      videoFile = null;
+	      ctlr = null;
+
+         System.gc();	//call the garbage collector
+         finish();	//close the activity
+       
+	   }
 	 
 }

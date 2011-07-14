@@ -87,10 +87,10 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 	@RequestMapping(value = "/admin/add_item/map", 
-			method = RequestMethod.POST)
-			@SuppressWarnings("unchecked")	
-			public ModelAndView addMapImageItem(final HttpServletRequest req, 
-					final HttpServletResponse res)
+					method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")	
+	public ModelAndView addMapImageItem(final HttpServletRequest req, 
+										final HttpServletResponse res)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -104,7 +104,7 @@ public class PlaceBooksAdminControllerDebug
 			pm.getTransaction().begin();
 
 			for (final Enumeration<String> params = req.getParameterNames(); 
-			params.hasMoreElements();)
+				 params.hasMoreElements();)
 			{
 				final String param = params.nextElement();
 				final String value = req.getParameterValues(param)[0];
@@ -628,18 +628,9 @@ public class PlaceBooksAdminControllerDebug
 
 					if (prefix.contentEquals("gpstrace"))
 					{
-						final InputStreamReader reader = 
-							new InputStreamReader(item.getInputStream());
-						final StringWriter writer = new StringWriter();
-						int data;
-						while((data = reader.read()) != -1)
-						{
-							writer.write(data);
-						}
-						reader.close();
-						writer.close();
-						pbi = new GPSTraceItem(null, null, null, 
-								writer.toString());
+						pbi = new GPSTraceItem(null, null, null);
+						((GPSTraceItem)pbi).readTrace(item.getInputStream());
+						pbi.setPlaceBook(p);
 						p.addItem(pbi);
 
 						continue;
@@ -683,6 +674,7 @@ public class PlaceBooksAdminControllerDebug
 
 						pbi = new VideoItem(null, null, null, null);
 						p.addItem(pbi);
+						pbi.setPlaceBook(p);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
 						((VideoItem) pbi).setPath(path + "/" + pbi.getKey() 
@@ -705,6 +697,7 @@ public class PlaceBooksAdminControllerDebug
 
 						pbi = new AudioItem(null, null, null, null);
 						p.addItem(pbi);
+						pbi.setPlaceBook(p);
 						pm.getTransaction().commit();
 						pm.getTransaction().begin();
 						((AudioItem) pbi).setPath(path + "/" + pbi.getKey() 
@@ -758,7 +751,8 @@ public class PlaceBooksAdminControllerDebug
 
 			pbi.setOwner(itemData.getOwner());
 			pbi.setSourceURL(itemData.getSourceURL());
-			pbi.setGeometry(itemData.getGeometry());
+			if (itemData.getGeometry() != null)
+				pbi.setGeometry(itemData.getGeometry());
 
 			pm.getTransaction().commit();
 		}
@@ -846,7 +840,7 @@ public class PlaceBooksAdminControllerDebug
 			for (Node track : tracks.getTracks())
 			{
 
-				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, null, "");
+				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, "");
 				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId, tripName);
 				try
 				{

@@ -46,10 +46,12 @@ import placebooks.model.PlaceBookItemSearchIndex;
 import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
+import placebooks.model.MapImageItem;
 
 public final class PlaceBooksAdminHelper
 {
-	private static final Logger log = Logger.getLogger(PlaceBooksAdminHelper.class.getName());
+	private static final Logger log = 
+		Logger.getLogger(PlaceBooksAdminHelper.class.getName());
 
 	public static final String[] getExtension(final String field)
 	{
@@ -63,8 +65,35 @@ public final class PlaceBooksAdminHelper
 		return out;
 	}
 
-	public static final File makePackage(final PlaceBook p)
+	public static final File makePackage(final EntityManager em, final PlaceBook p)
 	{
+		
+		// Mapping
+		try
+		{
+			final File mapGeom = TileHelper.getMap(p);
+			em.getTransaction().begin();
+			MapImageItem mii = new MapImageItem(null, null, null, null);
+			p.addItem(mii);
+			mii.setPlaceBook(p);
+			mii.setOwner(p.getOwner());
+			mii.setGeometry(p.getGeometry());
+			mii.setPath(mapGeom.getPath());
+			em.getTransaction().commit();
+		}		
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			if (em.getTransaction().isActive())
+			{
+				em.getTransaction().rollback();
+				log.error("Rolling current persist transaction back");
+			}
+		}
+
 		final String out = placeBookToXML(p);
 
 		if (out == null) { return null; }
@@ -76,8 +105,9 @@ public final class PlaceBooksAdminHelper
 			{
 				final FileWriter fw = new FileWriter(new File(pkgPath
 						+ "/"
-						+ PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
-								.getProperty(PropertiesSingleton.IDEN_CONFIG, "")));
+						+ PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_CONFIG, "")));
 				fw.write(out);
 				fw.close();
 			}
@@ -88,8 +118,9 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
-		final String pkgZPath = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+		final String pkgZPath = PropertiesSingleton
+									.get(PlaceBooksAdminHelper.class.getClassLoader())
+									.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
 
 		final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
 
@@ -99,14 +130,18 @@ public final class PlaceBooksAdminHelper
 			if (new File(pkgZPath).exists() || new File(pkgZPath).mkdirs())
 			{
 
-				final ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
+				final ZipOutputStream zos = 
+					new ZipOutputStream(new BufferedOutputStream(
+						new FileOutputStream(zipFile))
+					);
 				zos.setMethod(ZipOutputStream.DEFLATED);
 
 				final ArrayList<File> files = new ArrayList<File>();
 				getFileListRecursive(new File(pkgPath), files);
 
 				final File currentDir = new File(".");
-				log.info("Current working directory is " + currentDir.getAbsolutePath());
+				log.info("Current working directory is " 
+						 + currentDir.getAbsolutePath());
 
 				final byte data[] = new byte[2048];
 				BufferedInputStream bis = null;
@@ -143,7 +178,8 @@ public final class PlaceBooksAdminHelper
 	}
 
 	// Takes a PlaceBook, copies it, and returns the (published) copy
-	public static final PlaceBook publishPlaceBook(final EntityManager em, final PlaceBook p)
+	public static final PlaceBook publishPlaceBook(final EntityManager em, 
+												   final PlaceBook p)
 	{
 		PlaceBook p_ = null;
 		try
@@ -160,13 +196,15 @@ public final class PlaceBooksAdminHelper
 				if (item instanceof MediaItem)
 				{
 					final String data = ((MediaItem) item).getPath();
-					((MediaItem) item).writeDataToDisk(data, new FileInputStream(new File(data)));
+					((MediaItem) item).writeDataToDisk(data, 
+											new FileInputStream(new File(data)));
 				}
 				else if (item instanceof WebBundleItem)
 				{
 					final WebBundleItem wbi = (WebBundleItem) item;
 					final String data = wbi.generateWebBundlePath();
-					FileUtils.copyDirectory(new File(wbi.getWebBundlePath()), new File(data));
+					FileUtils.copyDirectory(new File(wbi.getWebBundlePath()), 
+											new File(data));
 					wbi.setWebBundlePath(data);
 				}
 			}
@@ -405,15 +443,15 @@ public final class PlaceBooksAdminHelper
 		return false;
 	}
 
-	public static final Set<Map.Entry<PlaceBook, Integer>> search(final String terms)
+	public static final Set<Map.Entry<PlaceBook, Integer>> 
+		search(final EntityManager em, final String terms)
 	{
 
 		final Set<String> search = SearchHelper.getIndex(terms, 5);
 
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		final TypedQuery<PlaceBookSearchIndex> query1 = pm.createQuery(	"SELECT p FROM PlaceBookSearchIndex p",
-																		PlaceBookSearchIndex.class);
+		final TypedQuery<PlaceBookSearchIndex> query1 = 
+			em.createQuery("SELECT p FROM PlaceBookSearchIndex p",
+						   PlaceBookSearchIndex.class);
 		final List<PlaceBookSearchIndex> pbIndexes = query1.getResultList();
 
 		// Search rationale: ratings are accumulated per PlaceBook for that
@@ -430,11 +468,13 @@ public final class PlaceBooksAdminHelper
 			{
 				rating = new Integer(0);
 			}
-			hits.put(index.getPlaceBook(), new Integer(keywords.size() + rating.intValue()));
+			hits.put(index.getPlaceBook(), new Integer(keywords.size() 
+					 + rating.intValue()));
 		}
 
-		final TypedQuery<PlaceBookItemSearchIndex> query2 = pm.createQuery(	"SELECT p FROM PlaceBookItemSearchIndex p",
-																			PlaceBookItemSearchIndex.class);
+		final TypedQuery<PlaceBookItemSearchIndex> query2 = 
+			em.createQuery("SELECT p FROM PlaceBookItemSearchIndex p",
+						   PlaceBookItemSearchIndex.class);
 		final List<PlaceBookItemSearchIndex> pbiIndexes = query2.getResultList();
 
 		for (final PlaceBookItemSearchIndex index : pbiIndexes)
@@ -450,8 +490,6 @@ public final class PlaceBooksAdminHelper
 			}
 			hits.put(p, new Integer(keywords.size() + rating.intValue()));
 		}
-
-		pm.close();
 
 		return hits.entrySet();
 	}

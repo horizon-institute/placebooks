@@ -1,33 +1,29 @@
 package org.placebooks.www;
 
+import android.app.Application;
 import java.util.*;
-//import java.util.Iterator;
-//import java.util.ListIterator;
 import java.util.Collections;
-
 import android.util.Log;
 import android.widget.TextView;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Coordinate;
 
-
 //A book is an array list of items (items can be images, video, audio, text or gps trails)
-public class Book {
+public class Book extends Application{
 	
-	private String key;
-	private String owner;	
+	private String key;		//unique book key
+	private String owner;	//name of the book owner or the creator
 	private String timestamp;	//need a timestamp on the book so that we can compare timestamps for any book updates
 
-	
+	/*
+	 * ArrayLists for each book PAGE
+	 */
 	private ArrayList<Point> page1 = new ArrayList<Point>();
 	private ArrayList<Point> page2 = new ArrayList<Point>();
 	private ArrayList<Point> page3 = new ArrayList<Point>();
 	private ArrayList<Point> page4 = new ArrayList<Point>();
 	private ArrayList<Point> page5 = new ArrayList<Point>();
 	private ArrayList<Point> page6 = new ArrayList<Point>();
-
-	private ArrayList<Long> coordinates = new ArrayList<Long>();
 
 
 	/*
@@ -40,12 +36,13 @@ public class Book {
 	ArrayList<AudioItem> audioItems = new ArrayList<AudioItem>();
 	ArrayList<MapImageItem> mapImageItems = new ArrayList<MapImageItem>();
 	ArrayList<WebBundleItem> webBundleItems = new ArrayList<WebBundleItem>();
+	ArrayList<GPSTraceItem> gpsTraceItems = new ArrayList<GPSTraceItem>();
 	
-
+/*
 	public ArrayList<WebBundleItem> getWebBundle(){
 		return this.webBundleItems;
 	}
-	
+*/	
 	/*
 	 * Getter methods
 	 */
@@ -106,9 +103,7 @@ public class Book {
 	public String toString(){
 		
 	for(TextItem item: textItems) {
-
 		try{
-			
 			Geometry geom;
 			Coordinate[] arrCoordinates;
 			Point pItems;
@@ -170,7 +165,6 @@ public class Book {
 	}
 	
 	for(ImageItem item: imageItems) {
-		
 		try{
 			Geometry geom;
 			Coordinate[] arrCoordinates;
@@ -232,7 +226,6 @@ public class Book {
 	}
 	
 	for(VideoItem item: videoItems) {
-		
 		try{
 			Geometry geom;
 			Coordinate[] arrCoordinates;
@@ -256,7 +249,6 @@ public class Book {
 				//Point pItems = new Point(filename, panel, order, type, videoKey, arrCoordinates);
 		  	    pItems = new Point(filename, panel, order, type, videoKey);//, arrCoordinates);
 			}
-	  	  
 			
 			//add to page 1
 			if(panel == 0){
@@ -297,7 +289,6 @@ public class Book {
 	}
 	
 	for(AudioItem item: audioItems) {
-		
 		try{
 			Geometry geom;
 			Coordinate[] arrCoordinates;
@@ -321,7 +312,6 @@ public class Book {
 				//it has no coordinates
 		  	  	pItems = new Point(filename, panel, order, type, audioKey);
 			}
-			
 			
 			//add to page 1
 			if(panel == 0){
@@ -361,7 +351,6 @@ public class Book {
 	}
 	
 	for(MapImageItem item: mapImageItems){
-		
 		try{
 			
 			Geometry geom;
@@ -429,7 +418,6 @@ public class Book {
 	}
 	
 	for(WebBundleItem item: webBundleItems){
-		
 		try{
 			Geometry geom;
 			Coordinate[] arrCoordinates;
@@ -454,6 +442,71 @@ public class Book {
 				pItems = new Point(filename, panel, order, type, wbKey, url);
 			}
 			
+			
+			//add to page 1
+			if(panel == 0){
+				page1.add(pItems);
+				
+			}
+			//add to page 2
+			else if(panel == 1){
+				page2.add(pItems);
+			
+			}
+			//add to page 3
+			else if(panel == 2){
+				page3.add(pItems);
+			
+			}
+			//add to page 4
+			else if(panel == 3){
+				page4.add(pItems);
+				
+			}
+			//add to page 5
+			else if(panel == 4){
+				page5.add(pItems);
+				
+			}
+			//add to page 6
+			else if(panel == 5){
+				page6.add(pItems);
+				
+			}
+			
+		} //end of try
+		catch(NullPointerException npe){
+			Log.e("TRACE = ",npe.getMessage());
+			System.out.println("Null pointer exception has been caught");
+		}
+		
+	}
+	
+	for(GPSTraceItem item: gpsTraceItems){
+		try{
+			//Geometry geom;
+			//Coordinate[] arrCoordinates;
+			Point pItems;
+			
+			String name = item.getName();
+			String type = item.getType();
+			int panel = item.getPanel();
+			int order = item.getOrder();
+			String key = item.getKey();
+			/*
+			if (item.getGeometry() != null){
+				//then it has coordinates
+				geom = item.getGeometry();
+				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
+				
+				pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+			}
+			else{
+				//no coordinates
+				pItems = new Point(filename, panel, order, type, wbKey, url);
+			}
+			*/
+			pItems = new Point(name, panel, order, type, key);
 			
 			//add to page 1
 			if(panel == 0){

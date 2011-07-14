@@ -7,30 +7,21 @@ public class GPSTraceItem extends Item {
 	
 	//trkpt attributes to get are: lat, lon, <ele> </ele> <time></time><speed></speed> </trkpt
 
-	private StringBuilder data;
-	private String URL;
-	private String name; //name of trace
-	//private StringBuilder gpx;
-	private Time time;
-	//private ArrayList <CustomType> trail;	
+	private String name; //name of trace - we will put this as data
+
+	//wpt attributes lat/lon is what we want out of it
 	
 	//strip out all the non alphanumeric chars (dashes and colons), then..
 	//Time t = new Time();
 	//time.parse("20110214T133110084Z");
 	
-	//bounds
-	private float maxlat;
-	private float maxlon;
-	private float minlat;
-	private float minlon;
+	public void setName(String name){
+		this.name = name;
+	}
 	
-	//trkseg
-	//trkpt
-	private float lat;
-	private float lon;
-	private float ele;
-	
-	//another time var
+	public String getName(){
+		return name;
+	}
 	
 
 }

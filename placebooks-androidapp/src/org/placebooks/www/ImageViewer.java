@@ -18,6 +18,8 @@ public class ImageViewer extends Activity {
 	
 	private String image;
 	private String packagePath;
+	private Bitmap bm;
+	private ImageView imageView;
 	
 	
 	@Override
@@ -37,7 +39,7 @@ public class ImageViewer extends Activity {
 			String myImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + image;
 	        
 	    	//WebView image = new WebView(this);
-			ImageView image = new ImageView(this);
+			imageView = new ImageView(this);
 	        
 	        
 		    //image.loadUrl("file://" + myImagePath);
@@ -47,13 +49,13 @@ public class ImageViewer extends Activity {
 		    //image.setImageURI(imgUri);
 			BitmapFactory.Options options = new BitmapFactory.Options();
 		    options.inSampleSize = 2;
-		    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
-		    image.setImageBitmap(bm);
-		    image.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		    setContentView(image);
+		    bm = BitmapFactory.decodeFile(myImagePath, options);
+		    imageView.setImageBitmap(bm);
+		    imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+		    setContentView(imageView);
 		    
 		    
-		    image.setOnClickListener(new OnClickListener() {
+		    imageView.setOnClickListener(new OnClickListener() {
 	             @Override
 	             public void onClick(View v) {
 	            	 
@@ -66,6 +68,21 @@ public class ImageViewer extends Activity {
 				}); 
 	        
 	}
+	
+	   @Override
+       public void onDestroy() {
+         super.onDestroy();
+          bm.recycle();		//clears the bitmap 
+          bm = null;
+	      imageView.setImageDrawable(null);    //sets the imageView to null and cleans it
+	      imageView = null;
+	      packagePath = null;
+	      image = null;
+
+           System.gc();	//call the garbage collector
+           finish();	//close the activity
+         
+	   }
 	
 	 
 	
