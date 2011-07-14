@@ -13,6 +13,7 @@ import placebooks.client.ui.places.PlaceBookPreviewPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceController;
@@ -36,6 +37,12 @@ public class PlaceBookPublish extends Composite
 
 	@UiField
 	TextBox title;
+
+	@UiField
+	TextBox location;
+	
+	@UiField
+	TextBox activity;
 	
 	@UiField
 	TextArea description;
@@ -45,6 +52,12 @@ public class PlaceBookPublish extends Composite
 		
 	@UiField
 	Button publish;
+	
+	@UiField
+	Image leftButton;
+
+	@UiField
+	Image rightButton;
 	
 	private final PlaceBook placebook;
 	
@@ -87,15 +100,10 @@ public class PlaceBookPublish extends Composite
 			placebookImage.setUrl(frame.getItem().getURL());
 		}
 		
-		if(index >= imageItems.size())
-		{
-			// disable rightButton
-		}
+		publish.setEnabled(!title.getText().trim().isEmpty() && !activity.getText().trim().isEmpty() && !location.getText().trim().isEmpty());
 		
-		if(index == 0)
-		{
-			// disable leftbutton
-		}
+		rightButton.setVisible(index < imageItems.size());
+		leftButton.setVisible(index > 0);		
 	}
 	
 	@UiHandler("leftButton")
@@ -117,6 +125,12 @@ public class PlaceBookPublish extends Composite
 			refresh();
 		}
 	}	
+	
+	@UiHandler(value={"location", "activity", "title"})
+	void handleChangeValue(KeyUpEvent event)
+	{
+		refresh();
+	}
 	
 	@UiHandler("publish")
 	void handlePublish(ClickEvent event)

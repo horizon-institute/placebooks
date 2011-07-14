@@ -38,9 +38,9 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	}
 
 	private static boolean everytrailsUpdate = false;
-	private LoginDetails everytrailDetails = null;
 	private final Label divider = new Label(" | ");
 	private final FlowPanel dropMenu = new FlowPanel();
+	private LoginDetails everytrailDetails = null;
 
 	private final MouseOutHandler hideMenuHandler = new MouseOutHandler()
 	{
@@ -59,12 +59,12 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		}
 	};
 
-	private final Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
-	
 	private final Label loginLabel = new Label("LOGIN");
 
+	private final Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
+
 	private PlaceController placeController;
-	
+
 	private Shelf shelf;
 
 	private final RequestCallback shelfCallback = new AbstractCallback()
@@ -79,7 +79,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		public void success(final Request request, final Response response)
 		{
 			try
-			{		
+			{
 				setShelfInternal(Shelf.parse(response.getText()));
 			}
 			catch (final Exception e)
@@ -95,21 +95,16 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 	private User user;
 
-	public void setPlaceController(PlaceController placeController)
-	{
-		this.placeController  = placeController;
-	}
-	
 	public PlaceBookToolbarLogin()
 	{
 		super();
-		
+
 		setStyleName(Resources.INSTANCE.style().toolbarLogin());
 		add(loginLabel);
 		add(divider);
 		add(signupLabel);
 		add(dropMenu);
-		
+
 		getElement().getStyle().setDisplay(Display.NONE);
 
 		loginLabel.setStyleName(Resources.INSTANCE.style().toolbarItem());
@@ -147,31 +142,35 @@ public class PlaceBookToolbarLogin extends FlowPanel
 				final LoginDialog account = new LoginDialog("Link Everytrail Account", "Link Account",
 						"Everytrail Username:");
 				account.addClickHandler(new ClickHandler()
-						{
-							
-							@Override
-							public void onClick(ClickEvent event)
-							{
-								dialogBox.hide();
-								PlaceBookService.linkAccount(account.getUsername(), account.getPassword(), "Everytrail", new AbstractCallback()
-								{
-									@Override
-									public void success(Request request, Response response)
-									{
-										everytrailsUpdate = true;
-										PlaceBookService.everytrail(new AbstractCallback()
-										{
-											@Override
-											public void success(Request request, Response response)
-											{
-												// TODO Auto-generated method stub
-												
-											}
-										});
-									}
-								});
-							}
-						});
+				{
+
+					@Override
+					public void onClick(final ClickEvent event)
+					{
+						dialogBox.hide();
+						PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), "Everytrail",
+														new AbstractCallback()
+														{
+															@Override
+															public void success(final Request request,
+																	final Response response)
+															{
+																everytrailsUpdate = true;
+																PlaceBookService.everytrail(new AbstractCallback()
+																{
+																	@Override
+																	public void success(final Request request,
+																			final Response response)
+																	{
+																		// TODO Auto-generated
+																		// method stub
+
+																	}
+																});
+															}
+														});
+					}
+				});
 				dialogBox.add(account);
 				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
 				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
@@ -187,7 +186,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			@Override
 			public void run()
 			{
-				hideMenu();				
+				hideMenu();
 				PlaceBookService.logout(new AbstractCallback()
 				{
 					@Override
@@ -213,10 +212,10 @@ public class PlaceBookToolbarLogin extends FlowPanel
 					account.addClickHandler(new ClickHandler()
 					{
 						@Override
-						public void onClick(ClickEvent event)
+						public void onClick(final ClickEvent event)
 						{
 							dialogBox.hide();
-							PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);							
+							PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);
 						}
 					});
 					dialogBox.add(account);
@@ -226,6 +225,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 					dialogBox.center();
 					dialogBox.show();
+					account.focus();
 				}
 			}
 		});
@@ -293,58 +293,32 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		hideMenuTimer.cancel();
 	}
 
+	public void setPlaceController(final PlaceController placeController)
+	{
+		this.placeController = placeController;
+	}
+
+	public void setShelf(final Shelf shelf)
+	{
+		if (shelf == null)
+		{
+			PlaceBookService.getShelf(shelfCallback);
+			getElement().getStyle().setDisplay(Display.NONE);
+		}
+		else
+		{
+			setShelfInternal(shelf);
+		}
+	}
+
 	public void setShelfListener(final ShelfListener shelfListener)
 	{
 		this.shelfListener = shelfListener;
 	}
-	
-	private void setUserInternal(final User user)
-	{
-		if(this.user == user)
-		{
-			return;
-		}
-		this.user = user;	
-		if (user != null)
-		{
-			getElement().getStyle().setDisplay(Display.BLOCK);			
-			divider.setVisible(false);
-			signupLabel.setVisible(false);
-			loginLabel.setText(user.getName());
-			
-			for(LoginDetails details: user.getLoginDetails())
-			{
-				if(details.getService().equals("Everytrail"))
-				{
-					everytrailDetails = details;
-					if(!everytrailsUpdate)
-					{
-						everytrailsUpdate = true;
-						PlaceBookService.everytrail(new AbstractCallback()
-						{
-							@Override
-							public void success(Request request, Response response)
-							{							
-							}
-						});
-					}
-				}
-			}
-		}
-		else
-		{
-			getElement().getStyle().setDisplay(Display.BLOCK);
-			everytrailDetails = null;
-			
-			divider.setVisible(true);
-			signupLabel.setVisible(true);
-			loginLabel.setText("LOGIN");
-		}
-	}
 
 	public void setUser(final User user)
-	{	
-		if(user == null)
+	{
+		if (user == null)
 		{
 			PlaceBookService.getShelf(shelfCallback);
 			getElement().getStyle().setDisplay(Display.NONE);
@@ -357,7 +331,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 	public void showMenu(final int x, final int y)
 	{
-		for(MenuItem item: menuItems)
+		for (final MenuItem item : menuItems)
 		{
 			item.refresh();
 		}
@@ -370,14 +344,11 @@ public class PlaceBookToolbarLogin extends FlowPanel
 
 	private void setShelfInternal(final Shelf shelf)
 	{
-		getElement().getStyle().setDisplay(Display.BLOCK);		
-		if(this.shelf == shelf)
-		{
-			return;
-		}
+		getElement().getStyle().setDisplay(Display.BLOCK);
+		if (this.shelf == shelf) { return; }
 		this.shelf = shelf;
 
-		if(shelf == null)
+		if (shelf == null)
 		{
 			setUserInternal(null);
 		}
@@ -391,17 +362,45 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			shelfListener.shelfChanged(shelf);
 		}
 	}
-	
-	public void setShelf(final Shelf shelf)
+
+	private void setUserInternal(final User user)
 	{
-		if(shelf == null)
+		if (this.user == user) { return; }
+		this.user = user;
+		if (user != null)
 		{
-			PlaceBookService.getShelf(shelfCallback);
-			getElement().getStyle().setDisplay(Display.NONE);
+			getElement().getStyle().setDisplay(Display.BLOCK);
+			divider.setVisible(false);
+			signupLabel.setVisible(false);
+			loginLabel.setText(user.getName());
+
+			for (final LoginDetails details : user.getLoginDetails())
+			{
+				if (details.getService().equals("Everytrail"))
+				{
+					everytrailDetails = details;
+					if (!everytrailsUpdate)
+					{
+						everytrailsUpdate = true;
+						PlaceBookService.everytrail(new AbstractCallback()
+						{
+							@Override
+							public void success(final Request request, final Response response)
+							{
+							}
+						});
+					}
+				}
+			}
 		}
 		else
 		{
-			setShelfInternal(shelf);
+			getElement().getStyle().setDisplay(Display.BLOCK);
+			everytrailDetails = null;
+
+			divider.setVisible(true);
+			signupLabel.setVisible(true);
+			loginLabel.setText("LOGIN");
 		}
 	}
 }

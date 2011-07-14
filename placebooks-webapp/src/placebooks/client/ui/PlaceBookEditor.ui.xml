@@ -4,7 +4,7 @@
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
-			top: 40px;
+			top: 41px;
 			left: 0px;
 			right: 120px;
 			bottom: 0px;
@@ -25,7 +25,7 @@
 		.palette {
 			position: absolute;
 			text-align: center;
-			top: 40px;
+			top: 41px;
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
@@ -86,17 +86,23 @@
 		}
 		
 		.account {
-			border-left: 1px solid grey;
-			padding: 0px 4px;
+			padding: 0px;
 			float:right;
 			cursor: default;
 		}
 		
 		.zoomImage {
-			margin: 2px;
-			margin-top: 12px;
+			margin-right: 5px;
+			margin-top: 14px;
 			float:right;
 		}
+		
+		.zoomImage2 {
+			margin-left: 50px;
+			margin-right: 5px;
+			margin-top: 14px;
+			float:right;
+		}		
 		
 		.body {
 			-webkit-user-select: none;	
@@ -111,9 +117,9 @@
 		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
 		<g:FlowPanel styleName="{res.style.toolbar}">
 			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
-			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
-			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_out}" ui:field="zoomOut" />
 			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+			<g:Image styleName="{style.zoomImage2}" resource="{res.zoom_out}" ui:field="zoomOut" />
 			<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />						
 			<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
 		</g:FlowPanel>		

@@ -71,6 +71,7 @@ a:hover {
 
 .panelInvisible {
 	position: absolute;
+	overflow: visible;
 }
 
 .panel {
@@ -80,6 +81,7 @@ a:hover {
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
 	box-shadow: 3px 3px 6px #666;
+	overflow: visible;	
 }
 
 .listItem {
@@ -201,6 +203,15 @@ img {
 	left: 0px;
 	right: 0px;
 	margin: 5px;
+}
+
+.innerPanel {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	overflow: hidden;
 }
 
 .panelleft {

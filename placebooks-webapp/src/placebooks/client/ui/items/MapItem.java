@@ -32,6 +32,7 @@ public class MapItem extends PlaceBookItemWidget
 		protected void handleEvent(final Event event)
 		{
 			recenter();
+			recenter();
 		}
 	};
 
@@ -106,7 +107,7 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void createMap()
 	{
-		if(map == null)
+		if (map == null)
 		{
 			map = Map.create(panel.getElement());
 			final ClickControl control = ClickControl.create(new EventHandler()
@@ -120,19 +121,19 @@ public class MapItem extends PlaceBookItemWidget
 					{
 						GWT.log("Clicked at " + lonLat);
 						positionItem.setGeometry(POINT_PREFIX + lonLat.getLon() + " " + lonLat.getLat() + ")");
+
+						fireChanged();
+						fireFocusChanged(true);
+						refreshMarkers();
 					}
-	
-					fireChanged();
-					fireFocusChanged(true);
-					refreshMarkers();
 				}
 			}.getFunction());
 			map.addControl(control);
 			control.activate();
-	
+
 			map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
 			// map.addLayer(OSMLayer.create("Osmarender"));
-	
+
 			markerLayer = MarkerLayer.create("markerLayer");
 			map.addLayer(markerLayer);
 		}
@@ -173,6 +174,7 @@ public class MapItem extends PlaceBookItemWidget
 		if (routeLayer != null)
 		{
 			final Bounds routeBounds = routeLayer.getDataExtent();
+			GWT.log("" + routeBounds);
 			if (routeBounds != null)
 			{
 				if (bounds == null)
@@ -195,6 +197,7 @@ public class MapItem extends PlaceBookItemWidget
 		try
 		{
 			final Bounds bounds = getLayerBounds();
+			GWT.log(""+bounds);
 			if (bounds != null)
 			{
 				map.zoomToExtent(bounds);
