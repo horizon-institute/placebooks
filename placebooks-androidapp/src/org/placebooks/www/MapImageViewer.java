@@ -1,5 +1,9 @@
 package org.placebooks.www;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,23 +16,31 @@ import android.webkit.WebView;
 import android.widget.LinearLayout.LayoutParams;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Coordinate;
+
+import android.widget.TextView;
 import android.widget.Toast;
 import android.location.*;
-import android.location.LocationManager;
-import android.location.LocationListener;
-import android.location.LocationProvider;
 import android.content.Context;
 import android.util.Log;
 import android.widget.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView.ScaleType;
 import android.view.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import android.os.Environment;
+
+import java.io.FileOutputStream;
+
 
 public class MapImageViewer extends Activity {
 	
 	private ScrollView sv;
 	private LinearLayout ll;
-	private MapCanvas mapCanvas;
+	private MapCanvas mapCanvas = null;
 	private String mapImage;
 	private String packagePath;
 
@@ -39,6 +51,7 @@ public class MapImageViewer extends Activity {
 	//t-values for our current position on our map image (scaled)
 	double t1;
     double t2;
+    Bitmap bm = null;
     //map image dimensions
     int mapHeight;
     int mapWidth;
@@ -116,107 +129,150 @@ public class MapImageViewer extends Activity {
 	        
 	        myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
 	        
-	    	//make bitmap of the map image
-	    	BitmapFactory.Options options = new BitmapFactory.Options();
-		    options.inSampleSize = 1;
-		    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);	    
-		    
-		    
-		    imageHeight = bm.getHeight();
-		    imageWidth = bm.getWidth();
-		    
-		    // calculate the pixels in the image
-		    imagePixels = (bm.getWidth()) * (bm.getHeight());
-		    /* now work out the lat/lon for each corner
-		     *  E.G
-		     *  
-		     *  0,400		600,400			(tl_x, tl_y)	(tr_x, tr_y)
-		     * 
-		     * 	0,0		    600,0			(bl_x, bl_y)	(br_x, br_y)
-		     */
-		    ptl_x = 0;
-		    ptl_y = bm.getHeight();
-		    pbl_x = 0;
-		    pbl_y = 0;
-		    ptr_x = bm.getWidth();
-		    ptr_y = bm.getHeight();
-		    pbr_x = bm.getWidth();
-		    pbr_y = 0;
-		    
-		    System.out.println("pixel top left x = " + ptl_x);
-		    System.out.println("pixel top left y = " + ptl_y);
-		    System.out.println("pixel bottom left x = " + pbl_x);
-		    System.out.println("pixel bottom left y = " + pbl_y);
-		    System.out.println("pixel top right x = " + ptr_x);
-		    System.out.println("pixel top right y = " + ptr_y);
-		    System.out.println("pixel bottom left x = " + pbr_x);
-		    System.out.println("pixel bottom left y = " + pbr_y);
-		    
-		    
-		    
-		    	
-		    //Now get the mobile's current longitude and latitude
-		    //find best location provider that features high accuracy and draws as little power as possible
-			LocationManager locationManager;
-		    String context = Context.LOCATION_SERVICE;
-		    locationManager = (LocationManager)getSystemService(context);	//finds your current location
-		    
-		    Criteria criteria = new Criteria();
-		    criteria.setAccuracy(Criteria.ACCURACY_FINE);
-		    criteria.setAltitudeRequired(false);
-		    criteria.setBearingRequired(false);
-		    criteria.setCostAllowed(true);
-		    criteria.setPowerRequirement(Criteria.POWER_LOW);
+	        try {
+	        		//File file = new File(myMapImagePath);
+	        		//convert String into InputStream
+	        		//InputStream is = new ByteArrayInputStream(myMapImagePath.getBytes());	
+	        	
+			    	//make bitmap of the map image
+			    	BitmapFactory.Options options = new BitmapFactory.Options();
+				    options.inSampleSize = 1;
+				   // bm = BitmapFactory.decodeStream(is, null, options);
+				    bm = BitmapFactory.decodeFile(myMapImagePath, options);	 
+		        
 			    
-		    String provider = locationManager.getBestProvider(criteria, true);
-		    Location location = locationManager.getLastKnownLocation(provider);
-		    updateWithNewLocation(location);
-		    //locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
-		    
-		    String provider2 = LocationManager.GPS_PROVIDER;
-		    int time = 10; //milliseconds
-		    int distance = 30;	//meters
-		    
-		    locationManager.requestLocationUpdates(provider2, time, distance,locationListener);	//method to get updates whenever the current location changes, using a location listener
-		    
-		    
-		    calculatePixelCoordinates();	//call the method to calculate the pixel equivalence for the coordinates
+			    
+			    imageHeight = bm.getHeight();
+			    imageWidth = bm.getWidth();
+			    
+			    int bytes = bm.getRowBytes();
+			    
+			    
+			    Toast msg = Toast.makeText(this, "height= " + Integer.toString(imageHeight) + "width= " +Integer.toString(imageWidth) + ("\nnumber of bytes = " + bytes), Toast.LENGTH_LONG);
+				msg.show();
+				
+				String path = Environment.getExternalStorageDirectory().toString();
+		        OutputStream fOut = null;
+		        File file = new File(path, "bitmapimg.jpg");
+		            fOut = new FileOutputStream(file);
+		            fOut.write(bm.getRowBytes());
 
-		    
-		    
-		    //draw the map on the canvas with the location
-		    mapCanvas = new MapCanvas(this, myMapImagePath, pixel_lat, pixel_lon);	//context, directory (path+filename),  ,pixel(lat), pixel(long), 
-		    
-		    BitmapDrawable bmd = new BitmapDrawable(bm);
-		    
-		    mapCanvas.setImageDrawable(bmd);
-	        mapCanvas.setScaleType(ScaleType.CENTER);	//needs to focus on the yah dot
+		            fOut.flush();
+		            fOut.close();
 
-
-        
-		    ll = new LinearLayout(this);
-		    
-		    ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
-//		    ll.addView(mapCanvas, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));//imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
-	    
-		    
+				
+			    
+			    // calculate the pixels in the image
+			    imagePixels = (bm.getWidth()) * (bm.getHeight());
+			    /* now work out the lat/lon for each corner
+			     *  E.G
+			     *  
+			     *  0,400		600,400			(tl_x, tl_y)	(tr_x, tr_y)
+			     * 
+			     * 	0,0		    600,0			(bl_x, bl_y)	(br_x, br_y)
+			     */
+			    ptl_x = 0;
+			    ptl_y = bm.getHeight();
+			    pbl_x = 0;
+			    pbl_y = 0;
+			    ptr_x = bm.getWidth();
+			    ptr_y = bm.getHeight();
+			    pbr_x = bm.getWidth();
+			    pbr_y = 0;
+			    
+			    System.out.println("pixel top left x = " + ptl_x);
+			    System.out.println("pixel top left y = " + ptl_y);
+			    System.out.println("pixel bottom left x = " + pbl_x);
+			    System.out.println("pixel bottom left y = " + pbl_y);
+			    System.out.println("pixel top right x = " + ptr_x);
+			    System.out.println("pixel top right y = " + ptr_y);
+			    System.out.println("pixel bottom left x = " + pbr_x);
+			    System.out.println("pixel bottom left y = " + pbr_y);
+			    
+			    
+			    
+			    	
+			    //Now get the mobile's current longitude and latitude
+			    //find best location provider that features high accuracy and draws as little power as possible
+				LocationManager locationManager;
+			    String context = Context.LOCATION_SERVICE;
+			    locationManager = (LocationManager)getSystemService(context);	//finds your current location
+			    
+			    Criteria criteria = new Criteria();
+			    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			    criteria.setAltitudeRequired(false);
+			    criteria.setBearingRequired(false);
+			    criteria.setCostAllowed(true);
+			    criteria.setPowerRequirement(Criteria.POWER_LOW);
+				    
+			    String provider = locationManager.getBestProvider(criteria, true);
+			    Location location = locationManager.getLastKnownLocation(provider);
+			    updateWithNewLocation(location);
+			    //locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
+			    
+			    String provider2 = LocationManager.GPS_PROVIDER;
+			    int time = 10; //milliseconds
+			    int distance = 30;	//meters
+			    
+			    locationManager.requestLocationUpdates(provider2, time, distance,locationListener);	//method to get updates whenever the current location changes, using a location listener
+			    
+			    
+			    calculatePixelCoordinates();	//call the method to calculate the pixel equivalence for the coordinates
 	
-		    
-		    ScrollView sv = new ScrollView(this);
-	        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+			    
+			    
+			    //draw the map on the canvas with the location
+			    //mapCanvas = new MapCanvas(this,/* myMapImagePath,*/ pixel_lat, pixel_lon);	//context, directory (path+filename),  ,pixel(lat), pixel(long), 
+			    mapCanvas = new MapCanvas(this);
+			    mapCanvas.setLat(pixel_lat);
+			    mapCanvas.setLon(pixel_lon);
+			    
+			    
+			    BitmapDrawable bmd = new BitmapDrawable(bm);
+			    
+			    mapCanvas.setImageDrawable(bmd);
+		        mapCanvas.setScaleType(ScaleType.CENTER);	//needs to focus on the yah dot
+	
 	        
+			    ll = new LinearLayout(this);
+			    
+			    ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
+	//		    ll.addView(mapCanvas, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));//imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
 		    
-	        sv.addView(ll);
-	        
-	        HorizontalScrollView hsv = new HorizontalScrollView(this);
-	        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-	        hsv.addView(sv);
-		    
-	        setContentView(hsv);
-	        mapCanvas.invalidate();
+			    
+		
+			    
+			    ScrollView sv = new ScrollView(this);
+		        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		        
+			    
+		        sv.addView(ll);
+		        
+		        HorizontalScrollView hsv = new HorizontalScrollView(this);
+		        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		        hsv.addView(sv);
+			    
+		        setContentView(hsv);
+		        mapCanvas.invalidate();
+	        }
+	        catch(Exception e){
+	        	
+	        	System.out.println("Exception " + e.toString());
+				TextView txtView = new TextView(MapImageViewer.this);
+				txtView.setText("Exception " +e.toString());
+				setContentView(txtView);
+	        }
+	        catch (OutOfMemoryError E){
+	        	System.gc();
+	        	
+	        	System.out.println("Out of Memory Exception");
+				TextView txtView = new TextView(MapImageViewer.this);
+				txtView.setText("Error: cannot load image. Out of memory! \nException " +E.toString());
+				setContentView(txtView);
+	       
+	        }
 
 		   // setContentView(mapCanvas);
-	    
 	        
 	} //end of onCreate
 	
@@ -279,11 +335,7 @@ public class MapImageViewer extends Activity {
 		
 		public void calculatePixelCoordinates(){
 			
-				        
-	    	//make bitmap of the map image
-	    	BitmapFactory.Options options = new BitmapFactory.Options();
-		    options.inSampleSize = 1;
-		    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);	 
+
 			 /*
 		     * 
 		     * Now that we have obtained the current gps location of the phone,
@@ -322,6 +374,71 @@ public class MapImageViewer extends Activity {
 			
 		}
 		
+
+		   @Override
+	       public void onDestroy() {
+	         super.onDestroy();
+	          bm.recycle();		//clears the bitmap 
+	          bm = null;
+		      sv = null;
+		      ll = null;
+		      mapCanvas.setImageDrawable(null);    //sets the custom imageView to null and cleans it
+		      mapImage = null;
+		      packagePath = null;
+		      imageHeight = 0;
+		      imageWidth = 0;
+		      imagePixels = 0;
+ 
+	           System.gc();	//call the garbage collector
+	           finish();	//close the activity
+	         
+		   }
+		   
+		   @Override
+		   protected void onResume()
+		   {
+		     System.gc();
+		     super.onResume();
+		   }
+		   
+		   @Override
+		   protected void onPause()
+		   {
+		     super.onPause();
+		     System.gc();
+		   }
+	
+		   
+		 //decodes image and scales it to reduce memory consumption
+			 private Bitmap decodeFile(File f){
+			     try {
+			         //Decode image size
+			         BitmapFactory.Options o = new BitmapFactory.Options();
+			         o.inJustDecodeBounds = true;
+			         BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+			         //The new size we want to scale to
+			         final int REQUIRED_SIZE=70;
+
+			         //Find the correct scale value. It should be the power of 2.
+			         int width_tmp=o.outWidth, height_tmp=o.outHeight;
+			         int scale=1;
+			         while(true){
+			             if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+			                 break;
+			             width_tmp/=2;
+			             height_tmp/=2;
+			             scale*=2;
+			         }
+
+			         //Decode with inSampleSize
+			         BitmapFactory.Options o2 = new BitmapFactory.Options();
+			         o2.inSampleSize=scale;
+			         return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+			     } catch (FileNotFoundException e) {}
+			     return null;
+			 }
 		
+			 
 		
 }

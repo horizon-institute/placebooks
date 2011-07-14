@@ -31,11 +31,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.widget.BaseAdapter;
+//import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import java.io.File;
-import java.net.CookieHandler;
+//import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,38 +46,51 @@ import java.io.FileOutputStream;
 import org.apache.http.util.ByteArrayBuffer;
 import java.io.IOException;
 import android.view.View.OnClickListener; 
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 
-import java.net.URL;
-import android.os.AsyncTask;
-import android.content.res.Configuration;
+//import java.net.URL;
+//import android.os.AsyncTask;
+//import android.content.res.Configuration;
 import android.app.AlertDialog;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.DataOutputStream;
-import android.webkit.CookieManager;
+//import java.io.BufferedReader;
+//import java.io.InputStreamReader;
+//import java.io.OutputStreamWriter;
+//import java.io.DataOutputStream;
+//import android.webkit.CookieManager;
 
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.*;
+//import org.apache.http.impl.client.DefaultHttpClient;
+//import org.apache.http.protocol.BasicHttpContext;
+//import org.apache.http.client.CookieStore;
+//import org.apache.http.impl.client.BasicCookieStore;
+//import org.apache.http.protocol.HttpContext;
+//import org.apache.http.client.protocol.ClientContext;
+//import org.apache.http.client.*;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.Header;
-import java.io.ByteArrayOutputStream;
+//import org.apache.http.client.methods.HttpPost;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
+//import org.apache.http.client.entity.UrlEncodedFormEntity;
+//import org.apache.http.HttpResponse;
+//import org.apache.http.Header;
+//import java.io.ByteArrayOutputStream;
 import android.view.KeyEvent;
+
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.widget.Toast;
 
 
 
 public class Shelf extends ListActivity {
+	
+	/* This variables need to be global, so we can used them onResume and onPause method to
+    stop the listener */
+	TelephonyManager Tel;
+	MyPhoneStateListener MyListener;
+	
+	private ProgressDialog myDialog = null;
+
 	
 	private JSONObject json;
     private String username;
@@ -99,7 +112,17 @@ public class Shelf extends ListActivity {
 		        setContentView(R.layout.shelflist);	//push shelf list layout into the content view
 		        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
 
-		      
+		        
+		        
+		        /* 
+		         * Update the listener, and start it 
+				 * This is for testing the phone signal strength
+		         */
+		        MyListener = new MyPhoneStateListener();
+		        Tel = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);
+		        Tel.listen(MyListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+		        
+		        
 		        
 		        /*
 		         * get the extras (username) out of the new intent
@@ -112,6 +135,9 @@ public class Shelf extends ListActivity {
 		        System.out.println("username =====" + username);
 		        
 
+
+		        
+
 		        OnlineCheck oc = new OnlineCheck();		       
 		        /*
 		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
@@ -119,18 +145,23 @@ public class Shelf extends ListActivity {
 		        */       
 		        if (oc.isOnline(this)){
 		        	
-			    	String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
-		        	System.out.println("URL ===== " + url);
-			    	json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
-		          										  
-		          	//also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
-		        	DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
-		          	
-		          	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-			        TextView tv = new TextView(this);
-			        tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
-			        ll.addView(tv);
-
+					String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
+				    System.out.println("URL ===== " + url);
+					json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+				          										  
+				    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
+				    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+				          	
+				    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+					TextView tv = new TextView(Shelf.this);
+					tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
+					ll.addView(tv);
+					
+					
+		        	/*
+		        	 * Still working on
+		        	 * new GetShelfTask().execute();
+		        	 */
 		
 		        }
 		        else if (!oc.isOnline(this)) {		//do a check if there is a shelf file on the sdcard
@@ -466,6 +497,46 @@ public class Shelf extends ListActivity {
 			   
 			   
 			   /*
+			    * The Carrier to Interference-plus-Noise Ratio (CINR) is a primary measurement of signal effectiveness.
+			    * The carrier is the desired signal, and the interference can either be noise or co-channel interference.
+			    * (Co-channel interference is a particular problem when frequencies are reused at short distances).
+			    */
+			   
+			   /* Called when the application is minimized */
+			    @Override
+			   protected void onPause()
+			    {
+			      super.onPause();
+			      Tel.listen(MyListener, PhoneStateListener.LISTEN_NONE);
+			   }
+
+			    /* Called when the application resumes */
+			   @Override
+			   protected void onResume()
+			   {
+			      super.onResume();
+			      Tel.listen(MyListener,PhoneStateListener.LISTEN_SIGNAL_STRENGTH);
+			   }
+
+			   /* ÑÑÑÑÑÑÑÑÑÐ */
+			    /* Start the PhoneState listener */
+			   /* ÑÑÑÑÑÑÑÑÑÐ */
+			    private class MyPhoneStateListener extends PhoneStateListener
+			    {
+			      /* Get the Signal strength from the provider, each tiome there is an update */
+			      @Override
+			      public void onSignalStrengthsChanged(SignalStrength signalStrength)
+			      {
+			         super.onSignalStrengthsChanged(signalStrength);
+			         Toast msg = Toast.makeText(getApplicationContext(), "GSM Cinr = "
+			            + String.valueOf(signalStrength.getGsmSignalStrength()), Toast.LENGTH_SHORT);
+			            msg.show();
+			      }
+
+			    };// End of private Class
+			   
+			   
+			   /*
 			    * Reload method for reloading the activity
 			    */
 			   //@Override
@@ -482,7 +553,11 @@ public class Shelf extends ListActivity {
 				}
 
 			   
-			   //quit app on back press
+			   /*
+			   *Quit the app on back press. User will already be logged in and
+			   *their credentials saved. Therefore there is no reason to go back
+			   *because we do not need to log in screen anymore.
+			   */
 			   @Override
 			   public boolean onKeyDown(int keyCode, KeyEvent event) {
 			       if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -491,5 +566,57 @@ public class Shelf extends ListActivity {
 			       }
 			       return super.onKeyDown(keyCode, event);
 			   }
+			   
+			   
+			   
+	/*		   
+			   private class GetShelfTask extends AsyncTask<String, Void, Boolean> {
+
+				   @Override
+				       protected void onPreExecute() {
+				           super.onPreExecute();
+				           // show a progress dialog indicating that its loading
+      		        		myDialog = ProgressDialog.show( Shelf.this, " " , " Logging in.. ", true);	
+
+				       }
+
+				       @Override
+				       protected Boolean doInBackground(String... params) {
+				               // give your code that has to be loaded.
+       		        	//	new Thread() {
+	        		    //    	public void run() {
+	        		        		
+				    	   
+				    	    String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
+						    System.out.println("URL ===== " + url);
+							json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+						          										  
+						    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
+						    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+						          	
+						    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+							TextView tv = new TextView(Shelf.this);
+							tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
+							ll.addView(tv);	
+	        		        		
+	        		        		
+  
+	 	        		//        	}
+	 	        		//            }.start();    
+	        		        	
+       		        	
+				    	   return true;
+				       }
+
+				       @Override
+				       protected void onPostExecute(Boolean success) {
+				           super.onPostExecute(success);
+				           //dismiss your progress dialog
+                           	myDialog.dismiss();     
+
+				       }
+				   }
+			   
+	*/		   
 
 }	//end of public shelf
