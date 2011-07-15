@@ -15,14 +15,16 @@
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
-	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
+	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />	
+	<property name="placebooks.props" 
+			  value="${src.dir}/placebooks.properties" />
+	<property name="log4j.props" value="${src.dir}/log4j.properties" />
+
+	<property name="jaxb.dir" value="${basepackage.name}/model/jaxb" />
 	<property name="GPX10.package" 
 			  value="${basepackage.name}.model.jaxb.GPX10" />
 	<property name="GPX11.package" 
 			  value="${basepackage.name}.model.jaxb.GPX11" />
-	<property name="placebooks.props" 
-			  value="${src.dir}/placebooks.properties" />
-	<property name="log4j.props" value="${src.dir}/log4j.properties" />
 
 	<path id="classpath">
   		<fileset dir="${warlib.dir}">
@@ -71,6 +73,11 @@
 		<copy todir="${classes.dir}/META-INF">
 			<fileset dir="${src.dir}/META-INF" />
 		</copy>
+	</target>
+
+	<target name="jaxb-jar" description="Generate JAR from GPX bindings">
+		<jar jarfile="${lib.dir}/gpx-bindings.jar" 
+			 basedir="${classes.dir}" includes="${jaxb.dir}/**" />
 	</target>
 
 	<target name="jaxb" description="Generate Java bindings from GPX XSD">
