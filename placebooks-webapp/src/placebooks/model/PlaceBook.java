@@ -79,10 +79,16 @@ public class PlaceBook
 	
 	//@JsonIgnore
 	//private Permissions readPermissions;
+	
+	public PlaceBook()
+	{
+		index.setPlaceBook(this);		
+	}
 
 	// Make a new PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
 	{
+		this();
 		this.state = State.UNPUBLISHED;
 		this.owner = owner;
 		if (owner != null)
@@ -91,7 +97,6 @@ public class PlaceBook
 		}
 		this.geom = geom;
 		this.timestamp = new Date();
-		index.setPlaceBook(this);
 
 		log.info("Created new PlaceBook: timestamp=" 
 				 + this.timestamp.toString());
@@ -105,10 +110,6 @@ public class PlaceBook
 		setItems(items);
 	}
 
-	PlaceBook()
-	{
-		index.setPlaceBook(this);		
-	}
 
 	// Copy constructor
 	public PlaceBook(final PlaceBook p)

@@ -1,25 +1,35 @@
 package placebooks.model.json;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Date;
 
 import placebooks.model.PlaceBook;
 
 public class PlaceBookEntry
 {
+	@JsonProperty	
 	private String description;
 
+	@JsonProperty
 	private String key;
 
+	@JsonProperty
 	private int numItems;
 
+	@JsonProperty
 	private String owner;
 
+	@JsonProperty	
 	private String packagePath;
 	
+	@JsonProperty	
 	private String state;
 
+	@JsonProperty
 	private String title;
 	
+	@JsonProperty	
 	private Date timestamp;
 
 	public PlaceBookEntry()

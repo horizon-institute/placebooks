@@ -65,7 +65,8 @@ public final class PlaceBooksAdminHelper
 		return out;
 	}
 
-	public static final File makePackage(final EntityManager em, final PlaceBook p)
+	public static final File makePackage(final EntityManager em, 
+										 final PlaceBook p)
 	{
 		
 		// Mapping
@@ -404,11 +405,13 @@ public final class PlaceBooksAdminHelper
 
 		final String webBundlePath = wbi.generateWebBundlePath();
 
-		wgetCmd.append("-P " + webBundlePath + " " + wbi.getSourceURL().toString());
+		wgetCmd.append("-P " + webBundlePath + " " 
+					   + wbi.getSourceURL().toString());
 
 		log.info("wgetCmd=" + wgetCmd.toString());
 
-		if (new File(webBundlePath).exists() || new File(webBundlePath).mkdirs())
+		if (new File(webBundlePath).exists() || 
+			new File(webBundlePath).mkdirs())
 		{
 			final int timeout = 
 				Integer.parseInt(PropertiesSingleton
@@ -463,7 +466,8 @@ public final class PlaceBooksAdminHelper
 		final TypedQuery<PlaceBookItemSearchIndex> query2 = 
 			em.createQuery("SELECT p FROM PlaceBookItemSearchIndex p",
 						   PlaceBookItemSearchIndex.class);
-		final List<PlaceBookItemSearchIndex> pbiIndexes = query2.getResultList();
+		final List<PlaceBookItemSearchIndex> pbiIndexes = 
+			query2.getResultList();
 
 		for (final PlaceBookItemSearchIndex index : pbiIndexes)
 		{
