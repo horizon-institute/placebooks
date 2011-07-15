@@ -72,6 +72,8 @@ public class PlaceBookPublish extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		title.setText(canvas.getPlaceBook().getMetadata("title", "No Title"));
 		description.setText(canvas.getPlaceBook().getMetadata("description", ""));
+		activity.setText(canvas.getPlaceBook().getMetadata("activity", ""));
+		location.setText(canvas.getPlaceBook().getMetadata("location", ""));		
 		
 		this.placebook = canvas.getPlaceBook();
 		this.placeController = placeController;
@@ -142,6 +144,8 @@ public class PlaceBookPublish extends Composite
 		}
 		
 		placebook.setMetadata("title", title.getText());
+		placebook.setMetadata("location", location.getText());
+		placebook.setMetadata("activity", activity.getText());
 		placebook.setMetadata("description", description.getText());
 		
 		PlaceBookService.publishPlaceBook(placebook, new AbstractCallback()

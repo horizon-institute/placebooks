@@ -625,6 +625,7 @@ public class PlaceBooksAdminController
 		}
 		catch (final Throwable e)
 		{
+			log.info(json);
 			log.warn(e.getMessage(), e);
 		}
 		finally

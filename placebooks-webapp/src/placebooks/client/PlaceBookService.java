@@ -69,7 +69,7 @@ public class PlaceBookService
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/saveplacebook",
-						"placebook=" + new JSONObject(placebook).toString(),
+						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()),
 						callback);
 	}
 
@@ -92,6 +92,7 @@ public class PlaceBookService
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
 			GWT.log("Request data: " + data);
+			URL.encodePathSegment(data);			
 		}
 		try
 		{

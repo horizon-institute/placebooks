@@ -174,7 +174,6 @@ public class MapItem extends PlaceBookItemWidget
 		if (routeLayer != null)
 		{
 			final Bounds routeBounds = routeLayer.getDataExtent();
-			GWT.log("" + routeBounds);
 			if (routeBounds != null)
 			{
 				if (bounds == null)
@@ -197,7 +196,6 @@ public class MapItem extends PlaceBookItemWidget
 		try
 		{
 			final Bounds bounds = getLayerBounds();
-			GWT.log(""+bounds);
 			if (bounds != null)
 			{
 				map.zoomToExtent(bounds);

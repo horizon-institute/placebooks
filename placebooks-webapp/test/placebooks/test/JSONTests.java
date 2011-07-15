@@ -5,6 +5,8 @@ import java.net.URL;
 import javax.persistence.EntityManager;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.type.JavaType;
 import org.junit.Test;
 
 import placebooks.controller.EMFSingleton;
@@ -34,6 +36,17 @@ public class JSONTests
 			System.out.println(lonStr);			
 			Float.parseFloat(lonStr);
 		}		
+	}
+	
+	@Test
+	public void jsonAmpersandTest() throws Exception
+	{
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+
+		System.out.println(mapper.writeValueAsString("&amp;"));
+		
+		System.out.println(mapper.readValue("{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Text Block\"},\"parameters\":{},\"text\":\"&amp;\"}", TextItem.class));
 	}
 	
 	@Test

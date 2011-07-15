@@ -120,7 +120,7 @@ public class PlacebooksIntegrationTests
 		assertEquals("success", tracksResponse.getStatus());
 		assertEquals(2, tracksResponse.getTracks().size());
 
-		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null, null);
+		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null);
 
 		Node trackToUse = tracksResponse.getTracks().lastElement();
 		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
