@@ -1,41 +1,38 @@
 package placebooks.model;
 
-import placebooks.model.jaxb.GPX10.Gpx;
-
-import placebooks.model.jaxb.GPX11.GpxType;
-import placebooks.model.jaxb.GPX11.TrksegType;
-import placebooks.model.jaxb.GPX11.WptType;
-import placebooks.model.jaxb.GPX11.RteType;
-import placebooks.model.jaxb.GPX11.TrkType;
-
-import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
-
-import java.util.List;
-
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.BufferedReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Lob;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.stream.StreamSource;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import placebooks.controller.EMFSingleton;
+import placebooks.controller.EverytrailHelper;
+import placebooks.model.jaxb.GPX10.Gpx;
+import placebooks.model.jaxb.GPX11.GpxType;
+import placebooks.model.jaxb.GPX11.RteType;
+import placebooks.model.jaxb.GPX11.TrkType;
+import placebooks.model.jaxb.GPX11.TrksegType;
+import placebooks.model.jaxb.GPX11.WptType;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
@@ -46,6 +43,8 @@ public class GPSTraceItem extends PlaceBookItem
 	@JsonIgnore
 	@Lob
 	private String trace;
+	
+	private String hash;
 
 	public GPSTraceItem(final User owner, final URL sourceURL, final String trace)
 	{
@@ -70,6 +69,11 @@ public class GPSTraceItem extends PlaceBookItem
 		return new GPSTraceItem(this);
 	}
 
+	public String getHash()
+	{
+		return hash;
+	}
+	
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
@@ -118,9 +122,7 @@ public class GPSTraceItem extends PlaceBookItem
 		}
 		reader.close();
 		writer.close();
-		
-		log.info("Got gps from url " + getSourceURL());
-		
+			
 		setTrace(writer.toString());
 	}
 	
@@ -199,7 +201,7 @@ public class GPSTraceItem extends PlaceBookItem
 		catch (final Throwable e) 
 		{
 			// GPX 1.0 spec
-			log.error(e.toString());
+			log.info("Failed to read GPX as GPX1.1, trying 1.0");
 
 			try 
 			{
@@ -249,7 +251,7 @@ public class GPSTraceItem extends PlaceBookItem
 			} 
 			catch (final Exception e_) 
 			{
-				log.error(e_.toString());
+				log.error(e_.toString(), e);
 			}
 
 			try
@@ -262,12 +264,24 @@ public class GPSTraceItem extends PlaceBookItem
 			}
 			catch (final Throwable e_)
 			{
-				log.error(e_.toString());
+				log.error(e_.toString(), e);
 			}
 
 
 		}
 		setGeometry(bounds.getBoundary());
+		
+		try
+		{
+			final MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(trace.getBytes());
+			
+			hash = String.format("%032x", new BigInteger(1, md.digest()));			
+		}
+		catch(Exception e)
+		{
+			log.error("Failed to hash gpx", e);
+		}
 	}
 
 	@Override

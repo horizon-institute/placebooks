@@ -4,7 +4,7 @@ import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
 @WithTokenizers({ PlaceBookEditorNewPlace.Tokenizer.class, PlaceBookEditorPlace.Tokenizer.class, PlaceBookHomePlace.Tokenizer.class,
-					PlaceBookPreviewPlace.Tokenizer.class, PlaceBookBrowsePlace.Tokenizer.class, PlaceBookLibraryPlace.Tokenizer.class })
+					PlaceBookPreviewPlace.Tokenizer.class, PlaceBookBrowsePlace.Tokenizer.class, PlaceBookBrowsePlace.Tokenizer.class, PlaceBookSearchPlace.Tokenizer.class })
 public interface PlaceBookHistoryMapper extends PlaceHistoryMapper
 {
 }

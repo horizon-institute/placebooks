@@ -5,6 +5,8 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.items.MapItem;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
 import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.palette.Palette;
@@ -94,7 +96,17 @@ public class PlaceBookEditor extends Composite
 			}
 		}
 		
-
+		public void refreshMap()
+		{
+			for(PlaceBookItemFrame itemFrame: canvas.getItems())
+			{
+				if(itemFrame.getItemWidget() instanceof MapItem)
+				{
+					((MapItem)itemFrame.getItemWidget()).refreshMarkers();
+				}
+			}
+		}
+		
 		@Override
 		public void run()
 		{

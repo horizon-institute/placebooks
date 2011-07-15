@@ -34,6 +34,9 @@
 			background-color: #447;
 			min-height: 10px;
 			cursor:move;
+			line-height: 22px;
+			padding-left: 5px;
+			color: #BBC;
 		}
 		
 		.borderSection {
@@ -64,9 +67,7 @@
 		<g:SimplePanel styleName="{style.menuButton}" ui:field="menuButton">
 			<g:Image resource='{res.dropMenuIcon}' />
 		</g:SimplePanel>
-		<g:SimplePanel styleName="{style.dragSection}" ui:field="dragSection">
-		</g:SimplePanel>
-		<g:SimplePanel styleName="{style.resizeSection}" ui:field="resizeSection">
-		</g:SimplePanel>
+		<g:Label styleName="{style.dragSection}" ui:field="dragSection" />
+		<g:SimplePanel styleName="{style.resizeSection}" ui:field="resizeSection" />
 	</g:FlowPanel>
 </ui:UiBinder> 

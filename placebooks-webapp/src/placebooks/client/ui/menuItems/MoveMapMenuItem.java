@@ -3,14 +3,14 @@ package placebooks.client.ui.menuItems;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
-public class RemoveMapMenuItem extends MenuItem
+public class MoveMapMenuItem extends MenuItem
 {
 	private final SaveContext context;
 	private final PlaceBookItemFrame item;
 
-	public RemoveMapMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public MoveMapMenuItem(final SaveContext context, final PlaceBookItemFrame item)
 	{
-		super("Remove from Map");
+		super("Move on Map");
 		this.item = item;
 		this.context = context;
 	}
@@ -24,7 +24,7 @@ public class RemoveMapMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		item.getItem().removeMetadata("mapItemID");
+		item.getItem().setGeometry(null);
 		item.getItemWidget().refresh();
 		context.refreshMap();		
 		context.markChanged();

@@ -41,7 +41,7 @@ public class UploadMenuItem extends MenuItem
 		final FormPanel form = new FormPanel();
 		final FileUpload upload = new FileUpload();
 		final Hidden hidden = new Hidden("itemKey", item.getItem().getKey());
-		final PopupPanel dialogBox = new PopupPanel(false, true);
+		final PopupPanel dialogBox = new PopupPanel(true, true);
 		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4)
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
@@ -53,15 +53,6 @@ public class UploadMenuItem extends MenuItem
 			{
 				// dialogBox.hide();
 				form.submit();
-			}
-		});
-
-		final Button cancelButton = new Button("Cancel", new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				dialogBox.hide();
 			}
 		});
 
@@ -101,7 +92,6 @@ public class UploadMenuItem extends MenuItem
 		panel.add(upload);
 		panel.add(hidden);
 		panel.add(uploadButton);
-		panel.add(cancelButton);
 
 		dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
 		dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());

@@ -1,7 +1,6 @@
 package placebooks.client.ui.places;
 
-import placebooks.client.model.PlaceBook;
-import placebooks.client.model.User;
+import placebooks.client.model.Shelf;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
@@ -9,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
 
 public class PlaceBookBrowsePlace extends Place
 {
-	@Prefix("search")
+	@Prefix("browse")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookBrowsePlace>
 	{
 		@Override
@@ -21,30 +20,26 @@ public class PlaceBookBrowsePlace extends Place
 		@Override
 		public String getToken(final PlaceBookBrowsePlace place)
 		{
-			return "test";
+			return "library";
 		}
 	}
 
-	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
-
-	private final User user;
+	private final Shelf shelf;
 
 	public PlaceBookBrowsePlace()
 	{
 		super();
-		this.user = null;
+		this.shelf = null;
 	}
 
-	public PlaceBookBrowsePlace(final User user)
+	public PlaceBookBrowsePlace(final Shelf shelf)
 	{
 		super();
-		this.user = user;
+		this.shelf = shelf;
 	}
-
-	public PlaceBook getPlaceBook()
+	
+	public Shelf getShelf()
 	{
-		final PlaceBook placebook = PlaceBook.parse(newPlaceBook);
-		placebook.setOwner(user);
-		return placebook;
+		return shelf;
 	}
 }

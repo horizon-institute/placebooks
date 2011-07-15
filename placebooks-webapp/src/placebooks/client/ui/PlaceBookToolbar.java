@@ -5,7 +5,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookToolbarLogin.ShelfListener;
 import placebooks.client.ui.places.PlaceBookEditorNewPlace;
 import placebooks.client.ui.places.PlaceBookHomePlace;
-import placebooks.client.ui.places.PlaceBookLibraryPlace;
+import placebooks.client.ui.places.PlaceBookBrowsePlace;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -47,7 +47,7 @@ public class PlaceBookToolbar extends FlowPanel
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				placeController.goTo(new PlaceBookLibraryPlace(login.getShelf()));
+				placeController.goTo(new PlaceBookBrowsePlace(login.getShelf()));
 			}
 		}));
 		add(login);

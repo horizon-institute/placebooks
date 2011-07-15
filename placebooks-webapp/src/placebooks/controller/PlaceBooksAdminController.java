@@ -107,7 +107,7 @@ public class PlaceBooksAdminController
 				}
 				catch (final java.net.MalformedURLException e)
 				{
-					log.error(e.toString());
+					log.error(e.toString(), e);
 				}
 			}
 			else if (field.equals("geometry"))
@@ -118,7 +118,7 @@ public class PlaceBooksAdminController
 				}
 				catch (final ParseException e)
 				{
-					log.error(e.toString());
+					log.error(e.toString(), e);
 				}
 			}
 			else
@@ -662,14 +662,12 @@ public class PlaceBooksAdminController
 			 PlaceBooksAdminHelper.search(em, terms))
 		{
 			final PlaceBook p = entry.getKey();
-			if (p.getState() == PlaceBook.State.PUBLISHED)
+			if (p != null && p.getState() == PlaceBook.State.PUBLISHED)
 			{
 				log.info("Search result: pb key=" + entry.getKey().getKey() 
 						 + ", score=" + entry.getValue());
 				pbs.add(new PlaceBookSearchEntry(p, entry.getValue()));
-			}
-
-		
+			}	
 		}
 		em.close();
 
@@ -727,8 +725,6 @@ public class PlaceBooksAdminController
 			if (g != null)
 			{
 				final String trace = g.getTrace();
-				log.info(trace);
-
 				res.setContentType("text/xml");
 				final PrintWriter p = res.getWriter();
 				p.print(trace);
@@ -1003,7 +999,6 @@ public class PlaceBooksAdminController
 				{
 					item = new GPSTraceItem(itemData.getOwner(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
-					((GPSTraceItem) item).readTrace(fileData.getInputStream());
 				}
 				else if (type.equals("image"))
 				{
@@ -1025,8 +1020,16 @@ public class PlaceBooksAdminController
 			if (item instanceof MediaItem)
 			{
 				manager.getTransaction().commit();
+				((MediaItem) item).setSourceURL(null);				
 				((MediaItem) item).writeDataToDisk(name, fileData.getInputStream());
 				manager.getTransaction().begin();
+			}
+			else if(item instanceof GPSTraceItem)
+			{
+				manager.getTransaction().commit();
+				((GPSTraceItem)item).setSourceURL(null);				
+				((GPSTraceItem)item).readTrace(fileData.getInputStream());
+				manager.getTransaction().begin();				
 			}
 
 			manager.getTransaction().commit();

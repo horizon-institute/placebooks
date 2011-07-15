@@ -213,7 +213,7 @@ public class MapItem extends PlaceBookItemWidget
 		}
 	}
 
-	private void refreshMarkers()
+	public void refreshMarkers()
 	{
 		if (placebook == null) { return; }
 
@@ -241,7 +241,7 @@ public class MapItem extends PlaceBookItemWidget
 				{
 					GWT.log("No geometry for " + item.getKey());
 					positionItem = item;
-					interactionLabel.setText("Set position of item " + item.getKey());
+					interactionLabel.setText("Set position of " + item.getMetadata("title", item.getKey()));
 					interactionLabel.setVisible(true);
 				}
 			}

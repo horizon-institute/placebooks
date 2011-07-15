@@ -9,12 +9,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookLibrary extends Composite
+public class PlaceBookShelf extends Composite
 {
-	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
+	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookShelf>
 	{
 	}
 
@@ -26,11 +27,15 @@ public class PlaceBookLibrary extends Composite
 	@UiField
 	Panel placebooks;
 	
-	public PlaceBookLibrary(PlaceController placeController, Shelf shelf)
+	@UiField
+	Label titleLabel;
+	
+	public PlaceBookShelf(String title, PlaceController placeController, Shelf shelf)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		Window.setTitle("PlaceBooks - Your Library");
+		Window.setTitle("PlaceBooks " + title);
+		titleLabel.setText(title);
 		
 		toolbar.setPlaceController(placeController);
 		toolbar.setShelf(shelf);		
@@ -42,7 +47,7 @@ public class PlaceBookLibrary extends Composite
 				setShelf(shelf);
 			}
 		});
-		GWT.log("Library " + shelf);
+		GWT.log("Browse " + title + ": " + shelf);
 		setShelf(shelf);
 	}	
 

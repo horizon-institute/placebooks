@@ -1,13 +1,25 @@
 package placebooks.client.ui;
 
+import placebooks.client.AbstractCallback;
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.Shelf;
+import placebooks.client.ui.places.PlaceBookSearchPlace;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookHome extends Composite
@@ -20,12 +32,18 @@ public class PlaceBookHome extends Composite
 
 	@UiField
 	PlaceBookToolbar toolbar;
+	
+	@UiField
+	TextBox search;
+	
+	private final PlaceController placeController;
 
-	public PlaceBookHome()
+	public PlaceBookHome(final PlaceController controller)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
 		Window.setTitle("PlaceBooks");
+		this.placeController = controller;
 	}
 
 	public PlaceBookHome(final PlaceController controller, Shelf shelf)
@@ -33,5 +51,55 @@ public class PlaceBookHome extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		toolbar.setPlaceController(controller);
 		toolbar.setShelf(shelf);
+		this.placeController = controller;
+		
+		Window.setTitle("PlaceBooks");		
+	}
+	
+	@UiHandler("search")
+	void handleFocus(final FocusEvent event)
+	{
+		if(search.getText().equals("Search PlaceBooks"))
+		{
+			search.setText("");		
+			search.getElement().getStyle().setColor("#000");
+		}
+	}
+	
+	@UiHandler("search")
+	void handleBlur(final BlurEvent event)
+	{
+		if(search.getText().equals(""))
+		{
+			search.setText("Search PlaceBooks");		
+			search.getElement().getStyle().clearColor();
+		}
+	}
+	
+	@UiHandler("searchButton")
+	void handleSearch(final ClickEvent event)
+	{
+		search();
+	}
+	
+	@UiHandler("search")
+	void handleSearchEnter(final KeyPressEvent event)
+	{
+		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
+		{
+			search();
+		}
+	}
+	
+	private void search()
+	{
+		PlaceBookService.search(search.getText(), new AbstractCallback()
+		{
+			@Override
+			public void success(Request request, Response response)
+			{
+				placeController.goTo(new PlaceBookSearchPlace(search.getText(), Shelf.parse(response.getText())));
+			}
+		});
 	}
 }

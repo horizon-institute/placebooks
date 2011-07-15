@@ -16,7 +16,7 @@
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		
 		<g:FlowPanel styleName="{res.style.content}">		
-			<g:Label styleName="{style.title}">MY LIBRARY</g:Label>
+			<g:Label ui:field="titleLabel" styleName="{style.title}">MY LIBRARY</g:Label>
 			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
 		</g:FlowPanel>
 	</g:FlowPanel>

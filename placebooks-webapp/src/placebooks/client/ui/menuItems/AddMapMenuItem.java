@@ -44,6 +44,7 @@ public class AddMapMenuItem extends MenuItem
 		if (mapItems.size() == 1)
 		{
 			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
+			context.refreshMap();
 			context.markChanged();
 		}
 	}

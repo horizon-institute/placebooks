@@ -1,12 +1,23 @@
 package placebooks.client.ui.openlayers;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 public class OSMap extends Map
 {
-	public final static native OSMap createOSMap(final Element div)
+	public final static OSMap createOSMap(final Element div)
+	{
+		if(div.getId() == null)
+		{
+			div.setId(HTMLPanel.createUniqueId());
+		}
+		
+		return createOS(div.getId());
+	}
+	
+	private final static native OSMap createOS(final String id)
 	/*-{
-		return new $wnd.OpenSpace.Map(div);//, {
+		return new $wnd.OpenSpace.Map(id);//, {
 	//		controls : [
 	//					new $wnd.OpenLayers.Control.Navigation(),
 	//						new $wnd.OpenLayers.Control.PanZoomBar(),

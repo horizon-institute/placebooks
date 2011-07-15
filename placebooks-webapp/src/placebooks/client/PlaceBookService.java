@@ -72,6 +72,11 @@ public class PlaceBookService
 						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()),
 						callback);
 	}
+	
+	public static void search(final String search, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
+	}
 
 	private static String getHostURL()
 	{
@@ -91,8 +96,7 @@ public class PlaceBookService
 		if (data != null)
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			GWT.log("Request data: " + data);
-			URL.encodePathSegment(data);			
+			GWT.log("Request data: " + URL.decodePathSegment(data));
 		}
 		try
 		{
