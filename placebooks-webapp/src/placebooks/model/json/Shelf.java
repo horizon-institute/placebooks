@@ -8,26 +8,27 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import placebooks.model.PlaceBook;
-import placebooks.model.User;
 
 public class Shelf
 {
 	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
-	private Collection<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+	private Collection<PlaceBookEntry> entries = 
+		new ArrayList<PlaceBookEntry>();
 
-	@JsonProperty
-	private User user;
+	public Shelf()
+	{
+	}
 
-	public Shelf(final User user, final Collection<PlaceBook> pbs)
+	public Shelf(final Collection<PlaceBook> pbs)
 	{
 		log.info("Creating JSON Shelf...");
-		this.user = user;
 
 		for (final PlaceBook pb : pbs)
 		{
-			for (final Map.Entry<String, String> e : pb.getMetadata().entrySet())
+			for (final Map.Entry<String, String> e : 
+				 pb.getMetadata().entrySet())
 			{
 				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 			}
@@ -36,9 +37,11 @@ public class Shelf
 			entries.add(entry);
 		}
 	}
-	
-	public User getUser()
+
+
+	public void setEntries(final Collection<PlaceBookEntry> entries)
 	{
-		return user;
+		this.entries.clear();
+		this.entries.addAll(entries);
 	}
 }

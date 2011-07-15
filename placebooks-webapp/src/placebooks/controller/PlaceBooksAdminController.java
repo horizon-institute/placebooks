@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -50,6 +51,9 @@ import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.json.Shelf;
+import placebooks.model.json.UserShelf;
+import placebooks.model.json.PlaceBookEntry;
+import placebooks.model.json.PlaceBookSearchEntry;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -404,7 +408,7 @@ public class PlaceBooksAdminController
 				log.info("User " + user.getName());
 				try
 				{
-					final Shelf shelf = new Shelf(user, pbs);
+					final UserShelf shelf = new UserShelf(pbs, user);
 					final ObjectMapper mapper = new ObjectMapper();
 					log.info("Shelf: " + mapper.writeValueAsString(shelf));
 					final ServletOutputStream sos = res.getOutputStream();
@@ -440,20 +444,24 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
+										  final HttpServletResponse res,
+										  @PathVariable("owner") final String owner)
 	{
 		if (owner.trim().isEmpty()) { return null; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
+		final TypedQuery<User> uq = 
+			pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", 
+						   User.class);
 		uq.setParameter("email", owner.trim());
 		try
 		{
 			final User user = uq.getSingleResult();
 
-			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-															PlaceBook.class);
+			final TypedQuery<PlaceBook> q = 
+			pm.createQuery("SELECT p FROM PlaceBook p WHERE p.owner = :user",
+						   PlaceBook.class);
 
 			q.setParameter("user", user);
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -461,7 +469,7 @@ public class PlaceBooksAdminController
 			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
 			if (!pbs.isEmpty())
 			{
-				final Shelf s = new Shelf(user, pbs);
+				final UserShelf s = new UserShelf(pbs, user);
 				try
 				{
 					final ObjectMapper mapper = new ObjectMapper();
@@ -638,28 +646,56 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
-	public ModelAndView searchGET(@PathVariable("terms") final String terms)
+	public ModelAndView searchGET(final HttpServletRequest req,
+								  final HttpServletResponse res,
+								  @PathVariable("terms") final String terms)
 	{
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
 		
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
+		final Collection<PlaceBookEntry> pbs = 
+			new ArrayList<PlaceBookEntry>();
 		for (final Map.Entry<PlaceBook, Integer> entry : 
 			 PlaceBooksAdminHelper.search(em, terms))
 		{
-			out.append("key=" + entry.getKey().getKey() + ", score=" + entry.getValue() + "<br>");
+			final PlaceBook p = entry.getKey();
+			if (p.getState() == PlaceBook.State.PUBLISHED)
+			{
+				log.info("Search result: pb key=" + entry.getKey().getKey() 
+						 + ", score=" + entry.getValue());
+				pbs.add(new PlaceBookSearchEntry(p, entry.getValue()));
+			}
+
+		
 		}
 		em.close();
 
-		timeEnd = System.nanoTime();
-		out.append("<br>Execution time = " + (timeEnd - timeStart) + " ns");
+		final Shelf s = new Shelf();
+		s.setEntries(pbs);
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
 
-		return new ModelAndView("message", "text", "search results:<br>" + out.toString());
+		timeEnd = System.nanoTime();
+		log.info("Search execution time = " + (timeEnd - timeStart) + " ns");
+		
+		return null;
 	}
 
 	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
-	public ModelAndView searchPOST(final HttpServletRequest req)
+	public ModelAndView searchPOST(final HttpServletRequest req,
+								   final HttpServletResponse res)
 	{
 		final StringBuffer out = new StringBuffer();
 		final String[] terms = req.getParameter("terms").split("\\s");
@@ -672,7 +708,7 @@ public class PlaceBooksAdminController
 			}
 		}
 
-		return searchGET(out.toString());
+		return searchGET(req, res, out.toString());
 	}
 
 	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", method = RequestMethod.GET)
