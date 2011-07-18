@@ -178,10 +178,10 @@ public final class TileHelper
 
 		OSRef[] bbox = new OSRef[2];
 		int x = (int)Math.floor((bbox_[0].getEasting() / incX)) * incX,
-			y = (int)Math.floor((bbox_[0].getNorthing() / incY)) * incY;
+			y = (int)Math.floor((bbox_[0].getNorthing() / incY)) * incY - incY;
 		bbox[0] = new OSRef(x, y);
 		x = (int)Math.ceil((bbox_[1].getEasting() / incX)) * incX;
-		y = (int)Math.ceil((bbox_[1].getNorthing() / incY)) * incY;
+		y = (int)Math.ceil((bbox_[1].getNorthing() / incY)) * incY - incY;
 		bbox[1] = new OSRef(x, y);
 
 		for (int i = 0; i < bbox.length; ++i)
