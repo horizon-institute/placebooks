@@ -75,14 +75,15 @@ public final class PlaceBooksAdminHelper
 		{
 			try
 			{
-				final File mapGeom = TileHelper.getMap(p);
+				final TileHelper.MapMetadata md = TileHelper.getMap(p);
+				p.setGeometry(md.getBoundingBox());
 				em.getTransaction().begin();
 				MapImageItem mii = new MapImageItem(null, null, null, null);
 				p.addItem(mii);
 				mii.setPlaceBook(p);
 				mii.setOwner(p.getOwner());
 				mii.setGeometry(p.getGeometry());
-				mii.setPath(mapGeom.getPath());
+				mii.setPath(md.getFile().getPath());
 				em.getTransaction().commit();
 			}		
 			catch (final Throwable e)
@@ -125,9 +126,10 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
-		final String pkgZPath = PropertiesSingleton
-									.get(PlaceBooksAdminHelper.class.getClassLoader())
-									.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+		final String pkgZPath = 
+			PropertiesSingleton
+				.get(PlaceBooksAdminHelper.class.getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
 
 		final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
 

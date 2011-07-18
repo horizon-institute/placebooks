@@ -340,12 +340,14 @@ public class PlaceBook
 		{
 			try
 			{
-				Geometry empty = new WKTReader().read(
-									"POLYGON ((" + minLat + " " + minLon + ", "
-												 + minLat + " " + maxLon + ", "
-												 + maxLat + " " + maxLon + ", "
-												 + maxLat + " " + minLon + ", "
-												 + minLat + " " + minLon + "))");
+				Geometry empty = 
+					new WKTReader().read(
+								"POLYGON ((" + minLat + " " + minLon + ", "
+											 + minLat + " " + maxLon + ", "
+											 + maxLat + " " + maxLon + ", "
+											 + maxLat + " " + minLon + ", "
+											 + minLat + " " + minLon + "))"
+					);
 				log.info("empty=" + empty);
 				if (bounds != null)
 					bounds = empty.union(bounds);

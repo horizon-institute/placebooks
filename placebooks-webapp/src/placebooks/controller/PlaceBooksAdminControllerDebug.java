@@ -136,9 +136,9 @@ public class PlaceBooksAdminControllerDebug
 			pbi.setOwner(itemData.getOwner());
 			pbi.setGeometry(itemData.getGeometry());
 			pbi.setSourceURL(itemData.getSourceURL());
-			((MapImageItem)pbi).setPath(
-					(TileHelper.getMap(pbi.getGeometry())).getPath()
-			);
+			final TileHelper.MapMetadata md = TileHelper.getMap(pbi);
+			((MapImageItem)pbi).setPath((md.getFile()).getPath());
+			pbi.setGeometry(md.getBoundingBox());
 
 			pm.getTransaction().commit();
 
