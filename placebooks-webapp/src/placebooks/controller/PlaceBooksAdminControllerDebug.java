@@ -119,7 +119,7 @@ public class PlaceBooksAdminControllerDebug
 			pbi.setGeometry(itemData.getGeometry());
 			pbi.setSourceURL(itemData.getSourceURL());
 			((MapImageItem)pbi).setPath(
-					(TileHelper.getMap(pbi.getGeometry())).getPath()
+					(TileHelper.getMap(pbi.getGeometry())).getFile().getPath()
 			);
 
 			pm.getTransaction().commit();
