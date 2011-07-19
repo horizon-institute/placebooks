@@ -1,11 +1,21 @@
 package placebooks.client.ui.openlayers;
 
+import placebooks.client.JavaScriptInjector;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
 public class Map extends JavaScriptObject
 {
-	public final static native Map create(final Element div)
+	public static Map create(final Element div)
+	{
+		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg4623().getText());
+		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg900913().getText());
+
+		return createMap(div);
+	}
+
+	private final static native Map createMap(final Element div)
 	/*-{
 		return new $wnd.OpenLayers.Map(div, {
 			controls : [
@@ -36,11 +46,11 @@ public class Map extends JavaScriptObject
 		this.addLayer(layer);
 	}-*/;
 
-	public final native Bounds getMaxExtent()
+	public final native Projection getDisplayProjection()
 	/*-{
-		return this.maxExtent;
+		return this.displayProjection;
 	}-*/;
-	
+
 	public final native Events getEvents()
 	/*-{
 		return this.events;
@@ -60,6 +70,11 @@ public class Map extends JavaScriptObject
 	public final native LonLat getLonLatFromViewPortPx(final JavaScriptObject pixels)
 	/*-{
 		return this.getLonLatFromViewPortPx(pixels);
+	}-*/;
+
+	public final native Bounds getMaxExtent()
+	/*-{
+		return this.maxExtent;
 	}-*/;
 
 	public final native Projection getProjection()
@@ -86,14 +101,9 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.setCenter(lonLat, zoom);		
 	}-*/;
-	
+
 	public final native void zoomToExtent(final Bounds extent)
 	/*-{
 		this.zoomToExtent(extent);
-	}-*/;
-
-	public final native Projection getDisplayProjection()
-	/*-{
-		return this.displayProjection;
 	}-*/;
 }

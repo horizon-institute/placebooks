@@ -25,21 +25,21 @@ public class LoginDialog extends Composite
 	private static LoginDialogUiBinder uiBinder = GWT.create(LoginDialogUiBinder.class);
 
 	@UiField
-	Label titleLabel;
-	
+	PasswordTextBox password;
+
 	@UiField
 	Button submit;
 
 	@UiField
-	PasswordTextBox password;
+	Label titleLabel;
 
 	@UiField
 	TextBox username;
-	
+
 	@UiField
 	Label usernameLabel;
 
-	public LoginDialog(String title, String submitText, String usernameText)
+	public LoginDialog(final String title, final String submitText, final String usernameText)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		submit.setEnabled(false);
@@ -47,10 +47,15 @@ public class LoginDialog extends Composite
 		titleLabel.setText(title);
 		usernameLabel.setText(usernameText);
 	}
-	
+
 	public void addClickHandler(final ClickHandler clickHandler)
 	{
 		submit.addClickHandler(clickHandler);
+	}
+
+	public void focus()
+	{
+		username.setFocus(true);
 	}
 
 	public String getPassword()
@@ -63,20 +68,6 @@ public class LoginDialog extends Composite
 		return username.getText();
 	}
 
-	public void focus()
-	{
-		username.setFocus(true);
-	}
-	
-	@UiHandler("password")
-	void submitOnReturn(final KeyPressEvent event)
-	{
-		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
-		{
-			submit.click();
-		}
-	}
-	
 	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyUpEvent event)
 	{
@@ -94,11 +85,21 @@ public class LoginDialog extends Composite
 
 		submit.setEnabled(true);
 	}
-//
-//	@UiHandler("submit")
-//	void createAccount(final ClickEvent event)
-//	{
-//		submit.setEnabled(false);
-//
-//	}
+
+	//
+	// @UiHandler("submit")
+	// void createAccount(final ClickEvent event)
+	// {
+	// submit.setEnabled(false);
+	//
+	// }
+
+	@UiHandler("password")
+	void submitOnReturn(final KeyPressEvent event)
+	{
+		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
+		{
+			submit.click();
+		}
+	}
 }

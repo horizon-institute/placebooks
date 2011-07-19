@@ -23,19 +23,19 @@ public class PlaceBookHomePlace extends Place
 			return "";
 		}
 	}
-	
+
 	private final Shelf shelf;
-	
+
 	public PlaceBookHomePlace()
 	{
 		this.shelf = null;
 	}
-	
-	public PlaceBookHomePlace(Shelf shelf)
+
+	public PlaceBookHomePlace(final Shelf shelf)
 	{
 		this.shelf = shelf;
 	}
-	
+
 	public Shelf getShelf()
 	{
 		return shelf;

@@ -3,9 +3,9 @@ package placebooks.client.ui;
 import placebooks.client.model.Shelf;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookToolbarLogin.ShelfListener;
+import placebooks.client.ui.places.PlaceBookBrowsePlace;
 import placebooks.client.ui.places.PlaceBookEditorNewPlace;
 import placebooks.client.ui.places.PlaceBookHomePlace;
-import placebooks.client.ui.places.PlaceBookBrowsePlace;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -53,16 +53,11 @@ public class PlaceBookToolbar extends FlowPanel
 		add(login);
 	}
 
-	public void setShelfListener(ShelfListener shelfListener)
-	{
-		login.setShelfListener(shelfListener);
-	}
-	
 	public PlaceController getPlaceController()
 	{
 		return placeController;
 	}
-	
+
 	public void setPlaceController(final PlaceController placeController)
 	{
 		login.setPlaceController(placeController);
@@ -72,5 +67,10 @@ public class PlaceBookToolbar extends FlowPanel
 	public void setShelf(final Shelf shelf)
 	{
 		login.setShelf(shelf);
+	}
+
+	public void setShelfListener(final ShelfListener shelfListener)
+	{
+		login.setShelfListener(shelfListener);
 	}
 }

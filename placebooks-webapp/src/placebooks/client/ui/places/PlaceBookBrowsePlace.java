@@ -37,7 +37,7 @@ public class PlaceBookBrowsePlace extends Place
 		super();
 		this.shelf = shelf;
 	}
-	
+
 	public Shelf getShelf()
 	{
 		return shelf;

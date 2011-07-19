@@ -7,28 +7,28 @@ import com.google.gwt.user.client.ui.Composite;
 
 public abstract class PlaceBookItemWidget extends Composite
 {
-	public static interface ResizeHandler
+	public static interface ChangeHandler
 	{
-		public void itemResized();
+		public void itemChanged();
 	}
-	
+
 	public static interface FocusHandler
 	{
 		public void itemFocusChanged(final boolean focussed);
 	}
-	
-	public static interface ChangeHandler
+
+	public static interface ResizeHandler
 	{
-		public void itemChanged();
-	}	
-		
+		public void itemResized();
+	}
+
 	public static final double HEIGHT_PRECISION = 10000;
 
 	protected PlaceBookItem item;
-	
-	private ResizeHandler resizeHandler;
+
+	private ChangeHandler changeHandler;
 	private FocusHandler focusHandler;
-	private ChangeHandler changeHandler;	
+	private ResizeHandler resizeHandler;
 
 	PlaceBookItemWidget(final PlaceBookItem item)
 	{
@@ -40,70 +40,70 @@ public abstract class PlaceBookItemWidget extends Composite
 		return item;
 	}
 
-	public void setFocusHandler(FocusHandler focusHandler)
-	{
-		this.focusHandler = focusHandler;
-	}
-	
-	public void setChangeHandler(ChangeHandler changeHandler)
+	public abstract void refresh();
+
+	public void setChangeHandler(final ChangeHandler changeHandler)
 	{
 		this.changeHandler = changeHandler;
 	}
-		
-	public abstract void refresh();
 
-	int getOrder()
+	public void setFocusHandler(final FocusHandler focusHandler)
 	{
-		return item.getParameter("order", 0);
+		this.focusHandler = focusHandler;
 	}
-	
-	public void setResizeHandler(ResizeHandler resizeHandler)
+
+	public void setPlaceBook(final PlaceBook placebook)
+	{
+
+	}
+
+	public void setResizeHandler(final ResizeHandler resizeHandler)
 	{
 		this.resizeHandler = resizeHandler;
 	}
-	
-	public void update(PlaceBookItem newItem)
+
+	public void update(final PlaceBookItem newItem)
 	{
-		if(item.getKey() == null && newItem.getKey() != null)
+		if (item.getKey() == null && newItem.getKey() != null)
 		{
 			item.setKey(newItem.getKey());
 			item.removeMetadata("tempID");
 			newItem.removeMetadata("tempID");
 		}
-		
-		if(newItem.getHash() != null)
+
+		if (newItem.getHash() != null)
 		{
 			item.setHash(newItem.getHash());
 		}
 		refresh();
 	}
-	
-	public void setPlaceBook(final PlaceBook placebook)
-	{
-		
-	}
 
-	protected void fireResized()
+	int getOrder()
 	{
-		if(resizeHandler != null)
-		{
-			resizeHandler.itemResized();
-		}
+		return item.getParameter("order", 0);
 	}
 
 	protected void fireChanged()
 	{
-		if(changeHandler != null)
+		if (changeHandler != null)
 		{
 			changeHandler.itemChanged();
 		}
 	}
-	
+
 	protected void fireFocusChanged(final boolean focussed)
 	{
-		if(focusHandler != null)
+		if (focusHandler != null)
 		{
 			focusHandler.itemFocusChanged(focussed);
 		}
-	}	
+	}
+
+	protected void fireResized()
+	{
+		if (resizeHandler != null)
+		{
+			resizeHandler.itemResized();
+		}
+	}
 }

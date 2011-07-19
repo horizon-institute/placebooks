@@ -38,16 +38,16 @@ public class PlaceBookSearchPlace extends Place
 	{
 		super();
 		this.shelf = shelf;
-		this.search = search;		
+		this.search = search;
 	}
-	
-	public Shelf getShelf()
-	{
-		return shelf;
-	}
-	
+
 	public String getSearch()
 	{
 		return search;
+	}
+
+	public Shelf getShelf()
+	{
+		return shelf;
 	}
 }

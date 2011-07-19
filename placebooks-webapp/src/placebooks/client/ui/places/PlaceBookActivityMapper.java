@@ -25,16 +25,17 @@ public class PlaceBookActivityMapper implements ActivityMapper
 		}
 		else if (place instanceof PlaceBookHomePlace)
 		{
-			return new PlaceBookHomeActivity(controller, ((PlaceBookHomePlace)place).getShelf());
+			return new PlaceBookHomeActivity(controller, ((PlaceBookHomePlace) place).getShelf());
 		}
 		else if (place instanceof PlaceBookBrowsePlace)
 		{
-			return new PlaceBookBrowseActivity("Library", controller, ((PlaceBookBrowsePlace)place).getShelf());
+			return new PlaceBookBrowseActivity("Library", controller, ((PlaceBookBrowsePlace) place).getShelf());
 		}
 		else if (place instanceof PlaceBookSearchPlace)
 		{
-			return new PlaceBookBrowseActivity("Search - " + ((PlaceBookSearchPlace)place).getSearch(), controller, ((PlaceBookSearchPlace)place).getShelf());
-		}		
+			return new PlaceBookBrowseActivity("Search - " + ((PlaceBookSearchPlace) place).getSearch(), controller,
+					((PlaceBookSearchPlace) place).getShelf());
+		}
 		else if (place instanceof PlaceBookEditorNewPlace)
 		{
 			return new PlaceBookEditorNewActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook());

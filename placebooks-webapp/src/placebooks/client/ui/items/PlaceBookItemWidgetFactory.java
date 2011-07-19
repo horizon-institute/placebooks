@@ -9,10 +9,7 @@ public class PlaceBookItemWidgetFactory
 	{
 		if (item.is(ItemType.TEXT))
 		{
-			if(editable)
-			{
-				return new EditableTextItem(item);
-			}
+			if (editable) { return new EditableTextItem(item); }
 			return new TextItem(item);
 		}
 		else if (item.is(ItemType.IMAGE))
@@ -31,10 +28,7 @@ public class PlaceBookItemWidgetFactory
 		{
 			return new MapItem(item);
 		}
-		else if (item.is(ItemType.WEB))
-		{
-			return new WebBundleItem(item);
-		}
+		else if (item.is(ItemType.WEB)) { return new WebBundleItem(item); }
 		return null;
 	}
 }

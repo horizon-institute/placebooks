@@ -2,13 +2,11 @@ package placebooks.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.model.GPSTraceItem;
+import placebooks.model.MapImageItem;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBook.State;
@@ -46,7 +45,6 @@ import placebooks.model.PlaceBookItemSearchIndex;
 import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
-import placebooks.model.MapImageItem;
 
 public final class PlaceBooksAdminHelper
 {
@@ -250,6 +248,10 @@ public final class PlaceBooksAdminHelper
 					{
 						if (!containsItem(item, placebook.getItems()))
 						{
+							if(item instanceof GPSTraceItem)
+							{
+							}
+							item.deleteItemData();
 							manager.remove(item);
 						}
 					}

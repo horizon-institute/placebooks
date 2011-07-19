@@ -19,27 +19,25 @@ public class PlaceBookEntryWidget extends FlowPanel
 
 	public PlaceBookEntryWidget(final PlaceController placeController, final PlaceBookEntry entry)
 	{
-		if(entry.getState().equals("PUBLISHED"))
+		if (entry.getState().equals("PUBLISHED"))
 		{
-			label.setText(entry.getTitle() + " (Published)");					
+			label.setText(entry.getTitle() + " (Published)");
 		}
 		else
 		{
 			label.setText(entry.getTitle());
 		}
-		
 
-		setStyleName(Resources.INSTANCE.style().placebookEntry());		
+		setStyleName(Resources.INSTANCE.style().placebookEntry());
 		label.setStyleName(Resources.INSTANCE.style().placebookEntryText());
-		if(entry.getState().equals("PUBLISHED"))
+		if (entry.getState().equals("PUBLISHED"))
 		{
-			setTitle("View " + entry.getTitle());					
+			setTitle("View " + entry.getTitle());
 		}
 		else
 		{
 			setTitle("Edit " + entry.getTitle());
-		}		
-
+		}
 
 		add(image);
 		add(label);
@@ -49,9 +47,9 @@ public class PlaceBookEntryWidget extends FlowPanel
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				if(entry.getState().equals("PUBLISHED"))
+				if (entry.getState().equals("PUBLISHED"))
 				{
-					placeController.goTo(new PlaceBookPreviewPlace(entry.getKey()));					
+					placeController.goTo(new PlaceBookPreviewPlace(entry.getKey()));
 				}
 				else
 				{

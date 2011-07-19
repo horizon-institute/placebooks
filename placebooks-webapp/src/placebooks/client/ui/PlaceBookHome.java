@@ -31,11 +31,11 @@ public class PlaceBookHome extends Composite
 	private static PlaceBookAccountUiBinder uiBinder = GWT.create(PlaceBookAccountUiBinder.class);
 
 	@UiField
-	PlaceBookToolbar toolbar;
-	
-	@UiField
 	TextBox search;
-	
+
+	@UiField
+	PlaceBookToolbar toolbar;
+
 	private final PlaceController placeController;
 
 	public PlaceBookHome(final PlaceController controller)
@@ -46,42 +46,42 @@ public class PlaceBookHome extends Composite
 		this.placeController = controller;
 	}
 
-	public PlaceBookHome(final PlaceController controller, Shelf shelf)
+	public PlaceBookHome(final PlaceController controller, final Shelf shelf)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		toolbar.setPlaceController(controller);
 		toolbar.setShelf(shelf);
 		this.placeController = controller;
-		
-		Window.setTitle("PlaceBooks");		
+
+		Window.setTitle("PlaceBooks");
 	}
-	
-	@UiHandler("search")
-	void handleFocus(final FocusEvent event)
-	{
-		if(search.getText().equals("Search PlaceBooks"))
-		{
-			search.setText("");		
-			search.getElement().getStyle().setColor("#000");
-		}
-	}
-	
+
 	@UiHandler("search")
 	void handleBlur(final BlurEvent event)
 	{
-		if(search.getText().equals(""))
+		if (search.getText().equals(""))
 		{
-			search.setText("Search PlaceBooks");		
+			search.setText("Search PlaceBooks");
 			search.getElement().getStyle().clearColor();
 		}
 	}
-	
+
+	@UiHandler("search")
+	void handleFocus(final FocusEvent event)
+	{
+		if (search.getText().equals("Search PlaceBooks"))
+		{
+			search.setText("");
+			search.getElement().getStyle().setColor("#000");
+		}
+	}
+
 	@UiHandler("searchButton")
 	void handleSearch(final ClickEvent event)
 	{
 		search();
 	}
-	
+
 	@UiHandler("search")
 	void handleSearchEnter(final KeyPressEvent event)
 	{
@@ -90,13 +90,13 @@ public class PlaceBookHome extends Composite
 			search();
 		}
 	}
-	
+
 	private void search()
 	{
 		PlaceBookService.search(search.getText(), new AbstractCallback()
 		{
 			@Override
-			public void success(Request request, Response response)
+			public void success(final Request request, final Response response)
 			{
 				placeController.goTo(new PlaceBookSearchPlace(search.getText(), Shelf.parse(response.getText())));
 			}

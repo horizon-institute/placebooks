@@ -6,15 +6,21 @@ public interface PlaceBookCSS extends CssResource
 {
 	String canvas();
 
+	String content();
+
 	String dialog();
 
 	String dialogGlass();
 
 	String dragFrame();
 
+	String dropMenu();
+
 	String frameWidgetPanel();
 
 	String glassPanel();
+
+	String innerPanel();
 
 	String insert();
 
@@ -26,8 +32,6 @@ public interface PlaceBookCSS extends CssResource
 
 	String menuItem();
 
-	String innerPanel();
-	
 	String panel();
 
 	String panelcenter();
@@ -38,29 +42,25 @@ public interface PlaceBookCSS extends CssResource
 
 	String panelright();
 
+	String placebookEntry();
+
+	String placebookEntryText();
+
 	String popupPanel();
 
 	String textitem();
 
-	String widgetPanel();
-
-	String dropMenu();
-	
-	String toolbarMenu();
-	
-	String toolbarMenuItem();	
-	
 	String toolbar();
-	
+
 	String toolbarItem();
-	
-	String toolbarItemDisabled();	
-	
+
+	String toolbarItemDisabled();
+
 	String toolbarLogin();
 
-	String placebookEntry();
-	
-	String placebookEntryText();
-	
-	String content();
+	String toolbarMenu();
+
+	String toolbarMenuItem();
+
+	String widgetPanel();
 }

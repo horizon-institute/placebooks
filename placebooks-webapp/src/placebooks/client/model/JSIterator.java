@@ -9,12 +9,12 @@ public class JSIterator<T extends JavaScriptObject> implements Iterator<T>
 {
 	private final JsArray<T> array;
 	private int index = 0;
-	
+
 	public JSIterator(final JsArray<T> jsarray)
 	{
 		this.array = jsarray;
 	}
-	
+
 	@Override
 	public boolean hasNext()
 	{
@@ -24,7 +24,7 @@ public class JSIterator<T extends JavaScriptObject> implements Iterator<T>
 	@Override
 	public T next()
 	{
-		T result = array.get(index);
+		final T result = array.get(index);
 		index++;
 		return result;
 	}
@@ -32,6 +32,6 @@ public class JSIterator<T extends JavaScriptObject> implements Iterator<T>
 	@Override
 	public void remove()
 	{
-				
+
 	}
 }

@@ -1,28 +1,29 @@
 package placebooks.client.ui.items.frames;
 
-import com.google.gwt.core.client.GWT;
-
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 
+import com.google.gwt.core.client.GWT;
 
 public abstract class PlaceBookItemFrameFactory
 {
 	public abstract PlaceBookItemFrame createFrame();
-	
-	public abstract boolean getEditable();
-	
-	public PlaceBookItemFrame createFrame(PlaceBookItem item)
+
+	public PlaceBookItemFrame createFrame(final PlaceBookItem item)
 	{
-		PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, getEditable());
-		if(widget == null)
+		final PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, getEditable());
+		if (widget == null)
 		{
-			GWT.log("No widget for " + item.getKey());
+			GWT.log("No widget for " + item.getKey() + ": type=" + item.getShortClassName());
+			return null;
 		}
-		PlaceBookItemFrame frame = createFrame();
+
+		final PlaceBookItemFrame frame = createFrame();
 		frame.setItemWidget(widget);
-		
+
 		return frame;
 	}
+
+	public abstract boolean getEditable();
 }

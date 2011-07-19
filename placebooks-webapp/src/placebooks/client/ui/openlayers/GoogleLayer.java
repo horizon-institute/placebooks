@@ -1,8 +1,17 @@
 package placebooks.client.ui.openlayers;
 
+import placebooks.client.JavaScriptInjector;
+
 public class GoogleLayer extends Layer
 {
-	public final static native OSMLayer create(final String name, final Bounds mapBounds)
+	public final static GoogleLayer create(final String name, final Bounds mapBounds)
+	{
+		JavaScriptInjector.add("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false");
+
+		return createLayer(name, mapBounds);
+	}
+
+	private final static native GoogleLayer createLayer(final String name, final Bounds mapBounds)
 	/*-{
 		return new $wnd.OpenLayers.Layer.Google(name,
 		{

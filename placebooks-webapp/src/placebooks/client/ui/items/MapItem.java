@@ -7,11 +7,11 @@ import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
 import placebooks.client.ui.openlayers.Event;
 import placebooks.client.ui.openlayers.EventHandler;
-import placebooks.client.ui.openlayers.GoogleLayer;
 import placebooks.client.ui.openlayers.LonLat;
 import placebooks.client.ui.openlayers.Map;
 import placebooks.client.ui.openlayers.Marker;
 import placebooks.client.ui.openlayers.MarkerLayer;
+import placebooks.client.ui.openlayers.OSLayer;
 import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
@@ -85,6 +85,42 @@ public class MapItem extends PlaceBookItemWidget
 		recenter();
 	}
 
+	public void refreshMarkers()
+	{
+		if (placebook == null) { return; }
+
+		positionItem = null;
+		interactionLabel.setVisible(false);
+		for (final PlaceBookItem item : placebook.getItems())
+		{
+			if (item.hasMetadata("mapItemID") && item.getMetadata("mapItemID").equals(getItem().getKey()))
+			{
+				if (item.getGeometry() != null)
+				{
+					final String geometry = item.getGeometry();
+					if (geometry.startsWith(POINT_PREFIX))
+					{
+						final LonLat lonlat = LonLat.create(geometry.substring(	POINT_PREFIX.length(),
+																				geometry.length() - 1));
+						final Marker marker = Marker.create(MARKER_URL,
+															lonlat.clone().transform(map.getDisplayProjection(),
+																						map.getProjection()), 32, 32);
+						markerLayer.addMarker(marker);
+						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
+					}
+				}
+				else
+				{
+					GWT.log("No geometry for " + item.getKey());
+					positionItem = item;
+					interactionLabel.setText("Set position of " + item.getMetadata("title", item.getKey()));
+					interactionLabel.setVisible(true);
+				}
+			}
+		}
+		recenter();
+	}
+
 	@Override
 	public void setPlaceBook(final PlaceBook placebook)
 	{
@@ -110,6 +146,7 @@ public class MapItem extends PlaceBookItemWidget
 		if (map == null)
 		{
 			map = Map.create(panel.getElement());
+			// map = OSMap.create(panel.getElement());
 			final ClickControl control = ClickControl.create(new EventHandler()
 			{
 				@Override
@@ -131,7 +168,8 @@ public class MapItem extends PlaceBookItemWidget
 			map.addControl(control);
 			control.activate();
 
-			map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
+			// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
+			map.addLayer(OSLayer.create("glayer"));
 			// map.addLayer(OSMLayer.create("Osmarender"));
 
 			markerLayer = MarkerLayer.create("markerLayer");
@@ -211,41 +249,5 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			GWT.log(e.getMessage(), e);
 		}
-	}
-
-	public void refreshMarkers()
-	{
-		if (placebook == null) { return; }
-
-		positionItem = null;
-		interactionLabel.setVisible(false);
-		for (final PlaceBookItem item : placebook.getItems())
-		{
-			if (item.hasMetadata("mapItemID") && item.getMetadata("mapItemID").equals(getItem().getKey()))
-			{
-				if (item.getGeometry() != null)
-				{
-					final String geometry = item.getGeometry();
-					if (geometry.startsWith(POINT_PREFIX))
-					{
-						final LonLat lonlat = LonLat.create(geometry.substring(	POINT_PREFIX.length(),
-																				geometry.length() - 1));
-						final Marker marker = Marker.create(MARKER_URL,
-															lonlat.clone().transform(map.getDisplayProjection(),
-																						map.getProjection()), 32, 32);
-						markerLayer.addMarker(marker);
-						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
-					}
-				}
-				else
-				{
-					GWT.log("No geometry for " + item.getKey());
-					positionItem = item;
-					interactionLabel.setText("Set position of " + item.getMetadata("title", item.getKey()));
-					interactionLabel.setVisible(true);
-				}
-			}
-		}
-		recenter();
 	}
 }

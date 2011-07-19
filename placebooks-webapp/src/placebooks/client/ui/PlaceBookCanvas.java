@@ -21,7 +21,7 @@ public class PlaceBookCanvas extends FlowPanel
 	private static final int DEFAULT_COLUMNS = 3;
 	private static final int DEFAULT_PAGES = 2;
 
-	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();	
+	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
 
@@ -36,9 +36,16 @@ public class PlaceBookCanvas extends FlowPanel
 			@Override
 			public void onResize(final ResizeEvent event)
 			{
-				reflow();				
+				reflow();
 			}
 		});
+	}
+
+	public void add(final PlaceBookItemFrame item)
+	{
+		addImpl(item);
+		placebook.add(item.getItem());
+		refreshItemPlaceBook();
 	}
 
 	public Iterable<PlaceBookItemFrame> getItems()
@@ -63,64 +70,19 @@ public class PlaceBookCanvas extends FlowPanel
 			panel.reflow();
 		}
 	}
-	
-	private final void refreshItemPlaceBook()
-	{
-		for(PlaceBookItemFrame item: items)
-		{
-			item.getItemWidget().setPlaceBook(placebook);
-		}	
-	}
-	
-	private void addImpl(final PlaceBookItemFrame item)
-	{
-		items.add(item);
-		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));		
-	}
-	
-	public void add(final PlaceBookItemFrame item)
-	{
-		addImpl(item);
-		placebook.add(item.getItem());
-		refreshItemPlaceBook();
-	}
 
-	private void removeImpl(final PlaceBookItemFrame item)
-	{
-		items.remove(item);
-		item.setPanel(null);
-	}
-	
 	public void remove(final PlaceBookItemFrame item)
 	{
 		removeImpl(item);
 		placebook.remove(item.getItem());
-		refreshItemPlaceBook();		
+		refreshItemPlaceBook();
 	}
 
-	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
-	{
-		for(PlaceBookItemFrame frame: items)
-		{
-			if(frame.getItem().getKey() != null)
-			{
-				if(frame.getItem().getKey().equals(item.getKey()))
-				{	
-					return frame;
-				}
-			}
-			else if (item.hasMetadata("tempID") && item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID")))
-			{
-				return frame;
-			}			
-		}
-		return null;
-	}
-	
-	public void setPlaceBook(final PlaceBook newPlaceBook, final PlaceBookItemFrameFactory factory, boolean panelsVisible)
+	public void setPlaceBook(final PlaceBook newPlaceBook, final PlaceBookItemFrameFactory factory,
+			final boolean panelsVisible)
 	{
 		assert placebook == null;
-		this.placebook = newPlaceBook;	
+		this.placebook = newPlaceBook;
 		clear();
 		int pages = DEFAULT_PAGES;
 		try
@@ -147,35 +109,70 @@ public class PlaceBookCanvas extends FlowPanel
 			add(panel);
 		}
 
-		for (PlaceBookItem item: newPlaceBook.getItems())
+		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
-			addImpl(factory.createFrame(item));		
+			addImpl(factory.createFrame(item));
 		}
 
-		refreshItemPlaceBook();	
-		reflow();		
+		refreshItemPlaceBook();
+		reflow();
 	}
-	
+
 	public void updatePlaceBook(final PlaceBook newPlaceBook)
 	{
 		this.placebook = newPlaceBook;
 
-		for (PlaceBookItem item: newPlaceBook.getItems())
+		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
 			final PlaceBookItemFrame frame = getFrame(item);
-			if(frame != null)
+			if (frame != null)
 			{
 				frame.getItemWidget().update(item);
 			}
 		}
-		
+
 		placebook.clearItems();
 		for (final PlaceBookItemFrame item : items)
 		{
 			placebook.add(item.getItem());
 		}
 
-		refreshItemPlaceBook();		
+		refreshItemPlaceBook();
 		reflow();
+	}
+
+	private void addImpl(final PlaceBookItemFrame item)
+	{
+		if (item == null) { return; }
+		items.add(item);
+		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));
+	}
+
+	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
+	{
+		for (final PlaceBookItemFrame frame : items)
+		{
+			if (frame.getItem().getKey() != null)
+			{
+				if (frame.getItem().getKey().equals(item.getKey())) { return frame; }
+			}
+			else if (item.hasMetadata("tempID")
+					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
+		}
+		return null;
+	}
+
+	private final void refreshItemPlaceBook()
+	{
+		for (final PlaceBookItemFrame item : items)
+		{
+			item.getItemWidget().setPlaceBook(placebook);
+		}
+	}
+
+	private void removeImpl(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+		item.setPanel(null);
 	}
 }

@@ -78,14 +78,14 @@ public class UploadMenuItem extends MenuItem
 				item.getItemWidget().refresh();
 				dialogBox.hide();
 				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
-				{					
+				{
 					@Override
-					public void success(Request request, Response response)
+					public void success(final Request request, final Response response)
 					{
-						PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
-						item.getItemWidget().update(placebookItem);						
+						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getItemWidget().update(placebookItem);
 					}
-				});				
+				});
 			}
 		});
 
