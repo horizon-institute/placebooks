@@ -17,6 +17,14 @@ public class PlaceBookToolbarItem extends FlowPanel
 	private final Image image = new Image();
 	private final InlineLabel label = new InlineLabel();
 
+	public PlaceBookToolbarItem(final String text, final ImageResource imageRes, final ClickHandler clickHandler)
+	{
+		this();
+		setResource(imageRes);
+		label.setText(text);
+		setClickHandler(clickHandler);
+	}
+
 	PlaceBookToolbarItem()
 	{
 		addDomHandler(new ClickHandler()
@@ -35,14 +43,6 @@ public class PlaceBookToolbarItem extends FlowPanel
 		add(image);
 		add(label);
 		setEnabled(true);
-	}
-
-	public PlaceBookToolbarItem(final String text, final ImageResource imageRes, final ClickHandler clickHandler)
-	{
-		this();
-		setResource(imageRes);
-		label.setText(text);
-		setClickHandler(clickHandler);
 	}
 
 	public void hideImage()
@@ -75,7 +75,7 @@ public class PlaceBookToolbarItem extends FlowPanel
 			image.setVisible(true);
 			image.setResource(imageResource);
 			image.getElement().getStyle().setMarginRight(5, Unit.PX);
-			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);			
+			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);
 		}
 		else
 		{

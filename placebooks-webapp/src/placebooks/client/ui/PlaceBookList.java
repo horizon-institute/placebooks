@@ -106,7 +106,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 		{
 			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 			entries.add(newPlaceBook);
-			for (PlaceBookEntry entry: entries)
+			for (final PlaceBookEntry entry : entries)
 			{
 				entries.add(entry);
 			}

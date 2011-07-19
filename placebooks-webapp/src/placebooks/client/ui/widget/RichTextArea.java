@@ -15,16 +15,16 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
 public class RichTextArea extends Widget implements HasKeyUpHandlers, HasFocusHandlers, HasBlurHandlers
-{	
+{
 	public RichTextArea()
 	{
 		super();
-		Element div = DOM.createDiv();
+		final Element div = DOM.createDiv();
 		setElement(div);
 		div.setAttribute("contentEditable", "true");
 		div.getStyle().setProperty("textAlign", "justify");
 	}
-	
+
 	public RichTextArea(final String html)
 	{
 		this();

@@ -20,15 +20,15 @@ public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 		public boolean getEditable()
 		{
 			return false;
-		}		
+		}
 	};
-	
+
 	public PlaceBookItemBlankFrame()
 	{
 		rootPanel = new SimplePanel();
 		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
 		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
 		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
-		rootPanel.add(widgetPanel);		
+		rootPanel.add(widgetPanel);
 	}
 }

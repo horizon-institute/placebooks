@@ -47,6 +47,21 @@ public class CreateAccount extends Composite
 		createAccount.setEnabled(false);
 	}
 
+	public String getEmail()
+	{
+		return email.getText();
+	}
+
+	public String getPassword()
+	{
+		return password.getText();
+	}
+
+	public void setCallback(final AbstractCallback callback)
+	{
+		this.callback = callback;
+	}
+
 	@UiHandler(value = { "name", "email", "password", "passwordConfirm" })
 	void checkValid(final KeyUpEvent event)
 	{
@@ -82,20 +97,5 @@ public class CreateAccount extends Composite
 	{
 		createAccount.setEnabled(false);
 		PlaceBookService.registerAccount(name.getText(), email.getText(), password.getText(), callback);
-	}
-
-	public String getEmail()
-	{
-		return email.getText();
-	}
-
-	public String getPassword()
-	{
-		return password.getText();
-	}
-
-	public void setCallback(final AbstractCallback callback)
-	{
-		this.callback = callback;
 	}
 }

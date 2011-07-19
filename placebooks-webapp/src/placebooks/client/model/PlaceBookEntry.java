@@ -19,11 +19,11 @@ public class PlaceBookEntry extends JavaScriptObject
 	public final native String getOwner() /*-{ return this.owner; }-*/;
 
 	public final native String getState() /*-{ return this.state; }-*/;
-	
-	public final String getTitle() 
+
+	public final String getTitle()
 	{
-		String title = getTitleImpl();
-		if(title != null && !title.trim().equals(""))
+		final String title = getTitleImpl();
+		if (title != null && !title.trim().equals(""))
 		{
 			return title;
 		}
@@ -32,7 +32,7 @@ public class PlaceBookEntry extends JavaScriptObject
 			return "No Title (" + getKey() + ")";
 		}
 	}
-	
+
 	public final native String getTitleImpl() /*-{ return this.title; }-*/;
 
 	public final native void setOwner(User user) /*-{ this.owner = user; }-*/;

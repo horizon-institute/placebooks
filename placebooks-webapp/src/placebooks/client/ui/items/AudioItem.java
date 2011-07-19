@@ -10,42 +10,28 @@ import com.google.gwt.user.client.Timer;
 public class AudioItem extends PlaceBookItemWidget
 {
 	private final Audio audio;
-	private String url;
 	private final Timer loadTimer = new Timer()
 	{
 		@Override
 		public void run()
 		{
-			checkSize();			
+			checkSize();
 		}
-	};	
-	
-	private void checkSize()
-	{
-		if(audio.getOffsetHeight() == 0)
-		{
-			loadTimer.schedule(1000);			
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
-	}	
-	
+	};
+	private String url;
 
-	AudioItem(PlaceBookItem item)
+	AudioItem(final PlaceBookItem item)
 	{
 		super(item);
 		audio = Audio.createIfSupported();
 		audio.setControls(true);
-		audio.setWidth("100%");		
+		audio.setWidth("100%");
 		audio.addCanPlayThroughHandler(new CanPlayThroughHandler()
 		{
 			@Override
-			public void onCanPlayThrough(CanPlayThroughEvent event)
+			public void onCanPlayThrough(final CanPlayThroughEvent event)
 			{
-				fireResized();				
+				fireResized();
 			}
 		});
 		initWidget(audio);
@@ -54,11 +40,24 @@ public class AudioItem extends PlaceBookItemWidget
 	@Override
 	public void refresh()
 	{
-		if(url == null || !url.equals(getItem().getURL()))
+		if (url == null || !url.equals(getItem().getURL()))
 		{
 			url = getItem().getURL();
 			audio.setSrc(url);
 			checkSize();
+		}
+	}
+
+	private void checkSize()
+	{
+		if (audio.getOffsetHeight() == 0)
+		{
+			loadTimer.schedule(1000);
+		}
+		else
+		{
+			loadTimer.cancel();
+			fireResized();
 		}
 	}
 }

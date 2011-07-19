@@ -13,40 +13,27 @@ import com.google.gwt.user.client.ui.Image;
 public class ImageItem extends PlaceBookItemWidget
 {
 	private final Image image = new Image();
-	
+
 	private final Timer loadTimer = new Timer()
 	{
 		@Override
 		public void run()
 		{
-			checkSize();			
+			checkSize();
 		}
 	};
-	
-	private void checkSize()
-	{
-		if(image.getHeight() == 0)
-		{
-			loadTimer.schedule(1000);			
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
-	}
 
-	ImageItem(PlaceBookItem item)
+	ImageItem(final PlaceBookItem item)
 	{
 		super(item);
 		initWidget(image);
 		image.getElement().getStyle().setProperty("margin", "0 auto");
-		image.getElement().getStyle().setDisplay(Display.BLOCK);		
-		
+		image.getElement().getStyle().setDisplay(Display.BLOCK);
+
 		image.addLoadHandler(new LoadHandler()
 		{
 			@Override
-			public void onLoad(LoadEvent event)
+			public void onLoad(final LoadEvent event)
 			{
 				checkSize();
 			}
@@ -55,7 +42,7 @@ public class ImageItem extends PlaceBookItemWidget
 		image.addClickHandler(new ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				fireFocusChanged(true);
 				event.stopPropagation();
@@ -75,5 +62,18 @@ public class ImageItem extends PlaceBookItemWidget
 			image.setWidth("100%");
 		}
 		image.setUrl(getItem().getURL());
+	}
+
+	private void checkSize()
+	{
+		if (image.getHeight() == 0)
+		{
+			loadTimer.schedule(1000);
+		}
+		else
+		{
+			loadTimer.cancel();
+			fireResized();
+		}
 	}
 }

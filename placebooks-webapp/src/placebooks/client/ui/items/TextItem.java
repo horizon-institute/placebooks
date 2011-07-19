@@ -11,7 +11,7 @@ public class TextItem extends PlaceBookItemWidget
 	TextItem(final PlaceBookItem item)
 	{
 		super(item);
-		
+
 		initWidget(textPanel);
 	}
 

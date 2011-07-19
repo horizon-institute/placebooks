@@ -42,15 +42,6 @@ public class PlaceBook extends JavaScriptObject
 			}
 		};
 	}
-	
-	private final native JsArray<PlaceBookItem> getItemsInternal()
-	/*-{
-		if(!('items' in this))
-		{
-			this.items = new Array();
-		}
-		return this.items;
-	}-*/;
 
 	public final native String getKey()
 	/*-{
@@ -70,7 +61,7 @@ public class PlaceBook extends JavaScriptObject
 		}
 		return defaultValue;
 	}-*/;
-	
+
 	public final native User getOwner() /*-{
 										return this.owner;
 										}-*/;
@@ -100,6 +91,15 @@ public class PlaceBook extends JavaScriptObject
 	}-*/;
 
 	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
+
+	private final native JsArray<PlaceBookItem> getItemsInternal()
+	/*-{
+		if(!('items' in this))
+		{
+			this.items = new Array();
+		}
+		return this.items;
+	}-*/;
 
 	// @Persistent
 	// private Date timestamp;

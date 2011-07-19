@@ -22,18 +22,18 @@ public class EditableTextItem extends PlaceBookItemWidget
 		initWidget(textPanel);
 		textPanel.setStyleName(Resources.INSTANCE.style().textitem());
 		textPanel.addDomHandler(new ClickHandler()
-		{		
+		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				event.stopPropagation();
-				fireFocusChanged(true);				
+				fireFocusChanged(true);
 			}
 		}, ClickEvent.getType());
 		textPanel.addFocusHandler(new com.google.gwt.event.dom.client.FocusHandler()
 		{
 			@Override
-			public void onFocus(FocusEvent event)
+			public void onFocus(final FocusEvent event)
 			{
 				fireFocusChanged(true);
 				event.stopPropagation();
@@ -41,22 +41,22 @@ public class EditableTextItem extends PlaceBookItemWidget
 		});
 		textPanel.addBlurHandler(new BlurHandler()
 		{
-			
+
 			@Override
-			public void onBlur(BlurEvent event)
+			public void onBlur(final BlurEvent event)
 			{
 				fireFocusChanged(false);
-				
+
 			}
 		});
 		textPanel.addKeyUpHandler(new KeyUpHandler()
 		{
 			@Override
-			public void onKeyUp(KeyUpEvent event)
+			public void onKeyUp(final KeyUpEvent event)
 			{
 				item.setText(textPanel.getElement().getInnerHTML());
 				fireResized();
-				fireChanged();				
+				fireChanged();
 			}
 		});
 	}

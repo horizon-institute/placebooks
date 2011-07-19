@@ -37,17 +37,12 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public static class Factory extends PlaceBookItemFrameFactory
 	{
 		private PlaceBookInteractionHandler interactionHandler;
-		
+
 		public Factory()
 		{
 
 		}
-		
-		public void setInteractionHandler(PlaceBookInteractionHandler interactionHandler)
-		{
-			this.interactionHandler = interactionHandler;
-		}
-		
+
 		@Override
 		public PlaceBookItemFrame createFrame()
 		{
@@ -59,58 +54,63 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			return true;
 		}
+
+		public void setInteractionHandler(final PlaceBookInteractionHandler interactionHandler)
+		{
+			this.interactionHandler = interactionHandler;
+		}
 	}
-	
-	private final MouseOverHandler highlightOn = new MouseOverHandler()
-	{
-		@Override
-		public void onMouseOver(MouseOverEvent event)
-		{
-			setHighlight(true);
-		}
-	};
-
-	private final MouseOutHandler highlightOff = new MouseOutHandler()
-	{
-		@Override
-		public void onMouseOut(MouseOutEvent event)
-		{
-			setHighlight(false);
-		}
-	};
-	
-	private boolean highlighted = false;
-
-	private final PlaceBookInteractionHandler interactionHandler;
 
 	private final PlaceBookItemWidget.ChangeHandler changeHandler = new PlaceBookItemWidget.ChangeHandler()
 	{
 		@Override
 		public void itemChanged()
 		{
-			interactionHandler.getContext().markChanged();			
+			interactionHandler.getContext().markChanged();
 		}
 	};
-	
+
 	private final PlaceBookItemWidget.FocusHandler focusHandler = new PlaceBookItemWidget.FocusHandler()
 	{
 		@Override
-		public void itemFocusChanged(boolean focussed)
+		public void itemFocusChanged(final boolean focussed)
 		{
-			if(focussed)
+			if (focussed)
 			{
 				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);
 			}
 			else
 			{
-				interactionHandler.setSelected(null);				
+				interactionHandler.setSelected(null);
 			}
 		}
 	};
-	
+
+	private boolean highlighted = false;
+
+	private final MouseOutHandler highlightOff = new MouseOutHandler()
+	{
+		@Override
+		public void onMouseOut(final MouseOutEvent event)
+		{
+			setHighlight(false);
+		}
+	};
+
+	private final MouseOverHandler highlightOn = new MouseOverHandler()
+	{
+		@Override
+		public void onMouseOver(final MouseOverEvent event)
+		{
+			setHighlight(true);
+		}
+	};
+
+	private final PlaceBookInteractionHandler interactionHandler;
+
 	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
-	public PlaceBookItemPopupFrame(PlaceBookInteractionHandler interactHandler)
+	public PlaceBookItemPopupFrame(final PlaceBookInteractionHandler interactHandler)
 	{
 		super();
 		rootPanel = new SimplePanel();
@@ -121,85 +121,83 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
 		widgetPanel.addDomHandler(highlightOff, MouseOutEvent.getType());
-		
+
 		frame.addDomHandler(highlightOn, MouseOverEvent.getType());
 		frame.addDomHandler(highlightOff, MouseOutEvent.getType());
-		
+
 		menuButton.addDomHandler(new ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				final int x = menuButton.getElement().getAbsoluteLeft() + menuButton.getElement().getClientWidth();
 				final int y = menuButton.getElement().getAbsoluteTop() + menuButton.getElement().getClientHeight();
-				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);				
+				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);
 				interactionHandler.showMenu(menuItems, x, y, true);
-				event.stopPropagation();				
+				event.stopPropagation();
 			}
 		}, ClickEvent.getType());
-		
+
 		dragSection.addDomHandler(new MouseDownHandler()
 		{
 			@Override
-			public void onMouseDown(MouseDownEvent event)
+			public void onMouseDown(final MouseDownEvent event)
 			{
-				interactionHandler.setupDrag(event, getItemWidget(), PlaceBookItemPopupFrame.this);			
+				interactionHandler.setupDrag(event, getItemWidget(), PlaceBookItemPopupFrame.this);
 			}
 		}, MouseDownEvent.getType());
-		
+
 		resizeSection.addDomHandler(new MouseDownHandler()
 		{
 			@Override
-			public void onMouseDown(MouseDownEvent event)
+			public void onMouseDown(final MouseDownEvent event)
 			{
-				interactionHandler.setupResize(event, PlaceBookItemPopupFrame.this);			
+				interactionHandler.setupResize(event, PlaceBookItemPopupFrame.this);
 			}
-		}, MouseDownEvent.getType());		
+		}, MouseDownEvent.getType());
 		rootPanel.add(widgetPanel);
-		
+
 		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
-		menuItems.add(new DeletePlaceBookMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems
+				.add(new DeletePlaceBookMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));		
-		menuItems.add(new MoveMapMenuItem(interactionHandler.getContext(), this));		
+		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new MoveMapMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new RemoveMapMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new UploadMenuItem(this));
 	}
 
-	void add(final MenuItem menuItem)
+	@Override
+	public void resize(final String left, final String top, final String width, final String height)
 	{
-		menuItems.add(menuItem);
-	}
+		super.resize(left, top, width, height);
+		frame.getElement().getStyle().setProperty("left", left);
+		frame.getElement().getStyle().setProperty("width", width);
 
-	private void setHighlight(final boolean highlight)
-	{
-		if(highlighted != highlight)
-		{
-			highlighted = highlight;
-			updateFrame();
-		}
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
 	}
-
-//	@Override
-//	protected void onLoad()
-//	{
-//		super.onLoad();		
-//		((Panel) getParent()).add(frame);		
-//	}
 
 	@Override
-	public void setItemWidget(PlaceBookItemWidget itemWidget)
+	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		super.setItemWidget(itemWidget);
 		itemWidget.setFocusHandler(focusHandler);
 		itemWidget.setChangeHandler(changeHandler);
 	}
 
+	// @Override
+	// protected void onLoad()
+	// {
+	// super.onLoad();
+	// ((Panel) getParent()).add(frame);
+	// }
+
 	@Override
-	public void setPanel(PlaceBookPanel newPanel)
+	public void setPanel(final PlaceBookPanel newPanel)
 	{
 		if (panel == newPanel) { return; }
 		if (panel != null)
@@ -210,19 +208,8 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		if (panel != null)
 		{
 			panel.add(frame);
-		}	
+		}
 	}
-
-	@Override
-	public void resize(String left, String top, String width, String height)
-	{
-		super.resize(left, top, width, height);
-		frame.getElement().getStyle().setProperty("left", left);
-		frame.getElement().getStyle().setProperty("width", width);
-
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
-	}	
 
 	@Override
 	public void updateFrame()
@@ -246,6 +233,20 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			frame.getElement().getStyle().setZIndex(0);
 			frame.getElement().getStyle().setOpacity(0);
 			frame.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		}
+	}
+
+	void add(final MenuItem menuItem)
+	{
+		menuItems.add(menuItem);
+	}
+
+	private void setHighlight(final boolean highlight)
+	{
+		if (highlighted != highlight)
+		{
+			highlighted = highlight;
+			updateFrame();
 		}
 	}
 }

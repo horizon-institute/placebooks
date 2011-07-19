@@ -11,8 +11,9 @@ public class PlaceBookItem extends JavaScriptObject
 {
 	public enum ItemType
 	{
-		AUDIO("placebooks.model.AudioItem"), GPS("placebooks.model.GPSTraceItem"), IMAGE("placebooks.model.ImageItem"), TEXT(
-				"placebooks.model.TextItem"), VIDEO("placebooks.model.VideoItem"), WEB("placebooks.model.WebBundleItem");
+		AUDIO("placebooks.model.AudioItem"), GPS("placebooks.model.GPSTraceItem"), IMAGE("placebooks.model.ImageItem"), MAP(
+				"placebooks.model.MapImageItem"), TEXT("placebooks.model.TextItem"), VIDEO("placebooks.model.VideoItem"), WEB(
+				"placebooks.model.WebBundleItem");
 
 		private final String typeName;
 
@@ -28,28 +29,28 @@ public class PlaceBookItem extends JavaScriptObject
 	}
 
 	public static final native PlaceBookItem parse(final String json) /*-{
-		return eval('(' + json + ')');
-	}-*/;
+																		return eval('(' + json + ')');
+																		}-*/;
 
 	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{
-		return eval('(' + json + ')');
-	}-*/;
+																					return eval('(' + json + ')');
+																					}-*/;
 
 	protected PlaceBookItem()
 	{
 	}
 
 	public final native String getClassName() /*-{
-		return this["@class"];
-	}-*/;
+												return this["@class"];
+												}-*/;
 
 	public final native String getGeometry() /*-{
-		return this.geom;
-	}-*/;
+												return this.geom;
+												}-*/;
 
 	public final native String getHash() /*-{
-		return this.hash;
-	}-*/;
+											return this.hash;
+											}-*/;
 
 	public final ImageResource getIcon()
 	{
@@ -78,12 +79,12 @@ public class PlaceBookItem extends JavaScriptObject
 	}
 
 	public final native String getKey() /*-{
-		return this.id;
-	}-*/;
+										return this.id;
+										}-*/;
 
 	public final native String getMetadata(String name) /*-{
-		return this.metadata[name];
-	}-*/;
+														return this.metadata[name];
+														}-*/;
 
 	public final native String getMetadata(String name, final String defaultValue)
 	/*-{
@@ -94,8 +95,8 @@ public class PlaceBookItem extends JavaScriptObject
 	}-*/;
 
 	public final native int getParameter(String name) /*-{
-		return this.parameters[name];
-	}-*/;
+														return this.parameters[name];
+														}-*/;
 
 	public final native int getParameter(String name, final int defaultValue)
 	/*-{
@@ -112,18 +113,12 @@ public class PlaceBookItem extends JavaScriptObject
 	}
 
 	public final native String getSourceURL() /*-{
-		return this.sourceURL;
-	}-*/;
+												return this.sourceURL;
+												}-*/;
 
 	public final native String getText() /*-{
-		return this.text;
-	}-*/;
-
-	private boolean isMedia(String shortClass)
-	{
-		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
-				|| shortClass.equals("videoitem");
-	}
+											return this.text;
+											}-*/;
 
 	public final String getURL()
 	{
@@ -135,15 +130,14 @@ public class PlaceBookItem extends JavaScriptObject
 		}
 		if (key != null && isMedia(shortClass))
 		{
-			if(getHash() != null)
+			if (getHash() != null)
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
-					+ getShortClassName() + "/" + key + "?" + getHash();
+				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key + "?"
+						+ getHash();
 			}
 			else
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/"
-				+ getShortClassName() + "/" + key;				
+				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
 			}
 		}
 
@@ -151,12 +145,12 @@ public class PlaceBookItem extends JavaScriptObject
 	}
 
 	public final native boolean hasMetadata(String name) /*-{
-		return 'metadata' in this && name in this.metadata;
-	}-*/;
+															return 'metadata' in this && name in this.metadata;
+															}-*/;
 
 	public final native boolean hasParameter(String name) /*-{
-		return 'parameters' in this && name in this.parameters;
-	}-*/;
+															return 'parameters' in this && name in this.parameters;
+															}-*/;
 
 	public final boolean is(final ItemType type)
 	{
@@ -182,9 +176,14 @@ public class PlaceBookItem extends JavaScriptObject
 		this.geom = string;
 	}-*/;
 
-	public final native void setKey(String key) /*-{
-		this.id = key;
+	public final native void setHash(String hash)
+	/*-{
+		this.hash = hash;
 	}-*/;
+
+	public final native void setKey(String key) /*-{
+												this.id = key;
+												}-*/;
 
 	public final native void setMetadata(String name, String value)
 	/*-{
@@ -203,15 +202,16 @@ public class PlaceBookItem extends JavaScriptObject
 	}-*/;
 
 	public final native void setSourceURL(String value) /*-{
-		this.sourceURL = value;
-	}-*/;
+														this.sourceURL = value;
+														}-*/;
 
 	public final native void setText(String newText) /*-{
-		this.text = newText;
-	}-*/;
+														this.text = newText;
+														}-*/;
 
-	public final native void setHash(String hash)
-	/*-{
-		this.hash = hash;
-	}-*/;
+	private boolean isMedia(final String shortClass)
+	{
+		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
+				|| shortClass.equals("videoitem");
+	}
 }

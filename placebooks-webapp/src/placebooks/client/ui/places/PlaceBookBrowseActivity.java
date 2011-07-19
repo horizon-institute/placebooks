@@ -13,8 +13,8 @@ public class PlaceBookBrowseActivity extends AbstractActivity
 	private final PlaceController placeController;
 	private final Shelf shelf;
 	private final String title;
-	
-	public PlaceBookBrowseActivity(String title, PlaceController placeController, Shelf shelf)
+
+	public PlaceBookBrowseActivity(final String title, final PlaceController placeController, final Shelf shelf)
 	{
 		this.shelf = shelf;
 		this.placeController = placeController;
@@ -24,7 +24,7 @@ public class PlaceBookBrowseActivity extends AbstractActivity
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		PlaceBookShelf browse = new PlaceBookShelf(title, placeController, shelf);
-		panel.setWidget(browse);		
+		final PlaceBookShelf browse = new PlaceBookShelf(title, placeController, shelf);
+		panel.setWidget(browse);
 	}
 }

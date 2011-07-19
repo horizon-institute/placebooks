@@ -26,7 +26,7 @@ public abstract class MenuItem extends Label
 	{
 		return true;
 	}
-	
+
 	public void refresh()
 	{
 		setVisible(isEnabled());

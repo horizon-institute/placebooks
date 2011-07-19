@@ -22,41 +22,41 @@ public class PlaceBookShelf extends Composite
 	private static PlaceBookLibraryUiBinder uiBinder = GWT.create(PlaceBookLibraryUiBinder.class);
 
 	@UiField
-	PlaceBookToolbar toolbar;
-	
-	@UiField
 	Panel placebooks;
-	
+
 	@UiField
 	Label titleLabel;
-	
-	public PlaceBookShelf(String title, PlaceController placeController, Shelf shelf)
+
+	@UiField
+	PlaceBookToolbar toolbar;
+
+	public PlaceBookShelf(final String title, final PlaceController placeController, final Shelf shelf)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
 		Window.setTitle("PlaceBooks " + title);
 		titleLabel.setText(title);
-		
+
 		toolbar.setPlaceController(placeController);
-		toolbar.setShelf(shelf);		
+		toolbar.setShelf(shelf);
 		toolbar.setShelfListener(new PlaceBookToolbarLogin.ShelfListener()
 		{
 			@Override
-			public void shelfChanged(Shelf shelf)
-			{		
+			public void shelfChanged(final Shelf shelf)
+			{
 				setShelf(shelf);
 			}
 		});
 		GWT.log("Browse " + title + ": " + shelf);
 		setShelf(shelf);
-	}	
+	}
 
-	private void setShelf(Shelf shelf)
+	private void setShelf(final Shelf shelf)
 	{
 		placebooks.clear();
-		if(shelf != null)
+		if (shelf != null)
 		{
-			for(PlaceBookEntry entry: shelf.getEntries())
+			for (final PlaceBookEntry entry : shelf.getEntries())
 			{
 				placebooks.add(new PlaceBookEntryWidget(toolbar.getPlaceController(), entry));
 			}

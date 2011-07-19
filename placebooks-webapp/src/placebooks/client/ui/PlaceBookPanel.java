@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPanel extends FlowPanel
 {
-	protected static final double HEIGHT_PRECISION = 10000;	
-	
+	protected static final double HEIGHT_PRECISION = 10000;
+
 	private static final Comparator<PlaceBookItemFrame> orderComparator = new Comparator<PlaceBookItemFrame>()
 	{
 		@Override
@@ -30,6 +30,8 @@ public class PlaceBookPanel extends FlowPanel
 
 	private final int column;
 
+	private final FlowPanel innerPanel = new FlowPanel();
+
 	private final List<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
 
 	private final int panelIndex;
@@ -37,8 +39,6 @@ public class PlaceBookPanel extends FlowPanel
 	private float panelWidth = 33;
 
 	private final int row;
-	
-	private final FlowPanel innerPanel = new FlowPanel();
 
 	public PlaceBookPanel(final int index, final int columns, final boolean visible)
 	{
@@ -66,17 +66,12 @@ public class PlaceBookPanel extends FlowPanel
 			setStyleName(Resources.INSTANCE.style().panelInvisible());
 		}
 		setWidth(100f / columns);
-		
+
 		innerPanel.setStyleName(Resources.INSTANCE.style().innerPanel());
-		
+
 		add(innerPanel);
 	}
 
-	public Panel getInnerPanel()
-	{
-		return innerPanel;
-	}
-	
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -93,6 +88,11 @@ public class PlaceBookPanel extends FlowPanel
 	public int getIndex()
 	{
 		return panelIndex;
+	}
+
+	public Panel getInnerPanel()
+	{
+		return innerPanel;
 	}
 
 	public void reflow()
@@ -219,7 +219,7 @@ public class PlaceBookPanel extends FlowPanel
 	private int layoutItem(final PlaceBookItemFrame item, final int top)
 	{
 		String heightString;
-		
+
 		if (item.getItem().hasParameter("height") && item.getPanel() != null)
 		{
 			final int height = item.getItem().getParameter("height");
@@ -234,7 +234,7 @@ public class PlaceBookPanel extends FlowPanel
 		}
 
 		item.resize("0px", top + "px", "100%", heightString);
-		
+
 		return item.getRootPanel().getOffsetHeight();
 	}
 }

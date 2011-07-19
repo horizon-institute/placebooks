@@ -311,6 +311,37 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		}
 	}
 
+	public void setShelfListener(final ShelfListener shelfListener)
+	{
+		this.shelfListener = shelfListener;
+	}
+
+	public void setUser(final User user)
+	{
+		if (user == null)
+		{
+			PlaceBookService.getShelf(shelfCallback);
+			getElement().getStyle().setDisplay(Display.NONE);
+		}
+		else
+		{
+			setUserInternal(user);
+		}
+	}
+
+	public void showMenu(final int x, final int y)
+	{
+		for (final MenuItem item : menuItems)
+		{
+			item.refresh();
+		}
+		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
+		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
+		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		dropMenu.getElement().getStyle().setOpacity(0.9);
+		hideMenuTimer.cancel();
+	}
+
 	private void setShelfInternal(final Shelf shelf)
 	{
 		getElement().getStyle().setDisplay(Display.BLOCK);
@@ -329,24 +360,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		if (shelfListener != null)
 		{
 			shelfListener.shelfChanged(shelf);
-		}
-	}
-
-	public void setShelfListener(final ShelfListener shelfListener)
-	{
-		this.shelfListener = shelfListener;
-	}
-
-	public void setUser(final User user)
-	{
-		if (user == null)
-		{
-			PlaceBookService.getShelf(shelfCallback);
-			getElement().getStyle().setDisplay(Display.NONE);
-		}
-		else
-		{
-			setUserInternal(user);
 		}
 	}
 
@@ -389,18 +402,5 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			signupLabel.setVisible(true);
 			loginLabel.setText("LOGIN");
 		}
-	}
-
-	public void showMenu(final int x, final int y)
-	{
-		for (final MenuItem item : menuItems)
-		{
-			item.refresh();
-		}
-		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
-		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		dropMenu.getElement().getStyle().setOpacity(0.9);
-		hideMenuTimer.cancel();
 	}
 }

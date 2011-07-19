@@ -25,7 +25,7 @@ public class PalettePlaceBookItem extends PaletteItem
 
 		panel.getElement().getStyle().setCursor(Cursor.MOVE);
 
-		if(item.is(ItemType.IMAGE) && item.getKey() != null)
+		if (item.is(ItemType.IMAGE) && item.getKey() != null)
 		{
 			image.setUrl(item.getURL());
 			image.setHeight("auto");
