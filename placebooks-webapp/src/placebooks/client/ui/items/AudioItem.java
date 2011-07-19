@@ -20,6 +20,20 @@ public class AudioItem extends PlaceBookItemWidget
 		}
 	};	
 	
+	private void checkSize()
+	{
+		if(audio.getOffsetHeight() == 0)
+		{
+			loadTimer.schedule(1000);			
+		}
+		else
+		{
+			loadTimer.cancel();
+			fireResized();
+		}
+	}	
+	
+
 	AudioItem(PlaceBookItem item)
 	{
 		super(item);
@@ -35,20 +49,6 @@ public class AudioItem extends PlaceBookItemWidget
 			}
 		});
 		initWidget(audio);
-	}	
-	
-
-	private void checkSize()
-	{
-		if(audio.getOffsetHeight() == 0)
-		{
-			loadTimer.schedule(1000);			
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
 	}
 
 	@Override

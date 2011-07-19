@@ -4,11 +4,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class LonLat extends JavaScriptObject
 {
-	public final static native LonLat create(final float lon, final float lat)
-	/*-{
-		return new $wnd.OpenLayers.LonLat(lon, lat);
-	}-*/;
-	
 	/**
 	 * Parse a string containing a space separated coordinate.
 	 */
@@ -21,15 +16,15 @@ public class LonLat extends JavaScriptObject
 		LonLat lonlat = LonLat.create(lon, lat);
 		return lonlat;
 	}
+	
+	public final static native LonLat create(final float lon, final float lat)
+	/*-{
+		return new $wnd.OpenLayers.LonLat(lon, lat);
+	}-*/;
 
 	protected LonLat()
 	{
 	}
-
-	public final native LonLat cloneLatLon()
-	/*-{
-		return this.clone();
-	}-*/;
 
 	public final native float getLat()
 	/*-{
@@ -39,6 +34,11 @@ public class LonLat extends JavaScriptObject
 	public final native float getLon()
 	/*-{
 		return this.lon;
+	}-*/;
+
+	public final native LonLat clone()
+	/*-{
+		return this.clone();
 	}-*/;
 
 	

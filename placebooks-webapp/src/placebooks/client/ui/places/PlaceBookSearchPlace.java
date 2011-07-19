@@ -41,13 +41,13 @@ public class PlaceBookSearchPlace extends Place
 		this.search = search;		
 	}
 	
-	public String getSearch()
-	{
-		return search;
-	}
-	
 	public Shelf getShelf()
 	{
 		return shelf;
+	}
+	
+	public String getSearch()
+	{
+		return search;
 	}
 }

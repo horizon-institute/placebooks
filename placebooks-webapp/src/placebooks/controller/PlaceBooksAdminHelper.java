@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.model.GPSTraceItem;
+import placebooks.model.MapImageItem;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBook.State;
@@ -44,7 +45,6 @@ import placebooks.model.PlaceBookItemSearchIndex;
 import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
-import placebooks.model.MapImageItem;
 
 public final class PlaceBooksAdminHelper
 {
@@ -99,14 +99,15 @@ public final class PlaceBooksAdminHelper
 		{
 			try
 			{
-				final File mapGeom = TileHelper.getMap(p);
+				final TileHelper.MapMetadata md = TileHelper.getMap(p);
+				p.setGeometry(md.getBoundingBox());
 				em.getTransaction().begin();
 				MapImageItem mii = new MapImageItem(null, null, null, null);
 				p.addItem(mii);
 				mii.setPlaceBook(p);
 				mii.setOwner(p.getOwner());
 				mii.setGeometry(p.getGeometry());
-				mii.setPath(mapGeom.getPath());
+				mii.setPath(md.getFile().getPath());
 				em.getTransaction().commit();
 			}		
 			catch (final Throwable e)
@@ -149,9 +150,10 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
-		final String pkgZPath = PropertiesSingleton
-									.get(PlaceBooksAdminHelper.class.getClassLoader())
-									.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
+		final String pkgZPath = 
+			PropertiesSingleton
+				.get(PlaceBooksAdminHelper.class.getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
 
 		final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
 
@@ -312,6 +314,10 @@ public final class PlaceBooksAdminHelper
 					{
 						if (!containsItem(item, placebook.getItems()))
 						{
+							if(item instanceof GPSTraceItem)
+							{
+							}
+							item.deleteItemData();
 							manager.remove(item);
 						}
 					}

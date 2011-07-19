@@ -53,6 +53,11 @@ public class PlaceBookToolbar extends FlowPanel
 		add(login);
 	}
 
+	public void setShelfListener(ShelfListener shelfListener)
+	{
+		login.setShelfListener(shelfListener);
+	}
+	
 	public PlaceController getPlaceController()
 	{
 		return placeController;
@@ -63,14 +68,9 @@ public class PlaceBookToolbar extends FlowPanel
 		login.setPlaceController(placeController);
 		this.placeController = placeController;
 	}
-	
+
 	public void setShelf(final Shelf shelf)
 	{
 		login.setShelf(shelf);
-	}
-
-	public void setShelfListener(ShelfListener shelfListener)
-	{
-		login.setShelfListener(shelfListener);
 	}
 }

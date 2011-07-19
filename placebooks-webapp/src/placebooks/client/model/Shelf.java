@@ -13,6 +13,8 @@ public class Shelf extends JavaScriptObject
 	{
 	}
 
+	private final native JsArray<PlaceBookEntry> getEntriesImpl() /*-{ return this.entries; }-*/;
+
 	public final Iterable<PlaceBookEntry> getEntries()
 	{
 		return new Iterable<PlaceBookEntry>()
@@ -24,8 +26,6 @@ public class Shelf extends JavaScriptObject
 			}
 		};
 	}
-
-	private final native JsArray<PlaceBookEntry> getEntriesImpl() /*-{ return this.entries; }-*/;
 	
 	public final native User getUser() /*-{ return this.user; }-*/;
 }

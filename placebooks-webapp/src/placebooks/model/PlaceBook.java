@@ -361,6 +361,68 @@ public class PlaceBook
 
 	public void setTimestamp(final Date timestamp)
 	{
-		this.timestamp = timestamp;
+		Geometry bounds = null;
+		float minLat = Float.POSITIVE_INFINITY;
+		float maxLat = Float.NEGATIVE_INFINITY;
+		float minLon = Float.POSITIVE_INFINITY;
+		float maxLon = Float.NEGATIVE_INFINITY;
+		boolean emptySet = false;
+
+		for (PlaceBookItem item : getItems())
+		{
+			final Geometry g = item.getGeometry();
+			if (g != null)
+			{
+				// A Geometry with no dimensions has to be handled
+				if (g.getBoundary().isEmpty()) 
+				{
+					Coordinate[] cs = g.getCoordinates();
+					for (Coordinate c : cs)
+					{
+						minLat = Math.min(minLat, (float)c.x);
+						maxLat = Math.max(maxLat, (float)c.x);
+						minLon = Math.min(minLon, (float)c.y);
+						maxLon = Math.max(maxLon, (float)c.y);
+						emptySet = true;
+					}
+				}
+				else
+				{
+					if (bounds != null)
+						bounds = g.union(bounds);
+					else
+						bounds = g;
+				}
+			}
+		}
+
+		if (emptySet)
+		{
+			try
+			{
+				Geometry empty = 
+					new WKTReader().read(
+								"POLYGON ((" + minLat + " " + minLon + ", "
+											 + minLat + " " + maxLon + ", "
+											 + maxLat + " " + maxLon + ", "
+											 + maxLat + " " + minLon + ", "
+											 + minLat + " " + minLon + "))"
+					);
+				log.info("empty=" + empty);
+				if (bounds != null)
+					bounds = empty.union(bounds);
+				else
+					bounds = empty;
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.toString());
+			}
+
+		}
+
+
+		geom = bounds.getBoundary();
+		log.info("calcBoundary()= " + geom);
 	}
 }

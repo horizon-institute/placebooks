@@ -13,13 +13,13 @@ public class Projection extends JavaScriptObject
 	{
 	}
 
-	public final native String getCode()
-	/*-{
-		return this.getCode();
-	}-*/;
-	
 	public final native String getUnits()
 	/*-{
 		return this.getUnits();
+	}-*/;
+	
+	public final native String getCode()
+	/*-{
+		return this.getCode();
 	}-*/;	
 }

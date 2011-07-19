@@ -78,30 +78,114 @@ public class PlaceBookInteractionHandler
 		insert.setStyleName(Resources.INSTANCE.style().insert());
 	}
 
-	public PlaceBookCanvas getCanvas()
-	{
-		return canvas;
-	}
-	
-	public SaveContext getContext()
-	{
-		return saveContext;
-	}
-
-	private PlaceBookPanel getPanel(final MouseEvent<?> event)
-	{
-		final int canvasx = event.getRelativeX(canvas.getElement());
-		final int canvasy = event.getRelativeY(canvas.getElement());
-		for (final PlaceBookPanel panel : canvas.getPanels())
-		{
-			if (panel.isIn(canvasx, canvasy)) { return panel; }
-		}
-		return null;
-	}
-
 	public PlaceBookItemFrame getSelected()
 	{
 		return selected;
+	}
+	
+	public void setSelected(PlaceBookItemFrame selectedItem)
+	{
+		PlaceBookItemFrame oldSelection = this.selected;
+		selected = selectedItem;
+		if(oldSelection != null)
+		{
+			oldSelection.updateFrame();
+		}
+		if(selected != null)
+		{
+			selected.updateFrame();
+		}
+		hideMenu();
+	}
+
+	private void hideMenu()
+	{
+		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		dropMenu.getElement().getStyle().setOpacity(0);
+	}
+
+	/**
+	 * On mouse down
+	 */
+	public void setupDrag(final MouseEvent<?> event, final PlaceBookItemWidget item,
+			final PlaceBookItemFrame itemFrame)
+	{
+		if (dragState == DragState.waiting)
+		{
+			canvas.add(insert);
+			dragState = DragState.dragInit;
+			this.dragItem = item;
+			originx = event.getClientX();
+			originy = event.getClientY();
+			this.dragItemFrame = itemFrame;
+		}
+	}
+
+	public void setupResize(final MouseEvent<?> event, final PlaceBookItemFrame frame)
+	{
+		if(dragState == DragState.waiting)
+		{
+			dragState = DragState.resizeInit;
+			this.dragItemFrame = frame;
+			originx = event.getClientX();
+			originy = event.getClientY();
+		}
+	}
+	
+	public void setupUIElements(final Panel panel)
+	{
+		panel.add(dragFrame.getRootPanel());
+		panel.add(dropMenu);
+		
+		panel.addDomHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				hideMenu();
+				setSelected(null);
+			}
+		}, ClickEvent.getType());
+		
+		panel.addDomHandler(new MouseMoveHandler()
+		{
+			@Override
+			public void onMouseMove(MouseMoveEvent event)
+			{
+				handleDrag(event);				
+			}
+		}, MouseMoveEvent.getType());
+		
+		panel.addDomHandler(new MouseUpHandler()
+		{
+			@Override
+			public void onMouseUp(MouseUpEvent event)
+			{
+				handleDragEnd(event);				
+			}
+		}, MouseUpEvent.getType());	
+	}
+
+	public void showMenu(final Iterable<? extends MenuItem> items, final int x, final int y, boolean alignRight)
+	{
+		dropMenu.clear();
+		for (final MenuItem item : items)
+		{
+			if (item.isEnabled())
+			{
+				dropMenu.add(item);
+			}
+		}
+
+		int left = x;
+		if(alignRight)
+		{
+			left -= dropMenu.getOffsetWidth();
+		}
+		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
+		dropMenu.getElement().getStyle().setLeft(left, Unit.PX);
+		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		dropMenu.getElement().getStyle().setOpacity(1);
 	}
 
 	private void handleDrag(final MouseEvent<?> event)
@@ -169,7 +253,7 @@ public class PlaceBookInteractionHandler
 		}
 		event.stopPropagation();
 	}
-	
+
 	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
@@ -208,108 +292,24 @@ public class PlaceBookInteractionHandler
 		dragState = DragState.waiting;
 	}
 
-	private void hideMenu()
+	private PlaceBookPanel getPanel(final MouseEvent<?> event)
 	{
-		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		dropMenu.getElement().getStyle().setOpacity(0);
+		final int canvasx = event.getRelativeX(canvas.getElement());
+		final int canvasy = event.getRelativeY(canvas.getElement());
+		for (final PlaceBookPanel panel : canvas.getPanels())
+		{
+			if (panel.isIn(canvasx, canvasy)) { return panel; }
+		}
+		return null;
 	}
 
-	public void setSelected(PlaceBookItemFrame selectedItem)
+	public SaveContext getContext()
 	{
-		PlaceBookItemFrame oldSelection = this.selected;
-		selected = selectedItem;
-		if(oldSelection != null)
-		{
-			oldSelection.updateFrame();
-		}
-		if(selected != null)
-		{
-			selected.updateFrame();
-		}
-		hideMenu();
+		return saveContext;
 	}
 
-	/**
-	 * On mouse down
-	 */
-	public void setupDrag(final MouseEvent<?> event, final PlaceBookItemWidget item,
-			final PlaceBookItemFrame itemFrame)
+	public PlaceBookCanvas getCanvas()
 	{
-		if (dragState == DragState.waiting)
-		{
-			canvas.add(insert);
-			dragState = DragState.dragInit;
-			this.dragItem = item;
-			originx = event.getClientX();
-			originy = event.getClientY();
-			this.dragItemFrame = itemFrame;
-		}
-	}
-
-	public void setupResize(final MouseEvent<?> event, final PlaceBookItemFrame frame)
-	{
-		if(dragState == DragState.waiting)
-		{
-			dragState = DragState.resizeInit;
-			this.dragItemFrame = frame;
-			originx = event.getClientX();
-			originy = event.getClientY();
-		}
-	}
-
-	public void setupUIElements(final Panel panel)
-	{
-		panel.add(dragFrame.getRootPanel());
-		panel.add(dropMenu);
-		
-		panel.addDomHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(ClickEvent event)
-			{
-				hideMenu();
-				setSelected(null);
-			}
-		}, ClickEvent.getType());
-		
-		panel.addDomHandler(new MouseMoveHandler()
-		{
-			@Override
-			public void onMouseMove(MouseMoveEvent event)
-			{
-				handleDrag(event);				
-			}
-		}, MouseMoveEvent.getType());
-		
-		panel.addDomHandler(new MouseUpHandler()
-		{
-			@Override
-			public void onMouseUp(MouseUpEvent event)
-			{
-				handleDragEnd(event);				
-			}
-		}, MouseUpEvent.getType());	
-	}
-
-	public void showMenu(final Iterable<? extends MenuItem> items, final int x, final int y, boolean alignRight)
-	{
-		dropMenu.clear();
-		for (final MenuItem item : items)
-		{
-			if (item.isEnabled())
-			{
-				dropMenu.add(item);
-			}
-		}
-
-		int left = x;
-		if(alignRight)
-		{
-			left -= dropMenu.getOffsetWidth();
-		}
-		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(left, Unit.PX);
-		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		dropMenu.getElement().getStyle().setOpacity(1);
+		return canvas;
 	}
 }

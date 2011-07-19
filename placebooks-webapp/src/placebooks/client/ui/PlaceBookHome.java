@@ -57,22 +57,22 @@ public class PlaceBookHome extends Composite
 	}
 	
 	@UiHandler("search")
-	void handleBlur(final BlurEvent event)
-	{
-		if(search.getText().equals(""))
-		{
-			search.setText("Search PlaceBooks");		
-			search.getElement().getStyle().clearColor();
-		}
-	}
-	
-	@UiHandler("search")
 	void handleFocus(final FocusEvent event)
 	{
 		if(search.getText().equals("Search PlaceBooks"))
 		{
 			search.setText("");		
 			search.getElement().getStyle().setColor("#000");
+		}
+	}
+	
+	@UiHandler("search")
+	void handleBlur(final BlurEvent event)
+	{
+		if(search.getText().equals(""))
+		{
+			search.setText("Search PlaceBooks");		
+			search.getElement().getStyle().clearColor();
 		}
 	}
 	

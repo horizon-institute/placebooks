@@ -11,62 +11,62 @@ public interface Resources extends ClientBundle
 {
 	public static final Resources INSTANCE = GWT.create(Resources.class);
 
-	ImageResource add();
+	ImageResource dropMenuIcon();
 
+	ImageResource folder();
+
+	ImageResource image();
+
+	ImageResource map();
+	
+	ImageResource placebook();	
+	
 	ImageResource arrow_left();
-
-	ImageResource arrow_right();
-
-	ImageResource audio();
-	
-	ImageResource book();	
-	
-	ImageResource book_open();
-	
-	ImageResource chrome();
-	
-	ImageResource dropMenuIcon();	
 	
 	ImageResource error();
 	
-	ImageResource everytrail();	
+	ImageResource arrow_right();	
 	
-	ImageResource folder();
+	ImageResource add();
 	
-	ImageResource image();
+	ImageResource book();	
 	
-	ImageResource map();
+	ImageResource chrome();
 	
-	ImageResource movies();
+	ImageResource television();
 	
-	ImageResource music();	
+	ImageResource video();
+	
+	ImageResource save();
+	
+	ImageResource audio();	
+	
+	ImageResource everytrail();
+	
+	ImageResource youtube();	
 	
 	ImageResource phone_Android();
 	
-	ImageResource picture();	
+	ImageResource book_open();	
 	
-	ImageResource placebook();
-	
-	ImageResource progress();	
-	
+	ImageResource movies();
+
+	ImageResource music();
+
+	ImageResource picture();
+
+	ImageResource progress();
+
 	ImageResource progress2();
 
 	ImageResource progress3();
 
-	ImageResource save();
-
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();
 
-	ImageResource television();
-
 	ImageResource text();
 
-	ImageResource video();
-
 	ImageResource web_page();
-
-	ImageResource youtube();
 
 	ImageResource zoom_in();
 

@@ -31,19 +31,6 @@ public abstract class PlaceBookItemFrame
 		return panel;
 	}
 
-	public Panel getRootPanel()
-	{
-		return rootPanel;
-	}
-
-	protected void itemWidgetResized()
-	{
-		if (panel != null)
-		{
-			panel.reflow();
-		}
-	}
-
 	public void resize(final String left, final String top, final String width, final String height)
 	{
 		if (left.equals(rootPanel.getElement().getStyle().getLeft()) && top.equals(rootPanel.getElement().getStyle().getTop())
@@ -54,7 +41,7 @@ public abstract class PlaceBookItemFrame
 		rootPanel.getElement().getStyle().setProperty("width", width);
 		itemWidget.getElement().getStyle().setProperty("height", height);
 	}
-	
+
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		this.itemWidget = itemWidget;
@@ -77,6 +64,11 @@ public abstract class PlaceBookItemFrame
 		});
 	}
 
+	public Panel getRootPanel()
+	{
+		return rootPanel;
+	}
+	
 	public void setPanel(final PlaceBookPanel newPanel)
 	{
 		if (panel == newPanel) { return; }
@@ -97,5 +89,13 @@ public abstract class PlaceBookItemFrame
 	public void updateFrame()
 	{
 
+	}
+
+	protected void itemWidgetResized()
+	{
+		if (panel != null)
+		{
+			panel.reflow();
+		}
 	}
 }

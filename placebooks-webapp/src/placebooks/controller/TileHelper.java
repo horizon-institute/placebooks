@@ -20,6 +20,7 @@ import uk.me.jstott.jcoord.OSRef;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 public final class TileHelper
 {
@@ -76,8 +77,31 @@ public final class TileHelper
 		return url;
 	}
 
+	public static final MapMetadata getMap(final PlaceBook p)
+		throws IOException, IllegalArgumentException
+	{
+		if (p.getGeometry() == null)
+		{
+			p.calcBoundary();
+			if (p.getGeometry() != null)
+				return getMap(p.getGeometry());
+			else
+				return null;
+		}
+		else
+			return getMap(p.getGeometry());
+	}
+
+	public static final MapMetadata getMap(final PlaceBookItem pi)
+		throws IOException, IllegalArgumentException
+	{
+		return getMap(pi.getGeometry());
+	}
+
+
 	// Geometry *must* be a boundary, i.e., four points
-	public static final File getMap(final Geometry g) 
+	// Geometry g is updated with the boundaries of the map
+	public static final MapMetadata getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException
 	{
 		log.info("getMap() geometry = " + g);
@@ -128,37 +152,44 @@ public final class TileHelper
 			log.error(e.toString());
 		}
 
-
 		// 0 = TL, 1 = BR
-		Coordinate[] bbox_ = new Coordinate[2];
-		bbox_[0] = new Coordinate(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-		bbox_[1] = new Coordinate(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+		Coordinate[] coords_ = new Coordinate[2];
+		coords_[0] = new Coordinate(Double.POSITIVE_INFINITY, 
+								    Double.POSITIVE_INFINITY);
+		coords_[1] = new Coordinate(Double.NEGATIVE_INFINITY, 
+				 				    Double.NEGATIVE_INFINITY);
 
 		final Coordinate[] coords = g.getCoordinates();
 		for (int i = 0; i < coords.length; ++i)
 		{
-			bbox_[0].x = Math.min(coords[i].x, bbox_[0].x);
-			bbox_[0].y = Math.min(coords[i].y, bbox_[0].y);
-			bbox_[1].x = Math.max(coords[i].x, bbox_[1].x);
-			bbox_[1].y = Math.max(coords[i].y, bbox_[1].y);
+			coords_[0].x = Math.min(coords[i].x, coords_[0].x);
+			coords_[0].y = Math.min(coords[i].y, coords_[0].y);
+			coords_[1].x = Math.max(coords[i].x, coords_[1].x);
+			coords_[1].y = Math.max(coords[i].y, coords_[1].y);
 		}
 		
-		OSRef[] bbox = new OSRef[2];
-		for (int i = 0; i < bbox_.length; ++i)
+		OSRef[] bbox_ = new OSRef[2];
+		for (int i = 0; i < coords_.length; ++i)
 		{
-			bbox[i] = new OSRef(new LatLng(bbox_[i].x, bbox_[i].y));
-
-			log.info("OSRef = " + bbox[i].getEasting() + "," 
-					 + bbox[i].getNorthing());
+			bbox_[i] = new OSRef(new LatLng(coords_[i].x, coords_[i].y));
+			log.info("Bounding box unnormalised, bbox["+i+"]="
+					 +bbox_[i].getEasting()+","+bbox_[i].getNorthing());
 		}
 
-		int x = (int)Math.floor((bbox[0].getEasting() / incX)) * incX,
-			y = (int)Math.floor((bbox[0].getNorthing() / incY)) * incY;
+		OSRef[] bbox = new OSRef[2];
+		int x = (int)Math.floor((bbox_[0].getEasting() / incX)) * incX,
+			y = (int)Math.floor((bbox_[0].getNorthing() / incY)) * incY - incY;
 		bbox[0] = new OSRef(x, y);
-		x = (int)Math.ceil((bbox[1].getEasting() / incX)) * incX;
-		y = (int)Math.ceil((bbox[1].getNorthing() / incY)) * incY;
+		x = (int)Math.ceil((bbox_[1].getEasting() / incX)) * incX;
+		y = (int)Math.ceil((bbox_[1].getNorthing() / incY)) * incY - incY;
 		bbox[1] = new OSRef(x, y);
-		
+
+		for (int i = 0; i < bbox.length; ++i)
+		{
+			log.info("Bounding box NORMALISED, bbox["+i+"]="
+					 +bbox[i].getEasting()+","+bbox[i].getNorthing());
+		}
+
 
 		final int eBlocks = (int)Math.ceil(
 									(Math.abs(bbox[1].getEasting() 
@@ -179,9 +210,9 @@ public final class TileHelper
 		for (int i = (int)bbox[0].getEasting(); i <= (int)bbox[1].getEasting(); 
 			 i += incX)
 		{
-			int m = 0;
-			for (int j = (int)bbox[1].getNorthing(); 
-				 j >= (int)bbox[0].getNorthing(); j -= incY)
+			int m = buf.getHeight();
+			for (int j = (int)bbox[0].getNorthing(); 
+				 j <= (int)bbox[1].getNorthing(); j += incY)
 			{
 				log.info("i = " + i + " j = " + j);
 				// %5C = \
@@ -208,7 +239,7 @@ public final class TileHelper
 					log.error(e.toString());
 				}
 
-				m += pixelY;
+				m -= pixelY;
 			}
 
 			n += pixelX;
@@ -247,28 +278,56 @@ public final class TileHelper
 			throw new IOException("Error creating map");
 		}
 
-		return mapFile;
+		LatLng[] bboxLL = new LatLng[2];
+		bboxLL[0] = bbox[0].toLatLng();
+		bboxLL[1] = bbox[1].toLatLng();
+
+		Geometry g_ = null;
+
+		try
+		{
+			// Construct new geometry, lat/lon not OS
+			g_ = 
+				new WKTReader().read(
+						"LINEARRING (" + bboxLL[0].getLatitude() + " " 
+									   + bboxLL[1].getLongitude() + ", "
+									   + bboxLL[0].getLatitude() + " " 
+									   + bboxLL[0].getLongitude() + ", "
+									   + bboxLL[1].getLatitude() + " " 
+									   + bboxLL[0].getLongitude() + ", "
+									   + bboxLL[1].getLatitude() + " " 
+									   + bboxLL[1].getLongitude() + ", "
+									   + bboxLL[0].getLatitude() + " " 
+									   + bboxLL[1].getLongitude() + ")"
+				);
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString());
+		}
+		return new MapMetadata(mapFile, g_);
 		
 	}
 
-	public static final File getMap(final PlaceBook p)
-		throws IOException, IllegalArgumentException
+	public static class MapMetadata
 	{
-		if (p.getGeometry() == null)
-		{
-			p.calcBoundary();
-			if (p.getGeometry() != null)
-				return getMap(p.getGeometry());
-			else
-				return null;
-		}
-		else
-			return getMap(p.getGeometry());
-	}
+		private File file;
+		private Geometry boundingBox;
 
-	public static final File getMap(final PlaceBookItem pi)
-		throws IOException, IllegalArgumentException
-	{
-		return getMap(pi.getGeometry());
+		public MapMetadata(final File file, final Geometry boundingBox)
+		{
+			this.file = file;
+			this.boundingBox = boundingBox;
+		}
+
+		public final Geometry getBoundingBox()
+		{
+			return boundingBox;
+		}
+
+		public final File getFile()
+		{
+			return file;
+		}
 	}
 }

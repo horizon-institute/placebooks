@@ -11,6 +11,8 @@ public abstract class PlaceBookItemFrameFactory
 {
 	public abstract PlaceBookItemFrame createFrame();
 	
+	public abstract boolean getEditable();
+	
 	public PlaceBookItemFrame createFrame(PlaceBookItem item)
 	{
 		PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, getEditable());
@@ -23,6 +25,4 @@ public abstract class PlaceBookItemFrameFactory
 		
 		return frame;
 	}
-	
-	public abstract boolean getEditable();
 }

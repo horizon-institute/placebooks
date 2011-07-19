@@ -23,6 +23,19 @@ public class ImageItem extends PlaceBookItemWidget
 		}
 	};
 	
+	private void checkSize()
+	{
+		if(image.getHeight() == 0)
+		{
+			loadTimer.schedule(1000);			
+		}
+		else
+		{
+			loadTimer.cancel();
+			fireResized();
+		}
+	}
+
 	ImageItem(PlaceBookItem item)
 	{
 		super(item);
@@ -48,19 +61,6 @@ public class ImageItem extends PlaceBookItemWidget
 				event.stopPropagation();
 			}
 		});
-	}
-
-	private void checkSize()
-	{
-		if(image.getHeight() == 0)
-		{
-			loadTimer.schedule(1000);			
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
 	}
 
 	@Override

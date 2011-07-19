@@ -72,6 +72,11 @@ public class PlaceBookPanel extends FlowPanel
 		add(innerPanel);
 	}
 
+	public Panel getInnerPanel()
+	{
+		return innerPanel;
+	}
+	
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -84,58 +89,10 @@ public class PlaceBookPanel extends FlowPanel
 			items.add(order, item);
 		}
 	}
-	
+
 	public int getIndex()
 	{
 		return panelIndex;
-	}
-
-	public Panel getInnerPanel()
-	{
-		return innerPanel;
-	}
-
-	boolean isIn(final int x, final int y)
-	{
-		final int left = getElement().getOffsetLeft();
-		final int width = getElement().getOffsetWidth();
-		final int top = getElement().getOffsetTop() - 20;
-		final int height = getElement().getOffsetHeight();
-		return left < x && x < (left + width) && top < y && y < (top + height);
-	}
-
-	private int layoutInsert(final Widget insert, final int top, final int height)
-	{
-		insert.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		insert.getElement().getStyle().setTop(top, Unit.PX);
-		insert.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-
-		insert.setWidth(panelWidth + "%");
-		insert.setHeight(height + "px");
-
-		return insert.getOffsetHeight();
-	}
-
-	private int layoutItem(final PlaceBookItemFrame item, final int top)
-	{
-		String heightString;
-		
-		if (item.getItem().hasParameter("height") && item.getPanel() != null)
-		{
-			final int height = item.getItem().getParameter("height");
-			final double heightPCT = height / HEIGHT_PRECISION;
-			final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
-
-			heightString = heightPX + "px";
-		}
-		else
-		{
-			heightString = "";
-		}
-
-		item.resize("0px", top + "px", "100%", heightString);
-		
-		return item.getRootPanel().getOffsetHeight();
 	}
 
 	public void reflow()
@@ -151,6 +108,39 @@ public class PlaceBookPanel extends FlowPanel
 			top += layoutItem(item, top);
 			order++;
 		}
+	}
+
+	public void remove(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+	}
+
+	public void resize()
+	{
+		final int panelHeight = getElement().getClientWidth() * 2;
+
+		final int panelTop = ((panelHeight + 20) * row);
+
+		getElement().getStyle().setTop(panelTop, Unit.PX);
+		setHeight(panelHeight + "px");
+	}
+
+	public void setWidth(final float panelWidth)
+	{
+		this.panelWidth = panelWidth;
+		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
+		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
+
+		resize();
+	}
+
+	boolean isIn(final int x, final int y)
+	{
+		final int left = getElement().getOffsetLeft();
+		final int width = getElement().getOffsetWidth();
+		final int top = getElement().getOffsetTop() - 20;
+		final int height = getElement().getOffsetHeight();
+		return left < x && x < (left + width) && top < y && y < (top + height);
 	}
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
@@ -214,27 +204,37 @@ public class PlaceBookPanel extends FlowPanel
 		}
 	}
 
-	public void remove(final PlaceBookItemFrame item)
+	private int layoutInsert(final Widget insert, final int top, final int height)
 	{
-		items.remove(item);
+		insert.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		insert.getElement().getStyle().setTop(top, Unit.PX);
+		insert.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
+
+		insert.setWidth(panelWidth + "%");
+		insert.setHeight(height + "px");
+
+		return insert.getOffsetHeight();
 	}
 
-	public void resize()
+	private int layoutItem(final PlaceBookItemFrame item, final int top)
 	{
-		final int panelHeight = getElement().getClientWidth() * 2;
+		String heightString;
+		
+		if (item.getItem().hasParameter("height") && item.getPanel() != null)
+		{
+			final int height = item.getItem().getParameter("height");
+			final double heightPCT = height / HEIGHT_PRECISION;
+			final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
 
-		final int panelTop = ((panelHeight + 20) * row);
+			heightString = heightPX + "px";
+		}
+		else
+		{
+			heightString = "";
+		}
 
-		getElement().getStyle().setTop(panelTop, Unit.PX);
-		setHeight(panelHeight + "px");
-	}
-
-	public void setWidth(final float panelWidth)
-	{
-		this.panelWidth = panelWidth;
-		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
-		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-
-		resize();
+		item.resize("0px", top + "px", "100%", heightString);
+		
+		return item.getRootPanel().getOffsetHeight();
 	}
 }

@@ -73,6 +73,38 @@ public class MapItem extends PlaceBookItemWidget
 		}
 	}
 
+	@Override
+	public void refresh()
+	{
+		final String newURL = getItem().getURL();
+		if (url == null || !url.equals(newURL) || routeLayer == null)
+		{
+			this.url = newURL;
+			createRoute();
+		}
+		recenter();
+	}
+
+	@Override
+	public void setPlaceBook(final PlaceBook placebook)
+	{
+		this.placebook = placebook;
+		if (map == null)
+		{
+			createMap();
+		}
+
+		markerLayer.clearMarkers();
+		refreshMarkers();
+	}
+
+	@Override
+	protected void onAttach()
+	{
+		super.onAttach();
+		createMap();
+	}
+
 	private void createMap()
 	{
 		if (map == null)
@@ -157,13 +189,6 @@ public class MapItem extends PlaceBookItemWidget
 		return bounds;
 	}
 
-	@Override
-	protected void onAttach()
-	{
-		super.onAttach();
-		createMap();
-	}
-
 	private void recenter()
 	{
 		if (map == null) { return; }
@@ -188,18 +213,6 @@ public class MapItem extends PlaceBookItemWidget
 		}
 	}
 
-	@Override
-	public void refresh()
-	{
-		final String newURL = getItem().getURL();
-		if (url == null || !url.equals(newURL) || routeLayer == null)
-		{
-			this.url = newURL;
-			createRoute();
-		}
-		recenter();
-	}
-
 	public void refreshMarkers()
 	{
 		if (placebook == null) { return; }
@@ -218,7 +231,7 @@ public class MapItem extends PlaceBookItemWidget
 						final LonLat lonlat = LonLat.create(geometry.substring(	POINT_PREFIX.length(),
 																				geometry.length() - 1));
 						final Marker marker = Marker.create(MARKER_URL,
-															lonlat.cloneLatLon().transform(map.getDisplayProjection(),
+															lonlat.clone().transform(map.getDisplayProjection(),
 																						map.getProjection()), 32, 32);
 						markerLayer.addMarker(marker);
 						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
@@ -234,18 +247,5 @@ public class MapItem extends PlaceBookItemWidget
 			}
 		}
 		recenter();
-	}
-
-	@Override
-	public void setPlaceBook(final PlaceBook placebook)
-	{
-		this.placebook = placebook;
-		if (map == null)
-		{
-			createMap();
-		}
-
-		markerLayer.clearMarkers();
-		refreshMarkers();
 	}
 }

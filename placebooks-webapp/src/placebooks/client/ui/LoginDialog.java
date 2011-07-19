@@ -53,6 +53,30 @@ public class LoginDialog extends Composite
 		submit.addClickHandler(clickHandler);
 	}
 
+	public String getPassword()
+	{
+		return password.getText();
+	}
+
+	public String getUsername()
+	{
+		return username.getText();
+	}
+
+	public void focus()
+	{
+		username.setFocus(true);
+	}
+	
+	@UiHandler("password")
+	void submitOnReturn(final KeyPressEvent event)
+	{
+		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
+		{
+			submit.click();
+		}
+	}
+	
 	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyUpEvent event)
 	{
@@ -77,28 +101,4 @@ public class LoginDialog extends Composite
 //		submit.setEnabled(false);
 //
 //	}
-
-	public void focus()
-	{
-		username.setFocus(true);
-	}
-
-	public String getPassword()
-	{
-		return password.getText();
-	}
-	
-	public String getUsername()
-	{
-		return username.getText();
-	}
-	
-	@UiHandler("password")
-	void submitOnReturn(final KeyPressEvent event)
-	{
-		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
-		{
-			submit.click();
-		}
-	}
 }
