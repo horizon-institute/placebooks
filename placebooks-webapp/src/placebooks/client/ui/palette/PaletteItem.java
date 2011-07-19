@@ -32,7 +32,7 @@ public class PaletteItem extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	public Object getName()
+	public String getName()
 	{
 		return text.getText();
 	}

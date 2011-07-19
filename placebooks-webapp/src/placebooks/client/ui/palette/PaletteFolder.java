@@ -57,7 +57,7 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 		return item;
 	}
 
-	public PaletteFolder getFolderParent()
+	public PaletteFolder getParentFolder()
 	{
 		return parent;
 	}

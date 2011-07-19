@@ -12,6 +12,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -294,7 +295,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	}
 
 	public void setPlaceController(final PlaceController placeController)
-	{
+	{	
 		this.placeController = placeController;
 	}
 

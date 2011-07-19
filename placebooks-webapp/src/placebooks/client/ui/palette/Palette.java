@@ -1,5 +1,8 @@
 package placebooks.client.ui.palette;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookInteractionHandler;
 
@@ -19,7 +22,7 @@ public class Palette extends FlowPanel
 	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 	private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
-	// private PaletteFolder currentFolder = null;
+	private PaletteFolder currentFolder = null;
 
 	public Palette()
 	{
@@ -55,15 +58,60 @@ public class Palette extends FlowPanel
 			folder.add(new PalettePlaceBookItem(items.get(index), dragHandler));
 		}
 
-		setPaletteFolder(root);
+		if (currentFolder == null)
+		{
+			setPaletteFolder(root);
+		}
+		else
+		{
+			final PaletteFolder newFolder = findFolder(root, currentFolder);
+			final int scrollOffset = getElement().getScrollTop();
+			setPaletteFolder(newFolder);
+			getElement().setScrollTop(scrollOffset);
+		}
 	}
 
 	public void setPaletteFolder(final PaletteFolder folder)
 	{
+		currentFolder = folder;
 		clear();
 		for (final PaletteItem paletteItem : folder)
 		{
 			add(paletteItem);
 		}
+	}
+
+	private PaletteFolder findFolder(final PaletteFolder root, final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = getPath(folder);
+
+		PaletteFolder current = root;
+		for (final PaletteFolder pathElement : path)
+		{
+			final PaletteFolder equiv = current.getFolder(pathElement.getName());
+			if (equiv != null)
+			{
+				current = equiv;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return current;
+	}
+
+	private List<PaletteFolder> getPath(final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = new ArrayList<PaletteFolder>();
+
+		PaletteFolder current = folder;
+		while (current.getParentFolder() != null)
+		{
+			path.add(0, current);
+			current = current.getParentFolder();
+		}
+
+		return path;
 	}
 }

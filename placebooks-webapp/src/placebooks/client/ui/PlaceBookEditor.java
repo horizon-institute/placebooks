@@ -211,6 +211,7 @@ public class PlaceBookEditor extends Composite
 
 		Window.setTitle("PlaceBooks Editor");
 
+		account.setPlaceController(placeController);		
 		account.add(new MenuItem("Print Preview")
 		{
 			@Override

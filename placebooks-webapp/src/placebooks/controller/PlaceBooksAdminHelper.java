@@ -300,7 +300,6 @@ public final class PlaceBooksAdminHelper
 	{
 		try
 		{
-
 			final User currentUser = UserManager.getCurrentUser(manager);
 			manager.getTransaction().begin();
 			PlaceBook placebook = p;

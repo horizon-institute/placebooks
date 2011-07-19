@@ -2,6 +2,7 @@ package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Frame;
 
 public class WebBundleItem extends PlaceBookItemWidget
@@ -13,6 +14,8 @@ public class WebBundleItem extends PlaceBookItemWidget
 	{
 		super(item);
 		initWidget(frame);
+		frame.setWidth("100%");
+		frame.getElement().getStyle().setBorderWidth(0, Unit.PX);
 	}
 
 	@Override
