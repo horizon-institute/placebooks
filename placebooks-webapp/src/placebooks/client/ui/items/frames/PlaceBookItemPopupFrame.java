@@ -43,21 +43,21 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 		}
 		
-		public void setInteractionHandler(PlaceBookInteractionHandler interactionHandler)
-		{
-			this.interactionHandler = interactionHandler;
-		}
-		
 		@Override
 		public PlaceBookItemFrame createFrame()
 		{
 			return new PlaceBookItemPopupFrame(interactionHandler);
 		}
-
+		
 		@Override
 		public boolean getEditable()
 		{
 			return true;
+		}
+
+		public void setInteractionHandler(PlaceBookInteractionHandler interactionHandler)
+		{
+			this.interactionHandler = interactionHandler;
 		}
 	}
 	
@@ -174,13 +174,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		menuItems.add(menuItem);
 	}
 
-	private void setHighlight(final boolean highlight)
+	@Override
+	public void resize(String left, String top, String width, String height)
 	{
-		if(highlighted != highlight)
-		{
-			highlighted = highlight;
-			updateFrame();
-		}
+		super.resize(left, top, width, height);
+		frame.getElement().getStyle().setProperty("left", left);
+		frame.getElement().getStyle().setProperty("width", width);
+
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
 	}
 
 //	@Override
@@ -189,6 +191,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 //		super.onLoad();		
 //		((Panel) getParent()).add(frame);		
 //	}
+
+	private void setHighlight(final boolean highlight)
+	{
+		if(highlighted != highlight)
+		{
+			highlighted = highlight;
+			updateFrame();
+		}
+	}
 
 	@Override
 	public void setItemWidget(PlaceBookItemWidget itemWidget)
@@ -211,17 +222,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			panel.add(frame);
 		}	
-	}
-
-	@Override
-	public void resize(String left, String top, String width, String height)
-	{
-		super.resize(left, top, width, height);
-		frame.getElement().getStyle().setProperty("left", left);
-		frame.getElement().getStyle().setProperty("width", width);
-
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
 	}	
 
 	@Override

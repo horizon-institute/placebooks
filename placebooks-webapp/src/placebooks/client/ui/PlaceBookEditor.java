@@ -41,11 +41,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends Composite
 {
-	public enum SaveState {
-		saved,
-		not_saved,
-		saving,
-		save_error
+	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
+	{
 	}
 	
 	public class SaveContext extends Timer
@@ -59,41 +56,6 @@ public class PlaceBookEditor extends Composite
 			schedule(saveDelay);
 			setState(SaveState.not_saved);
 			// changed = true;
-		}
-		
-		private void setState(SaveState state)
-		{
-//			this.state = state;
-			switch (state)
-			{
-				case saved:
-					saveStatusPanel.setText("Saved");
-					saveStatusPanel.hideImage();
-					saveStatusPanel.setEnabled(false);
-					break;
-
-				case not_saved:
-					saveStatusPanel.setText("Save");
-					saveStatusPanel.hideImage();					
-					//saveStatusPanel.setResource(Resources.INSTANCE.save());					
-					saveStatusPanel.setEnabled(true);
-					break;
-					
-				case saving:
-					saveStatusPanel.setText("Saving");
-					saveStatusPanel.setResource(Resources.INSTANCE.progress2());
-					saveStatusPanel.setEnabled(false);
-					break;					
-
-				case save_error:
-					saveStatusPanel.setText("Error Saving");			
-					saveStatusPanel.setResource(Resources.INSTANCE.error());
-					saveStatusPanel.setEnabled(true);
-					break;						
-					
-				default:
-					break;
-			}
 		}
 		
 		public void refreshMap()
@@ -135,10 +97,48 @@ public class PlaceBookEditor extends Composite
 				}
 			});
 		}
+		
+		private void setState(SaveState state)
+		{
+//			this.state = state;
+			switch (state)
+			{
+				case saved:
+					saveStatusPanel.setText("Saved");
+					saveStatusPanel.hideImage();
+					saveStatusPanel.setEnabled(false);
+					break;
+
+				case not_saved:
+					saveStatusPanel.setText("Save");
+					saveStatusPanel.hideImage();					
+					//saveStatusPanel.setResource(Resources.INSTANCE.save());					
+					saveStatusPanel.setEnabled(true);
+					break;
+					
+				case saving:
+					saveStatusPanel.setText("Saving");
+					saveStatusPanel.setResource(Resources.INSTANCE.progress2());
+					saveStatusPanel.setEnabled(false);
+					break;					
+
+				case save_error:
+					saveStatusPanel.setText("Error Saving");			
+					saveStatusPanel.setResource(Resources.INSTANCE.error());
+					saveStatusPanel.setEnabled(true);
+					break;						
+					
+				default:
+					break;
+			}
+		}
 	}
 
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
-	{
+	public enum SaveState {
+		saved,
+		not_saved,
+		saving,
+		save_error
 	}
 
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
@@ -279,31 +279,35 @@ public class PlaceBookEditor extends Composite
 		return saveContext;
 	}
 
+	@UiHandler("title")
+	void handleTitleEdit(final KeyUpEvent event)
+	{
+		canvas.getPlaceBook().setMetadata("title", title.getElement().getInnerText());
+		saveContext.markChanged();
+	}
+
+	@UiHandler("zoomIn")
+	void handleZoomIn(final ClickEvent event)
+	{
+		setZoom(zoom + 20);
+	}
+
+	@UiHandler("zoomOut")
+	void handleZoomOut(final ClickEvent event)
+	{
+		setZoom(zoom - 20);
+	}
+
 	public void markChanged()
 	{
 		saveContext.markChanged();
 	}
 
-	public void updatePalette()
+	@Override
+	protected void onAttach()
 	{
-		PlaceBookService.getPaletteItems(new AbstractCallback()
-		{
-			@Override
-			public void failure(final Request request, final Response response)
-			{
-				if (response.getStatusCode() == 401)
-				{
-					placeController.goTo(new PlaceBookHomePlace());
-				}
-			}
-
-			@Override
-			public void success(final Request request, final Response response)
-			{
-				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				palette.setPalette(items, interactionHandler);
-			}
-		});
+		super.onAttach();
+		canvas.reflow();
 	}
 
 	public void setPlaceBook(final PlaceBook newPlacebook)
@@ -327,6 +331,40 @@ public class PlaceBookEditor extends Composite
 
 		loadingPanel.setVisible(false);
 		canvas.reflow();
+	}
+
+	private void setZoom(final int zoom)
+	{
+		this.zoom = zoom;
+		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
+		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
+		zoomLabel.setText(zoom + "%");
+		for (final PlaceBookPanel panel : canvas.getPanels())
+		{
+			panel.reflow();
+		}
+	}
+
+	public void updatePalette()
+	{
+		PlaceBookService.getPaletteItems(new AbstractCallback()
+		{
+			@Override
+			public void failure(final Request request, final Response response)
+			{
+				if (response.getStatusCode() == 401)
+				{
+					placeController.goTo(new PlaceBookHomePlace());
+				}
+			}
+
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
+				palette.setPalette(items, interactionHandler);
+			}
+		});
 	}
 
 	private void updatePlaceBook(final PlaceBook newPlacebook)
@@ -359,44 +397,6 @@ public class PlaceBookEditor extends Composite
 	
 			account.setUser(newPlacebook.getOwner());
 			canvas.reflow();
-		}
-	}
-
-	@Override
-	protected void onAttach()
-	{
-		super.onAttach();
-		canvas.reflow();
-	}
-
-	@UiHandler("title")
-	void handleTitleEdit(final KeyUpEvent event)
-	{
-		canvas.getPlaceBook().setMetadata("title", title.getElement().getInnerText());
-		saveContext.markChanged();
-	}
-
-	@UiHandler("zoomIn")
-	void handleZoomIn(final ClickEvent event)
-	{
-		setZoom(zoom + 20);
-	}
-
-	@UiHandler("zoomOut")
-	void handleZoomOut(final ClickEvent event)
-	{
-		setZoom(zoom - 20);
-	}
-
-	private void setZoom(final int zoom)
-	{
-		this.zoom = zoom;
-		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
-		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
-		zoomLabel.setText(zoom + "%");
-		for (final PlaceBookPanel panel : canvas.getPanels())
-		{
-			panel.reflow();
 		}
 	}
 }

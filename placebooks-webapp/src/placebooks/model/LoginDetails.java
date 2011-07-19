@@ -40,6 +40,10 @@ public class LoginDetails
 
 	private String username;
 
+	LoginDetails()
+	{
+	}
+
 	public LoginDetails(final User user, final String service, final String userid, final String username,
 			final String password)
 	{
@@ -48,10 +52,6 @@ public class LoginDetails
 		this.service = service;
 		this.username = username;
 		this.password = password;
-	}
-
-	LoginDetails()
-	{
 	}
 
 	public String getID()

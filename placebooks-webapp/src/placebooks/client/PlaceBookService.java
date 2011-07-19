@@ -15,6 +15,16 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
 	}
 
+	private static String getHostURL()
+	{
+		final String url = GWT.getHostPageBaseURL();
+		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
+		// "taxishare-ui/".length())
+		// + "taxishare-service/"; }
+
+		return url;
+	}
+
 	public static void getPaletteItems(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/palette", callback);
@@ -65,27 +75,17 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/createUserAccount", "name=" + name + "&email=" + email
 				+ "&password=" + password, callback);
 	}
-
+	
 	public static void savePlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/saveplacebook",
 						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()),
 						callback);
 	}
-	
+
 	public static void search(final String search, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
-	}
-
-	private static String getHostURL()
-	{
-		final String url = GWT.getHostPageBaseURL();
-		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
-		// "taxishare-ui/".length())
-		// + "taxishare-service/"; }
-
-		return url;
 	}
 
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,

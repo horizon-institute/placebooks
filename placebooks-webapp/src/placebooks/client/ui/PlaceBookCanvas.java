@@ -41,43 +41,6 @@ public class PlaceBookCanvas extends FlowPanel
 		});
 	}
 
-	public Iterable<PlaceBookItemFrame> getItems()
-	{
-		return items;
-	}
-
-	public Iterable<PlaceBookPanel> getPanels()
-	{
-		return panels;
-	}
-
-	public PlaceBook getPlaceBook()
-	{
-		return placebook;
-	}
-
-	public void reflow()
-	{
-		for (final PlaceBookPanel panel : panels)
-		{
-			panel.reflow();
-		}
-	}
-	
-	private final void refreshItemPlaceBook()
-	{
-		for(PlaceBookItemFrame item: items)
-		{
-			item.getItemWidget().setPlaceBook(placebook);
-		}	
-	}
-	
-	private void addImpl(final PlaceBookItemFrame item)
-	{
-		items.add(item);
-		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));		
-	}
-	
 	public void add(final PlaceBookItemFrame item)
 	{
 		addImpl(item);
@@ -85,17 +48,10 @@ public class PlaceBookCanvas extends FlowPanel
 		refreshItemPlaceBook();
 	}
 
-	private void removeImpl(final PlaceBookItemFrame item)
+	private void addImpl(final PlaceBookItemFrame item)
 	{
-		items.remove(item);
-		item.setPanel(null);
-	}
-	
-	public void remove(final PlaceBookItemFrame item)
-	{
-		removeImpl(item);
-		placebook.remove(item.getItem());
-		refreshItemPlaceBook();		
+		items.add(item);
+		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));		
 	}
 
 	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
@@ -115,6 +71,50 @@ public class PlaceBookCanvas extends FlowPanel
 			}			
 		}
 		return null;
+	}
+
+	public Iterable<PlaceBookItemFrame> getItems()
+	{
+		return items;
+	}
+	
+	public Iterable<PlaceBookPanel> getPanels()
+	{
+		return panels;
+	}
+	
+	public PlaceBook getPlaceBook()
+	{
+		return placebook;
+	}
+	
+	public void reflow()
+	{
+		for (final PlaceBookPanel panel : panels)
+		{
+			panel.reflow();
+		}
+	}
+
+	private final void refreshItemPlaceBook()
+	{
+		for(PlaceBookItemFrame item: items)
+		{
+			item.getItemWidget().setPlaceBook(placebook);
+		}	
+	}
+	
+	public void remove(final PlaceBookItemFrame item)
+	{
+		removeImpl(item);
+		placebook.remove(item.getItem());
+		refreshItemPlaceBook();		
+	}
+
+	private void removeImpl(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+		item.setPanel(null);
 	}
 	
 	public void setPlaceBook(final PlaceBook newPlaceBook, final PlaceBookItemFrameFactory factory, boolean panelsVisible)

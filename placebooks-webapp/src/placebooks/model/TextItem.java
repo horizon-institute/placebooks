@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
+import placebooks.controller.ItemFactory;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -21,11 +21,9 @@ public class TextItem extends PlaceBookItem
 	@Lob
 	private String text;
 
-	public TextItem(final User owner, final Geometry geom, final URL sourceURL,
-					final String text)
+	TextItem()
 	{
-		super(owner, geom, sourceURL);
-		setText(text);
+		super();
 	}
 
 	public TextItem(final TextItem t)
@@ -34,25 +32,11 @@ public class TextItem extends PlaceBookItem
 		setText(new String(t.getText()));
 	}
 
-	@Override
-	public TextItem deepCopy()
+	public TextItem(final User owner, final Geometry geom, final URL sourceURL,
+					final String text)
 	{
-		return new TextItem(this);
-	}
-
-	@Override
-	public void updateItem(PlaceBookItem item)
-	{
-		super.updateItem(item);
-		if(item instanceof TextItem)
-		{
-			setText(((TextItem) item).getText());
-		}
-	}
-
-	TextItem()
-	{
-		super();
+		super(owner, geom, sourceURL);
+		setText(text);
 	}
 
 	@Override
@@ -64,6 +48,12 @@ public class TextItem extends PlaceBookItem
 		text.appendChild(config.createTextNode(this.getText()));
 		item.appendChild(text);
 		root.appendChild(item);
+	}
+
+	@Override
+	public TextItem deepCopy()
+	{
+		return new TextItem(this);
 	}
 
 	@Override
@@ -82,25 +72,19 @@ public class TextItem extends PlaceBookItem
 		return text;
 	}
 
-	public void setText(final String text)
-	{
-		this.text = text;
-		index.addAll(SearchHelper.getIndex(text));		
-	}
-
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
-	public PlaceBookItem saveUpdatedItem()
+	public IUpdateableExternal saveUpdatedItem()
 	{
-		PlaceBookItem returnItem = this;
+		IUpdateableExternal returnItem = this;
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		TextItem item;
+		IUpdateableExternal item;
 		try
 		{
 			pm.getTransaction().begin();
-			item = (TextItem) EverytrailHelper.GetExistingItem(this, pm);
+			item = ItemFactory.GetExistingItem(this, pm);
 			if(item != null)
 			{
 				
@@ -125,5 +109,21 @@ public class TextItem extends PlaceBookItem
 			}
 		}
 		return returnItem;
+	}
+
+	public void setText(final String text)
+	{
+		this.text = text;
+		index.addAll(SearchHelper.getIndex(text));		
+	}
+
+	@Override
+	public void updateItem(IUpdateableExternal item)
+	{
+		super.updateItem(item);
+		if(item instanceof TextItem)
+		{
+			setText(((TextItem) item).getText());
+		}
 	}
 }

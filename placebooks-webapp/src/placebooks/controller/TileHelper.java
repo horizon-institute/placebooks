@@ -76,27 +76,6 @@ public final class TileHelper
 		return url;
 	}
 
-	public static final File getMap(final PlaceBook p)
-		throws IOException, IllegalArgumentException
-	{
-		if (p.getGeometry() == null)
-		{
-			p.calcBoundary();
-			if (p.getGeometry() != null)
-				return getMap(p.getGeometry());
-			else
-				return null;
-		}
-		else
-			return getMap(p.getGeometry());
-	}
-
-	public static final File getMap(final PlaceBookItem pi)
-		throws IOException, IllegalArgumentException
-	{
-		return getMap(pi.getGeometry());
-	}
-
 	// Geometry *must* be a boundary, i.e., four points
 	public static final File getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException
@@ -270,5 +249,26 @@ public final class TileHelper
 
 		return mapFile;
 		
+	}
+
+	public static final File getMap(final PlaceBook p)
+		throws IOException, IllegalArgumentException
+	{
+		if (p.getGeometry() == null)
+		{
+			p.calcBoundary();
+			if (p.getGeometry() != null)
+				return getMap(p.getGeometry());
+			else
+				return null;
+		}
+		else
+			return getMap(p.getGeometry());
+	}
+
+	public static final File getMap(final PlaceBookItem pi)
+		throws IOException, IllegalArgumentException
+	{
+		return getMap(pi.getGeometry());
 	}
 }

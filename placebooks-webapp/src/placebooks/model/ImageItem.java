@@ -9,12 +9,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class ImageItem extends MediaItem
 {
-	public ImageItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String image)
-	{
-		super(owner, geom, sourceURL, image);
-	}
-
 	ImageItem()
 	{
 	}
@@ -22,6 +16,12 @@ public class ImageItem extends MediaItem
 	public ImageItem(final ImageItem i)
 	{
 		super(i);
+	}
+
+	public ImageItem(final User owner, final Geometry geom, final URL sourceURL,
+					 final String image)
+	{
+		super(owner, geom, sourceURL, image);
 	}
 
 	@Override

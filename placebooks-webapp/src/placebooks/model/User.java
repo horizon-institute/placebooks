@@ -44,16 +44,16 @@ public class User
 	@OneToMany(mappedBy = "owner", cascade = ALL)
 	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
 
+	User()
+	{
+
+	}
+
 	public User(final String name, final String email, final String passwordHash)
 	{
 		this.name = name;
 		this.email = email.toLowerCase();
 		this.passwordHash = passwordHash;
-	}
-
-	User()
-	{
-
 	}
 
 	public void add(final LoginDetails loginDetail)

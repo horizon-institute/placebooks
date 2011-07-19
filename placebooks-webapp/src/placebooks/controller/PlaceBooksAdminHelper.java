@@ -2,13 +2,11 @@ package placebooks.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +51,15 @@ public final class PlaceBooksAdminHelper
 	private static final Logger log = 
 		Logger.getLogger(PlaceBooksAdminHelper.class.getName());
 
+	private static boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
+	{
+		for (final PlaceBookItem item : items)
+		{
+			if (findItem.getKey().equals(item.getKey())) { return true; }
+		}
+		return false;
+	}
+
 	public static final String[] getExtension(final String field)
 	{
 		final int delim = field.indexOf(".");
@@ -63,6 +70,23 @@ public final class PlaceBooksAdminHelper
 		out[1] = field.substring(delim + 1, field.length());
 
 		return out;
+	}
+
+	private static void getFileListRecursive(final File path, final List<File> out)
+	{
+		final List<File> files = new ArrayList<File>(Arrays.asList(path.listFiles()));
+
+		for (final File file : files)
+		{
+			if (file.isDirectory())
+			{
+				getFileListRecursive(file, out);
+			}
+			else
+			{
+				out.add(file);
+			}
+		}
 	}
 
 	public static final File makePackage(final EntityManager em, 
@@ -182,6 +206,44 @@ public final class PlaceBooksAdminHelper
 		}
 
 		return zipFile;
+	}
+
+	private static String placeBookToXML(final PlaceBook p)
+	{
+		StringWriter out = null;
+
+		try
+		{
+
+			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final Document config = builder.newDocument();
+
+			final Element root = p.createConfigurationRoot(config);
+			config.appendChild(root);
+
+			// Note: ImageItem, VideoItem and AudioItem write their data to a
+			// package directly as well as creating XML configuration
+			for (final PlaceBookItem item : p.getItems())
+			{
+				item.appendConfiguration(config, root);
+			}
+
+			final TransformerFactory tf = TransformerFactory.newInstance();
+			final Transformer t = tf.newTransformer();
+			final DOMSource source = new DOMSource(config);
+
+			out = new StringWriter();
+			final StreamResult result = new StreamResult(out);
+			t.transform(source, result);
+
+			return out.getBuffer().toString();
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString(), e);
+		}
+
+		return null;
 	}
 
 	// Takes a PlaceBook, copies it, and returns the (published) copy
@@ -484,70 +546,6 @@ public final class PlaceBooksAdminHelper
 		}
 
 		return hits.entrySet();
-	}
-
-	private static boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
-	{
-		for (final PlaceBookItem item : items)
-		{
-			if (findItem.getKey().equals(item.getKey())) { return true; }
-		}
-		return false;
-	}
-
-	private static void getFileListRecursive(final File path, final List<File> out)
-	{
-		final List<File> files = new ArrayList<File>(Arrays.asList(path.listFiles()));
-
-		for (final File file : files)
-		{
-			if (file.isDirectory())
-			{
-				getFileListRecursive(file, out);
-			}
-			else
-			{
-				out.add(file);
-			}
-		}
-	}
-
-	private static String placeBookToXML(final PlaceBook p)
-	{
-		StringWriter out = null;
-
-		try
-		{
-
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			final Document config = builder.newDocument();
-
-			final Element root = p.createConfigurationRoot(config);
-			config.appendChild(root);
-
-			// Note: ImageItem, VideoItem and AudioItem write their data to a
-			// package directly as well as creating XML configuration
-			for (final PlaceBookItem item : p.getItems())
-			{
-				item.appendConfiguration(config, root);
-			}
-
-			final TransformerFactory tf = TransformerFactory.newInstance();
-			final Transformer t = tf.newTransformer();
-			final DOMSource source = new DOMSource(config);
-
-			out = new StringWriter();
-			final StreamResult result = new StreamResult(out);
-			t.transform(source, result);
-
-			return out.getBuffer().toString();
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.toString(), e);
-		}
-
-		return null;
 	}
 
 }

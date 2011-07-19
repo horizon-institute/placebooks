@@ -10,7 +10,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.Lob;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -25,8 +24,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
 import placebooks.model.jaxb.GPX10.Gpx;
 import placebooks.model.jaxb.GPX11.GpxType;
 import placebooks.model.jaxb.GPX11.RteType;
@@ -46,13 +43,6 @@ public class GPSTraceItem extends PlaceBookItem
 	
 	private String hash;
 
-	public GPSTraceItem(final User owner, final URL sourceURL, final String trace)
-	{
-		// Geometry is set from calculating the GPX boundaries
-		super(owner, null, sourceURL);
-		setTrace(trace);
-	}
-
 	GPSTraceItem()
 	{
 	}
@@ -62,16 +52,12 @@ public class GPSTraceItem extends PlaceBookItem
 		super(g);
 		setTrace(new String(g.getTrace()));
 	}
-	
-	@Override
-	public GPSTraceItem deepCopy()
-	{
-		return new GPSTraceItem(this);
-	}
 
-	public String getHash()
+	public GPSTraceItem(final User owner, final URL sourceURL, final String trace)
 	{
-		return hash;
+		// Geometry is set from calculating the GPX boundaries
+		super(owner, null, sourceURL);
+		setTrace(trace);
 	}
 	
 	@Override
@@ -101,6 +87,12 @@ public class GPSTraceItem extends PlaceBookItem
 	}
 
 	@Override
+	public GPSTraceItem deepCopy()
+	{
+		return new GPSTraceItem(this);
+	}
+	
+	@Override
 	public void deleteItemData()
 	{
 	}
@@ -111,6 +103,18 @@ public class GPSTraceItem extends PlaceBookItem
 		return GPSTraceItem.class.getName();
 	}
 
+	public String getHash()
+	{
+		return hash;
+	}
+
+	// @Persistent
+	// @Column(jdbcType = "CLOB")
+	public String getTrace()
+	{
+		return trace;
+	}
+	
 	public void readTrace(final InputStream is) throws Exception
 	{
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -124,13 +128,6 @@ public class GPSTraceItem extends PlaceBookItem
 		writer.close();
 			
 		setTrace(writer.toString());
-	}
-	
-	// @Persistent
-	// @Column(jdbcType = "CLOB")
-	public String getTrace()
-	{
-		return trace;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -288,57 +285,18 @@ public class GPSTraceItem extends PlaceBookItem
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
-	public void updateItem(PlaceBookItem item)
+	public void updateItem(IUpdateableExternal updateItem)
 	{
+		GPSTraceItem item = (GPSTraceItem) updateItem;
 		super.updateItem(item);
 		if(item instanceof GPSTraceItem)
 		{
-			GPSTraceItem gpsitem = (GPSTraceItem)item; 
+			GPSTraceItem gpsitem = item; 
 			if(gpsitem.getTrace() != null && !gpsitem.getTrace().trim().equals(""))
 			{
-				setTrace(((GPSTraceItem) item).getTrace());
+				setTrace((item).getTrace());
 			}
 		}
 	}
 
-
-	
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
-	 */
-	@Override
-	public PlaceBookItem saveUpdatedItem()
-	{
-		PlaceBookItem returnItem = this;
-		final EntityManager pm = EMFSingleton.getEntityManager();
-		GPSTraceItem item;
-		try
-		{
-			pm.getTransaction().begin();
-			item = (GPSTraceItem) EverytrailHelper.GetExistingItem(this, pm);
-			if(item != null)
-			{
-				
-				log.debug("Existing item found so updating");
-				item.update(this);
-				returnItem = item;
-				pm.flush();
-			}
-			else
-			{
-				log.debug("No existing item found so creating new");
-				pm.persist(this);
-			}
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
-		}
-		return returnItem;
-	}
 }

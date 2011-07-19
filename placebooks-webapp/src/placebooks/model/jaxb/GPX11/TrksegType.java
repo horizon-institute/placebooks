@@ -50,6 +50,18 @@ public class TrksegType {
     protected ExtensionsType extensions;
 
     /**
+     * Gets the value of the extensions property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ExtensionsType }
+     *     
+     */
+    public ExtensionsType getExtensions() {
+        return extensions;
+    }
+
+    /**
      * Gets the value of the trkpt property.
      * 
      * <p>
@@ -76,18 +88,6 @@ public class TrksegType {
             trkpt = new ArrayList<WptType>();
         }
         return this.trkpt;
-    }
-
-    /**
-     * Gets the value of the extensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public ExtensionsType getExtensions() {
-        return extensions;
     }
 
     /**

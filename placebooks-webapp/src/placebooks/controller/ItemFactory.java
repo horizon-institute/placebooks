@@ -13,13 +13,19 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import placebooks.model.GPSTraceItem;
+import placebooks.model.IUpdateableExternal;
 import placebooks.model.ImageItem;
+import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 
@@ -39,6 +45,162 @@ import com.vividsolutions.jts.geom.LineString;
 public class ItemFactory
 {
 	private static final Logger log = Logger.getLogger(ItemFactory.class.getName());
+
+	/**
+	 * Gets the item with the external id or null if there is none.
+	 * n.b. assumes ther's only one of these in the db.
+	 * @param externalId
+	 * @return IUpdateableExternal item or null
+	 */
+	public static IUpdateableExternal GetExistingItem(IUpdateableExternal itemToSave, EntityManager em)
+	{
+		IUpdateableExternal item = null;
+		log.debug("Querying externalID " +  itemToSave.getExternalID());
+		Query q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where placebookitem.externalID = ?1", PlaceBookItem.class);
+		q.setParameter(1, itemToSave.getExternalID());
+		try
+		{
+			item = (IUpdateableExternal) q.getSingleResult();
+		}
+		catch(NoResultException ex)
+		{
+			item = null;
+		}
+		return item;
+	}
+
+	/**
+	 * Convert an Everytrail track to a GPSTraceItem
+	 * @param owner User creating this item
+	 * @param trackItem the track item as a DOM node from EverytrailTracks response
+	 * @param tripName 
+	 */
+	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id, String tripName)
+	{
+		trackItem.toString();
+		log.debug(trackItem.getTextContent());
+
+		String track_id = "";
+		String track_name = "";
+		Geometry trackGeom = null;
+		
+		if(trip_id!=null)
+		{
+			gpsItem.addMetadataEntry("trip", trip_id)	;	
+		}
+
+		if(tripName!=null)
+		{
+			gpsItem.addMetadataEntry("trip_name", tripName)	;	
+		}
+
+		
+		//First look at node attributes to get the unique id
+		final NamedNodeMap trackAttributes = trackItem.getAttributes();
+		for (int attributeIndex = 0; attributeIndex < trackAttributes.getLength(); attributeIndex++)
+		{
+			if (trackAttributes.item(attributeIndex).getNodeName().equals("id"))
+			{
+				track_id = trackAttributes.item(attributeIndex).getNodeValue();
+			}
+		}
+		if(track_id.equals(""))
+		{
+			log.error("Can't get track id");
+		}
+		else
+		{
+			log.debug("Track id is: " + track_id);
+		}
+
+		//Then look at the properties in the child nodes to get url, title, description, etc.
+		final NodeList trackProperties = trackItem.getChildNodes();
+		for (int propertyIndex = 0; propertyIndex < trackProperties.getLength(); propertyIndex++)
+		{
+			final Node item = trackProperties.item(propertyIndex);
+			final String itemName = item.getNodeName();
+			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+			if (itemName.equals("name"))
+			{
+				track_name = item.getTextContent();
+				log.debug("Track name is: " + track_name);
+			}
+			if (itemName.equals("trk"))
+			{
+				//Convert this into geometry
+				final NodeList trkProperties = item.getChildNodes();
+				for (int trkPropertyIndex = 0; trkPropertyIndex < trkProperties.getLength(); trkPropertyIndex++)
+				{
+					final Node trkItem = trkProperties.item(trkPropertyIndex);
+					final String trkItemName = trkItem.getNodeName();
+					//log.debug("Inspecting trk element property: " + trkItemName);
+
+					if (trkItemName.equals("name"))
+					{
+						log.debug("Processing track name " + trkItem.getTextContent());
+					}
+					if (trkItemName.equals("trkseg"))
+					{
+						//log.debug("Processing track segment " + trkItem.getTextContent());
+						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
+						final NodeList trkSegProperties = trkItem.getChildNodes();
+						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)
+						{
+							final Node trkSegItem = trkSegProperties.item(trkSegPropertyIndex);
+							final String trkSegItemName = trkSegItem.getNodeName();
+
+							if (trkSegItemName.equals("trkpt"))
+							{
+								String lat = null;
+								String lon = null;
+								final NamedNodeMap locationAttributes = trkSegItem.getAttributes();
+								for (int locAttributeIndex = 0; locAttributeIndex < locationAttributes.getLength(); locAttributeIndex++)
+								{
+									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lat"))
+									{
+										lat = locationAttributes.item(locAttributeIndex).getNodeValue();
+									}
+									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lon"))
+									{
+										lon = locationAttributes.item(locAttributeIndex).getNodeValue();
+									}
+								}
+								Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
+								points.add(coordinateToAdd);
+							}
+						}
+						try
+						{
+							final GeometryFactory gf = new GeometryFactory();
+							Coordinate coordinates[] = new Coordinate[points.size()];
+							points.toArray(coordinates);
+							LineString lineString = gf.createLineString(coordinates);
+							if(trackGeom==null)
+							{
+								trackGeom = gf.createGeometry(lineString);
+							}
+							else
+							{
+								trackGeom = trackGeom.union(lineString);
+							}
+						}
+						catch (final Exception ex)
+						{
+							log.error("Couldn't get lat/lon data from Everytrail track.");
+							log.debug(ex.getClass());
+							log.debug(ex.getMessage());
+						}
+					}
+				}
+			}
+		}
+
+		gpsItem.setGeometry(trackGeom);
+		gpsItem.setExternalID("everytrail-" + track_id);
+		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
+
+	}
+
 
 	/**
 	 * Convert an Everytrail Picture to an Image item for the given user
@@ -177,7 +339,7 @@ public class ItemFactory
 		imageItem.addMetadataEntry("description", itemDescription);
 		imageItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 	}
-
+	
 	public static VideoItem toVideoItem(final User owner, final VideoEntry youtubeVideo)
 	{
 		Geometry geom = null;
@@ -230,138 +392,5 @@ public class ItemFactory
 			log.info("Can't get location of video...");
 		}
 		return new VideoItem(owner, geom, sourceUrl, videoFile.getAbsolutePath());
-	}
-
-
-	/**
-	 * Convert an Everytrail track to a GPSTraceItem
-	 * @param owner User creating this item
-	 * @param trackItem the track item as a DOM node from EverytrailTracks response
-	 * @param tripName 
-	 */
-	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id, String tripName)
-	{
-		trackItem.toString();
-		log.debug(trackItem.getTextContent());
-
-		String track_id = "";
-		String track_name = "";
-		Geometry trackGeom = null;
-		
-		if(trip_id!=null)
-		{
-			gpsItem.addMetadataEntry("trip", trip_id)	;	
-		}
-
-		if(tripName!=null)
-		{
-			gpsItem.addMetadataEntry("trip_name", tripName)	;	
-		}
-
-		
-		//First look at node attributes to get the unique id
-		final NamedNodeMap trackAttributes = trackItem.getAttributes();
-		for (int attributeIndex = 0; attributeIndex < trackAttributes.getLength(); attributeIndex++)
-		{
-			if (trackAttributes.item(attributeIndex).getNodeName().equals("id"))
-			{
-				track_id = trackAttributes.item(attributeIndex).getNodeValue();
-			}
-		}
-		if(track_id.equals(""))
-		{
-			log.error("Can't get track id");
-		}
-		else
-		{
-			log.debug("Track id is: " + track_id);
-		}
-
-		//Then look at the properties in the child nodes to get url, title, description, etc.
-		final NodeList trackProperties = trackItem.getChildNodes();
-		for (int propertyIndex = 0; propertyIndex < trackProperties.getLength(); propertyIndex++)
-		{
-			final Node item = trackProperties.item(propertyIndex);
-			final String itemName = item.getNodeName();
-			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-			if (itemName.equals("name"))
-			{
-				track_name = item.getTextContent();
-				log.debug("Track name is: " + track_name);
-			}
-			if (itemName.equals("trk"))
-			{
-				//Convert this into geometry
-				final NodeList trkProperties = item.getChildNodes();
-				for (int trkPropertyIndex = 0; trkPropertyIndex < trkProperties.getLength(); trkPropertyIndex++)
-				{
-					final Node trkItem = trkProperties.item(trkPropertyIndex);
-					final String trkItemName = trkItem.getNodeName();
-					//log.debug("Inspecting trk element property: " + trkItemName);
-
-					if (trkItemName.equals("name"))
-					{
-						log.debug("Processing track name " + trkItem.getTextContent());
-					}
-					if (trkItemName.equals("trkseg"))
-					{
-						//log.debug("Processing track segment " + trkItem.getTextContent());
-						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
-						final NodeList trkSegProperties = trkItem.getChildNodes();
-						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)
-						{
-							final Node trkSegItem = trkSegProperties.item(trkSegPropertyIndex);
-							final String trkSegItemName = trkSegItem.getNodeName();
-
-							if (trkSegItemName.equals("trkpt"))
-							{
-								String lat = null;
-								String lon = null;
-								final NamedNodeMap locationAttributes = trkSegItem.getAttributes();
-								for (int locAttributeIndex = 0; locAttributeIndex < locationAttributes.getLength(); locAttributeIndex++)
-								{
-									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lat"))
-									{
-										lat = locationAttributes.item(locAttributeIndex).getNodeValue();
-									}
-									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lon"))
-									{
-										lon = locationAttributes.item(locAttributeIndex).getNodeValue();
-									}
-								}
-								Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
-								points.add(coordinateToAdd);
-							}
-						}
-						try
-						{
-							final GeometryFactory gf = new GeometryFactory();
-							Coordinate coordinates[] = new Coordinate[points.size()];
-							points.toArray(coordinates);
-							LineString lineString = gf.createLineString(coordinates);
-							if(trackGeom==null)
-							{
-								trackGeom = gf.createGeometry(lineString);
-							}
-							else
-							{
-								trackGeom = trackGeom.union(lineString);
-							}
-						}
-						catch (final Exception ex)
-						{
-							log.error("Couldn't get lat/lon data from Everytrail track.");
-							log.debug(ex.getClass());
-							log.debug(ex.getMessage());
-						}
-					}
-				}
-			}
-		}
-
-		gpsItem.setGeometry(trackGeom);
-		gpsItem.setExternalID("everytrail-" + track_id);
-		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
-
 	}
 }

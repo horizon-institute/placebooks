@@ -23,55 +23,6 @@ public class YouTubeHelper
 {
 	private static final Logger log = Logger.getLogger(YouTubeHelper.class.getName());
 
-	/**
-	 * Gets a list of a user's favourite videos as posted on their profile
-	 * 
-	 * @param userName
-	 * @return VideoFeed
-	 */
-	public static VideoFeed UserFavorites(final String userName)
-	{
-		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/favorites");
-	}
-
-	/**
-	 * Get's a user's favorites after logging in - this shouldn't make a different as they are
-	 * public
-	 * 
-	 * @param userName
-	 * @param password
-	 * @return
-	 * @throws AuthenticationException
-	 */
-	public static VideoFeed UserFavorites(final String userName, final String password) throws AuthenticationException
-	{
-		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/favorites", userName, password);
-	}
-
-	/**
-	 * Gets a users publicly published videos
-	 * 
-	 * @param userName
-	 * @return
-	 */
-	public static VideoFeed UserVideos(final String userName)
-	{
-		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/uploads");
-	}
-
-	/**
-	 * Gets the list of user's videos including private videos
-	 * 
-	 * @param userName
-	 * @param password
-	 * @return
-	 * @throws AuthenticationException
-	 */
-	public static VideoFeed UserVideos(final String userName, final String password) throws AuthenticationException
-	{
-		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/uploads", userName, password);
-	}
-
 	private static VideoFeed getFeedForURL(final String urlString)
 	{
 		final YouTubeService service = YouTubeHelper.getYoutubeService();
@@ -137,6 +88,55 @@ public class YouTubeHelper
 		// Using ssl bypasses UoN proxy
 		ytService.useSsl();
 		return ytService;
+	}
+
+	/**
+	 * Gets a list of a user's favourite videos as posted on their profile
+	 * 
+	 * @param userName
+	 * @return VideoFeed
+	 */
+	public static VideoFeed UserFavorites(final String userName)
+	{
+		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/favorites");
+	}
+
+	/**
+	 * Get's a user's favorites after logging in - this shouldn't make a different as they are
+	 * public
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	public static VideoFeed UserFavorites(final String userName, final String password) throws AuthenticationException
+	{
+		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/favorites", userName, password);
+	}
+
+	/**
+	 * Gets a users publicly published videos
+	 * 
+	 * @param userName
+	 * @return
+	 */
+	public static VideoFeed UserVideos(final String userName)
+	{
+		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/uploads");
+	}
+
+	/**
+	 * Gets the list of user's videos including private videos
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	public static VideoFeed UserVideos(final String userName, final String password) throws AuthenticationException
+	{
+		return getFeedForURL("http://gdata.youtube.com/feeds/api/users/" + userName + "/uploads", userName, password);
 	}
 
 }

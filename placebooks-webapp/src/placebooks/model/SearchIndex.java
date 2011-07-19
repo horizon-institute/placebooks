@@ -26,24 +26,24 @@ public class SearchIndex
 	{
 	}
 
-	public String getID()
-	{
-		return id;
-	}
-	
-	public void setID(String id)
-	{
-		this.id = id;
-	}
-	
 	public void add(final String element)
 	{
 		index.add(element);
 	}
-
+	
 	public void addAll(final Set<String> elements)
 	{
 		index.addAll(elements);
+	}
+	
+	public void clear()
+	{
+		index.clear();
+	}
+
+	public String getID()
+	{
+		return id;
 	}
 
 	public Set<String> getIndex()
@@ -51,9 +51,9 @@ public class SearchIndex
 		return Collections.unmodifiableSet(index);
 	}
 
-	public void clear()
+	public void setID(String id)
 	{
-		index.clear();
+		this.id = id;
 	}
 	
 	public void setIndex(final Set<String> index)

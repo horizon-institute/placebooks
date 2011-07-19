@@ -1,0 +1,129 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pb="urn:import:placebooks.client.ui"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.canvasPanel {
+			position: absolute;
+			top: 41px;
+			left: 0px;
+			right: 120px;
+			bottom: 0px;
+			background: #BBD;		
+			overflow-x: auto;
+			overflow-y: scroll;	
+		}
+		
+		.innerCanvasPanel {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+			margin: 20px;
+		}		
+		
+		.palette {
+			position: absolute;
+			text-align: center;
+			top: 41px;
+			right: 0px;
+			bottom: 0px;
+			width: 120px;
+			z-index: -10;
+			background: #556;	
+			overflow: auto;
+		}
+			
+		.loadingPanel {
+			position: absolute;
+			text-align: center;
+			top: 0px;
+			right: 0px;
+			bottom: 0px;
+			left: 0px;
+			z-index: 20;
+			background: rgba(0,0,0,0.4);	
+		}
+		
+		.loading {
+			background: #555;
+			border: 1px solid #333;
+			border-radius: 5px;
+			margin-top: 100px;
+			padding: 10px 20px;
+			display: inline-block;
+		}
+
+		.savingLabel {
+			line-height: 40px;
+			padding: 0 15px;
+		}
+
+		.populate {
+			position: absolute;
+			text-align: center;
+			top: 0px;
+			right: 0px;
+			height: 20px;
+			width: 120px;
+			z-index: -5;			
+		}
+		
+		.titleLabel {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-o-user-select: text;			
+			user-select: text;	
+			padding-left: 8px;		
+		}
+		
+		.loadingLabel {
+			color: white;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 25px;
+			padding-left: 15px;
+			vertical-align: top;
+		}
+		
+		.account {
+			padding: 0px;
+			float:right;
+			cursor: default;
+		}
+		
+		.zoomImage {
+			margin-right: 5px;
+			margin-top: 14px;
+			float:right;
+		}
+		
+		.zoomImage2 {
+			margin-left: 50px;
+			margin-right: 5px;
+			margin-top: 14px;
+			float:right;
+		}		
+		
+		.body {
+			-webkit-user-select: none;	
+			-moz-user-select: none;
+			-o-user-select: none;			
+			user-select: none;
+			overflow: hidden;			
+		}
+	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
+		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
+		<g:FlowPanel styleName="{res.style.toolbar}">
+			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
+			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+			<g:Image styleName="{style.zoomImage2}" resource="{res.zoom_out}" ui:field="zoomOut" />
+			<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />						
+			<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
+		</g:FlowPanel>		
+		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
+		<pal:Palette styleName="{style.palette}" ui:field="palette" />
+	</p:MousePanel>
+</ui:UiBinder>

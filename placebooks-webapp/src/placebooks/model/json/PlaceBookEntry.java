@@ -58,34 +58,29 @@ public class PlaceBookEntry
 		return key;
 	}
 	
-	public String getState()
-	{
-		return state;
-	}
-
 	public int getNumItems()
 	{
 		return numItems;
-	}
-	
-	public Date getTimestamp()
-	{
-		return timestamp;
-	}
-	
-	public void setTimestamp(final Date timestamp)
-	{
-		this.timestamp = timestamp;
 	}
 
 	public String getOwner()
 	{
 		return owner;
 	}
-
+	
 	public String getPackagePath()
 	{
 		return packagePath;
+	}
+	
+	public String getState()
+	{
+		return state;
+	}
+
+	public Date getTimestamp()
+	{
+		return timestamp;
 	}
 
 	public String getTitle()
@@ -116,6 +111,11 @@ public class PlaceBookEntry
 	public void setPackagePath(final String packagePath)
 	{
 		this.packagePath = packagePath;
+	}
+
+	public void setTimestamp(final Date timestamp)
+	{
+		this.timestamp = timestamp;
 	}
 
 	public void setTitle(final String title)

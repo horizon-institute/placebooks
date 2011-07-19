@@ -74,30 +74,6 @@ public class TrkType {
     protected List<TrksegType> trkseg;
 
     /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
      * Gets the value of the cmt property.
      * 
      * @return
@@ -107,18 +83,6 @@ public class TrkType {
      */
     public String getCmt() {
         return cmt;
-    }
-
-    /**
-     * Sets the value of the cmt property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCmt(String value) {
-        this.cmt = value;
     }
 
     /**
@@ -134,39 +98,15 @@ public class TrkType {
     }
 
     /**
-     * Sets the value of the desc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
-
-    /**
-     * Gets the value of the src property.
+     * Gets the value of the extensions property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ExtensionsType }
      *     
      */
-    public String getSrc() {
-        return src;
-    }
-
-    /**
-     * Sets the value of the src property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSrc(String value) {
-        this.src = value;
+    public ExtensionsType getExtensions() {
+        return extensions;
     }
 
     /**
@@ -199,6 +139,18 @@ public class TrkType {
     }
 
     /**
+     * Gets the value of the name property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Gets the value of the number property.
      * 
      * @return
@@ -211,63 +163,15 @@ public class TrkType {
     }
 
     /**
-     * Sets the value of the number property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
-     */
-    public void setNumber(BigInteger value) {
-        this.number = value;
-    }
-
-    /**
-     * Gets the value of the type property.
+     * Gets the value of the src property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
-
-    /**
-     * Gets the value of the extensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public ExtensionsType getExtensions() {
-        return extensions;
-    }
-
-    /**
-     * Sets the value of the extensions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public void setExtensions(ExtensionsType value) {
-        this.extensions = value;
+    public String getSrc() {
+        return src;
     }
 
     /**
@@ -297,6 +201,102 @@ public class TrkType {
             trkseg = new ArrayList<TrksegType>();
         }
         return this.trkseg;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the cmt property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCmt(String value) {
+        this.cmt = value;
+    }
+
+    /**
+     * Sets the value of the desc property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDesc(String value) {
+        this.desc = value;
+    }
+
+    /**
+     * Sets the value of the extensions property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ExtensionsType }
+     *     
+     */
+    public void setExtensions(ExtensionsType value) {
+        this.extensions = value;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
+    }
+
+    /**
+     * Sets the value of the number property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setNumber(BigInteger value) {
+        this.number = value;
+    }
+
+    /**
+     * Sets the value of the src property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSrc(String value) {
+        this.src = value;
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 
 }

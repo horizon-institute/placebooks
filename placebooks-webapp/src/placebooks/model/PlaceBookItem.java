@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,6 +30,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import placebooks.controller.EMFSingleton;
+import placebooks.controller.ItemFactory;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -37,7 +40,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, 
 				getterVisibility = Visibility.NONE)
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS)
-public abstract class PlaceBookItem
+public abstract class PlaceBookItem implements IUpdateableExternal
 {
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBookItem.class.getName());
@@ -85,23 +88,6 @@ public abstract class PlaceBookItem
 		index.setPlaceBookItem(this);		
 	}
 
-	// Make a new PlaceBookItem
-	public PlaceBookItem(final User owner, final Geometry geom, 
-						 final URL sourceURL)
-	{
-		this.owner = owner;
-		this.geom = geom;
-		this.timestamp = new Date();
-		if (sourceURL != null)
-			this.sourceURL = sourceURL.toExternalForm();
-		else
-			this.sourceURL = null;
-
-		index.setPlaceBookItem(this);
-		log.info("Created new PlaceBookItem, concrete name: " + getEntityName()
-				 + ", timestamp=" + this.timestamp.toString());
-	}
-
 	public PlaceBookItem(final PlaceBookItem p)
 	{
 		this.owner = p.getOwner();
@@ -141,7 +127,22 @@ public abstract class PlaceBookItem
 		}
 	}
 
-	public abstract PlaceBookItem deepCopy();
+	// Make a new PlaceBookItem
+	public PlaceBookItem(final User owner, final Geometry geom, 
+						 final URL sourceURL)
+	{
+		this.owner = owner;
+		this.geom = geom;
+		this.timestamp = new Date();
+		if (sourceURL != null)
+			this.sourceURL = sourceURL.toExternalForm();
+		else
+			this.sourceURL = null;
+
+		index.setPlaceBookItem(this);
+		log.info("Created new PlaceBookItem, concrete name: " + getEntityName()
+				 + ", timestamp=" + this.timestamp.toString());
+	}
 
 	public void addMetadataEntry(final String key, final String value)
 	{
@@ -162,133 +163,13 @@ public abstract class PlaceBookItem
 	 */
 	public abstract void appendConfiguration(Document config, Element root);
 
+	public abstract PlaceBookItem deepCopy();
+
 	/**
 	 * Each class must provide a method for deleting any data sitting on disk
 	 */
 	public abstract void deleteItemData();
 
-	public abstract String getEntityName();
-
-	public Geometry getGeometry()
-	{
-		return geom;
-	}
-
-	public String getKey()
-	{
-		return id;
-	}
-
-	public String getExternalID()
-	{
-		return externalID;
-	}
-
-	
-	public Map<String, String> getMetadata()
-	{
-		return Collections.unmodifiableMap(metadata);
-	}
-
-	public String getMetadataValue(final String key)
-	{
-		return metadata.get(key);
-	}
-
-	public User getOwner()
-	{
-		return owner;
-	}
-
-	public Map<String, Integer> getParameters()
-	{
-		return Collections.unmodifiableMap(parameters);
-	}
-
-	public Integer getParameterValue(final String key)
-	{
-		return parameters.get(key);
-	}
-
-	public PlaceBook getPlaceBook()
-	{
-		return placebook;
-	}
-
-	public URL getSourceURL()
-	{
-		if(sourceURL == null)
-		{
-			return null;
-		}
-		try
-		{
-			return new URL(sourceURL);
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
-	}
-
-	public Date getTimestamp()
-	{
-		return timestamp;
-	}
-
-	public boolean hasMetadata()
-	{
-		return (!metadata.isEmpty());
-	}
-
-	public boolean hasParameters()
-	{
-		return (!parameters.isEmpty());
-	}
-
-	public void setGeometry(final Geometry geom)
-	{
-		this.geom = geom;
-	}
-
-	public void setOwner(final User owner)
-	{
-		this.owner = owner;
-	}
-
-	public void setExternalID(final String id)
-	{
-		this.externalID = id;
-	}
-	
-	public void setPlaceBook(final PlaceBook placebook)
-	{
-		this.placebook = placebook;
-	}
-
-	public void setSourceURL(final URL sourceURL)
-	{
-		if (sourceURL != null)
-			this.sourceURL = sourceURL.toExternalForm();
-		else
-			this.sourceURL = null;
-	}
-
-	public void setTimestamp(final Date timestamp)
-	{
-		this.timestamp = timestamp;
-	}
-	
-	public void setMedataData(final Map<String, String> new_data)
-	{
-		this.metadata.putAll(new_data);
-	}
-
-	public void setParameters(final Map<String, Integer> new_data)
-	{
-		this.parameters.putAll(new_data);
-	}
-	
 	/**
 	 * Header common to all items
 	 * 
@@ -343,6 +224,173 @@ public abstract class PlaceBookItem
 		return item;
 	}
 
+	public abstract String getEntityName();
+
+	@Override
+	public String getExternalID()
+	{
+		return externalID;
+	}
+
+	public Geometry getGeometry()
+	{
+		return geom;
+	}
+
+	
+	public String getKey()
+	{
+		return id;
+	}
+
+	public Map<String, String> getMetadata()
+	{
+		return Collections.unmodifiableMap(metadata);
+	}
+
+	public String getMetadataValue(final String key)
+	{
+		return metadata.get(key);
+	}
+
+	public User getOwner()
+	{
+		return owner;
+	}
+
+	public Map<String, Integer> getParameters()
+	{
+		return Collections.unmodifiableMap(parameters);
+	}
+
+	public Integer getParameterValue(final String key)
+	{
+		return parameters.get(key);
+	}
+
+	public PlaceBook getPlaceBook()
+	{
+		return placebook;
+	}
+
+	public PlaceBookItemSearchIndex getSearchIndex()
+	{
+		return index;
+	}
+
+	public URL getSourceURL()
+	{
+		if(sourceURL == null)
+		{
+			return null;
+		}
+		try
+		{
+			return new URL(sourceURL);
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
+
+	public Date getTimestamp()
+	{
+		return timestamp;
+	}
+
+	public boolean hasMetadata()
+	{
+		return (!metadata.isEmpty());
+	}
+
+	public boolean hasParameters()
+	{
+		return (!parameters.isEmpty());
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public IUpdateableExternal saveUpdatedItem()
+	{
+		IUpdateableExternal returnItem = this;
+		final EntityManager em = EMFSingleton.getEntityManager();
+		IUpdateableExternal item;
+		try
+		{
+			em.getTransaction().begin();
+			item = ItemFactory.GetExistingItem(this, em);
+			if(item != null)
+			{
+				
+				log.debug("Existing item found so updating");
+				item.update(this);
+				returnItem = item;
+				em.flush();
+			}
+			else
+			{
+				log.debug("No existing item found so creating new");
+				em.persist(this);
+			}
+			em.getTransaction().commit();
+		}
+		finally
+		{
+			if (em.getTransaction().isActive())
+			{
+				em.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+		return returnItem;
+	}
+	
+	public void setExternalID(final String id)
+	{
+		this.externalID = id;
+	}
+
+	public void setGeometry(final Geometry geom)
+	{
+		this.geom = geom;
+	}
+
+	public void setMedataData(final Map<String, String> new_data)
+	{
+		this.metadata.putAll(new_data);
+	}
+	
+	public void setOwner(final User owner)
+	{
+		this.owner = owner;
+	}
+
+	public void setParameters(final Map<String, Integer> new_data)
+	{
+		this.parameters.putAll(new_data);
+	}
+	
+	public void setPlaceBook(final PlaceBook placebook)
+	{
+		this.placebook = placebook;
+	}
+
+	public void setSourceURL(final URL sourceURL)
+	{
+		if (sourceURL != null)
+			this.sourceURL = sourceURL.toExternalForm();
+		else
+			this.sourceURL = null;
+	}
+
+	public void setTimestamp(final Date timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+
 	private Element setToConfig(final Document config, final Map<String, ?> m, 
 							    final String name)
 	{
@@ -363,8 +411,9 @@ public abstract class PlaceBookItem
 
 		return null;
 	}
-
-	public final void update(PlaceBookItem item)
+	
+	@Override
+	public final void update(IUpdateableExternal item)
 	{
 		if(this == item)
 		{
@@ -378,14 +427,15 @@ public abstract class PlaceBookItem
 		
 		updateItem(item);	
 	}
-
+	
 	/**
 	 * Implementation of 'update' for placebook item superclass to update all base fields.
 	 * This should be called from descendant classes in their implementation of 'update' 
 	 * @param item
 	 */
-	protected void updateItem(PlaceBookItem item)
+	protected void updateItem(IUpdateableExternal updateItem)
 	{
+		PlaceBookItem item = (PlaceBookItem) updateItem;
 		parameters.clear();
 		for(Entry<String, Integer> entry: item.getParameters().entrySet())
 		{
@@ -414,15 +464,4 @@ public abstract class PlaceBookItem
 			item.setTimestamp(new Date());
 		}	
 	}
-	
-	public PlaceBookItemSearchIndex getSearchIndex()
-	{
-		return index;
-	}
-
-	/**
-	 * Implement this is subclasses to allow the items to be updated and saved properly
-	 * @param newItem
-	 */
-	public abstract PlaceBookItem saveUpdatedItem();
 }

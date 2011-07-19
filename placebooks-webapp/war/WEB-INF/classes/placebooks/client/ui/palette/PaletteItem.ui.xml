@@ -1,0 +1,33 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.panel {
+			display: inline-block;
+			padding: 5px;
+			margin: 10px auto;
+			text-align: center;
+			border-radius: 10px;			
+		}
+		
+		.panel:HOVER {
+			background-color: #667;
+		}
+		
+		.text {
+			margin-left: auto;
+			margin-right: auto;
+			padding: 0px 7px;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 12px;
+			background: #333;
+			color: #FFF;
+			border-radius: 10px;
+		}
+	</ui:style>
+
+	<p:MousePanel styleName="{style.panel}" ui:field="panel">
+		<g:Image ui:field="image"/>
+		<g:Label styleName="{style.text}" ui:field="text"></g:Label>
+	</p:MousePanel>
+</ui:UiBinder> 

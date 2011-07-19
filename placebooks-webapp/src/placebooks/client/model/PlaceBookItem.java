@@ -119,12 +119,6 @@ public class PlaceBookItem extends JavaScriptObject
 		return this.text;
 	}-*/;
 
-	private boolean isMedia(String shortClass)
-	{
-		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
-				|| shortClass.equals("videoitem");
-	}
-
 	public final String getURL()
 	{
 		final String shortClass = getShortClassName();
@@ -163,6 +157,12 @@ public class PlaceBookItem extends JavaScriptObject
 		return getClassName().equals(type.getTypeName());
 	}
 
+	private boolean isMedia(String shortClass)
+	{
+		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
+				|| shortClass.equals("videoitem");
+	}
+
 	public final native void removeMetadata(String name)
 	/*-{
 		if (('metadata' in this)) {
@@ -180,6 +180,11 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setGeometry(String string)
 	/*-{
 		this.geom = string;
+	}-*/;
+
+	public final native void setHash(String hash)
+	/*-{
+		this.hash = hash;
 	}-*/;
 
 	public final native void setKey(String key) /*-{
@@ -208,10 +213,5 @@ public class PlaceBookItem extends JavaScriptObject
 
 	public final native void setText(String newText) /*-{
 		this.text = newText;
-	}-*/;
-
-	public final native void setHash(String hash)
-	/*-{
-		this.hash = hash;
 	}-*/;
 }

@@ -5,16 +5,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 
 public class OSMap extends Map
 {
-	public final static OSMap createOSMap(final Element div)
-	{
-		if(div.getId() == null)
-		{
-			div.setId(HTMLPanel.createUniqueId());
-		}
-		
-		return createOS(div.getId());
-	}
-	
 	private final static native OSMap createOS(final String id)
 	/*-{
 		return new $wnd.OpenSpace.Map(id);//, {
@@ -31,6 +21,16 @@ public class OSMap extends Map
 	//		displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
 	//	});
 	}-*/;
+	
+	public final static OSMap createOSMap(final Element div)
+	{
+		if(div.getId() == null)
+		{
+			div.setId(HTMLPanel.createUniqueId());
+		}
+		
+		return createOS(div.getId());
+	}
 
 	protected OSMap()
 	{

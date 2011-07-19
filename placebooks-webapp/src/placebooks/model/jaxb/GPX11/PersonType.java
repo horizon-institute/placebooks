@@ -51,30 +51,6 @@ public class PersonType {
     protected LinkType link;
 
     /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
      * Gets the value of the email property.
      * 
      * @return
@@ -84,18 +60,6 @@ public class PersonType {
      */
     public EmailType getEmail() {
         return email;
-    }
-
-    /**
-     * Sets the value of the email property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EmailType }
-     *     
-     */
-    public void setEmail(EmailType value) {
-        this.email = value;
     }
 
     /**
@@ -111,6 +75,30 @@ public class PersonType {
     }
 
     /**
+     * Gets the value of the name property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the email property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link EmailType }
+     *     
+     */
+    public void setEmail(EmailType value) {
+        this.email = value;
+    }
+
+    /**
      * Sets the value of the link property.
      * 
      * @param value
@@ -120,6 +108,18 @@ public class PersonType {
      */
     public void setLink(LinkType value) {
         this.link = value;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

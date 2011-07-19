@@ -37,11 +37,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Gpx.Trk.Trkseg }
+     * Create an instance of {@link BoundsType }
      * 
      */
-    public Gpx.Trk.Trkseg createGpxTrkTrkseg() {
-        return new Gpx.Trk.Trkseg();
+    public BoundsType createBoundsType() {
+        return new BoundsType();
+    }
+
+    /**
+     * Create an instance of {@link Gpx }
+     * 
+     */
+    public Gpx createGpx() {
+        return new Gpx();
+    }
+
+    /**
+     * Create an instance of {@link Gpx.Rte }
+     * 
+     */
+    public Gpx.Rte createGpxRte() {
+        return new Gpx.Rte();
     }
 
     /**
@@ -53,19 +69,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BoundsType }
-     * 
-     */
-    public BoundsType createBoundsType() {
-        return new BoundsType();
-    }
-
-    /**
      * Create an instance of {@link Gpx.Trk }
      * 
      */
     public Gpx.Trk createGpxTrk() {
         return new Gpx.Trk();
+    }
+
+    /**
+     * Create an instance of {@link Gpx.Trk.Trkseg }
+     * 
+     */
+    public Gpx.Trk.Trkseg createGpxTrkTrkseg() {
+        return new Gpx.Trk.Trkseg();
     }
 
     /**
@@ -82,22 +98,6 @@ public class ObjectFactory {
      */
     public Gpx.Wpt createGpxWpt() {
         return new Gpx.Wpt();
-    }
-
-    /**
-     * Create an instance of {@link Gpx.Rte }
-     * 
-     */
-    public Gpx.Rte createGpxRte() {
-        return new Gpx.Rte();
-    }
-
-    /**
-     * Create an instance of {@link Gpx }
-     * 
-     */
-    public Gpx createGpx() {
-        return new Gpx();
     }
 
 }

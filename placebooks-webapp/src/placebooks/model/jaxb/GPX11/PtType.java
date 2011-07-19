@@ -71,42 +71,6 @@ public class PtType {
     }
 
     /**
-     * Sets the value of the ele property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setEle(BigDecimal value) {
-        this.ele = value;
-    }
-
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
-
-    /**
-     * Sets the value of the time property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTime(XMLGregorianCalendar value) {
-        this.time = value;
-    }
-
-    /**
      * Gets the value of the lat property.
      * 
      * @return
@@ -116,18 +80,6 @@ public class PtType {
      */
     public BigDecimal getLat() {
         return lat;
-    }
-
-    /**
-     * Sets the value of the lat property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setLat(BigDecimal value) {
-        this.lat = value;
     }
 
     /**
@@ -143,6 +95,42 @@ public class PtType {
     }
 
     /**
+     * Gets the value of the time property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getTime() {
+        return time;
+    }
+
+    /**
+     * Sets the value of the ele property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public void setEle(BigDecimal value) {
+        this.ele = value;
+    }
+
+    /**
+     * Sets the value of the lat property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public void setLat(BigDecimal value) {
+        this.lat = value;
+    }
+
+    /**
      * Sets the value of the lon property.
      * 
      * @param value
@@ -152,6 +140,18 @@ public class PtType {
      */
     public void setLon(BigDecimal value) {
         this.lon = value;
+    }
+
+    /**
+     * Sets the value of the time property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setTime(XMLGregorianCalendar value) {
+        this.time = value;
     }
 
 }

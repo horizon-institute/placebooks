@@ -75,54 +75,6 @@ public class MetadataType {
     protected ExtensionsType extensions;
 
     /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the desc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDesc() {
-        return desc;
-    }
-
-    /**
-     * Sets the value of the desc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
-
-    /**
      * Gets the value of the author property.
      * 
      * @return
@@ -135,15 +87,15 @@ public class MetadataType {
     }
 
     /**
-     * Sets the value of the author property.
+     * Gets the value of the bounds property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link PersonType }
+     * @return
+     *     possible object is
+     *     {@link BoundsType }
      *     
      */
-    public void setAuthor(PersonType value) {
-        this.author = value;
+    public BoundsType getBounds() {
+        return bounds;
     }
 
     /**
@@ -159,15 +111,39 @@ public class MetadataType {
     }
 
     /**
-     * Sets the value of the copyright property.
+     * Gets the value of the desc property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CopyrightType }
+     * @return
+     *     possible object is
+     *     {@link String }
      *     
      */
-    public void setCopyright(CopyrightType value) {
-        this.copyright = value;
+    public String getDesc() {
+        return desc;
+    }
+
+    /**
+     * Gets the value of the extensions property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ExtensionsType }
+     *     
+     */
+    public ExtensionsType getExtensions() {
+        return extensions;
+    }
+
+    /**
+     * Gets the value of the keywords property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getKeywords() {
+        return keywords;
     }
 
     /**
@@ -200,6 +176,18 @@ public class MetadataType {
     }
 
     /**
+     * Gets the value of the name property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Gets the value of the time property.
      * 
      * @return
@@ -212,51 +200,15 @@ public class MetadataType {
     }
 
     /**
-     * Sets the value of the time property.
+     * Sets the value of the author property.
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link PersonType }
      *     
      */
-    public void setTime(XMLGregorianCalendar value) {
-        this.time = value;
-    }
-
-    /**
-     * Gets the value of the keywords property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKeywords() {
-        return keywords;
-    }
-
-    /**
-     * Sets the value of the keywords property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKeywords(String value) {
-        this.keywords = value;
-    }
-
-    /**
-     * Gets the value of the bounds property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BoundsType }
-     *     
-     */
-    public BoundsType getBounds() {
-        return bounds;
+    public void setAuthor(PersonType value) {
+        this.author = value;
     }
 
     /**
@@ -272,15 +224,27 @@ public class MetadataType {
     }
 
     /**
-     * Gets the value of the extensions property.
+     * Sets the value of the copyright property.
      * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
+     * @param value
+     *     allowed object is
+     *     {@link CopyrightType }
      *     
      */
-    public ExtensionsType getExtensions() {
-        return extensions;
+    public void setCopyright(CopyrightType value) {
+        this.copyright = value;
+    }
+
+    /**
+     * Sets the value of the desc property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDesc(String value) {
+        this.desc = value;
     }
 
     /**
@@ -293,6 +257,42 @@ public class MetadataType {
      */
     public void setExtensions(ExtensionsType value) {
         this.extensions = value;
+    }
+
+    /**
+     * Sets the value of the keywords property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setKeywords(String value) {
+        this.keywords = value;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
+    }
+
+    /**
+     * Sets the value of the time property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setTime(XMLGregorianCalendar value) {
+        this.time = value;
     }
 
 }

@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
+import placebooks.controller.ItemFactory;
 import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -34,6 +34,10 @@ public class WebBundleItem extends PlaceBookItem
 
 	private String webBundlePath;
 
+	WebBundleItem()
+	{
+	}
+
 	public WebBundleItem(final User owner, final Geometry geom, 
 						 final URL sourceURL, final String webBundleName,
 						 final String webBundlePath)
@@ -44,22 +48,12 @@ public class WebBundleItem extends PlaceBookItem
 		thumbnail = null;
 	}
 
-	WebBundleItem()
-	{
-	}
-
 	public WebBundleItem(final WebBundleItem w)
 	{
 		super(w);
 		this.webBundleName = new String(w.getWebBundleName());
 		this.webBundlePath = new String(w.getWebBundlePath());		
 		thumbnail = null;
-	}
-
-	@Override
-	public WebBundleItem deepCopy()
-	{
-		return new WebBundleItem(this);
 	}
 
 	@Override
@@ -88,6 +82,12 @@ public class WebBundleItem extends PlaceBookItem
 	}
 
 	@Override
+	public WebBundleItem deepCopy()
+	{
+		return new WebBundleItem(this);
+	}
+
+	@Override
 	public void deleteItemData()
 	{
 		try
@@ -98,6 +98,12 @@ public class WebBundleItem extends PlaceBookItem
 		{
 			log.error(e.toString());
 		}
+	}
+
+	public String generateWebBundlePath()
+	{
+		return PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
 	}
 
 	@Override
@@ -117,41 +123,75 @@ public class WebBundleItem extends PlaceBookItem
 		return thumbnail;
 	}
 
+	public String getWebBundle()
+	{
+		return webBundlePath + "/" + webBundleName;
+	}
 	public String getWebBundleName()
 	{
 		return webBundleName;
+	}
+
+	public String getWebBundlePath()
+	{
+		return webBundlePath;
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public IUpdateableExternal saveUpdatedItem()
+	{
+		IUpdateableExternal returnItem = this;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		IUpdateableExternal item;
+		try
+		{
+			pm.getTransaction().begin();
+			item = ItemFactory.GetExistingItem(this, pm);
+			if(item != null)
+			{
+				
+				item.update(this);
+				pm.persist(item);
+				returnItem = item;
+				log.debug("Existing item found so updating");
+			}
+			else
+			{
+				log.debug("No existing item found so creating new");
+				pm.persist(this);
+			}
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
+			}
+		}
+		return returnItem;
 	}
 
 	public void setWebBundleName(final String name)
 	{
 		webBundleName = name;
 	}
-	public String getWebBundlePath()
-	{
-		return webBundlePath;
-	}
 
 	public void setWebBundlePath(final String path)
 	{
 		webBundlePath = path;
 	}
-
-	public String getWebBundle()
-	{
-		return webBundlePath + "/" + webBundleName;
-	}
-
-	public String generateWebBundlePath()
-	{
-		return PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
-	}
-
+	
+	
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
 	@Override
-	public void updateItem(PlaceBookItem item)
+	public void updateItem(IUpdateableExternal item)
 	{
 		super.updateItem(item);
 //		if(item instanceof WebBundleItem)
@@ -181,46 +221,6 @@ public class WebBundleItem extends PlaceBookItem
 //				}
 //			}
 //		}
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
-	 */
-	@Override
-	public PlaceBookItem saveUpdatedItem()
-	{
-		PlaceBookItem returnItem = this;
-		final EntityManager pm = EMFSingleton.getEntityManager();
-		WebBundleItem item;
-		try
-		{
-			pm.getTransaction().begin();
-			item = (WebBundleItem) EverytrailHelper.GetExistingItem(this, pm);
-			if(item != null)
-			{
-				
-				item.update(this);
-				pm.persist(item);
-				returnItem = item;
-				log.debug("Existing item found so updating");
-			}
-			else
-			{
-				log.debug("No existing item found so creating new");
-				pm.persist(this);
-			}
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
-		}
-		return returnItem;
 	}
 
 }

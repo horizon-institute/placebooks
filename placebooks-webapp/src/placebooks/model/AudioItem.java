@@ -9,12 +9,6 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class AudioItem extends MediaItem
 {
-	public AudioItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String audio)
-	{
-		super(owner, geom, sourceURL, audio);
-	}
-
 	AudioItem()
 	{
 	}
@@ -22,6 +16,12 @@ public class AudioItem extends MediaItem
 	public AudioItem(final AudioItem a)
 	{
 		super(a);
+	}
+
+	public AudioItem(final User owner, final Geometry geom, final URL sourceURL,
+					 final String audio)
+	{
+		super(owner, geom, sourceURL, audio);
 	}
 
 	@Override

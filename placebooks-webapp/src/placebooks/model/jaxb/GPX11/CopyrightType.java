@@ -57,27 +57,15 @@ public class CopyrightType {
     protected String author;
 
     /**
-     * Gets the value of the year property.
+     * Gets the value of the author property.
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link String }
      *     
      */
-    public XMLGregorianCalendar getYear() {
-        return year;
-    }
-
-    /**
-     * Sets the value of the year property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setYear(XMLGregorianCalendar value) {
-        this.year = value;
+    public String getAuthor() {
+        return author;
     }
 
     /**
@@ -93,27 +81,15 @@ public class CopyrightType {
     }
 
     /**
-     * Sets the value of the license property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLicense(String value) {
-        this.license = value;
-    }
-
-    /**
-     * Gets the value of the author property.
+     * Gets the value of the year property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public String getAuthor() {
-        return author;
+    public XMLGregorianCalendar getYear() {
+        return year;
     }
 
     /**
@@ -126,6 +102,30 @@ public class CopyrightType {
      */
     public void setAuthor(String value) {
         this.author = value;
+    }
+
+    /**
+     * Sets the value of the license property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLicense(String value) {
+        this.license = value;
+    }
+
+    /**
+     * Sets the value of the year property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setYear(XMLGregorianCalendar value) {
+        this.year = value;
     }
 
 }

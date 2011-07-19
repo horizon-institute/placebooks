@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
+import placebooks.controller.ItemFactory;
 import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -37,17 +37,17 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 	}
 
+	public MediaItem(final MediaItem m)
+	{
+		super(m);
+		this.path = new String(m.getPath());
+	}
+
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
 					 final String file)
 	{
 		super(owner, geom, sourceURL);
 		this.path = file;
-	}
-
-	public MediaItem(final MediaItem m)
-	{
-		super(m);
-		this.path = new String(m.getPath());
 	}
 
 	@Override
@@ -70,26 +70,6 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 
 		root.appendChild(item);
-	}
-
-	@Override
-	public void deleteItemData()
-	{
-		final File f = new File(getPath());
-		if (f.exists())
-			f.delete();
-		else
-			log.error("Problem deleting file " + f.getAbsolutePath());
-	}
-
-	public String getPath()
-	{
-		return path;
-	}
-
-	public void setPath(final String filepath)
-	{
-		this.path = filepath;
 	}
 
 	protected void copyDataToPackage() throws IOException
@@ -115,38 +95,101 @@ public abstract class MediaItem extends PlaceBookItem
 			fos.close();
 		}
 	}
-	
-	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException
+
+	@Override
+	public void deleteItemData()
 	{
-		if(getKey() == null)
+		final File f = new File(getPath());
+		if (f.exists())
+			f.delete();
+		else
+			log.error("Problem deleting file " + f.getAbsolutePath());
+	}
+
+	public String getPath()
+	{
+		return path;
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 */
+	@Override
+	public IUpdateableExternal saveUpdatedItem()
+	{
+		IUpdateableExternal returnItem = this;
+		final EntityManager pm = EMFSingleton.getEntityManager();
+		IUpdateableExternal item;
+		try
 		{
-			final String path = 
-				PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
-			if (new File(path).exists() || new File(path).mkdirs())
+			pm.getTransaction().begin();
+			item = ItemFactory.GetExistingItem(this, pm);
+			if(item != null)
 			{
-				String filePath = path + "/" + System.currentTimeMillis() + name;
-
-				log.info("Copying file to=" + filePath);
-				final FileOutputStream output = new FileOutputStream(new File(filePath));
-				int byte_;
-				while ((byte_ = input.read()) != -1)
-				{
-					output.write(byte_);
-				}
-				output.close();
-				input.close();
-				setPath(filePath);
-			}	
+				
+				log.debug("Existing item found so updating");
+				item.update(this);
+				log.debug("Deleting file: " + this.getPath());
+				this.deleteItemData();
+				returnItem = item;
+				pm.flush();
+			}
 			else
 			{
-				throw new IOException("Failed to write file '" + path + "'"); 
+				log.debug("No existing item found so creating new");
+				pm.persist(this);
+			}
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete all transaction back");
 			}
 		}
-		else
+		return returnItem;
+	}
+	
+	public void setPath(final String filepath)
+	{
+		this.path = filepath;
+	}
+
+	/* (non-Javadoc)
+	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
+	 */
+	@Override
+	public void updateItem(final IUpdateableExternal item) 
+	{
+		super.updateItem(item);
+		if(item instanceof MediaItem)
 		{
-			writeDataToDisk(name, input);
+			final MediaItem mediaItem = (MediaItem) item;
+			if(mediaItem.getPath() == null)
+			{
+				return;
+			}
+			if(mediaItem.getPath().equals(getPath()))
+			{
+				return;
+			}
+			log.debug("Looking for " + mediaItem.getPath());
+			final File mediaFile = new File(mediaItem.getPath());
+			if (mediaFile.exists())
+			{
+				// @TODO Remove old file?
+				
+				try
+				{
+					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
+				}
+				catch (Exception e)
+				{
+					log.error(e.getMessage());
+				}
+			}
 		}
 	}
 
@@ -200,81 +243,38 @@ public abstract class MediaItem extends PlaceBookItem
 		entityManager.merge(this);
 		entityManager.close();
 	}
-
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
-	 */
-	@Override
-	public void updateItem(final PlaceBookItem item) 
-	{
-		super.updateItem(item);
-		if(item instanceof MediaItem)
-		{
-			final MediaItem mediaItem = (MediaItem) item;
-			if(mediaItem.getPath() == null)
-			{
-				return;
-			}
-			if(mediaItem.getPath().equals(getPath()))
-			{
-				return;
-			}
-			log.debug("Looking for " + mediaItem.getPath());
-			final File mediaFile = new File(mediaItem.getPath());
-			if (mediaFile.exists())
-			{
-				// TODO Remove old file?
-				
-				try
-				{
-					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
-				}
-				catch (Exception e)
-				{
-					log.error(e.getMessage());
-				}
-			}
-		}
-	}
 	
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
-	 */
-	@Override
-	public PlaceBookItem saveUpdatedItem()
+	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException
 	{
-		PlaceBookItem returnItem = this;
-		final EntityManager pm = EMFSingleton.getEntityManager();
-		MediaItem item;
-		try
+		if(getKey() == null)
 		{
-			pm.getTransaction().begin();
-			item = (MediaItem) EverytrailHelper.GetExistingItem(this, pm);
-			if(item != null)
+			final String path = 
+				PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+
+			if (new File(path).exists() || new File(path).mkdirs())
 			{
-				
-				log.debug("Existing item found so updating");
-				item.update(this);
-				log.debug("Deleting file: " + this.getPath());
-				this.deleteItemData();
-				returnItem = item;
-				pm.flush();
-			}
+				String filePath = path + "/" + System.currentTimeMillis() + name;
+
+				log.info("Copying file to=" + filePath);
+				final FileOutputStream output = new FileOutputStream(new File(filePath));
+				int byte_;
+				while ((byte_ = input.read()) != -1)
+				{
+					output.write(byte_);
+				}
+				output.close();
+				input.close();
+				setPath(filePath);
+			}	
 			else
 			{
-				log.debug("No existing item found so creating new");
-				pm.persist(this);
+				throw new IOException("Failed to write file '" + path + "'"); 
 			}
-			pm.getTransaction().commit();
 		}
-		finally
+		else
 		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
-			}
+			writeDataToDisk(name, input);
 		}
-		return returnItem;
 	}
 }

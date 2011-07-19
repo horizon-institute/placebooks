@@ -36,9 +36,9 @@ public class Map extends JavaScriptObject
 		this.addLayer(layer);
 	}-*/;
 
-	public final native Bounds getMaxExtent()
+	public final native Projection getDisplayProjection()
 	/*-{
-		return this.maxExtent;
+		return this.displayProjection;
 	}-*/;
 	
 	public final native Events getEvents()
@@ -62,6 +62,11 @@ public class Map extends JavaScriptObject
 		return this.getLonLatFromViewPortPx(pixels);
 	}-*/;
 
+	public final native Bounds getMaxExtent()
+	/*-{
+		return this.maxExtent;
+	}-*/;
+
 	public final native Projection getProjection()
 	/*-{
 		return this.getProjectionObject();
@@ -81,19 +86,14 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.setCenter(lonLat);		
 	}-*/;
-
+	
 	public final native void setCenter(final LonLat lonLat, final int zoom)
 	/*-{
 		this.setCenter(lonLat, zoom);		
 	}-*/;
-	
+
 	public final native void zoomToExtent(final Bounds extent)
 	/*-{
 		this.zoomToExtent(extent);
-	}-*/;
-
-	public final native Projection getDisplayProjection()
-	/*-{
-		return this.displayProjection;
 	}-*/;
 }

@@ -94,18 +94,10 @@ public class PlaceBookPublish extends Composite
 		publish.addClickHandler(clickHandler);
 	}
 	
-	private void refresh()
+	@UiHandler(value={"location", "activity", "title"})
+	void handleChangeValue(KeyUpEvent event)
 	{
-		if(index >= 0 && index < imageItems.size())
-		{
-			PlaceBookItemFrame frame = imageItems.get(index);
-			placebookImage.setUrl(frame.getItem().getURL());
-		}
-		
-		publish.setEnabled(!title.getText().trim().isEmpty() && !activity.getText().trim().isEmpty() && !location.getText().trim().isEmpty());
-		
-		rightButton.setVisible(index < imageItems.size());
-		leftButton.setVisible(index > 0);		
+		refresh();
 	}
 	
 	@UiHandler("leftButton")
@@ -116,22 +108,6 @@ public class PlaceBookPublish extends Composite
 			index--;
 			refresh();
 		}
-	}
-	
-	@UiHandler("rightButton")
-	void handleRightClick(ClickEvent event)
-	{
-		if(index < imageItems.size())
-		{
-			index++;
-			refresh();
-		}
-	}	
-	
-	@UiHandler(value={"location", "activity", "title"})
-	void handleChangeValue(KeyUpEvent event)
-	{
-		refresh();
 	}
 	
 	@UiHandler("publish")
@@ -157,5 +133,29 @@ public class PlaceBookPublish extends Composite
 				placeController.goTo(new PlaceBookPreviewPlace(placebook));
 			}
 		});
+	}	
+	
+	@UiHandler("rightButton")
+	void handleRightClick(ClickEvent event)
+	{
+		if(index < imageItems.size())
+		{
+			index++;
+			refresh();
+		}
+	}
+	
+	private void refresh()
+	{
+		if(index >= 0 && index < imageItems.size())
+		{
+			PlaceBookItemFrame frame = imageItems.get(index);
+			placebookImage.setUrl(frame.getItem().getURL());
+		}
+		
+		publish.setEnabled(!title.getText().trim().isEmpty() && !activity.getText().trim().isEmpty() && !location.getText().trim().isEmpty());
+		
+		rightButton.setVisible(index < imageItems.size());
+		leftButton.setVisible(index > 0);		
 	}
 }

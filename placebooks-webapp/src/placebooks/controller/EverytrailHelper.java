@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -45,7 +43,6 @@ import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
-import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -59,8 +56,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class EverytrailHelper
 {
-	public final static String SERVICE_NAME = "Everytrail";
-
 	static class HttpAuthenticator extends Authenticator
 	{
 		private String username, password;
@@ -83,9 +78,77 @@ public class EverytrailHelper
 		}
 	}
 
+	public final static String SERVICE_NAME = "Everytrail";
+
 	private static final String apiBaseUrl = "http://www.everytrail.com/api/";
 
 	private static final Logger log = Logger.getLogger(EverytrailHelper.class.getName());
+
+	/**
+	 * Perform a post to the given Everytrail api destination with the parameters specified
+	 * 
+	 * @param postDestination
+	 *            API destination after http://www.everytrail.com/api/ - e.g. user/trips
+	 * @param Hashtable
+	 *            <String, String> params a hastable of the parameters to post to the api with name
+	 *            / values as strings
+	 * @return String A string containing the post response from Everytrail
+	 */
+	private static String getPostResponseWithParams(final String postDestination, final Hashtable<String, String> params)
+	{
+		final StringBuilder postResponse = new StringBuilder();
+
+		// Add version 3 param to all requests
+		params.put("version", "3");
+		// Construct data to post by iterating through parameter Hashtable keys Enumeration
+		final StringBuilder data = new StringBuilder();
+		final Enumeration<String> paramNames = params.keys();
+		try
+		{
+			while (paramNames.hasMoreElements())
+			{
+				final String paramName = paramNames.nextElement();
+				data.append(URLEncoder.encode(paramName, "UTF-8") + "="
+						+ URLEncoder.encode(params.get(paramName), "UTF-8"));
+				if (paramNames.hasMoreElements())
+				{
+					data.append("&");
+				}
+			}
+
+			// Send data by setting up the api password http authentication and UoN proxy
+
+			Authenticator.setDefault(new HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
+					.getClassLoader())
+					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
+					.get(EverytrailHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")));
+
+			final URL url = new URL(apiBaseUrl + postDestination);
+			final URLConnection conn = CommunicationHelper.getConnection(url);
+
+			conn.setDoOutput(true);
+			final OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(data.toString());
+			wr.flush();
+
+			// Get the response
+			final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = rd.readLine()) != null)
+			{
+				postResponse.append(line);
+			}
+			wr.close();
+			rd.close();
+		}
+		catch (final Exception ex)
+		{
+			log.debug(ex.getMessage());
+		}
+
+		return postResponse.toString();
+	}
 
 	public static ImageItem imageItemFromEverytrailImage(final User owner, final Node everytrailPicture)
 	{
@@ -191,6 +254,80 @@ public class EverytrailHelper
 		}
 
 		return imageItem;
+	}
+
+	/**
+	 * Return the success/error status of an Everytrail API call
+	 * 
+	 * @param targetElementId
+	 * @return
+	 */
+	private static EverytrailResponseStatusData parseResponseStatus(final String targetElementId, final Document doc)
+	{
+		String status = "";
+		String value = "";
+		try
+		{
+			if (doc.getDocumentElement().getNodeName() == targetElementId)
+			{
+				status = doc.getDocumentElement().getAttribute("status");
+				if (status.equals("success"))
+				{
+					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
+				}
+				else
+				{
+					log.debug("Everytrail call returned status: " + status);
+					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
+				}
+			}
+		}
+		catch (final Exception ex)
+		{
+			log.error("Problem checking Everytrail response: " + ex.getMessage());
+			log.debug(ex.getStackTrace());
+		}
+		return new EverytrailResponseStatusData(status, value);
+	}
+
+	/**
+	 * Parse and Everytrail API response into an XML document from HTTP string response.
+	 * 
+	 * @param Strung
+	 *            Post response from everytrail http post
+	 * @return Document XML structured document
+	 */
+	private static Document parseResponseToXml(final String postString)
+	{
+		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db;
+		Document doc = null;
+		try
+		{
+			db = dbf.newDocumentBuilder();
+			final InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(postString));
+			doc = db.parse(is);
+			doc.getDocumentElement().normalize();
+		}
+		catch (final Exception ex)
+		{
+			log.equals("Problem parsing Everytrail XML response: " + ex.getMessage());
+			log.debug(ex.getStackTrace());
+		}
+		return doc;
+	}
+
+	/**
+	 * Parse and Everytrail API response into an XML document from HTTP string response.
+	 * 
+	 * @param StrungBuilder
+	 *            Post response from everytrail http post
+	 * @return Document XML structured document
+	 */
+	private static Document parseResponseToXml(final StringBuilder postResponse)
+	{
+		return parseResponseToXml(postResponse.toString());
 	}
 
 	/**
@@ -693,6 +830,26 @@ public class EverytrailHelper
 	}
 
 	/**
+	 * Copy all of a users content from Everytrail to Placebooks database, replacing items where
+	 *  necessary based on everytrail ids
+	 * @param pm EntityManager for database
+	 * @param user 
+	 */
+	public static void UpdateEverytrailContent(final EntityManager pm, final User user)
+	{
+		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
+		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
+		Map<String, Node> pics = picturesResponse.getPicturesMap();
+
+		for(String key : pics.keySet() )
+		{
+			ImageItem item = new ImageItem(user, null, null, null);
+			String tripId = picturesResponse.getPictureTrips().get(key);
+			ItemFactory.toImageItem(user, pics.get(key), item, tripId, picturesResponse.getTripNames().get(tripId));
+		}
+	}
+
+	/**
 	 * Log in to the Everytrail API with a given username and password n.b. this appears to be
 	 * submitted as HTTP not HTTPS so password is potentially insecure.
 	 * 
@@ -828,189 +985,6 @@ public class EverytrailHelper
 
 		final EverytrailVideosResponse returnValue = new EverytrailVideosResponse(status_to_return, picturesToReturn);
 		return returnValue;
-	}
-
-	/**
-	 * Perform a post to the given Everytrail api destination with the parameters specified
-	 * 
-	 * @param postDestination
-	 *            API destination after http://www.everytrail.com/api/ - e.g. user/trips
-	 * @param Hashtable
-	 *            <String, String> params a hastable of the parameters to post to the api with name
-	 *            / values as strings
-	 * @return String A string containing the post response from Everytrail
-	 */
-	private static String getPostResponseWithParams(final String postDestination, final Hashtable<String, String> params)
-	{
-		final StringBuilder postResponse = new StringBuilder();
-
-		// Add version 3 param to all requests
-		params.put("version", "3");
-		// Construct data to post by iterating through parameter Hashtable keys Enumeration
-		final StringBuilder data = new StringBuilder();
-		final Enumeration<String> paramNames = params.keys();
-		try
-		{
-			while (paramNames.hasMoreElements())
-			{
-				final String paramName = paramNames.nextElement();
-				data.append(URLEncoder.encode(paramName, "UTF-8") + "="
-						+ URLEncoder.encode(params.get(paramName), "UTF-8"));
-				if (paramNames.hasMoreElements())
-				{
-					data.append("&");
-				}
-			}
-
-			// Send data by setting up the api password http authentication and UoN proxy
-
-			Authenticator.setDefault(new HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
-					.getClassLoader())
-					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
-					.get(EverytrailHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")));
-
-			final URL url = new URL(apiBaseUrl + postDestination);
-			final URLConnection conn = CommunicationHelper.getConnection(url);
-
-			conn.setDoOutput(true);
-			final OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(data.toString());
-			wr.flush();
-
-			// Get the response
-			final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = rd.readLine()) != null)
-			{
-				postResponse.append(line);
-			}
-			wr.close();
-			rd.close();
-		}
-		catch (final Exception ex)
-		{
-			log.debug(ex.getMessage());
-		}
-
-		return postResponse.toString();
-	}
-
-	/**
-	 * Return the success/error status of an Everytrail API call
-	 * 
-	 * @param targetElementId
-	 * @return
-	 */
-	private static EverytrailResponseStatusData parseResponseStatus(final String targetElementId, final Document doc)
-	{
-		String status = "";
-		String value = "";
-		try
-		{
-			if (doc.getDocumentElement().getNodeName() == targetElementId)
-			{
-				status = doc.getDocumentElement().getAttribute("status");
-				if (status.equals("success"))
-				{
-					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
-				}
-				else
-				{
-					log.debug("Everytrail call returned status: " + status);
-					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
-				}
-			}
-		}
-		catch (final Exception ex)
-		{
-			log.error("Problem checking Everytrail response: " + ex.getMessage());
-			log.debug(ex.getStackTrace());
-		}
-		return new EverytrailResponseStatusData(status, value);
-	}
-
-	/**
-	 * Parse and Everytrail API response into an XML document from HTTP string response.
-	 * 
-	 * @param Strung
-	 *            Post response from everytrail http post
-	 * @return Document XML structured document
-	 */
-	private static Document parseResponseToXml(final String postString)
-	{
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db;
-		Document doc = null;
-		try
-		{
-			db = dbf.newDocumentBuilder();
-			final InputSource is = new InputSource();
-			is.setCharacterStream(new StringReader(postString));
-			doc = db.parse(is);
-			doc.getDocumentElement().normalize();
-		}
-		catch (final Exception ex)
-		{
-			log.equals("Problem parsing Everytrail XML response: " + ex.getMessage());
-			log.debug(ex.getStackTrace());
-		}
-		return doc;
-	}
-
-	/**
-	 * Parse and Everytrail API response into an XML document from HTTP string response.
-	 * 
-	 * @param StrungBuilder
-	 *            Post response from everytrail http post
-	 * @return Document XML structured document
-	 */
-	private static Document parseResponseToXml(final StringBuilder postResponse)
-	{
-		return parseResponseToXml(postResponse.toString());
-	}
-
-	/**
-	 * Copy all of a users content from Everytrail to Placebooks database, replacing items where
-	 *  necessary based on everytrail ids
-	 * @param pm EntityManager for database
-	 * @param user 
-	 */
-	public static void UpdateEverytrailContent(final EntityManager pm, final User user)
-	{
-		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
-		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
-		Map<String, Node> pics = picturesResponse.getPicturesMap();
-
-		for(String key : pics.keySet() )
-		{
-			ImageItem item = new ImageItem(user, null, null, null);
-			String tripId = picturesResponse.getPictureTrips().get(key);
-			ItemFactory.toImageItem(user, pics.get(key), item, tripId, picturesResponse.getTripNames().get(tripId));
-		}
-	}
-
-	/**
-	 * Gets the item with the external id or null if there is none.
-	 * n.b. assumes ther's only one of these in the db.
-	 * @param externalId
-	 * @return PlaceBookItem item or null
-	 */
-	public static PlaceBookItem GetExistingItem(PlaceBookItem itemToSave, EntityManager pm)
-	{
-		PlaceBookItem item = null;
-		log.debug("Querying externalID " +  itemToSave.getExternalID());
-		Query q = pm.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where placebookitem.externalID = ?1", PlaceBookItem.class);
-		q.setParameter(1, itemToSave.getExternalID());
-		try
-		{
-			item = (PlaceBookItem) q.getSingleResult();
-		}
-		catch(NoResultException ex)
-		{
-			item = null;
-		}
-		return item;
 	}
 
 }

@@ -30,6 +30,11 @@ public class EverytrailPicturesResponse
 		this.tripNames = tripNames;
 	}
 
+	public Collection<Node> getPictures()
+	{
+		return this.picturesMap.values();
+	}
+
 	/**
 	 * Get a map listing pictures with key of trip_id
 	 * @return Map<String, Node>
@@ -38,25 +43,20 @@ public class EverytrailPicturesResponse
 	{
 		return this.picturesMap;
 	}
-
+	
 	public HashMap<String, String> getPictureTrips()
 	{
 		return this.pictureTrips;
 	}
 	
-	public HashMap<String, String> getTripNames()
-	{
-		return this.tripNames;
-	}
-	
-	
-	public Collection<Node> getPictures()
-	{
-		return this.picturesMap.values();
-	}
 	
 	public String getStatus()
 	{
 		return this.status;
+	}
+	
+	public HashMap<String, String> getTripNames()
+	{
+		return this.tripNames;
 	}
 }

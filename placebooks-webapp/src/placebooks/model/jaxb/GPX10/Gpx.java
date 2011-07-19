@@ -215,412 +215,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "gpx")
 public class Gpx {
 
-    protected String name;
-    protected String desc;
-    protected String author;
-    protected String email;
-    @XmlSchemaType(name = "anyURI")
-    protected String url;
-    protected String urlname;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar time;
-    protected String keywords;
-    protected BoundsType bounds;
-    protected List<Gpx.Wpt> wpt;
-    protected List<Gpx.Rte> rte;
-    protected List<Gpx.Trk> trk;
-    @XmlAnyElement(lax = true)
-    protected List<Object> any;
-    @XmlAttribute(required = true)
-    protected String version;
-    @XmlAttribute(required = true)
-    protected String creator;
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the desc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDesc() {
-        return desc;
-    }
-
-    /**
-     * Sets the value of the desc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
-
-    /**
-     * Gets the value of the author property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAuthor() {
-        return author;
-    }
-
-    /**
-     * Sets the value of the author property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAuthor(String value) {
-        this.author = value;
-    }
-
-    /**
-     * Gets the value of the email property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Sets the value of the email property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEmail(String value) {
-        this.email = value;
-    }
-
-    /**
-     * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUrl(String value) {
-        this.url = value;
-    }
-
-    /**
-     * Gets the value of the urlname property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUrlname() {
-        return urlname;
-    }
-
-    /**
-     * Sets the value of the urlname property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUrlname(String value) {
-        this.urlname = value;
-    }
-
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
-
-    /**
-     * Sets the value of the time property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTime(XMLGregorianCalendar value) {
-        this.time = value;
-    }
-
-    /**
-     * Gets the value of the keywords property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKeywords() {
-        return keywords;
-    }
-
-    /**
-     * Sets the value of the keywords property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKeywords(String value) {
-        this.keywords = value;
-    }
-
-    /**
-     * Gets the value of the bounds property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BoundsType }
-     *     
-     */
-    public BoundsType getBounds() {
-        return bounds;
-    }
-
-    /**
-     * Sets the value of the bounds property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BoundsType }
-     *     
-     */
-    public void setBounds(BoundsType value) {
-        this.bounds = value;
-    }
-
-    /**
-     * Gets the value of the wpt property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the wpt property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getWpt().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Gpx.Wpt }
-     * 
-     * 
-     */
-    public List<Gpx.Wpt> getWpt() {
-        if (wpt == null) {
-            wpt = new ArrayList<Gpx.Wpt>();
-        }
-        return this.wpt;
-    }
-
-    /**
-     * Gets the value of the rte property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the rte property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRte().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Gpx.Rte }
-     * 
-     * 
-     */
-    public List<Gpx.Rte> getRte() {
-        if (rte == null) {
-            rte = new ArrayList<Gpx.Rte>();
-        }
-        return this.rte;
-    }
-
-    /**
-     * Gets the value of the trk property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the trk property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTrk().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Gpx.Trk }
-     * 
-     * 
-     */
-    public List<Gpx.Trk> getTrk() {
-        if (trk == null) {
-            trk = new ArrayList<Gpx.Trk>();
-        }
-        return this.trk;
-    }
-
-    /**
-     * Gets the value of the any property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the any property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAny().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Object }
-     * 
-     * 
-     */
-    public List<Object> getAny() {
-        if (any == null) {
-            any = new ArrayList<Object>();
-        }
-        return this.any;
-    }
-
-    /**
-     * Gets the value of the version property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getVersion() {
-        if (version == null) {
-            return "1.0";
-        } else {
-            return version;
-        }
-    }
-
-    /**
-     * Sets the value of the version property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setVersion(String value) {
-        this.version = value;
-    }
-
-    /**
-     * Gets the value of the creator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCreator() {
-        return creator;
-    }
-
-    /**
-     * Sets the value of the creator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCreator(String value) {
-        this.creator = value;
-    }
-
-
     /**
      * <p>Java class for anonymous complex type.
      * 
@@ -692,246 +286,6 @@ public class Gpx {
         "rtept"
     })
     public static class Rte {
-
-        protected String name;
-        protected String cmt;
-        protected String desc;
-        protected String src;
-        @XmlSchemaType(name = "anyURI")
-        protected String url;
-        protected String urlname;
-        @XmlSchemaType(name = "nonNegativeInteger")
-        protected BigInteger number;
-        @XmlAnyElement(lax = true)
-        protected List<Object> any;
-        protected List<Gpx.Rte.Rtept> rtept;
-
-        /**
-         * Gets the value of the name property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Sets the value of the name property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setName(String value) {
-            this.name = value;
-        }
-
-        /**
-         * Gets the value of the cmt property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getCmt() {
-            return cmt;
-        }
-
-        /**
-         * Sets the value of the cmt property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setCmt(String value) {
-            this.cmt = value;
-        }
-
-        /**
-         * Gets the value of the desc property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getDesc() {
-            return desc;
-        }
-
-        /**
-         * Sets the value of the desc property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setDesc(String value) {
-            this.desc = value;
-        }
-
-        /**
-         * Gets the value of the src property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSrc() {
-            return src;
-        }
-
-        /**
-         * Sets the value of the src property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setSrc(String value) {
-            this.src = value;
-        }
-
-        /**
-         * Gets the value of the url property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrl() {
-            return url;
-        }
-
-        /**
-         * Sets the value of the url property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrl(String value) {
-            this.url = value;
-        }
-
-        /**
-         * Gets the value of the urlname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrlname() {
-            return urlname;
-        }
-
-        /**
-         * Sets the value of the urlname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrlname(String value) {
-            this.urlname = value;
-        }
-
-        /**
-         * Gets the value of the number property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigInteger }
-         *     
-         */
-        public BigInteger getNumber() {
-            return number;
-        }
-
-        /**
-         * Sets the value of the number property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigInteger }
-         *     
-         */
-        public void setNumber(BigInteger value) {
-            this.number = value;
-        }
-
-        /**
-         * Gets the value of the any property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the any property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getAny().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Object }
-         * 
-         * 
-         */
-        public List<Object> getAny() {
-            if (any == null) {
-                any = new ArrayList<Object>();
-            }
-            return this.any;
-        }
-
-        /**
-         * Gets the value of the rtept property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the rtept property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getRtept().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Gpx.Rte.Rtept }
-         * 
-         * 
-         */
-        public List<Gpx.Rte.Rtept> getRtept() {
-            if (rtept == null) {
-                rtept = new ArrayList<Gpx.Rte.Rtept>();
-            }
-            return this.rtept;
-        }
-
 
         /**
          * <p>Java class for anonymous complex type.
@@ -1028,414 +382,6 @@ public class Gpx {
             protected BigDecimal lon;
 
             /**
-             * Gets the value of the ele property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getEle() {
-                return ele;
-            }
-
-            /**
-             * Sets the value of the ele property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setEle(BigDecimal value) {
-                this.ele = value;
-            }
-
-            /**
-             * Gets the value of the time property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link XMLGregorianCalendar }
-             *     
-             */
-            public XMLGregorianCalendar getTime() {
-                return time;
-            }
-
-            /**
-             * Sets the value of the time property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link XMLGregorianCalendar }
-             *     
-             */
-            public void setTime(XMLGregorianCalendar value) {
-                this.time = value;
-            }
-
-            /**
-             * Gets the value of the magvar property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getMagvar() {
-                return magvar;
-            }
-
-            /**
-             * Sets the value of the magvar property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setMagvar(BigDecimal value) {
-                this.magvar = value;
-            }
-
-            /**
-             * Gets the value of the geoidheight property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getGeoidheight() {
-                return geoidheight;
-            }
-
-            /**
-             * Sets the value of the geoidheight property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setGeoidheight(BigDecimal value) {
-                this.geoidheight = value;
-            }
-
-            /**
-             * Gets the value of the name property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getName() {
-                return name;
-            }
-
-            /**
-             * Sets the value of the name property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setName(String value) {
-                this.name = value;
-            }
-
-            /**
-             * Gets the value of the cmt property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getCmt() {
-                return cmt;
-            }
-
-            /**
-             * Sets the value of the cmt property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setCmt(String value) {
-                this.cmt = value;
-            }
-
-            /**
-             * Gets the value of the desc property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getDesc() {
-                return desc;
-            }
-
-            /**
-             * Sets the value of the desc property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setDesc(String value) {
-                this.desc = value;
-            }
-
-            /**
-             * Gets the value of the src property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSrc() {
-                return src;
-            }
-
-            /**
-             * Sets the value of the src property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setSrc(String value) {
-                this.src = value;
-            }
-
-            /**
-             * Gets the value of the url property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getUrl() {
-                return url;
-            }
-
-            /**
-             * Sets the value of the url property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setUrl(String value) {
-                this.url = value;
-            }
-
-            /**
-             * Gets the value of the urlname property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getUrlname() {
-                return urlname;
-            }
-
-            /**
-             * Sets the value of the urlname property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setUrlname(String value) {
-                this.urlname = value;
-            }
-
-            /**
-             * Gets the value of the sym property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getSym() {
-                return sym;
-            }
-
-            /**
-             * Sets the value of the sym property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setSym(String value) {
-                this.sym = value;
-            }
-
-            /**
-             * Gets the value of the type property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getType() {
-                return type;
-            }
-
-            /**
-             * Sets the value of the type property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setType(String value) {
-                this.type = value;
-            }
-
-            /**
-             * Gets the value of the fix property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
-             */
-            public String getFix() {
-                return fix;
-            }
-
-            /**
-             * Sets the value of the fix property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
-             */
-            public void setFix(String value) {
-                this.fix = value;
-            }
-
-            /**
-             * Gets the value of the sat property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigInteger }
-             *     
-             */
-            public BigInteger getSat() {
-                return sat;
-            }
-
-            /**
-             * Sets the value of the sat property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigInteger }
-             *     
-             */
-            public void setSat(BigInteger value) {
-                this.sat = value;
-            }
-
-            /**
-             * Gets the value of the hdop property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getHdop() {
-                return hdop;
-            }
-
-            /**
-             * Sets the value of the hdop property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setHdop(BigDecimal value) {
-                this.hdop = value;
-            }
-
-            /**
-             * Gets the value of the vdop property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getVdop() {
-                return vdop;
-            }
-
-            /**
-             * Sets the value of the vdop property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setVdop(BigDecimal value) {
-                this.vdop = value;
-            }
-
-            /**
-             * Gets the value of the pdop property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public BigDecimal getPdop() {
-                return pdop;
-            }
-
-            /**
-             * Sets the value of the pdop property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setPdop(BigDecimal value) {
-                this.pdop = value;
-            }
-
-            /**
              * Gets the value of the ageofdgpsdata property.
              * 
              * @return
@@ -1445,42 +391,6 @@ public class Gpx {
              */
             public BigDecimal getAgeofdgpsdata() {
                 return ageofdgpsdata;
-            }
-
-            /**
-             * Sets the value of the ageofdgpsdata property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setAgeofdgpsdata(BigDecimal value) {
-                this.ageofdgpsdata = value;
-            }
-
-            /**
-             * Gets the value of the dgpsid property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Integer }
-             *     
-             */
-            public Integer getDgpsid() {
-                return dgpsid;
-            }
-
-            /**
-             * Sets the value of the dgpsid property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Integer }
-             *     
-             */
-            public void setDgpsid(Integer value) {
-                this.dgpsid = value;
             }
 
             /**
@@ -1513,6 +423,90 @@ public class Gpx {
             }
 
             /**
+             * Gets the value of the cmt property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getCmt() {
+                return cmt;
+            }
+
+            /**
+             * Gets the value of the desc property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getDesc() {
+                return desc;
+            }
+
+            /**
+             * Gets the value of the dgpsid property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link Integer }
+             *     
+             */
+            public Integer getDgpsid() {
+                return dgpsid;
+            }
+
+            /**
+             * Gets the value of the ele property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getEle() {
+                return ele;
+            }
+
+            /**
+             * Gets the value of the fix property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getFix() {
+                return fix;
+            }
+
+            /**
+             * Gets the value of the geoidheight property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getGeoidheight() {
+                return geoidheight;
+            }
+
+            /**
+             * Gets the value of the hdop property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getHdop() {
+                return hdop;
+            }
+
+            /**
              * Gets the value of the lat property.
              * 
              * @return
@@ -1522,18 +516,6 @@ public class Gpx {
              */
             public BigDecimal getLat() {
                 return lat;
-            }
-
-            /**
-             * Sets the value of the lat property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link BigDecimal }
-             *     
-             */
-            public void setLat(BigDecimal value) {
-                this.lat = value;
             }
 
             /**
@@ -1549,6 +531,246 @@ public class Gpx {
             }
 
             /**
+             * Gets the value of the magvar property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getMagvar() {
+                return magvar;
+            }
+
+            /**
+             * Gets the value of the name property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getName() {
+                return name;
+            }
+
+            /**
+             * Gets the value of the pdop property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getPdop() {
+                return pdop;
+            }
+
+            /**
+             * Gets the value of the sat property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigInteger }
+             *     
+             */
+            public BigInteger getSat() {
+                return sat;
+            }
+
+            /**
+             * Gets the value of the src property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getSrc() {
+                return src;
+            }
+
+            /**
+             * Gets the value of the sym property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getSym() {
+                return sym;
+            }
+
+            /**
+             * Gets the value of the time property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link XMLGregorianCalendar }
+             *     
+             */
+            public XMLGregorianCalendar getTime() {
+                return time;
+            }
+
+            /**
+             * Gets the value of the type property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getType() {
+                return type;
+            }
+
+            /**
+             * Gets the value of the url property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getUrl() {
+                return url;
+            }
+
+            /**
+             * Gets the value of the urlname property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getUrlname() {
+                return urlname;
+            }
+
+            /**
+             * Gets the value of the vdop property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public BigDecimal getVdop() {
+                return vdop;
+            }
+
+            /**
+             * Sets the value of the ageofdgpsdata property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setAgeofdgpsdata(BigDecimal value) {
+                this.ageofdgpsdata = value;
+            }
+
+            /**
+             * Sets the value of the cmt property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setCmt(String value) {
+                this.cmt = value;
+            }
+
+            /**
+             * Sets the value of the desc property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setDesc(String value) {
+                this.desc = value;
+            }
+
+            /**
+             * Sets the value of the dgpsid property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link Integer }
+             *     
+             */
+            public void setDgpsid(Integer value) {
+                this.dgpsid = value;
+            }
+
+            /**
+             * Sets the value of the ele property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setEle(BigDecimal value) {
+                this.ele = value;
+            }
+
+            /**
+             * Sets the value of the fix property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setFix(String value) {
+                this.fix = value;
+            }
+
+            /**
+             * Sets the value of the geoidheight property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setGeoidheight(BigDecimal value) {
+                this.geoidheight = value;
+            }
+
+            /**
+             * Sets the value of the hdop property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setHdop(BigDecimal value) {
+                this.hdop = value;
+            }
+
+            /**
+             * Sets the value of the lat property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setLat(BigDecimal value) {
+                this.lat = value;
+            }
+
+            /**
              * Sets the value of the lon property.
              * 
              * @param value
@@ -1560,11 +782,381 @@ public class Gpx {
                 this.lon = value;
             }
 
+            /**
+             * Sets the value of the magvar property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setMagvar(BigDecimal value) {
+                this.magvar = value;
+            }
+
+            /**
+             * Sets the value of the name property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setName(String value) {
+                this.name = value;
+            }
+
+            /**
+             * Sets the value of the pdop property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setPdop(BigDecimal value) {
+                this.pdop = value;
+            }
+
+            /**
+             * Sets the value of the sat property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigInteger }
+             *     
+             */
+            public void setSat(BigInteger value) {
+                this.sat = value;
+            }
+
+            /**
+             * Sets the value of the src property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setSrc(String value) {
+                this.src = value;
+            }
+
+            /**
+             * Sets the value of the sym property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setSym(String value) {
+                this.sym = value;
+            }
+
+            /**
+             * Sets the value of the time property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link XMLGregorianCalendar }
+             *     
+             */
+            public void setTime(XMLGregorianCalendar value) {
+                this.time = value;
+            }
+
+            /**
+             * Sets the value of the type property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setType(String value) {
+                this.type = value;
+            }
+
+            /**
+             * Sets the value of the url property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setUrl(String value) {
+                this.url = value;
+            }
+
+            /**
+             * Sets the value of the urlname property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setUrlname(String value) {
+                this.urlname = value;
+            }
+
+            /**
+             * Sets the value of the vdop property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link BigDecimal }
+             *     
+             */
+            public void setVdop(BigDecimal value) {
+                this.vdop = value;
+            }
+
+        }
+        protected String name;
+        protected String cmt;
+        protected String desc;
+        protected String src;
+        @XmlSchemaType(name = "anyURI")
+        protected String url;
+        protected String urlname;
+        @XmlSchemaType(name = "nonNegativeInteger")
+        protected BigInteger number;
+        @XmlAnyElement(lax = true)
+        protected List<Object> any;
+
+        protected List<Gpx.Rte.Rtept> rtept;
+
+        /**
+         * Gets the value of the any property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the any property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getAny().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Object }
+         * 
+         * 
+         */
+        public List<Object> getAny() {
+            if (any == null) {
+                any = new ArrayList<Object>();
+            }
+            return this.any;
+        }
+
+        /**
+         * Gets the value of the cmt property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getCmt() {
+            return cmt;
+        }
+
+        /**
+         * Gets the value of the desc property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getDesc() {
+            return desc;
+        }
+
+        /**
+         * Gets the value of the name property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Gets the value of the number property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigInteger }
+         *     
+         */
+        public BigInteger getNumber() {
+            return number;
+        }
+
+        /**
+         * Gets the value of the rtept property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the rtept property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getRtept().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Gpx.Rte.Rtept }
+         * 
+         * 
+         */
+        public List<Gpx.Rte.Rtept> getRtept() {
+            if (rtept == null) {
+                rtept = new ArrayList<Gpx.Rte.Rtept>();
+            }
+            return this.rtept;
+        }
+
+        /**
+         * Gets the value of the src property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSrc() {
+            return src;
+        }
+
+        /**
+         * Gets the value of the url property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrl() {
+            return url;
+        }
+
+        /**
+         * Gets the value of the urlname property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrlname() {
+            return urlname;
+        }
+
+        /**
+         * Sets the value of the cmt property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setCmt(String value) {
+            this.cmt = value;
+        }
+
+        /**
+         * Sets the value of the desc property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setDesc(String value) {
+            this.desc = value;
+        }
+
+        /**
+         * Sets the value of the name property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setName(String value) {
+            this.name = value;
+        }
+
+        /**
+         * Sets the value of the number property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigInteger }
+         *     
+         */
+        public void setNumber(BigInteger value) {
+            this.number = value;
+        }
+
+        /**
+         * Sets the value of the src property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSrc(String value) {
+            this.src = value;
+        }
+
+        /**
+         * Sets the value of the url property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrl(String value) {
+            this.url = value;
+        }
+
+
+        /**
+         * Sets the value of the urlname property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrlname(String value) {
+            this.urlname = value;
         }
 
     }
-
-
     /**
      * <p>Java class for anonymous complex type.
      * 
@@ -1649,246 +1241,6 @@ public class Gpx {
     })
     public static class Trk {
 
-        protected String name;
-        protected String cmt;
-        protected String desc;
-        protected String src;
-        @XmlSchemaType(name = "anyURI")
-        protected String url;
-        protected String urlname;
-        @XmlSchemaType(name = "nonNegativeInteger")
-        protected BigInteger number;
-        @XmlAnyElement(lax = true)
-        protected List<Object> any;
-        protected List<Gpx.Trk.Trkseg> trkseg;
-
-        /**
-         * Gets the value of the name property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Sets the value of the name property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setName(String value) {
-            this.name = value;
-        }
-
-        /**
-         * Gets the value of the cmt property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getCmt() {
-            return cmt;
-        }
-
-        /**
-         * Sets the value of the cmt property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setCmt(String value) {
-            this.cmt = value;
-        }
-
-        /**
-         * Gets the value of the desc property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getDesc() {
-            return desc;
-        }
-
-        /**
-         * Sets the value of the desc property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setDesc(String value) {
-            this.desc = value;
-        }
-
-        /**
-         * Gets the value of the src property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSrc() {
-            return src;
-        }
-
-        /**
-         * Sets the value of the src property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setSrc(String value) {
-            this.src = value;
-        }
-
-        /**
-         * Gets the value of the url property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrl() {
-            return url;
-        }
-
-        /**
-         * Sets the value of the url property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrl(String value) {
-            this.url = value;
-        }
-
-        /**
-         * Gets the value of the urlname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrlname() {
-            return urlname;
-        }
-
-        /**
-         * Sets the value of the urlname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrlname(String value) {
-            this.urlname = value;
-        }
-
-        /**
-         * Gets the value of the number property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigInteger }
-         *     
-         */
-        public BigInteger getNumber() {
-            return number;
-        }
-
-        /**
-         * Sets the value of the number property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigInteger }
-         *     
-         */
-        public void setNumber(BigInteger value) {
-            this.number = value;
-        }
-
-        /**
-         * Gets the value of the any property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the any property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getAny().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Object }
-         * 
-         * 
-         */
-        public List<Object> getAny() {
-            if (any == null) {
-                any = new ArrayList<Object>();
-            }
-            return this.any;
-        }
-
-        /**
-         * Gets the value of the trkseg property.
-         * 
-         * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the trkseg property.
-         * 
-         * <p>
-         * For example, to add a new item, do as follows:
-         * <pre>
-         *    getTrkseg().add(newItem);
-         * </pre>
-         * 
-         * 
-         * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link Gpx.Trk.Trkseg }
-         * 
-         * 
-         */
-        public List<Gpx.Trk.Trkseg> getTrkseg() {
-            if (trkseg == null) {
-                trkseg = new ArrayList<Gpx.Trk.Trkseg>();
-            }
-            return this.trkseg;
-        }
-
-
         /**
          * <p>Java class for anonymous complex type.
          * 
@@ -1946,38 +1298,6 @@ public class Gpx {
             "trkpt"
         })
         public static class Trkseg {
-
-            protected List<Gpx.Trk.Trkseg.Trkpt> trkpt;
-
-            /**
-             * Gets the value of the trkpt property.
-             * 
-             * <p>
-             * This accessor method returns a reference to the live list,
-             * not a snapshot. Therefore any modification you make to the
-             * returned list will be present inside the JAXB object.
-             * This is why there is not a <CODE>set</CODE> method for the trkpt property.
-             * 
-             * <p>
-             * For example, to add a new item, do as follows:
-             * <pre>
-             *    getTrkpt().add(newItem);
-             * </pre>
-             * 
-             * 
-             * <p>
-             * Objects of the following type(s) are allowed in the list
-             * {@link Gpx.Trk.Trkseg.Trkpt }
-             * 
-             * 
-             */
-            public List<Gpx.Trk.Trkseg.Trkpt> getTrkpt() {
-                if (trkpt == null) {
-                    trkpt = new ArrayList<Gpx.Trk.Trkseg.Trkpt>();
-                }
-                return this.trkpt;
-            }
-
 
             /**
              * <p>Java class for anonymous complex type.
@@ -2080,462 +1400,6 @@ public class Gpx {
                 protected BigDecimal lon;
 
                 /**
-                 * Gets the value of the ele property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getEle() {
-                    return ele;
-                }
-
-                /**
-                 * Sets the value of the ele property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setEle(BigDecimal value) {
-                    this.ele = value;
-                }
-
-                /**
-                 * Gets the value of the time property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link XMLGregorianCalendar }
-                 *     
-                 */
-                public XMLGregorianCalendar getTime() {
-                    return time;
-                }
-
-                /**
-                 * Sets the value of the time property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link XMLGregorianCalendar }
-                 *     
-                 */
-                public void setTime(XMLGregorianCalendar value) {
-                    this.time = value;
-                }
-
-                /**
-                 * Gets the value of the course property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getCourse() {
-                    return course;
-                }
-
-                /**
-                 * Sets the value of the course property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setCourse(BigDecimal value) {
-                    this.course = value;
-                }
-
-                /**
-                 * Gets the value of the speed property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getSpeed() {
-                    return speed;
-                }
-
-                /**
-                 * Sets the value of the speed property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setSpeed(BigDecimal value) {
-                    this.speed = value;
-                }
-
-                /**
-                 * Gets the value of the magvar property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getMagvar() {
-                    return magvar;
-                }
-
-                /**
-                 * Sets the value of the magvar property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setMagvar(BigDecimal value) {
-                    this.magvar = value;
-                }
-
-                /**
-                 * Gets the value of the geoidheight property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getGeoidheight() {
-                    return geoidheight;
-                }
-
-                /**
-                 * Sets the value of the geoidheight property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setGeoidheight(BigDecimal value) {
-                    this.geoidheight = value;
-                }
-
-                /**
-                 * Gets the value of the name property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getName() {
-                    return name;
-                }
-
-                /**
-                 * Sets the value of the name property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setName(String value) {
-                    this.name = value;
-                }
-
-                /**
-                 * Gets the value of the cmt property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getCmt() {
-                    return cmt;
-                }
-
-                /**
-                 * Sets the value of the cmt property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setCmt(String value) {
-                    this.cmt = value;
-                }
-
-                /**
-                 * Gets the value of the desc property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getDesc() {
-                    return desc;
-                }
-
-                /**
-                 * Sets the value of the desc property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setDesc(String value) {
-                    this.desc = value;
-                }
-
-                /**
-                 * Gets the value of the src property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getSrc() {
-                    return src;
-                }
-
-                /**
-                 * Sets the value of the src property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setSrc(String value) {
-                    this.src = value;
-                }
-
-                /**
-                 * Gets the value of the url property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getUrl() {
-                    return url;
-                }
-
-                /**
-                 * Sets the value of the url property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setUrl(String value) {
-                    this.url = value;
-                }
-
-                /**
-                 * Gets the value of the urlname property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getUrlname() {
-                    return urlname;
-                }
-
-                /**
-                 * Sets the value of the urlname property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setUrlname(String value) {
-                    this.urlname = value;
-                }
-
-                /**
-                 * Gets the value of the sym property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getSym() {
-                    return sym;
-                }
-
-                /**
-                 * Sets the value of the sym property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setSym(String value) {
-                    this.sym = value;
-                }
-
-                /**
-                 * Gets the value of the type property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getType() {
-                    return type;
-                }
-
-                /**
-                 * Sets the value of the type property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setType(String value) {
-                    this.type = value;
-                }
-
-                /**
-                 * Gets the value of the fix property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
-                 */
-                public String getFix() {
-                    return fix;
-                }
-
-                /**
-                 * Sets the value of the fix property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
-                 */
-                public void setFix(String value) {
-                    this.fix = value;
-                }
-
-                /**
-                 * Gets the value of the sat property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigInteger }
-                 *     
-                 */
-                public BigInteger getSat() {
-                    return sat;
-                }
-
-                /**
-                 * Sets the value of the sat property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigInteger }
-                 *     
-                 */
-                public void setSat(BigInteger value) {
-                    this.sat = value;
-                }
-
-                /**
-                 * Gets the value of the hdop property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getHdop() {
-                    return hdop;
-                }
-
-                /**
-                 * Sets the value of the hdop property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setHdop(BigDecimal value) {
-                    this.hdop = value;
-                }
-
-                /**
-                 * Gets the value of the vdop property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getVdop() {
-                    return vdop;
-                }
-
-                /**
-                 * Sets the value of the vdop property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setVdop(BigDecimal value) {
-                    this.vdop = value;
-                }
-
-                /**
-                 * Gets the value of the pdop property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public BigDecimal getPdop() {
-                    return pdop;
-                }
-
-                /**
-                 * Sets the value of the pdop property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setPdop(BigDecimal value) {
-                    this.pdop = value;
-                }
-
-                /**
                  * Gets the value of the ageofdgpsdata property.
                  * 
                  * @return
@@ -2545,42 +1409,6 @@ public class Gpx {
                  */
                 public BigDecimal getAgeofdgpsdata() {
                     return ageofdgpsdata;
-                }
-
-                /**
-                 * Sets the value of the ageofdgpsdata property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setAgeofdgpsdata(BigDecimal value) {
-                    this.ageofdgpsdata = value;
-                }
-
-                /**
-                 * Gets the value of the dgpsid property.
-                 * 
-                 * @return
-                 *     possible object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public Integer getDgpsid() {
-                    return dgpsid;
-                }
-
-                /**
-                 * Sets the value of the dgpsid property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link Integer }
-                 *     
-                 */
-                public void setDgpsid(Integer value) {
-                    this.dgpsid = value;
                 }
 
                 /**
@@ -2613,6 +1441,102 @@ public class Gpx {
                 }
 
                 /**
+                 * Gets the value of the cmt property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getCmt() {
+                    return cmt;
+                }
+
+                /**
+                 * Gets the value of the course property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getCourse() {
+                    return course;
+                }
+
+                /**
+                 * Gets the value of the desc property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getDesc() {
+                    return desc;
+                }
+
+                /**
+                 * Gets the value of the dgpsid property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link Integer }
+                 *     
+                 */
+                public Integer getDgpsid() {
+                    return dgpsid;
+                }
+
+                /**
+                 * Gets the value of the ele property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getEle() {
+                    return ele;
+                }
+
+                /**
+                 * Gets the value of the fix property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getFix() {
+                    return fix;
+                }
+
+                /**
+                 * Gets the value of the geoidheight property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getGeoidheight() {
+                    return geoidheight;
+                }
+
+                /**
+                 * Gets the value of the hdop property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getHdop() {
+                    return hdop;
+                }
+
+                /**
                  * Gets the value of the lat property.
                  * 
                  * @return
@@ -2622,18 +1546,6 @@ public class Gpx {
                  */
                 public BigDecimal getLat() {
                     return lat;
-                }
-
-                /**
-                 * Sets the value of the lat property.
-                 * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link BigDecimal }
-                 *     
-                 */
-                public void setLat(BigDecimal value) {
-                    this.lat = value;
                 }
 
                 /**
@@ -2649,6 +1561,270 @@ public class Gpx {
                 }
 
                 /**
+                 * Gets the value of the magvar property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getMagvar() {
+                    return magvar;
+                }
+
+                /**
+                 * Gets the value of the name property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getName() {
+                    return name;
+                }
+
+                /**
+                 * Gets the value of the pdop property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getPdop() {
+                    return pdop;
+                }
+
+                /**
+                 * Gets the value of the sat property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigInteger }
+                 *     
+                 */
+                public BigInteger getSat() {
+                    return sat;
+                }
+
+                /**
+                 * Gets the value of the speed property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getSpeed() {
+                    return speed;
+                }
+
+                /**
+                 * Gets the value of the src property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getSrc() {
+                    return src;
+                }
+
+                /**
+                 * Gets the value of the sym property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getSym() {
+                    return sym;
+                }
+
+                /**
+                 * Gets the value of the time property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link XMLGregorianCalendar }
+                 *     
+                 */
+                public XMLGregorianCalendar getTime() {
+                    return time;
+                }
+
+                /**
+                 * Gets the value of the type property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getType() {
+                    return type;
+                }
+
+                /**
+                 * Gets the value of the url property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getUrl() {
+                    return url;
+                }
+
+                /**
+                 * Gets the value of the urlname property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link String }
+                 *     
+                 */
+                public String getUrlname() {
+                    return urlname;
+                }
+
+                /**
+                 * Gets the value of the vdop property.
+                 * 
+                 * @return
+                 *     possible object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public BigDecimal getVdop() {
+                    return vdop;
+                }
+
+                /**
+                 * Sets the value of the ageofdgpsdata property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setAgeofdgpsdata(BigDecimal value) {
+                    this.ageofdgpsdata = value;
+                }
+
+                /**
+                 * Sets the value of the cmt property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setCmt(String value) {
+                    this.cmt = value;
+                }
+
+                /**
+                 * Sets the value of the course property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setCourse(BigDecimal value) {
+                    this.course = value;
+                }
+
+                /**
+                 * Sets the value of the desc property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setDesc(String value) {
+                    this.desc = value;
+                }
+
+                /**
+                 * Sets the value of the dgpsid property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link Integer }
+                 *     
+                 */
+                public void setDgpsid(Integer value) {
+                    this.dgpsid = value;
+                }
+
+                /**
+                 * Sets the value of the ele property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setEle(BigDecimal value) {
+                    this.ele = value;
+                }
+
+                /**
+                 * Sets the value of the fix property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setFix(String value) {
+                    this.fix = value;
+                }
+
+                /**
+                 * Sets the value of the geoidheight property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setGeoidheight(BigDecimal value) {
+                    this.geoidheight = value;
+                }
+
+                /**
+                 * Sets the value of the hdop property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setHdop(BigDecimal value) {
+                    this.hdop = value;
+                }
+
+                /**
+                 * Sets the value of the lat property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setLat(BigDecimal value) {
+                    this.lat = value;
+                }
+
+                /**
                  * Sets the value of the lon property.
                  * 
                  * @param value
@@ -2660,13 +1836,427 @@ public class Gpx {
                     this.lon = value;
                 }
 
+                /**
+                 * Sets the value of the magvar property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setMagvar(BigDecimal value) {
+                    this.magvar = value;
+                }
+
+                /**
+                 * Sets the value of the name property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setName(String value) {
+                    this.name = value;
+                }
+
+                /**
+                 * Sets the value of the pdop property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setPdop(BigDecimal value) {
+                    this.pdop = value;
+                }
+
+                /**
+                 * Sets the value of the sat property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigInteger }
+                 *     
+                 */
+                public void setSat(BigInteger value) {
+                    this.sat = value;
+                }
+
+                /**
+                 * Sets the value of the speed property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setSpeed(BigDecimal value) {
+                    this.speed = value;
+                }
+
+                /**
+                 * Sets the value of the src property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setSrc(String value) {
+                    this.src = value;
+                }
+
+                /**
+                 * Sets the value of the sym property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setSym(String value) {
+                    this.sym = value;
+                }
+
+                /**
+                 * Sets the value of the time property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link XMLGregorianCalendar }
+                 *     
+                 */
+                public void setTime(XMLGregorianCalendar value) {
+                    this.time = value;
+                }
+
+                /**
+                 * Sets the value of the type property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setType(String value) {
+                    this.type = value;
+                }
+
+                /**
+                 * Sets the value of the url property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setUrl(String value) {
+                    this.url = value;
+                }
+
+                /**
+                 * Sets the value of the urlname property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link String }
+                 *     
+                 */
+                public void setUrlname(String value) {
+                    this.urlname = value;
+                }
+
+                /**
+                 * Sets the value of the vdop property.
+                 * 
+                 * @param value
+                 *     allowed object is
+                 *     {@link BigDecimal }
+                 *     
+                 */
+                public void setVdop(BigDecimal value) {
+                    this.vdop = value;
+                }
+
+            }
+
+            protected List<Gpx.Trk.Trkseg.Trkpt> trkpt;
+
+
+            /**
+             * Gets the value of the trkpt property.
+             * 
+             * <p>
+             * This accessor method returns a reference to the live list,
+             * not a snapshot. Therefore any modification you make to the
+             * returned list will be present inside the JAXB object.
+             * This is why there is not a <CODE>set</CODE> method for the trkpt property.
+             * 
+             * <p>
+             * For example, to add a new item, do as follows:
+             * <pre>
+             *    getTrkpt().add(newItem);
+             * </pre>
+             * 
+             * 
+             * <p>
+             * Objects of the following type(s) are allowed in the list
+             * {@link Gpx.Trk.Trkseg.Trkpt }
+             * 
+             * 
+             */
+            public List<Gpx.Trk.Trkseg.Trkpt> getTrkpt() {
+                if (trkpt == null) {
+                    trkpt = new ArrayList<Gpx.Trk.Trkseg.Trkpt>();
+                }
+                return this.trkpt;
             }
 
         }
+        protected String name;
+        protected String cmt;
+        protected String desc;
+        protected String src;
+        @XmlSchemaType(name = "anyURI")
+        protected String url;
+        protected String urlname;
+        @XmlSchemaType(name = "nonNegativeInteger")
+        protected BigInteger number;
+        @XmlAnyElement(lax = true)
+        protected List<Object> any;
+
+        protected List<Gpx.Trk.Trkseg> trkseg;
+
+        /**
+         * Gets the value of the any property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the any property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getAny().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Object }
+         * 
+         * 
+         */
+        public List<Object> getAny() {
+            if (any == null) {
+                any = new ArrayList<Object>();
+            }
+            return this.any;
+        }
+
+        /**
+         * Gets the value of the cmt property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getCmt() {
+            return cmt;
+        }
+
+        /**
+         * Gets the value of the desc property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getDesc() {
+            return desc;
+        }
+
+        /**
+         * Gets the value of the name property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Gets the value of the number property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigInteger }
+         *     
+         */
+        public BigInteger getNumber() {
+            return number;
+        }
+
+        /**
+         * Gets the value of the src property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSrc() {
+            return src;
+        }
+
+        /**
+         * Gets the value of the trkseg property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the trkseg property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getTrkseg().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link Gpx.Trk.Trkseg }
+         * 
+         * 
+         */
+        public List<Gpx.Trk.Trkseg> getTrkseg() {
+            if (trkseg == null) {
+                trkseg = new ArrayList<Gpx.Trk.Trkseg>();
+            }
+            return this.trkseg;
+        }
+
+        /**
+         * Gets the value of the url property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrl() {
+            return url;
+        }
+
+        /**
+         * Gets the value of the urlname property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrlname() {
+            return urlname;
+        }
+
+        /**
+         * Sets the value of the cmt property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setCmt(String value) {
+            this.cmt = value;
+        }
+
+        /**
+         * Sets the value of the desc property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setDesc(String value) {
+            this.desc = value;
+        }
+
+        /**
+         * Sets the value of the name property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setName(String value) {
+            this.name = value;
+        }
+
+        /**
+         * Sets the value of the number property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigInteger }
+         *     
+         */
+        public void setNumber(BigInteger value) {
+            this.number = value;
+        }
+
+        /**
+         * Sets the value of the src property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSrc(String value) {
+            this.src = value;
+        }
+
+        /**
+         * Sets the value of the url property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrl(String value) {
+            this.url = value;
+        }
+
+
+        /**
+         * Sets the value of the urlname property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrlname(String value) {
+            this.urlname = value;
+        }
 
     }
-
-
     /**
      * <p>Java class for anonymous complex type.
      * 
@@ -2762,414 +2352,6 @@ public class Gpx {
         protected BigDecimal lon;
 
         /**
-         * Gets the value of the ele property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getEle() {
-            return ele;
-        }
-
-        /**
-         * Sets the value of the ele property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setEle(BigDecimal value) {
-            this.ele = value;
-        }
-
-        /**
-         * Gets the value of the time property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link XMLGregorianCalendar }
-         *     
-         */
-        public XMLGregorianCalendar getTime() {
-            return time;
-        }
-
-        /**
-         * Sets the value of the time property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link XMLGregorianCalendar }
-         *     
-         */
-        public void setTime(XMLGregorianCalendar value) {
-            this.time = value;
-        }
-
-        /**
-         * Gets the value of the magvar property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getMagvar() {
-            return magvar;
-        }
-
-        /**
-         * Sets the value of the magvar property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setMagvar(BigDecimal value) {
-            this.magvar = value;
-        }
-
-        /**
-         * Gets the value of the geoidheight property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getGeoidheight() {
-            return geoidheight;
-        }
-
-        /**
-         * Sets the value of the geoidheight property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setGeoidheight(BigDecimal value) {
-            this.geoidheight = value;
-        }
-
-        /**
-         * Gets the value of the name property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Sets the value of the name property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setName(String value) {
-            this.name = value;
-        }
-
-        /**
-         * Gets the value of the cmt property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getCmt() {
-            return cmt;
-        }
-
-        /**
-         * Sets the value of the cmt property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setCmt(String value) {
-            this.cmt = value;
-        }
-
-        /**
-         * Gets the value of the desc property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getDesc() {
-            return desc;
-        }
-
-        /**
-         * Sets the value of the desc property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setDesc(String value) {
-            this.desc = value;
-        }
-
-        /**
-         * Gets the value of the src property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSrc() {
-            return src;
-        }
-
-        /**
-         * Sets the value of the src property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setSrc(String value) {
-            this.src = value;
-        }
-
-        /**
-         * Gets the value of the url property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrl() {
-            return url;
-        }
-
-        /**
-         * Sets the value of the url property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrl(String value) {
-            this.url = value;
-        }
-
-        /**
-         * Gets the value of the urlname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUrlname() {
-            return urlname;
-        }
-
-        /**
-         * Sets the value of the urlname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUrlname(String value) {
-            this.urlname = value;
-        }
-
-        /**
-         * Gets the value of the sym property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getSym() {
-            return sym;
-        }
-
-        /**
-         * Sets the value of the sym property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setSym(String value) {
-            this.sym = value;
-        }
-
-        /**
-         * Gets the value of the type property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getType() {
-            return type;
-        }
-
-        /**
-         * Sets the value of the type property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setType(String value) {
-            this.type = value;
-        }
-
-        /**
-         * Gets the value of the fix property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getFix() {
-            return fix;
-        }
-
-        /**
-         * Sets the value of the fix property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setFix(String value) {
-            this.fix = value;
-        }
-
-        /**
-         * Gets the value of the sat property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigInteger }
-         *     
-         */
-        public BigInteger getSat() {
-            return sat;
-        }
-
-        /**
-         * Sets the value of the sat property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigInteger }
-         *     
-         */
-        public void setSat(BigInteger value) {
-            this.sat = value;
-        }
-
-        /**
-         * Gets the value of the hdop property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getHdop() {
-            return hdop;
-        }
-
-        /**
-         * Sets the value of the hdop property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setHdop(BigDecimal value) {
-            this.hdop = value;
-        }
-
-        /**
-         * Gets the value of the vdop property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getVdop() {
-            return vdop;
-        }
-
-        /**
-         * Sets the value of the vdop property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setVdop(BigDecimal value) {
-            this.vdop = value;
-        }
-
-        /**
-         * Gets the value of the pdop property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public BigDecimal getPdop() {
-            return pdop;
-        }
-
-        /**
-         * Sets the value of the pdop property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setPdop(BigDecimal value) {
-            this.pdop = value;
-        }
-
-        /**
          * Gets the value of the ageofdgpsdata property.
          * 
          * @return
@@ -3179,42 +2361,6 @@ public class Gpx {
          */
         public BigDecimal getAgeofdgpsdata() {
             return ageofdgpsdata;
-        }
-
-        /**
-         * Sets the value of the ageofdgpsdata property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setAgeofdgpsdata(BigDecimal value) {
-            this.ageofdgpsdata = value;
-        }
-
-        /**
-         * Gets the value of the dgpsid property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getDgpsid() {
-            return dgpsid;
-        }
-
-        /**
-         * Sets the value of the dgpsid property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setDgpsid(Integer value) {
-            this.dgpsid = value;
         }
 
         /**
@@ -3247,6 +2393,90 @@ public class Gpx {
         }
 
         /**
+         * Gets the value of the cmt property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getCmt() {
+            return cmt;
+        }
+
+        /**
+         * Gets the value of the desc property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getDesc() {
+            return desc;
+        }
+
+        /**
+         * Gets the value of the dgpsid property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link Integer }
+         *     
+         */
+        public Integer getDgpsid() {
+            return dgpsid;
+        }
+
+        /**
+         * Gets the value of the ele property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getEle() {
+            return ele;
+        }
+
+        /**
+         * Gets the value of the fix property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getFix() {
+            return fix;
+        }
+
+        /**
+         * Gets the value of the geoidheight property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getGeoidheight() {
+            return geoidheight;
+        }
+
+        /**
+         * Gets the value of the hdop property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getHdop() {
+            return hdop;
+        }
+
+        /**
          * Gets the value of the lat property.
          * 
          * @return
@@ -3256,18 +2486,6 @@ public class Gpx {
          */
         public BigDecimal getLat() {
             return lat;
-        }
-
-        /**
-         * Sets the value of the lat property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
-         */
-        public void setLat(BigDecimal value) {
-            this.lat = value;
         }
 
         /**
@@ -3283,6 +2501,246 @@ public class Gpx {
         }
 
         /**
+         * Gets the value of the magvar property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getMagvar() {
+            return magvar;
+        }
+
+        /**
+         * Gets the value of the name property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Gets the value of the pdop property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getPdop() {
+            return pdop;
+        }
+
+        /**
+         * Gets the value of the sat property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigInteger }
+         *     
+         */
+        public BigInteger getSat() {
+            return sat;
+        }
+
+        /**
+         * Gets the value of the src property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSrc() {
+            return src;
+        }
+
+        /**
+         * Gets the value of the sym property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSym() {
+            return sym;
+        }
+
+        /**
+         * Gets the value of the time property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link XMLGregorianCalendar }
+         *     
+         */
+        public XMLGregorianCalendar getTime() {
+            return time;
+        }
+
+        /**
+         * Gets the value of the type property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         * Gets the value of the url property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrl() {
+            return url;
+        }
+
+        /**
+         * Gets the value of the urlname property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUrlname() {
+            return urlname;
+        }
+
+        /**
+         * Gets the value of the vdop property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public BigDecimal getVdop() {
+            return vdop;
+        }
+
+        /**
+         * Sets the value of the ageofdgpsdata property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setAgeofdgpsdata(BigDecimal value) {
+            this.ageofdgpsdata = value;
+        }
+
+        /**
+         * Sets the value of the cmt property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setCmt(String value) {
+            this.cmt = value;
+        }
+
+        /**
+         * Sets the value of the desc property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setDesc(String value) {
+            this.desc = value;
+        }
+
+        /**
+         * Sets the value of the dgpsid property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link Integer }
+         *     
+         */
+        public void setDgpsid(Integer value) {
+            this.dgpsid = value;
+        }
+
+        /**
+         * Sets the value of the ele property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setEle(BigDecimal value) {
+            this.ele = value;
+        }
+
+        /**
+         * Sets the value of the fix property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setFix(String value) {
+            this.fix = value;
+        }
+
+        /**
+         * Sets the value of the geoidheight property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setGeoidheight(BigDecimal value) {
+            this.geoidheight = value;
+        }
+
+        /**
+         * Sets the value of the hdop property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setHdop(BigDecimal value) {
+            this.hdop = value;
+        }
+
+        /**
+         * Sets the value of the lat property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setLat(BigDecimal value) {
+            this.lat = value;
+        }
+
+        /**
          * Sets the value of the lon property.
          * 
          * @param value
@@ -3294,6 +2752,548 @@ public class Gpx {
             this.lon = value;
         }
 
+        /**
+         * Sets the value of the magvar property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setMagvar(BigDecimal value) {
+            this.magvar = value;
+        }
+
+        /**
+         * Sets the value of the name property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setName(String value) {
+            this.name = value;
+        }
+
+        /**
+         * Sets the value of the pdop property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setPdop(BigDecimal value) {
+            this.pdop = value;
+        }
+
+        /**
+         * Sets the value of the sat property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigInteger }
+         *     
+         */
+        public void setSat(BigInteger value) {
+            this.sat = value;
+        }
+
+        /**
+         * Sets the value of the src property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSrc(String value) {
+            this.src = value;
+        }
+
+        /**
+         * Sets the value of the sym property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSym(String value) {
+            this.sym = value;
+        }
+
+        /**
+         * Sets the value of the time property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link XMLGregorianCalendar }
+         *     
+         */
+        public void setTime(XMLGregorianCalendar value) {
+            this.time = value;
+        }
+
+        /**
+         * Sets the value of the type property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setType(String value) {
+            this.type = value;
+        }
+
+        /**
+         * Sets the value of the url property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrl(String value) {
+            this.url = value;
+        }
+
+        /**
+         * Sets the value of the urlname property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUrlname(String value) {
+            this.urlname = value;
+        }
+
+        /**
+         * Sets the value of the vdop property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigDecimal }
+         *     
+         */
+        public void setVdop(BigDecimal value) {
+            this.vdop = value;
+        }
+
+    }
+    protected String name;
+    protected String desc;
+    protected String author;
+    protected String email;
+    @XmlSchemaType(name = "anyURI")
+    protected String url;
+    protected String urlname;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar time;
+    protected String keywords;
+    protected BoundsType bounds;
+    protected List<Gpx.Wpt> wpt;
+    protected List<Gpx.Rte> rte;
+    protected List<Gpx.Trk> trk;
+
+    @XmlAnyElement(lax = true)
+    protected List<Object> any;
+
+    @XmlAttribute(required = true)
+    protected String version;
+
+    @XmlAttribute(required = true)
+    protected String creator;
+
+    /**
+     * Gets the value of the any property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the any property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAny().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Object }
+     * 
+     * 
+     */
+    public List<Object> getAny() {
+        if (any == null) {
+            any = new ArrayList<Object>();
+        }
+        return this.any;
+    }
+
+    /**
+     * Gets the value of the author property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * Gets the value of the bounds property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BoundsType }
+     *     
+     */
+    public BoundsType getBounds() {
+        return bounds;
+    }
+
+    /**
+     * Gets the value of the creator property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCreator() {
+        return creator;
+    }
+
+    /**
+     * Gets the value of the desc property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDesc() {
+        return desc;
+    }
+
+    /**
+     * Gets the value of the email property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Gets the value of the keywords property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * Gets the value of the name property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets the value of the rte property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rte property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRte().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Gpx.Rte }
+     * 
+     * 
+     */
+    public List<Gpx.Rte> getRte() {
+        if (rte == null) {
+            rte = new ArrayList<Gpx.Rte>();
+        }
+        return this.rte;
+    }
+
+    /**
+     * Gets the value of the time property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getTime() {
+        return time;
+    }
+
+    /**
+     * Gets the value of the trk property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the trk property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTrk().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Gpx.Trk }
+     * 
+     * 
+     */
+    public List<Gpx.Trk> getTrk() {
+        if (trk == null) {
+            trk = new ArrayList<Gpx.Trk>();
+        }
+        return this.trk;
+    }
+
+    /**
+     * Gets the value of the url property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * Gets the value of the urlname property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUrlname() {
+        return urlname;
+    }
+
+    /**
+     * Gets the value of the version property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersion() {
+        if (version == null) {
+            return "1.0";
+        } else {
+            return version;
+        }
+    }
+
+    /**
+     * Gets the value of the wpt property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the wpt property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWpt().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Gpx.Wpt }
+     * 
+     * 
+     */
+    public List<Gpx.Wpt> getWpt() {
+        if (wpt == null) {
+            wpt = new ArrayList<Gpx.Wpt>();
+        }
+        return this.wpt;
+    }
+
+    /**
+     * Sets the value of the author property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAuthor(String value) {
+        this.author = value;
+    }
+
+    /**
+     * Sets the value of the bounds property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BoundsType }
+     *     
+     */
+    public void setBounds(BoundsType value) {
+        this.bounds = value;
+    }
+
+    /**
+     * Sets the value of the creator property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCreator(String value) {
+        this.creator = value;
+    }
+
+    /**
+     * Sets the value of the desc property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDesc(String value) {
+        this.desc = value;
+    }
+
+    /**
+     * Sets the value of the email property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEmail(String value) {
+        this.email = value;
+    }
+
+    /**
+     * Sets the value of the keywords property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setKeywords(String value) {
+        this.keywords = value;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
+    }
+
+    /**
+     * Sets the value of the time property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setTime(XMLGregorianCalendar value) {
+        this.time = value;
+    }
+
+
+    /**
+     * Sets the value of the url property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUrl(String value) {
+        this.url = value;
+    }
+
+
+    /**
+     * Sets the value of the urlname property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUrlname(String value) {
+        this.urlname = value;
+    }
+
+
+    /**
+     * Sets the value of the version property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersion(String value) {
+        this.version = value;
     }
 
 }
