@@ -70,10 +70,11 @@ public abstract class PlaceBookItemWidget extends Composite
 			item.removeMetadata("tempID");
 			newItem.removeMetadata("tempID");
 		}
-
+		
 		if (newItem.getHash() != null)
 		{
 			item.setHash(newItem.getHash());
+			item.setSourceURL(newItem.getSourceURL());			
 		}
 		refresh();
 	}

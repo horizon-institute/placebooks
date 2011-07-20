@@ -45,5 +45,6 @@ public class PlaceBookPreviewActivity extends AbstractActivity
 		}
 
 		panel.setWidget(canvas);
+		canvas.reflow();
 	}
 }

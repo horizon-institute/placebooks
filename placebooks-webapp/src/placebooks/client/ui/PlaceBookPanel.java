@@ -207,7 +207,7 @@ public class PlaceBookPanel extends FlowPanel
 	private int layoutInsert(final Widget insert, final int top, final int height)
 	{
 		insert.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		insert.getElement().getStyle().setTop(top, Unit.PX);
+		insert.getElement().getStyle().setTop(top + getElement().getOffsetTop(), Unit.PX);
 		insert.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
 
 		insert.setWidth(panelWidth + "%");
