@@ -4,18 +4,13 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.widget.RichTextArea;
 
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextArea;
 
 public class EditableTextItem extends PlaceBookItemWidget
 {
@@ -62,18 +57,6 @@ public class EditableTextItem extends PlaceBookItemWidget
 				item.setText(textPanel.getElement().getInnerHTML());
 				fireResized();
 				fireChanged();
-			}
-		});
-		textPanel.addKeyPressHandler(new KeyPressHandler()
-		{
-			@Override
-			public void onKeyPress(KeyPressEvent event)
-			{
-				TextArea area = new TextArea();
-				area.getElement().getStyle().setLeft(-1000, Unit.PX);
-				area.setFocus(true);
-				RootPanel.get().add(area);
-				
 			}
 		});
 	}
