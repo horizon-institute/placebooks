@@ -230,6 +230,7 @@ public class PlaceBookInteractionHandler
 			if (distance > RESIZE_DISTANCE)
 			{
 				GWT.log("Resize Start");
+				setSelected(dragItemFrame);
 				dragState = DragState.resizing;
 			}
 		}
@@ -259,7 +260,7 @@ public class PlaceBookInteractionHandler
 		else if (dragState == DragState.resizing)
 		{
 			final int y = event.getClientY();
-			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop();
+			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 13;
 			final int canvasHeight = canvas.getPanels().iterator().next().getOffsetHeight();
 			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
 
