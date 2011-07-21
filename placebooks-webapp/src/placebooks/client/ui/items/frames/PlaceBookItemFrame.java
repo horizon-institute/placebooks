@@ -48,6 +48,12 @@ public abstract class PlaceBookItemFrame
 		itemWidget.getElement().getStyle().setProperty("height", height);
 	}
 
+	public void clearItemWidget()
+	{
+		widgetPanel.clear();
+		this.itemWidget = null;
+	}
+	
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		this.itemWidget = itemWidget;

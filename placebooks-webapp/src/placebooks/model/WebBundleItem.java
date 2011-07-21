@@ -185,42 +185,4 @@ public class WebBundleItem extends PlaceBookItem
 	{
 		webBundlePath = path;
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
-	 */
-	@Override
-	public void updateItem(IUpdateableExternal item)
-	{
-		super.updateItem(item);
-//		if(item instanceof WebBundleItem)
-//		{
-//			MediaItem updatedItem = (MediaItem) item;
-//			//Overwrite existing file by saving new file in the existing folder with the existing name
-//			// Check it exists first though
-//			if (new File(updatedItem.getPath()).exists())
-//			{
-//				if (new File(this.getWebBundlePath()).exists() || new File(this.getWebBundlePath()).mkdirs())
-//				{
-//					final File dataFile = new File(updatedItem.getPath());
-//					FileInputStream fis;
-//					FileOutputStream fos;
-//					try
-//					{
-//						fis = new FileInputStream(dataFile);
-//						fos = new FileOutputStream(new File(this.getWebBundlePath()).getName());
-//						IOUtils.copy(fis, fos);
-//						fis.close();
-//						fos.close();
-//					}
-//					catch (Exception e)
-//					{
-//						log.error(e.getMessage());
-//					}
-//				}
-//			}
-//		}
-	}
-
 }

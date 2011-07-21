@@ -315,6 +315,16 @@ public final class PlaceBooksAdminHelper
 						{
 							if(item instanceof GPSTraceItem)
 							{
+								// Remove any MapImageItem if removing a GPSTraceItem
+								for(PlaceBookItem mapItem: placebook.getItems())
+								{
+									if(mapItem instanceof MapImageItem)
+									{
+										mapItem.deleteItemData();
+										manager.remove(mapItem);
+										placebook.removeItem(mapItem);
+									}
+								}
 							}
 							item.deleteItemData();
 							manager.remove(item);
@@ -399,7 +409,7 @@ public final class PlaceBooksAdminHelper
 			}
 
 			placebook = manager.merge(placebook);
-			// placebook.calcBoundary();
+			placebook.calcBoundary();
 			manager.getTransaction().commit();
 
 			manager.getTransaction().begin();
@@ -424,8 +434,8 @@ public final class PlaceBooksAdminHelper
 					}
 					else if (item instanceof WebBundleItem)
 					{
-						// final WebBundleItem webItem = (WebBundleItem)item;
-						// TODO
+						final WebBundleItem webItem = (WebBundleItem)item;
+						scrape(webItem);
 					}
 				}
 				catch (final Exception e)

@@ -213,8 +213,14 @@ public class PlaceBook
 
 		}
 
-
-		geom = bounds.getBoundary();
+		if(bounds != null)
+		{
+			geom = bounds.getBoundary();
+		}
+		else
+		{
+			geom = null;
+		}
 		log.info("calcBoundary()= " + geom);
 	}
 
