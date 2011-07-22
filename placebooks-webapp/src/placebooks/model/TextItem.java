@@ -21,7 +21,7 @@ public class TextItem extends PlaceBookItem
 	@Lob
 	private String text;
 
-	TextItem()
+	public TextItem()
 	{
 		super();
 	}

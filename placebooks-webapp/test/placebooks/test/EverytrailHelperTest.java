@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
-import placebooks.controller.EverytrailHelper;
 import placebooks.model.EverytrailLoginResponse;
+import placebooks.controller.EverytrailHelper;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
@@ -25,16 +25,8 @@ import placebooks.model.EverytrailVideosResponse;
  * @author pszmp
  *
  */
-public class EverytrailHelperTest
+public class EverytrailHelperTest extends PlacebooksTestSuper
 {
-	protected static String test_username = "placebooks_everytrail_test";
-	protected static String test_password = "testPass1!";		
-	protected static String test_user_id = "275539";
-	protected static String test_trip_id = "1017230";
-
-	protected static final Logger log = 
-		Logger.getLogger(EverytrailHelperTest.class.getName());
-	
 	/**
 	 * Test method for {@link placebooks.controller.EverytrailHelper#UserLogin(java.lang.String, java.lang.String)}.
 	 */
@@ -62,17 +54,7 @@ public class EverytrailHelperTest
 		assertEquals("11", loginResponse.getValue());
 	}
 
-	/**
-	 * Log in using the hard coded test user details and return the user ID on success.
-	 * @return String test_user_id
-	 */
-	protected String logInTestUser()
-	{
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_username, test_password);
-		assertEquals("success", loginResponse.getStatus());
-		assertEquals(test_user_id, loginResponse.getValue());
-		return loginResponse.getValue();
-	}
+
 	
 	/**
 	 * Test method for {@link placebooks.controller.EverytrailHelper#Pictures(java.lang.String)}.
@@ -80,7 +62,7 @@ public class EverytrailHelperTest
 	@Test
 	public void testPicturesString()
 	{
-		String user_id = logInTestUser();
+		String user_id = logInEverytrailTestUser();
 		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(user_id);
 		assertEquals("success", picturesResponse.getStatus());
 		// As default should return 10 pictures starting at 0 and test user has about 4 pictures
@@ -93,7 +75,7 @@ public class EverytrailHelperTest
 	@Test
 	public void testVideosString()
 	{
-		String user_id = logInTestUser();
+		String user_id = logInEverytrailTestUser();
 		EverytrailVideosResponse videosResponse = EverytrailHelper.Videos(user_id, test_password, test_password);
 		assertEquals("success", videosResponse.getStatus());
 		// As default should return 0 videos starting at 0 and test user has about 4 pictures
