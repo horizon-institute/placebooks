@@ -281,6 +281,8 @@ public final class TileHelper
 		LatLng[] bboxLL = new LatLng[2];
 		bboxLL[0] = bbox[0].toLatLng();
 		bboxLL[1] = bbox[1].toLatLng();
+		bboxLL[0].toWGS84();
+		bboxLL[1].toWGS84();
 
 		Geometry g_ = null;
 
