@@ -25,8 +25,8 @@ public class WebBundleViewer extends Activity  {
 	 private String packagePath;
 	 private String filename;
 	 private String url;
-	 private boolean isOnline;
-	 private ProgressDialog MyDialog;
+//	 private boolean isOnline;
+//	 private ProgressDialog MyDialog;
 
 	 //download package again - need 1) the key, and 2) the download path, then you want to call the reader class again and pass in the new key variable after the download
 	 //this class also needs a loading dialog while the user waits for the website to load..

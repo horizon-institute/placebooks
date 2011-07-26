@@ -178,10 +178,10 @@ public final class TileHelper
 
 		OSRef[] bbox = new OSRef[2];
 		int x = (int)Math.floor((bbox_[0].getEasting() / incX)) * incX,
-			y = (int)Math.floor((bbox_[0].getNorthing() / incY)) * incY - incY;
+			y = (int)Math.floor((bbox_[0].getNorthing() / incY)) * incY;
 		bbox[0] = new OSRef(x, y);
 		x = (int)Math.ceil((bbox_[1].getEasting() / incX)) * incX;
-		y = (int)Math.ceil((bbox_[1].getNorthing() / incY)) * incY - incY;
+		y = (int)Math.ceil((bbox_[1].getNorthing() / incY)) * incY;
 		bbox[1] = new OSRef(x, y);
 
 		for (int i = 0; i < bbox.length; ++i)
@@ -211,8 +211,8 @@ public final class TileHelper
 			 i += incX)
 		{
 			int m = buf.getHeight();
-			for (int j = (int)bbox[0].getNorthing(); 
-				 j <= (int)bbox[1].getNorthing(); j += incY)
+			for (int j = (int)bbox[0].getNorthing() - incY; 
+				 j <= (int)bbox[1].getNorthing() - incY; j += incY)
 			{
 				log.info("i = " + i + " j = " + j);
 				// %5C = \
@@ -262,9 +262,9 @@ public final class TileHelper
 	
 			final String name = 
 				Integer.toString((int)bbox[0].getEasting()) 
-				+ Integer.toString((int)bbox[1].getNorthing())
+				+ Integer.toString((int)bbox[0].getNorthing())
 				+ Integer.toString((int)bbox[1].getEasting()) 
-				+ Integer.toString((int)bbox[0].getNorthing());
+				+ Integer.toString((int)bbox[1].getNorthing());
 
 
 			mapFile = new File(path + "/" + name + "." + fmt);
@@ -281,6 +281,8 @@ public final class TileHelper
 		LatLng[] bboxLL = new LatLng[2];
 		bboxLL[0] = bbox[0].toLatLng();
 		bboxLL[1] = bbox[1].toLatLng();
+		bboxLL[0].toWGS84();
+		bboxLL[1].toWGS84();
 
 		Geometry g_ = null;
 

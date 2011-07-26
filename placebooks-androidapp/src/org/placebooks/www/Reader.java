@@ -19,6 +19,8 @@ import org.xml.sax.XMLReader;
 import org.placebooks.www.R;
 import org.placebooks.www.XMLHandler;
 import org.placebooks.www.Book;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 //import java.util.Iterator;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -62,10 +64,20 @@ import com.vividsolutions.jts.geom.Coordinate;
 import 	android.net.Uri;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
-
+import java.io.BufferedReader;
 //import android.os.Parcel;
 //import android.os.Parcelable;
- 
+import java.io.FileReader;
+
+
+import java.io.File;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.*;
+
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 
 //Implement a Listener (added the interface to the base class)
@@ -105,6 +117,7 @@ public class Reader extends Activity { // implements Parcelable {
 	
 	//Variables for placebook key (the id of the book) and the User's Name (unsure if it is staying)
 	private String pbkey;	//this is the placebook key that defines the ID for each placebook. The contents of each placebook is stored in the folder "key" e.g folder /1234567/contents in here
+	private String pbtimestamp;
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
     private String packagePath;
 	
@@ -144,8 +157,13 @@ public class Reader extends Activity { // implements Parcelable {
 	private double c_y4;
 	private double c_x5;
 	private double c_y5;
-	public Coordinate[] arrMapCoordinates;
-	
+	//public Coordinate[] arrMapCoordinates;
+	//private boolean hasGpx = false;
+	//private StringBuilder mapGpx;
+	private ArrayList<Double> gpsLatCoordinates = new ArrayList<Double>();
+	private ArrayList<Double> gpsLonCoordinates = new ArrayList<Double>();
+	private double[] arrGpsLatCoordinates;
+	private double[] arrGpsLonCoordinates;
 	
 	
 	 		 @Override
@@ -213,7 +231,30 @@ public class Reader extends Activity { // implements Parcelable {
 			        
 			        try {
 				        getMyXML();		//call method to parse XML		
-				        				 
+				        
+				      //Toast msg = Toast.makeText(this, "timestamp= " + pbtimestamp, Toast.LENGTH_LONG);
+					  //msg.show();
+			        	
+				        
+				      //filename is filepath string
+				     /*   BufferedReader br = new BufferedReader(new FileReader(new File("/sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/1121/config.xml")));
+				        String line;
+				        StringBuilder sb = new StringBuilder();
+
+				        while((line=br.readLine())!= null){
+				            sb.append(line.trim());
+				        }
+				        System.out.println("string builder xml file ==== " + sb);
+				       */
+				        
+				        
+				        
+				        
+				        
+				        
+				        
+				        
+				      
 
 					} catch (Exception e) {
 						
@@ -251,6 +292,8 @@ public class Reader extends Activity { // implements Parcelable {
 			                return false;
 			            }
 			        });
+					
+
 
 					
 			
@@ -285,7 +328,7 @@ public class Reader extends Activity { // implements Parcelable {
 							    //Uri imgUri=Uri.parse(myImagePath);
 							    //imgView.setImageURI(imgUri);
 						    	imgView.setImageBitmap(bm);
-								imgView.setLayoutParams(new LayoutParams(400, 300));		//this will use seam carving later on. For now we are saying load the image in a 400x300 container
+								imgView.setLayoutParams(new LayoutParams(250, 250)); //400,300	//this will use seam carving later on. For now we are saying load the image in a 400x300 container
 								page.addView(imgView); 	
 						   // }
 						   /* else{
@@ -313,7 +356,7 @@ public class Reader extends Activity { // implements Parcelable {
 				    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 20));
 				    page.addView(view);
 				    
-				    
+				  
 					imgView.setOnClickListener(new OnClickListener() {
 			             @Override
 			             public void onClick(View v) {
@@ -333,6 +376,7 @@ public class Reader extends Activity { // implements Parcelable {
 			             } //end of public void
 				 
 						}); 
+					
 				    	    
 			
 			 }
@@ -362,8 +406,8 @@ public class Reader extends Activity { // implements Parcelable {
 					 //Locate the video and get the thumbnail image of the video file
 					 try{
 						 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail("/sdcard/placebooks/unzipped" + packagePath + "/" + video, MediaStore.Images.Thumbnails.MINI_KIND);
-						 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, 360, 270, true);	//scale the bitmap to the right size of the button
-				 
+						 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, 270, 180, true);	//360, 270 scale the bitmap to the right size of the button
+						 
 						 ibVid = new ImageButton(this);
 						 
 						//assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
@@ -410,6 +454,17 @@ public class Reader extends Activity { // implements Parcelable {
 			             } //end of public void
 				 
 						});
+					
+					//give the video thumbnail a swipe gesture
+					ibVid.setOnTouchListener(new View.OnTouchListener() {
+						@Override
+			            public boolean onTouch(View v, MotionEvent event) {
+			                if (gestureDetector.onTouchEvent(event)) {
+			                    return true;
+			                }
+			                return false;
+			            }
+			        });
 					
 			} //end of displayVideo method
 			
@@ -593,18 +648,69 @@ public class Reader extends Activity { // implements Parcelable {
 				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
 			    mapImgView = new ImageView(this);
 			    
-			    arrMapCoordinates = c;	//copy the array to arrMapCoordinates[]
+			    //arrMapCoordinates = c;	//copy the array to arrMapCoordinates[]
 
+			    //if(hasMapCoordinates){}
+			    //Unmarshall the map trail coordinates
+			    try {
+					Serializer serializer = new Persister(); 
+					//use the simple framework to convert the gpx data from xml file to java objects
+					//REMEMBER TO CHANGE THIS FROM THE EXAMPLE TO THE REAL DYNAMIC THING! GET THE GPX FILEPATH FROM CONFIG.XML
+					File source = new File("sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/201/gpxdata.xml");
+					Gpx gpx = serializer.read(Gpx.class, source);
+
+					System.out.println("HERE THIS IS A TEST");
+					
+					 //quick hack for the deadline--will improve later
+					 for(int i=0; i<gpx.trk.trkseg.size(); i++){
+						
+						 String gpxLatLon =  gpx.trk.trkseg.get(i).toString();
+						 //cut the lat and lon out of the string
+						 int start = gpxLatLon.indexOf("latitude=");
+						 int size = gpxLatLon.length();
+						 int middle = gpxLatLon.indexOf("longitude=");
+
+						 gpsLatCoordinates.add(Double.parseDouble(gpxLatLon.substring(start+9, middle)));
+						 gpsLonCoordinates.add(Double.parseDouble(gpxLatLon.substring(middle+10, size)));
+
+						 //System.out.println("gps lat coords = " + gpsLatCoordinates.get(i));
+						 //System.out.println("gps lon coordinates = " + gpsLonCoordinates.get(i));
+						 
+					 
+					 }
+					 arrGpsLatCoordinates = new double[gpsLatCoordinates.size()];
+					 arrGpsLonCoordinates = new double[gpsLonCoordinates.size()];
+					 
+					 //copy the lat/lon arraylists to arrays
+					for (int i=0; i<gpsLatCoordinates.size(); i++){
+						arrGpsLatCoordinates[i] = gpsLatCoordinates.get(i);
+						//System.out.println("arr gps lat coords = " + arrGpsLatCoordinates[i]);
+
+					}
+					for (int i=0; i<gpsLonCoordinates.size(); i++){
+						arrGpsLonCoordinates[i] = gpsLonCoordinates.get(i);
+						//System.out.println("arr gps lon coordinates = " + arrGpsLonCoordinates[i]);
+
+					}
+				 //end of the quick hack 
+					 					 
+			     } catch (Exception e) {
+			          e.printStackTrace();
+			     }
+			     
+			     
+			    
+			    
 			    if(mapImage != null){
 					try{ 
-												
+						
 						BitmapFactory.Options options = new BitmapFactory.Options();
 					    options.inSampleSize = 2;
 					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
 						Uri imgUri=Uri.parse(myMapImagePath);
 					    mapImgView.setImageURI(imgUri);
 					    //mapImgView.setImageBitmap(bm);
-						mapImgView.setLayoutParams(new LayoutParams(500, 500));	
+						mapImgView.setLayoutParams(new LayoutParams(250, 250));	//350, 350 htc hd
 						page.addView(mapImgView); 
 						
 						/*
@@ -663,6 +769,7 @@ public class Reader extends Activity { // implements Parcelable {
        	        	 intent.putExtra("mapImage", mapImage);
        	        	 intent.putExtra("packagePath", packagePath);
        	        	 
+       	        	 //pass the map image lat/lon corner value
        	        	 intent.putExtra("c_x1", c_x1);
        	        	 intent.putExtra("c_y1", c_y1);
        	        	 intent.putExtra("c_x2", c_x2);
@@ -674,13 +781,13 @@ public class Reader extends Activity { // implements Parcelable {
        	        	 intent.putExtra("c_x5", c_x5);
        	        	 intent.putExtra("c_y5", c_y5);
        	        	 
-       	        	 //intent.putExtra("", c);
-       	        	 /*Double[] arrDouble = new Double[mapCoordinates.size()];
-       	        	 for (int i=0; i<)
-       	        	 intent.putExtra("double array", arrDouble);
-       	         */
+       	        	 //pass the gps trail lat/lons
+       	        	 intent.putExtra("arrLat", arrGpsLatCoordinates);
+       	        	 intent.putExtra("arrLon", arrGpsLonCoordinates);
+       	        	 
 
-	     				    overridePendingTransition(0, 0);
+
+	     		     overridePendingTransition(0, 0);
        	        	 startActivity(intent);	
        	        	 
 		            	
@@ -690,6 +797,8 @@ public class Reader extends Activity { // implements Parcelable {
 		    	
 		    }
 		    
+		 
+		    
 		    /*
 		     * Web Bundle Item
 		     * Method for displaying the web bundle
@@ -698,7 +807,7 @@ public class Reader extends Activity { // implements Parcelable {
 		    	
 			 	//ImageButton thumb = new ImageButton(this);
 			 	Button thumb = new Button(this);
-		    	thumb.setLayoutParams(new LayoutParams(400, 250));
+		    	thumb.setLayoutParams(new LayoutParams(300, 180));	//400, 250
 			 	thumb.setText("WEB BUNDLE");
 			 	page.addView(thumb);
 			 	
@@ -778,6 +887,7 @@ public class Reader extends Activity { // implements Parcelable {
 					setContentView(textView);
 				}
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
+				pbtimestamp = book.getTimestamp();
 				
 				page1 = (ArrayList<Point>)book.getPage1();
 				page2 = (ArrayList<Point>)book.getPage2();
@@ -795,6 +905,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	//StringBuilder gpxData = item.getGpxData();
 					
 					if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll);
@@ -808,18 +919,35 @@ public class Reader extends Activity { // implements Parcelable {
 					else if (type.equalsIgnoreCase("Audio")){
 						displayAudio(data, ll);	
 					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, ll);
-					}
+					
 					else if (type.equalsIgnoreCase("WebBundle")){
 						 displayWebBundle(data,url, itemKey, ll );
 					}
+					else if (type.equalsIgnoreCase("MapImage")){
+						//if(hasGpx = true){
+							//displayMapImage(data, geomCo, ll, gpxData);
+						//}
+						
+						//else if (hasGpx = false){
+							displayMapImage(data, geomCo, ll);
+						//}
+						
+						//hasGpx = false;	//reset the flag back to false
+					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
+						//hasGpx = true;	//the map comes with a gpx trail
+						
+						//setGpx(gpxData);
+				    	//System.out.println("GPX TRAIL =======" + gpxData);
+				    	//hasGpx = true;	//send this true flag to the Map Image Viewer
+						
 					}
 					
-					
+					//Toast msg = Toast.makeText(this, "data = " + gpsData.toString(), Toast.LENGTH_LONG);
+					//msg.show();
+					//System.out.println("DATA========" + gpsData);
 
 				}
 				for(Point item: page2) {
@@ -828,7 +956,8 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	
+		        	//StringBuilder gpxData = item.getGpxData();
+
 		        	if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll2);
 					}
@@ -848,8 +977,8 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll2);
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
 					}
 		        
 
@@ -859,8 +988,8 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
-					//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	//StringBuilder gpxData = item.getGpxData();
 
 		        	if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll3);
@@ -881,8 +1010,8 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll3);
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
 					}		        	
 		        	
 
@@ -894,6 +1023,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	//StringBuilder gpxData = item.getGpxData();
 
 		        	if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll4);
@@ -914,8 +1044,8 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll4);
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
 					}	
 		        	
 
@@ -927,7 +1057,8 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-	
+		        	//StringBuilder gpxData = item.getGpxData();
+
 		        	if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll5);
 					}
@@ -947,8 +1078,8 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll5);
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
 					}	
 
 				}
@@ -959,6 +1090,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	String url = item.getUrl();
 		        	//Geometry geom = item.getGeometryCoordinates();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
+		        	//StringBuilder gpxData = item.getGpxData();
 
 		        	if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll6);
@@ -979,8 +1111,8 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll6);
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
-						Toast msg = Toast.makeText(Reader.this, "data= \n" + data + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						msg.show();
+						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
+						//msg.show();
 					}
 
 				}

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -17,6 +18,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.TransformerFactory;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
@@ -30,6 +37,8 @@ import placebooks.model.jaxb.GPX11.RteType;
 import placebooks.model.jaxb.GPX11.TrkType;
 import placebooks.model.jaxb.GPX11.TrksegType;
 import placebooks.model.jaxb.GPX11.WptType;
+
+import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
@@ -53,7 +62,8 @@ public class GPSTraceItem extends PlaceBookItem
 		setTrace(new String(g.getTrace()));
 	}
 
-	public GPSTraceItem(final User owner, final URL sourceURL, final String trace)
+	public GPSTraceItem(final User owner, final URL sourceURL, 
+						final String trace)
 	{
 		// Geometry is set from calculating the GPX boundaries
 		super(owner, null, sourceURL);
@@ -65,22 +75,45 @@ public class GPSTraceItem extends PlaceBookItem
 	{
 		try
 		{
-			final StringReader reader = new StringReader(trace);
-			final InputSource source = new InputSource(reader);
-			final DocumentBuilder builder = 
-				DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document document = builder.parse(source);
-			reader.close();
+			// Check package dir exists already
+			final String path = 
+				PropertiesSingleton
+					.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
+						+ getPlaceBook().getKey();
 
-			final Element item = getConfigurationHeader(config);
-			final Element data = config.createElement("data");
-			final Node traceNode = 
-				config.importNode(document.getDocumentElement(), true);
-			data.appendChild(traceNode);
-			item.appendChild(data);
-			root.appendChild(item);
+			if (new File(path).exists() || new File(path).mkdirs())
+			{
+
+				final StringReader reader = new StringReader(trace);
+				final InputSource isource = new InputSource(reader);
+				final DocumentBuilder builder = 
+					DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				final Document document = builder.parse(isource);
+				reader.close();
+
+				final String gpxPath = path + "/" + getKey() + ".gpx";
+				final File gpxFile = new File(gpxPath);
+		
+				final Source source = new DOMSource(document);
+				final Result result = new StreamResult(gpxFile);
+
+        		final Transformer t = 
+					TransformerFactory.newInstance().newTransformer();
+		        t.transform(source, result);
+				
+
+				final Element item = getConfigurationHeader(config);
+				final Element filename = config.createElement("filename");
+				filename.appendChild(
+					config.createTextNode(gpxFile.getName())
+				);
+				item.appendChild(filename);
+				root.appendChild(item);
+			}
+
 		}
-		catch (Exception e)
+		catch (final Throwable e)
 		{
 			log.info(e.getMessage(), e);
 		}
@@ -117,7 +150,8 @@ public class GPSTraceItem extends PlaceBookItem
 	
 	public void readTrace(final InputStream is) throws Exception
 	{
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		final BufferedReader reader = 
+			new BufferedReader(new InputStreamReader(is));
 		final StringWriter writer = new StringWriter();
 		int data;
 		while((data = reader.read()) != -1)
@@ -154,8 +188,9 @@ public class GPSTraceItem extends PlaceBookItem
 			// GPX 1.1 spec
 
 			GpxType gpx = null;
-			Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX11")
-										.createUnmarshaller();
+			Unmarshaller u = 
+				JAXBContext.newInstance("placebooks.model.jaxb.GPX11")
+						   .createUnmarshaller();
 			JAXBElement<GpxType> root = 
 				(JAXBElement<GpxType>)u.unmarshal(new StreamSource(
 												  new StringReader(this.trace))
@@ -253,7 +288,8 @@ public class GPSTraceItem extends PlaceBookItem
 
 			try
 			{
-				bounds = wktReader.read("POLYGON ((" + minLat + " " + minLon + ", "
+				bounds = wktReader.read("POLYGON ((" 
+										+ minLat + " " + minLon + ", "
 										+ minLat + " " + maxLon + ", "
 										+ maxLat + " " + maxLon + ", "
 										+ maxLat + " " + minLon + ", "
@@ -292,7 +328,8 @@ public class GPSTraceItem extends PlaceBookItem
 		if(item instanceof GPSTraceItem)
 		{
 			GPSTraceItem gpsitem = item; 
-			if(gpsitem.getTrace() != null && !gpsitem.getTrace().trim().equals(""))
+			if (gpsitem.getTrace() != null && 
+			    !gpsitem.getTrace().trim().equals(""))
 			{
 				setTrace((item).getTrace());
 			}

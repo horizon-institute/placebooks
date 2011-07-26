@@ -57,6 +57,7 @@ public class PlaceBooks extends Activity{
     private TextView tv;
     private String strUserName;
     private String strPassword;
+    private OnlineCheck oc;
 		
     /** Called when the activity is first created. */
     @Override
@@ -64,6 +65,8 @@ public class PlaceBooks extends Activity{
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.splash);
 
+        oc = new OnlineCheck();
+        
         
         /*check if an SDCard exists. If it does then check if the PlaceBooks dir exists.
          * If it does not exist then create it. If there is no SDCard then alert user they need one.
@@ -137,7 +140,8 @@ public class PlaceBooks extends Activity{
 	         */
 	        btnLogin.setOnClickListener(new OnClickListener() {
 	        	public void onClick(View v){
-					   
+			        if (oc.isOnline(PlaceBooks.this)){
+   
 	        				// Check Login	
 	        		         username = etUsername.getText().toString();
 	        		         password = etPassword.getText().toString();
@@ -221,7 +225,16 @@ public class PlaceBooks extends Activity{
 	        		        	builder.setPositiveButton("OK", null);
 	        		        	AlertDialog dialog = builder.show();
 	        		        }     		       	
-	        		
+	        	  }//end of if oc
+			      else if(!oc.isOnline(PlaceBooks.this)){
+			    	//No internet connection!
+  		        	AlertDialog.Builder builder = new AlertDialog.Builder(PlaceBooks.this);
+  		        	builder.setTitle("No Internet Connectivity!");
+  		        	builder.setMessage("You mobile needs to be online to log in");
+  		        	builder.setPositiveButton("OK", null);
+  		        	AlertDialog dialog = builder.show();
+			    	  
+			      }
 	        	}
 	        });
         

@@ -81,13 +81,13 @@ import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 
-
 public class Shelf extends ListActivity {
 	
 	/* This variables need to be global, so we can used them onResume and onPause method to
     stop the listener */
 	TelephonyManager Tel;
 	MyPhoneStateListener MyListener;
+	String cinr;
 	
 	private ProgressDialog myDialog = null;
 
@@ -105,7 +105,12 @@ public class Shelf extends ListActivity {
     private String filename= "downloadFile.zip";   // you can download to any type of file ex:.jpeg (image) ,.txt(text file),.mp3 (audio file)
     //-- Download Variables --
 
-	
+	    
+    public void setCinr(String c){
+    	this.cinr = c;
+    }
+    
+    
 	 @Override
 		public void onCreate(Bundle savedInstanceState) {
 		        super.onCreate(savedInstanceState);	//icicle
@@ -122,6 +127,8 @@ public class Shelf extends ListActivity {
 		        Tel = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);
 		        Tel.listen(MyListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		        
+		        
+		        		        
 		        
 		        
 		        /*
@@ -145,6 +152,17 @@ public class Shelf extends ListActivity {
 		        */       
 		        if (oc.isOnline(this)){
 		        	
+		        	//Toast msg = Toast.makeText(this, "cinr= " + cinr, Toast.LENGTH_LONG);
+					//msg.show();
+		        	
+		        	json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+			        TextView tv = new TextView(this);
+			        tv.setText("Reading the cached shelf But I DO have an Internet connection.");
+			        ll.addView(tv);
+		        	
+		/*   TAKEN OUT FOR TIME BEING TO TEST GPS LOCATION
+		 *      	
 					String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
 				    System.out.println("URL ===== " + url);
 					json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
@@ -156,7 +174,7 @@ public class Shelf extends ListActivity {
 					TextView tv = new TextView(Shelf.this);
 					tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
 					ll.addView(tv);
-					
+		*/			
 					
 		        	/*
 		        	 * Still working on
@@ -202,7 +220,7 @@ public class Shelf extends ListActivity {
 			        	
 			        	//taken out for now
 			        	//item.setOwner(u.getString("name"));  //book owner name e.g stuart
-			        		
+			       		
 			        	 item.dl_listener = new OnClickListener(){
 				        	public void  onClick  (View  v){
 				        		
@@ -210,10 +228,10 @@ public class Shelf extends ListActivity {
 				        		//if the sdcard is mounted then download
 				        		if (sdcardcheck.isSdPresent()){
 				        		
-				        			/**
-				        			 * placebook does not exist on sdcard so download it.
-				        			 * call the download method and pass it the book key and package path
-				        			 */
+				        			
+				        			 //placebook does not exist on sdcard so download it.
+				        			 // call the download method and pass it the book key and package path
+				        			 
 				        			downloadPlaceBook(item.getKey(), item.getPackagePath() );
 				        		}
 				        		else{
@@ -230,14 +248,15 @@ public class Shelf extends ListActivity {
 
 						     } 
 						   };
-						   
+					
+			 
 						 item.view_listener = new OnClickListener(){
 					       public void  onClick  (View  v){
 					        						        		
-					        		/*
-					        		 * placebook exists on sdcard so view it
-					        		 * call to viewPlacebook();
-					        		 */
+					        		
+					        		 //placebook exists on sdcard so view it
+					        		 //call to viewPlacebook();
+					        		 
 					        		Intent intent = new Intent();
 
 					        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Reader");
@@ -252,6 +271,7 @@ public class Shelf extends ListActivity {
 						   
 			        	
 			        	myListModel.add(item);	//add the item to the arraylist of ListItems
+
 			        		}
 
 			        	}catch(JSONException e) {
@@ -259,6 +279,9 @@ public class Shelf extends ListActivity {
 			        	}
 			        	
 			        	
+			        	
+			        	
+			        	//populates the list view using the adapter
 			        	MyListAdapter adapter = new MyListAdapter(this);	//create the Adapter
 			        	adapter.setModel(myListModel);		//pass the ArrayList into the Adapter
 			        	setListAdapter(adapter);			//assign Adapter
@@ -523,17 +546,19 @@ public class Shelf extends ListActivity {
 			   /* ÑÑÑÑÑÑÑÑÑÐ */
 			    private class MyPhoneStateListener extends PhoneStateListener
 			    {
-			      /* Get the Signal strength from the provider, each tiome there is an update */
+			      /* Get the Signal strength from the provider, each time there is an update */
 			      @Override
 			      public void onSignalStrengthsChanged(SignalStrength signalStrength)
 			      {
 			         super.onSignalStrengthsChanged(signalStrength);
-			         Toast msg = Toast.makeText(getApplicationContext(), "GSM Cinr = "
+			     /*    Toast msg = Toast.makeText(getApplicationContext(), "GSM Cinr = "
 			            + String.valueOf(signalStrength.getGsmSignalStrength()), Toast.LENGTH_SHORT);
 			            msg.show();
+			       */     
 			      }
 
 			    };// End of private Class
+			    
 			   
 			   
 			   /*

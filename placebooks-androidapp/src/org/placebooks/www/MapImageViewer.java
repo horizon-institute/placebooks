@@ -21,44 +21,46 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.location.*;
 import android.content.Context;
-import android.util.Log;
 import android.widget.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView.ScaleType;
 import android.view.*;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import android.os.Environment;
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.OSRef;
 
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+import java.util.*;
 
 
 public class MapImageViewer extends Activity {
 	
 	private ScrollView sv;
 	private LinearLayout ll;
-	private MapCanvas mapCanvas = null;
+	private MapCanvas mapCanvas;
 	private String mapImage;
 	private String packagePath;
 
 	
 	//the phones current longitude and latitude
-	double longitude;
-	double latitude;
+	private double longitude;
+	private double latitude;
 	//t-values for our current position on our map image (scaled)
-	double t1;
-    double t2;
-    Bitmap bm = null;
+	private double t1;
+    private double t2;
+    private Bitmap bm;
     //map image dimensions
-    int mapHeight;
-    int mapWidth;
+    private int mapHeight;
+    private int mapWidth;
     
     //map image pixel equivalence for the lat/lon
-    int pixel_lat;
-    int pixel_lon;
+    private int pixel_lat;
+    private int pixel_lon;
     
     String myMapImagePath; 
 
@@ -87,12 +89,13 @@ public class MapImageViewer extends Activity {
 	private int pbr_x;		//bottom-right-x
 	private int pbr_y;		//bottom-right-y
 	
-	private double lat_test = 52.631111;
-	private double long_test = 1.281111;
-	private int plat_test = 300;	//mousehold heath in PIXELS
-	private int plong_test = 500;
-
-
+	//arrays for storing the lat/lons of the gps trail
+	private double[] arrGpsLat;
+	private double[] arrGpsLon;
+	//arraylists for the lat/lon pixls values for the gps trail
+	private ArrayList<Integer> alGpsLat = new ArrayList<Integer>();
+	private ArrayList<Integer> alGpsLon = new ArrayList<Integer>();
+	
 	
 	@Override
 	 public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +104,8 @@ public class MapImageViewer extends Activity {
 	        
 	        //mapCanvas = new MapCanvas(this);
 	        //setContentView(mapCanvas);
-	        
 	        //setContentView(R.layout.mapimageview);
+	        
 	        
 	    	// get the extraS out of the new intent (get all the coordinates for the map corners)
 	        Intent intent = getIntent();
@@ -119,20 +122,22 @@ public class MapImageViewer extends Activity {
 	        if(intent != null) c_x5 = intent.getDoubleExtra("c_x5", c_x5);
 	        if(intent != null) c_y5 = intent.getDoubleExtra("c_y5", c_y5);
 	        
+	        //gps trail data
+	        if(intent != null) arrGpsLat = intent.getDoubleArrayExtra("arrLat");
+	        if(intent != null) arrGpsLon = intent.getDoubleArrayExtra("arrLon");
+	        
+	        
 	        
 	        System.out.println("x= " + c_x1 + " y= " + c_y1);
 	        System.out.println("x= " + c_x2 + " y= " + c_y2);
 	        System.out.println("x= " + c_x3 + " y= " + c_y3);
 	        System.out.println("x= " + c_x4 + " y= " + c_y4);
 	        System.out.println("x= " + c_x5 + " y= " + c_y5);
-
+	        
 	        
 	        myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
 	        
 	        try {
-	        		//File file = new File(myMapImagePath);
-	        		//convert String into InputStream
-	        		//InputStream is = new ByteArrayInputStream(myMapImagePath.getBytes());	
 	        	
 			    	//make bitmap of the map image
 			    	BitmapFactory.Options options = new BitmapFactory.Options();
@@ -144,23 +149,7 @@ public class MapImageViewer extends Activity {
 			    
 			    imageHeight = bm.getHeight();
 			    imageWidth = bm.getWidth();
-			    
-			    int bytes = bm.getRowBytes();
-			    
-			    
-			    Toast msg = Toast.makeText(this, "height= " + Integer.toString(imageHeight) + "width= " +Integer.toString(imageWidth) + ("\nnumber of bytes = " + bytes), Toast.LENGTH_LONG);
-				msg.show();
-				
-				String path = Environment.getExternalStorageDirectory().toString();
-		        OutputStream fOut = null;
-		        File file = new File(path, "bitmapimg.jpg");
-		            fOut = new FileOutputStream(file);
-		            fOut.write(bm.getRowBytes());
-
-		            fOut.flush();
-		            fOut.close();
-
-				
+			
 			    
 			    // calculate the pixels in the image
 			    imagePixels = (bm.getWidth()) * (bm.getHeight());
@@ -189,8 +178,7 @@ public class MapImageViewer extends Activity {
 			    System.out.println("pixel bottom left x = " + pbr_x);
 			    System.out.println("pixel bottom left y = " + pbr_y);
 			    
-			    
-			    
+
 			    	
 			    //Now get the mobile's current longitude and latitude
 			    //find best location provider that features high accuracy and draws as little power as possible
@@ -206,54 +194,65 @@ public class MapImageViewer extends Activity {
 			    criteria.setPowerRequirement(Criteria.POWER_LOW);
 				    
 			    String provider = locationManager.getBestProvider(criteria, true);
+			    //String provider2 = LocationManager.GPS_PROVIDER;
+			    //int time = 10; //milliseconds
+			    //int distance = 30;	//meters
 			    Location location = locationManager.getLastKnownLocation(provider);
+			    //.requestLocationUpdates(provider, time, distance,locationListener);	//method to get updates whenever the current location changes, using a location listener
 			    updateWithNewLocation(location);
-			    //locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
-			    
-			    String provider2 = LocationManager.GPS_PROVIDER;
-			    int time = 10; //milliseconds
-			    int distance = 30;	//meters
-			    
-			    locationManager.requestLocationUpdates(provider2, time, distance,locationListener);	//method to get updates whenever the current location changes, using a location listener
+			    locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
+
 			    
 			    
-			    calculatePixelCoordinates();	//call the method to calculate the pixel equivalence for the coordinates
-	
+			    calculatePixelYAHCoordinates();	//call the method to calculate the pixel equivalence for the YAH coordinates
+			    calculateGpsTrail();	//call the method to calculate the gps trail
+			    
+			    System.out.println("Map Width===== " + mapWidth);
+			    System.out.println("Map Height===== " + mapHeight);
+			    System.out.println("Number of pixels===== " + (mapWidth*mapHeight));
+			    
 			    
 			    
 			    //draw the map on the canvas with the location
-			    //mapCanvas = new MapCanvas(this,/* myMapImagePath,*/ pixel_lat, pixel_lon);	//context, directory (path+filename),  ,pixel(lat), pixel(long), 
 			    mapCanvas = new MapCanvas(this);
+			    //set the lat/lon pixel values for the YAH marker
 			    mapCanvas.setLat(pixel_lat);
 			    mapCanvas.setLon(pixel_lon);
+			    //now set the lat/lon pixel values for the trail
+			    mapCanvas.setGpsLat(alGpsLat);
+			    mapCanvas.setGpsLon(alGpsLon);
 			    
-			    
+			    /*put this code back in when MapCanvas extends imageView
 			    BitmapDrawable bmd = new BitmapDrawable(bm);
-			    
 			    mapCanvas.setImageDrawable(bmd);
 		        mapCanvas.setScaleType(ScaleType.CENTER);	//needs to focus on the yah dot
-	
-	        
+			     */
+			    String mapImg = "sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+			    mapCanvas.loadUrl("file://" + mapImg);
+
+			    
 			    ll = new LinearLayout(this);
-			    
-			    ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
-	//		    ll.addView(mapCanvas, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));//imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
+			    ll.addView(mapCanvas, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));//imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
+
 		    
-			    
-		
-			    
+			    /*put this code back in when MapCanvas extends imageView
+			    ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
+			   
 			    ScrollView sv = new ScrollView(this);
-		        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		        
-			    
+		        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
 		        sv.addView(ll);
 		        
 		        HorizontalScrollView hsv = new HorizontalScrollView(this);
-		        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
 		        hsv.addView(sv);
 			    
 		        setContentView(hsv);
+		        */
+			    
+		        setContentView(ll);
 		        mapCanvas.invalidate();
+
+		        
 	        }
 	        catch(Exception e){
 	        	
@@ -273,6 +272,7 @@ public class MapImageViewer extends Activity {
 	        }
 
 		   // setContentView(mapCanvas);
+	        
 	        
 	} //end of onCreate
 	
@@ -294,8 +294,8 @@ public class MapImageViewer extends Activity {
 				latLongString = "No location found";
 			}
 			
-			//Toast msg = Toast.makeText(this, "Your current position is: \n" + latLongString, Toast.LENGTH_LONG);
-			//msg.show();
+		//	Toast msg = Toast.makeText(this, "Your current position is: \n" + latLongString, Toast.LENGTH_LONG);
+		//	msg.show();
 
 		}
 		
@@ -303,13 +303,13 @@ public class MapImageViewer extends Activity {
 		private final LocationListener locationListener = new LocationListener(){
 			public void onLocationChanged(Location location){
 				//update application based on new location
-				//updateWithNewLocation(location);
+				updateWithNewLocation(location);
 
 				//Update out map canvas with the new latitude and longitude				
 				longitude = location.getLongitude();
 			    latitude = location.getLatitude();
 			    			//do the calculations
-						    calculatePixelCoordinates();
+						    calculatePixelYAHCoordinates();
 						    //set the lat and lon
 						    mapCanvas.setLat(pixel_lat);
 						    mapCanvas.setLon(pixel_lon);
@@ -332,65 +332,99 @@ public class MapImageViewer extends Activity {
 			}
 		};
 		
-		
-		public void calculatePixelCoordinates(){
+		// Method for calculating the pixel coordinates of the YAH marker	
+		public void calculatePixelYAHCoordinates(){
+						
+		    // Now that we have obtained the current gps location of the phone,
+		    // we now need to do some maths to get the pixel value for this coordinate.
+		     
+		    //using the formula x^ - x1 / p1 where p=side length/pixel
+			//x - longitude y-latitude
+			
+		if(longitude != 0 && latitude != 0){
+			//lat y-axis
+			double top = (latitude-c_x1);
+			double bottomp1 = (c_x4-c_x1);
+			float bottomp2 = (float)(bottomp1) / (float)imageWidth;
+			float answer1 = (float)(top)/(bottomp2);
+			//pixel_lon = imageHeight - (int)(answer1);
+			pixel_lat = imageHeight - (int)(answer1);
+			
+			System.out.println("TOP: Latitude " +latitude + " - c_x1= " + c_x1);
+			System.out.println("BOTTOM: c_x4= " + c_x4 + " -c_x1= " +c_x1 + " /by imgWidth = " +(double)imageWidth);
+			System.out.println("c_x4-c_x1 == " + bottomp1);
+			
+			System.out.println("top answer= " +top + " bottom answer= " + bottomp2);
+			System.out.println("lat answer1 (600-) === " +answer1);
+			System.out.println("pixel_lon = " +pixel_lon);
+			
+			//lon x-axis
+			double top2 = (longitude-c_y1);
+			double bottomp3 = (c_y3-c_y1);
+			float bottomp4 = (float) bottomp3 / (float)imageHeight;
+			float answer2 = (float)(top2) / (bottomp4);
+			//pixel_lat = imageWidth - (int)(answer2);
+			pixel_lon = imageWidth - (int)(answer2);
 			
 
-			 /*
-		     * 
-		     * Now that we have obtained the current gps location of the phone,
-		     * we now need to do some maths to get the pixel value for this coordinate.
-		     * 
-		     */
-		    //using the formula x(t) = m.t+d      and      y(t) = k.t + c
-		    
-		    //starting with the bottom right corner of the map image (the first point)
-		    double m = c_x1 - c_x4;	//latitude of bottom right corner		c_x4 (is our 0).......c_x1 (is our 1)
-		    //x(t) = c_x4 + m.t
-		    double k = c_y2 - c_y1;	//longitude of bottom right corner		c_y4 (is our 0).......c_y1 (is our 1)
-		    //y(t) = c_y4 + k.t
-		    
-		    //now substitute in our x coordinate (so this is the latitude of our current gps position
-		    //latitude = c_x4 + m.t			<--rearrange our equation and make t the subject
-		    t1 = (latitude - c_x4) / m;//latitude;		//x-value
-		    
-		    //now do the same for the y coordinate (so this is our longitude of our current gps position
-		    //longitude = c_y4 + k.t
-		    t2 = (longitude - c_y4) / k;//longitude;	//y-value
-		    
-		    //now we need to know the map image dimensions (height and width in pixels)
-		    mapHeight = bm.getHeight();
-		    mapWidth = bm.getWidth();
-		    
-		    //x(t) = mapHeight * t1
-		    //y(t) = mapWidth * t2
-		    // also cast the answer to int
-		    pixel_lat = (int)(mapWidth * t1);
-		    pixel_lon = (int)(mapHeight * t2);
+		    System.out.println("the map pixel lat==" + pixel_lat);
+		    System.out.println("the map pixel lon==" + pixel_lon);
+		    System.out.println("latitude of where i am now ==" + latitude);
+		    System.out.println("longitude of where i am now ==" + longitude);
+		}
+		else{
+			Toast msg = Toast.makeText(this, "Cannot access GPS", Toast.LENGTH_LONG);
+			msg.show();
+			}
+	
+		}
+		
+		
+		// Method for calulcating the pixel coordinates for the gpx data trail
+		public void calculateGpsTrail(){
 			
-		    // Toast msg = Toast.makeText(this, "Pixel value for latitude is: \n" + pixel_lat + "\n pixel value for longitude is: \n" + pixel_lon, Toast.LENGTH_LONG);
-		    //Toast msg = Toast.makeText(this, "t1 =  \n" + t1 + "\n t2 = \n" + t2, Toast.LENGTH_LONG);
-			//msg.show();
+			//arrGpsLat and arrGpsLon have the same lengths
+			//so now iterate through each lat/lon and calculate the pixels
+			 for (int i=0; i<arrGpsLat.length; i++){
+
+				 double gpsLat = arrGpsLat[i];
+				 double gpsLon = arrGpsLon[i];
+				 
+				 	//lat y-axis
+				 	double top = (gpsLat-c_x1);
+					double bottomp1 = (c_x4-c_x1);
+					float bottomp2 = (float)(bottomp1) / (float)imageWidth;
+					float answer1 = (float)(top)/(bottomp2);
+					alGpsLat.add(imageHeight - (int)(answer1));
+					
+					//lon x-axis
+					double top2 = (gpsLon-c_y1);
+					double bottomp3 = (c_y3-c_y1);
+					float bottomp4 = (float) bottomp3 / (float)imageHeight;
+					float answer2 = (float)(top2) / (bottomp4);
+					alGpsLon.add(imageWidth - (int)(answer2));
+				 
+					System.out.println("GPS PIXEL CALCULATION LAT= " +alGpsLat.get(i));
+					System.out.println("GPS PIXEL CALCULATION LON= " +alGpsLon.get(i));
+
+		      }
+						
 			
 		}
 		
-
+		
 		   @Override
 	       public void onDestroy() {
 	         super.onDestroy();
 	          bm.recycle();		//clears the bitmap 
-	          bm = null;
-		      sv = null;
-		      ll = null;
-		      mapCanvas.setImageDrawable(null);    //sets the custom imageView to null and cleans it
-		      mapImage = null;
-		      packagePath = null;
+	          //important to put this code back in when MapCanvas extends imageView
+	          //mapCanvas.setImageDrawable(null);    //sets the custom imageView to null and cleans it
 		      imageHeight = 0;
 		      imageWidth = 0;
 		      imagePixels = 0;
  
-	           System.gc();	//call the garbage collector
-	           finish();	//close the activity
+	          System.gc();	//call the garbage collector
+	          finish();	//close the activity
 	         
 		   }
 		   
@@ -438,7 +472,7 @@ public class MapImageViewer extends Activity {
 			     } catch (FileNotFoundException e) {}
 			     return null;
 			 }
-		
+			 			
 			 
 		
 }

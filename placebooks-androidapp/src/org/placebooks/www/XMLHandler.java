@@ -14,6 +14,12 @@ import java.text.ParseException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
+import java.io.*;
+import org.xml.sax.*;
+import javax.xml.parsers.SAXParserFactory; 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+
 /**
  * SAX document handler to create instances of our custom object models from the information stored
  * in the XML document. This “document handler” is a listener for the various events that are fired
@@ -30,14 +36,14 @@ public class XMLHandler extends DefaultHandler {
 	MapImageItem mimitem;
 	WebBundleItem wbitem;
 	
-	StringBuilder url,text,filename, panel, order, geometry, name;//, timestamp;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
+	StringBuilder url,text,filename, panel, order, geometry, name, timestamp, data, gpx, attrLatLon;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
 
-
+	
 	/*
 	 * fields
 	 */
 	 private boolean in_key = false;
-	// private boolean in_timestamp = false;
+	 private boolean in_timestamp = false;
 	
 	 private boolean in_placebooksText = false;
 	 private boolean in_textGeometry = false;
@@ -68,8 +74,8 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_placebooksMapImage = false;
 	 private boolean in_mapImageGeometry = false;
 	 private boolean in_mapImageFilename = false;
-	 private boolean in_mapImagePanel = false;
-	 private boolean in_mapImageOrder = false;
+	 /*private boolean in_mapImagePanel = false;
+	 private boolean in_mapImageOrder = false;*/
 	 
 	 private boolean in_placebooksWebBundle = false;
 	 private boolean in_webBundleGeometry = false;
@@ -119,7 +125,7 @@ public class XMLHandler extends DefaultHandler {
 			 this.in_key = true;	
 			 String attr = atts.getValue("key");
              myBook.setKey(attr);
-                          
+                                       
 		 }
 
 		 else if (localName.equalsIgnoreCase("placebooks.model.TextItem")) {
@@ -244,10 +250,10 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_audioPanel = true;
 				 panel = new StringBuilder();
 			 }
-			 else if (this.in_placebooksMapImage){
+			/* else if (this.in_placebooksMapImage){
 				  this.in_mapImagePanel = true;
 				  panel = new StringBuilder();
-			  }
+			  }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			 else if (this.in_placebooksWebBundle){
 				 this.in_webBundlePanel= true;
 				 panel = new StringBuilder();
@@ -277,10 +283,10 @@ public class XMLHandler extends DefaultHandler {
 				  this.in_audioOrder = true;
 				  order = new StringBuilder();
 			  }
-			  else if (this.in_placebooksMapImage){
+			  /*else if (this.in_placebooksMapImage){
 				  this.in_mapImageOrder = true;
 				  order = new StringBuilder();
-			  }
+			  }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			  
 			  else if (this.in_placebooksWebBundle){
 				  this.in_webBundleOrder = true;
@@ -321,7 +327,11 @@ public class XMLHandler extends DefaultHandler {
 				 geometry = new StringBuilder();
 			 }
 			 
+			 
 		 } //end of else if geometry
+		 
+		
+
 		 
 	    else if(localName.equalsIgnoreCase("title")){
 	    //this is just for the metadata in gpstraceitem for now (the title)
@@ -330,14 +340,13 @@ public class XMLHandler extends DefaultHandler {
 	    		name = new StringBuilder();
 	    	}	    
 	    }
-		 /*
-	    else if(localName.equalsIgnoreCase("wpt")){
-	    	this.in_gpsTraceGeometry = true;
-	    	//geometry = new StringBuilder();
-	    	String geom;
-	    	geom = atts.getValue("lat") + ", " + atts.getValue("lon");
+	
+
+		 
+	    else if(localName.equalsIgnoreCase("timestamp")){
+	    	this.in_timestamp = true;
+	    	timestamp = new StringBuilder();
 	    }
-	    */
 
 		 
 			  	
@@ -470,11 +479,11 @@ public class XMLHandler extends DefaultHandler {
 				 aitem.setPanel(Integer.parseInt(panel.toString()));
 				 panel = null;
 			 }
-			 else if(this.in_placebooksMapImage){
+			 /*else if(this.in_placebooksMapImage){
 				 this.in_mapImagePanel = false;
 				 mimitem.setPanel(Integer.parseInt(panel.toString()));
 				 panel = null;
-			 }
+			 }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			 
 			 else if(this.in_placebooksWebBundle){
 				 this.in_webBundlePanel = false;
@@ -512,11 +521,11 @@ public class XMLHandler extends DefaultHandler {
 				 aitem.setOrder(Integer.parseInt(order.toString()));
 				 order = null;
 			 }
-			 else if(this.in_placebooksMapImage){
+			 /*else if(this.in_placebooksMapImage){
 				this.in_mapImageOrder = false;
 				mimitem.setOrder(Integer.parseInt(order.toString()));
 				order = null;
-			 }
+			 }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			 else if(this.in_placebooksWebBundle){
 				 this.in_webBundleOrder = false;
 				 wbitem.setOrder(Integer.parseInt(order.toString()));
@@ -612,6 +621,8 @@ public class XMLHandler extends DefaultHandler {
 				 
 		}
 		 
+		 	 
+		 
 		  else if(localName.equalsIgnoreCase("title")){
 			   if(this.in_placebooksGPSTrace){
 			    		this.in_gpsTraceName = false;
@@ -619,14 +630,17 @@ public class XMLHandler extends DefaultHandler {
 			    		name = null;
 			    	}	    
 		 }
-		 /*
-	     else if(localName.equalsIgnoreCase("wpt")){
-			    	this.in_gpsTraceGeometry = false;
-			    	//geometry = new StringBuilder();
-		}
-		 */
+		
 		 
-		 
+		  else if(localName.equalsIgnoreCase("timestamp")){
+		    	this.in_timestamp = false;
+		    	myBook.setTimestamp(timestamp.toString());
+		    	timestamp = null;
+
+		    	
+		    	//also get other timestamps..e.g every item will have a timestamp
+		    }
+
  
 		 
  
@@ -713,12 +727,12 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_mapImageFilename){
 			 filename.append(ch, start, length).toString();
 		 }
-		 else if (this.in_mapImagePanel){
+  /*	 else if (this.in_mapImagePanel){
 			 panel.append(ch, start, length).toString();
 		 }
 		 else if (this.in_mapImageOrder){
 			 order.append(ch, start, length).toString();
-		 }
+		 }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 		 
 		 //web bundle item
 		 
@@ -748,8 +762,13 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_gpsTraceOrder){
 			 order.append(ch, start, length).toString();
 		 }
+		 
 		 //get the geometries too
 		 
+		 
+		 else if (this.in_timestamp){
+			 timestamp.append(ch, start, length).toString();
+		 }
 		 
 	 } //end of void characters
 	 
