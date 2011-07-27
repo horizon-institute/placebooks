@@ -73,8 +73,8 @@
 			font-size: 20pt;
 			width: 670px;
 			color: #666;
-			vertical-algin: top;
-			margin-top: 3px;
+			vertical-align: top;
+			margin-top: 5px;
 		}
 		
 		.searchButton

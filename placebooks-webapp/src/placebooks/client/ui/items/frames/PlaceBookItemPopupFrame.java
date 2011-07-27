@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.PlaceBookInteractionHandler.DragState;
 import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
@@ -168,14 +169,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new UploadMenuItem(this));
+		
+		frame.getElement().getStyle().setProperty("left", "0px");
+		frame.getElement().getStyle().setProperty("width", "100%");
 	}
 
 	@Override
-	public void resize(final String left, final String top, final String width, final String height)
+	public void resize(final String height)
 	{
-		super.resize(left, top, width, height);
-		frame.getElement().getStyle().setProperty("left", left);
-		frame.getElement().getStyle().setProperty("width", width);
+		super.resize(height);
 
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
@@ -220,7 +222,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			frame.getElement().getStyle().setOpacity(1);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
-		else if (highlighted)
+		else if (highlighted && interactionHandler.getState() == DragState.waiting)
 		{
 			rootPanel.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);

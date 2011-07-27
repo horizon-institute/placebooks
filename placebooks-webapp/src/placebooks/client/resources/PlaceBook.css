@@ -6,7 +6,6 @@ body {
 	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
 	margin: 0px;
-	overflow: hidden;	
 }
 
 a {
@@ -104,8 +103,9 @@ a:hover {
 }
 
 .widgetPanel {
-	position: absolute;
+	width: 100%;
 	overflow: hidden;
+	position: relative;
 }
 
 .content {
@@ -191,8 +191,8 @@ img {
 }
 
 .insert {
-	position: absolute;
-	visibility: hidden;
+	width: 100%;
+	position: relative;
 }
 
 .insertInner {

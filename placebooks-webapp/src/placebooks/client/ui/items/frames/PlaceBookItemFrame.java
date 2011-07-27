@@ -36,15 +36,9 @@ public abstract class PlaceBookItemFrame
 		return rootPanel;
 	}
 
-	public void resize(final String left, final String top, final String width, final String height)
+	public void resize(final String height)
 	{
-		if (left.equals(rootPanel.getElement().getStyle().getLeft())
-				&& top.equals(rootPanel.getElement().getStyle().getTop())
-				&& width.equals(rootPanel.getElement().getStyle().getWidth())
-				&& height.equals(itemWidget.getElement().getStyle().getHeight())) { return; }
-		rootPanel.getElement().getStyle().setProperty("left", left);
-		rootPanel.getElement().getStyle().setProperty("top", top);
-		rootPanel.getElement().getStyle().setProperty("width", width);
+		if (height.equals(itemWidget.getElement().getStyle().getHeight())) { return; }
 		itemWidget.getElement().getStyle().setProperty("height", height);
 	}
 

@@ -9,8 +9,8 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,8 +35,6 @@ public class PlaceBookPanel extends FlowPanel
 	private final List<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
 
 	private final int panelIndex;
-
-	private float panelWidth = 33;
 
 	private final int row;
 
@@ -102,10 +100,10 @@ public class PlaceBookPanel extends FlowPanel
 		resize();
 
 		int order = 0;
-		int top = 0;
 		for (final PlaceBookItemFrame item : items)
 		{
-			top += layoutItem(item, top);
+			layoutItem(item, order, true);
+			GWT.log("Item " + item.getItem().getMetadata("title", "") + item.getItem().getKey() + ": " + order);			
 			order++;
 		}
 	}
@@ -127,7 +125,6 @@ public class PlaceBookPanel extends FlowPanel
 
 	public void setWidth(final float panelWidth)
 	{
-		this.panelWidth = panelWidth;
 		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
 		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
 
@@ -146,30 +143,26 @@ public class PlaceBookPanel extends FlowPanel
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
 	{
 		Collections.sort(items, orderComparator);
-
 		resize();
-
+		
 		newItem.getItem().setParameter("panel", panelIndex);
 
-		int order = 0;
 		int top = 0;
+		int order = 0;
 		boolean inserted = false;
 		for (final PlaceBookItemFrame item : items)
 		{
 			if (!inserted && inserty < top + item.getItemWidget().getOffsetHeight())
 			{
-				top += height;
-
 				newItem.getItem().setParameter("order", order);
-
-				inserted = true;
-
+				GWT.log("Item " + newItem.getItem().getMetadata("title", "") + newItem.getItem().getKey() + ": " + order);				
 				order++;
+				inserted = true;
 			}
-			top += layoutItem(item, top);
+			top += item.getRootPanel().getOffsetHeight();
 
 			item.getItem().setParameter("order", order);
-
+			GWT.log("Item " + item.getItem().getMetadata("title", "") + item.getItem().getKey() + ": " + order);			
 			order++;
 		}
 
@@ -182,42 +175,35 @@ public class PlaceBookPanel extends FlowPanel
 	void reflow(final Widget insert, final int inserty, final int height)
 	{
 		Collections.sort(items, orderComparator);
-
 		resize();
 
 		int top = 0;
-		Widget insertTemp = insert;
+		int order = 0;
+		
+		insert.setHeight(height +"px");
+		
 		for (final PlaceBookItemFrame item : items)
 		{
-			if (insertTemp != null && inserty < top + item.getItemWidget().getOffsetHeight())
+			if (inserty < top + item.getItemWidget().getOffsetHeight())
 			{
-				top += layoutInsert(insertTemp, top, height);
-
-				insertTemp = null;
+				innerPanel.insert(insert, order);			
+				return;
 			}
-			top += layoutItem(item, top);
+			top += layoutItem(item, order, false);
+			order++;
 		}
 
-		if (insertTemp != null && inserty > top)
+		innerPanel.add(insert);
+	}
+
+	private int layoutItem(final PlaceBookItemFrame item, final int order, final boolean move)
+	{
+		if(move && innerPanel.getWidgetIndex(item.getRootPanel()) != order)
 		{
-			layoutInsert(insertTemp, top, height);
+			innerPanel.insert(item.getRootPanel(), order);
 		}
-	}
-
-	private int layoutInsert(final Widget insert, final int top, final int height)
-	{
-		insert.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		insert.getElement().getStyle().setTop(top + getElement().getOffsetTop(), Unit.PX);
-		insert.getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-
-		insert.setWidth(panelWidth + "%");
-		insert.setHeight(height + "px");
-
-		return insert.getOffsetHeight();
-	}
-
-	private int layoutItem(final PlaceBookItemFrame item, final int top)
-	{
+		item.getItem().setParameter("order", order);		
+		
 		String heightString;
 
 		if (item.getItem().hasParameter("height") && item.getPanel() != null)
@@ -233,7 +219,7 @@ public class PlaceBookPanel extends FlowPanel
 			heightString = "";
 		}
 
-		item.resize("0px", top + "px", "100%", heightString);
+		item.resize(heightString);
 
 		return item.getRootPanel().getOffsetHeight();
 	}

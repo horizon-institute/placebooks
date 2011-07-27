@@ -45,7 +45,7 @@ public interface Resources extends ClientBundle
 
 	ImageResource picture();
 
-	@Source("Placebook_Blue.png")
+	@Source("Placebook_128.png")
 	ImageResource placebook();
 
 	ImageResource progress();
