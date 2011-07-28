@@ -1,5 +1,7 @@
 package placebooks.client.ui;
 
+import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.PlaceBookItemWidget;
@@ -82,6 +84,21 @@ public class PlaceBookInteractionHandler
 		insert.setStyleName(Resources.INSTANCE.style().insert());
 	}
 
+	public boolean canAdd(PlaceBookItem addItem)
+	{
+		if(addItem.is(ItemType.GPS))
+		{
+			for(PlaceBookItemFrame item: canvas.getItems())
+			{
+				if(item.getItem().is(ItemType.GPS))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	public PlaceBookCanvas getCanvas()
 	{
 		return canvas;

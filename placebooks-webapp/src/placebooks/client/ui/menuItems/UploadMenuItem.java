@@ -51,7 +51,6 @@ public class UploadMenuItem extends MenuItem
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				// dialogBox.hide();
 				form.submit();
 			}
 		});
@@ -76,7 +75,6 @@ public class UploadMenuItem extends MenuItem
 			{
 				GWT.log("Upload Complete: " + event.getResults());
 				item.getItemWidget().refresh();
-				dialogBox.hide();
 				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
 				{
 					@Override
@@ -84,6 +82,7 @@ public class UploadMenuItem extends MenuItem
 					{
 						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
 						item.getItemWidget().update(placebookItem);
+						dialogBox.hide();						
 					}
 				});
 			}

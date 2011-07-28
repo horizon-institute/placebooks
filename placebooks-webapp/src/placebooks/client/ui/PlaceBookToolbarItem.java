@@ -55,7 +55,7 @@ public class PlaceBookToolbarItem extends FlowPanel
 		this.clickHandler = clickHandler;
 	}
 
-	public void setEnabled(final boolean enabled)
+	private void setEnabled(final boolean enabled)
 	{
 		this.enabled = enabled;
 		if (enabled)

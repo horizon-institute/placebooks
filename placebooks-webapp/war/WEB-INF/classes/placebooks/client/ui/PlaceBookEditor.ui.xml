@@ -15,7 +15,7 @@
 		
 		.innerCanvasPanel {
 			position: absolute;
-			top: 0px;
+			top: 20px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
@@ -74,7 +74,6 @@
 			-moz-user-select: text;
 			-o-user-select: text;			
 			user-select: text;	
-			padding-left: 8px;		
 		}
 		
 		.loadingLabel {
@@ -83,6 +82,13 @@
 			font-size: 25px;
 			padding-left: 15px;
 			vertical-align: top;
+		}
+		
+		.toolbar {
+			font: 18px/40px mako, sans-serif;
+			height: 40px;
+			color: #000;
+			padding: 0 20px;
 		}
 		
 		.account {
@@ -114,16 +120,18 @@
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
-		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>	
-		<g:FlowPanel styleName="{res.style.toolbar}">
-			<pb:PlaceBookToolbarLogin styleName="{res.style.toolbarLogin}" ui:field="account" />
-			<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-			<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
-			<g:Image styleName="{style.zoomImage2}" resource="{res.zoom_out}" ui:field="zoomOut" />
-			<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />						
-			<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
-		</g:FlowPanel>		
-		<g:SimplePanel styleName="{style.canvasPanel}"><g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" /></g:SimplePanel>	
+		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
+		<pb:PlaceBookToolbar ui:field="toolbar" />
+		<g:FlowPanel styleName="{style.canvasPanel}">
+			<g:FlowPanel styleName="{style.toolbar}">
+				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
+				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
+				<g:Image styleName="{style.zoomImage2}" resource="{res.zoom_out}" ui:field="zoomOut" />
+				<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />						
+				<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
+			</g:FlowPanel>			
+			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />
+		</g:FlowPanel>	
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

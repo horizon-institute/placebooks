@@ -1,6 +1,7 @@
 package placebooks.client.ui;
 
 import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookToolbarLogin.ShelfListener;
 import placebooks.client.ui.places.PlaceBookBrowsePlace;
@@ -56,6 +57,16 @@ public class PlaceBookToolbar extends FlowPanel
 	public PlaceController getPlaceController()
 	{
 		return placeController;
+	}
+	
+	public PlaceBookToolbarLogin getLogin()
+	{
+		return login;
+	}
+	
+	public void setUser(final User user)
+	{
+		login.setUser(user);
 	}
 
 	public void setPlaceController(final PlaceController placeController)

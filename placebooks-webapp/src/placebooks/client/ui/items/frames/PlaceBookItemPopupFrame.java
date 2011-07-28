@@ -9,7 +9,7 @@ import placebooks.client.ui.PlaceBookInteractionHandler.DragState;
 import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
-import placebooks.client.ui.menuItems.DeletePlaceBookMenuItem;
+import placebooks.client.ui.menuItems.DeleteItemMenuItem;
 import placebooks.client.ui.menuItems.EditTitleMenuItem;
 import placebooks.client.ui.menuItems.FitToContentMenuItem;
 import placebooks.client.ui.menuItems.HideTrailMenuItem;
@@ -160,7 +160,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems
-				.add(new DeletePlaceBookMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+				.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));

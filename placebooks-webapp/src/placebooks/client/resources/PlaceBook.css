@@ -137,13 +137,30 @@ a:hover {
 }
 
 .toolbarItem:HOVER {
-	background-color: #555;
+	background-color: rgba(255,255,255,0.2);
 	color: #FFF;
 }
 
 .toolbarLogin {
 	float: right;
 	margin-right: 50px;
+}
+
+.saveItemDisabled {
+	float: right;
+	padding: 0 10px;
+	cursor: default;
+	color: #555;
+}
+
+.saveItem {
+	float: right;
+	padding: 0 10px;
+	cursor: default;	
+}
+
+.saveItem:HOVER {
+	background-color: rgba(255,255,255,0.2);	
 }
 
 .frameWidgetPanel {

@@ -18,7 +18,7 @@ import placebooks.client.ui.widget.RichTextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Float;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends Composite
@@ -102,26 +103,26 @@ public class PlaceBookEditor extends Composite
 				case saved:
 					saveStatusPanel.setText("Saved");
 					saveStatusPanel.hideImage();
-					saveStatusPanel.setEnabled(false);
+					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
 					break;
 
 				case not_saved:
 					saveStatusPanel.setText("Save");
 					saveStatusPanel.hideImage();
 					// saveStatusPanel.setResource(Resources.INSTANCE.save());
-					saveStatusPanel.setEnabled(true);
+					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
 					break;
 
 				case saving:
 					saveStatusPanel.setText("Saving");
 					saveStatusPanel.setResource(Resources.INSTANCE.progress2());
-					saveStatusPanel.setEnabled(false);
+					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
 					break;
 
 				case save_error:
 					saveStatusPanel.setText("Error Saving");
 					saveStatusPanel.setResource(Resources.INSTANCE.error());
-					saveStatusPanel.setEnabled(true);
+					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
 					break;
 
 				default:
@@ -142,7 +143,7 @@ public class PlaceBookEditor extends Composite
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
-	PlaceBookToolbarLogin account;
+	PlaceBookToolbar toolbar;
 
 	@UiField
 	Panel backPanel;
@@ -206,13 +207,12 @@ public class PlaceBookEditor extends Composite
 
 		factory.setInteractionHandler(interactionHandler);
 
-		saveStatusPanel.getElement().getStyle().setFloat(Float.RIGHT);
 		saveContext.setState(SaveState.saved);
 
 		Window.setTitle("PlaceBooks Editor");
 
-		account.setPlaceController(placeController);		
-		account.add(new MenuItem("Print Preview")
+		toolbar.setPlaceController(placeController);		
+		toolbar.getLogin().add(new MenuItem("Print Preview")
 		{
 			@Override
 			public void run()
@@ -220,7 +220,7 @@ public class PlaceBookEditor extends Composite
 				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));
 			}
 		});
-		account.add(new MenuItem("Publish")
+		toolbar.getLogin().add(new MenuItem("Publish")
 		{
 			@Override
 			public void run()
@@ -259,7 +259,9 @@ public class PlaceBookEditor extends Composite
 				updatePalette();
 			}
 		};
-		timer.scheduleRepeating(50000);
+		timer.scheduleRepeating(120000);
+		
+		RootPanel.get().getElement().getStyle().setOverflow(Overflow.HIDDEN);		
 	}
 
 	public PlaceBookCanvas getCanvas()
@@ -300,7 +302,7 @@ public class PlaceBookEditor extends Composite
 			title.getElement().setInnerText("No Title");
 		}
 
-		account.setUser(newPlacebook.getOwner());
+		toolbar.setUser(newPlacebook.getOwner());
 
 		loadingPanel.setVisible(false);
 		canvas.reflow();
@@ -393,7 +395,7 @@ public class PlaceBookEditor extends Composite
 				title.getElement().setInnerText("No Title");
 			}
 
-			account.setUser(newPlacebook.getOwner());
+			toolbar.setUser(newPlacebook.getOwner());
 			canvas.reflow();
 		}
 	}

@@ -9,7 +9,6 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
@@ -103,7 +102,6 @@ public class PlaceBookPanel extends FlowPanel
 		for (final PlaceBookItemFrame item : items)
 		{
 			layoutItem(item, order, true);
-			GWT.log("Item " + item.getItem().getMetadata("title", "") + item.getItem().getKey() + ": " + order);			
 			order++;
 		}
 	}
@@ -154,15 +152,13 @@ public class PlaceBookPanel extends FlowPanel
 		{
 			if (!inserted && inserty < top + item.getItemWidget().getOffsetHeight())
 			{
-				newItem.getItem().setParameter("order", order);
-				GWT.log("Item " + newItem.getItem().getMetadata("title", "") + newItem.getItem().getKey() + ": " + order);				
+				newItem.getItem().setParameter("order", order);			
 				order++;
 				inserted = true;
 			}
 			top += item.getRootPanel().getOffsetHeight();
 
-			item.getItem().setParameter("order", order);
-			GWT.log("Item " + item.getItem().getMetadata("title", "") + item.getItem().getKey() + ": " + order);			
+			item.getItem().setParameter("order", order);			
 			order++;
 		}
 
