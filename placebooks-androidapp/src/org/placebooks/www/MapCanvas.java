@@ -1,8 +1,10 @@
 package org.placebooks.www;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ScrollView;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,19 +19,24 @@ import java.util.*;
 //import android.view.SurfaceHolder;
 //import com.google.android.maps.MapView;
 //import com.google.android.maps.Overlay.PixelCalculator;
+import android.view.MotionEvent;
+import android.view.View.OnClickListener;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 
-public class MapCanvas extends WebView /* ImageView */{
+public class MapCanvas extends ImageView {
 	
 	private Context mContext;
-	private String directory;
+//	private String directory;
 	//pixel lat/lon values for the YAH marker
 	private int px_lat;
 	private int px_lon;
-	//arraylists for pixel lat/lons for the gps trail
+	//Arraylists for pixel lat/lons for the gps trail
 	private ArrayList<Integer> gpsLatPx = new ArrayList<Integer>();
 	private ArrayList<Integer> gpsLonPx = new ArrayList<Integer>();
-
+	
+	
 	public MapCanvas(Context c){
 		super(c);
 		mContext = c.getApplicationContext();
@@ -50,7 +57,9 @@ public class MapCanvas extends WebView /* ImageView */{
 	public void setGpsLon(ArrayList<Integer> alLon){
 		this.gpsLonPx = alLon;
 	}
+
 	
+		
 
 	
 	//doDrawing (draw when changes have been made)
@@ -73,6 +82,12 @@ public class MapCanvas extends WebView /* ImageView */{
 		trailPen.setStrokeWidth(4);
 		trailPen.setColor(Color.BLACK);	//color.RED 0xffff0000
 		
+		Paint mediaPen = new Paint();
+		mediaPen.setStyle(Paint.Style.STROKE);
+		mediaPen.setStrokeWidth(5);
+		mediaPen.setColor(Color.RED);
+
+		
 		//draw out the gps trail
 		for(int i=1; i<gpsLatPx.size(); i++){
 			canvas.drawLine(gpsLonPx.get(i), gpsLatPx.get(i), gpsLonPx.get(i-1), gpsLatPx.get(i-1), trailPen);			
@@ -84,13 +99,10 @@ public class MapCanvas extends WebView /* ImageView */{
 		
 		
 		invalidate();	
-		
-		
-		
-	}
+				
+	}	//end of onDraw()
 	
 	
-
 }
 
 

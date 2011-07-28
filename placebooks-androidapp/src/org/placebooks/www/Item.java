@@ -12,8 +12,7 @@ public abstract class Item {
 	
 	private String timestamp;
 	private Geometry geometry;
-	private String type
-	;
+	private String type;
 	//parameters
 	private int panel;
 	private int order;

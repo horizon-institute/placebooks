@@ -38,6 +38,7 @@ public class Book extends Application{
 	ArrayList<WebBundleItem> webBundleItems = new ArrayList<WebBundleItem>();
 	ArrayList<GPSTraceItem> gpsTraceItems = new ArrayList<GPSTraceItem>();
 	
+	
 /*
 	public ArrayList<WebBundleItem> getWebBundle(){
 		return this.webBundleItems;

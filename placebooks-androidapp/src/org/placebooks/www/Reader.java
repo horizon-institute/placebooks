@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;	//for images and for the map (i guess) since the map is now going to be just an image
@@ -121,17 +122,20 @@ public class Reader extends Activity { // implements Parcelable {
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
     private String packagePath;
 	
-	
+/*	
 	private ArrayList<Point> page1 = new ArrayList<Point>();
 	private ArrayList<Point> page2 = new ArrayList<Point>();
 	private ArrayList<Point> page3 = new ArrayList<Point>();
 	private ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
 	private ArrayList<Point> page5 = new ArrayList<Point>();
 	private ArrayList<Point> page6 = new ArrayList<Point>();
-	
+*/	
 	
 	//Image Variables
 	private ImageView imgView;
+//	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
+
+	
 	
 	//Video Variables
 	private VideoView video;
@@ -231,30 +235,6 @@ public class Reader extends Activity { // implements Parcelable {
 			        
 			        try {
 				        getMyXML();		//call method to parse XML		
-				        
-				      //Toast msg = Toast.makeText(this, "timestamp= " + pbtimestamp, Toast.LENGTH_LONG);
-					  //msg.show();
-			        	
-				        
-				      //filename is filepath string
-				     /*   BufferedReader br = new BufferedReader(new FileReader(new File("/sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/1121/config.xml")));
-				        String line;
-				        StringBuilder sb = new StringBuilder();
-
-				        while((line=br.readLine())!= null){
-				            sb.append(line.trim());
-				        }
-				        System.out.println("string builder xml file ==== " + sb);
-				       */
-				        
-				        
-				        
-				        
-				        
-				        
-				        
-				        
-				      
 
 					} catch (Exception e) {
 						
@@ -294,7 +274,6 @@ public class Reader extends Activity { // implements Parcelable {
 			        });
 					
 
-
 					
 			
 	 		 } //end of onCreate() Method
@@ -319,7 +298,7 @@ public class Reader extends Activity { // implements Parcelable {
 					try {
 
 							BitmapFactory.Options options = new BitmapFactory.Options();
-						    options.inSampleSize = 4;
+						    options.inSampleSize = 2;	//WAS 4 (STABLE) TRYING 2 TO SEE WHAT PERFORMANCE IS LIKE
 						    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
 						
 						    
@@ -346,9 +325,7 @@ public class Reader extends Activity { // implements Parcelable {
 							page.addView(txtView);
 						}
 					
-				    
-				    
-				    
+				    				    
 				    
 	
 					//New custom view that adds a bit of spacing to the end of image items
@@ -366,8 +343,9 @@ public class Reader extends Activity { // implements Parcelable {
 		     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
 	        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.ImageViewer");
-	        	        	 intent.putExtra("image", img);
-	        	        	 intent.putExtra("path", packagePath);
+	        	        	 //intent.putExtra("image", img);
+	        	        	 //intent.putExtra("path", packagePath);
+	        	        	 intent.putExtra("imagePath",  "/sdcard/placebooks/unzipped" + packagePath + "/" + img);
 		     				    overridePendingTransition(0, 0);
 	        	        	 startActivity(intent);	
 	        	        	 
@@ -613,17 +591,6 @@ public class Reader extends Activity { // implements Parcelable {
 		    	
 		    }
 		    
-		    @Override
-		    public void onDestroy(){
-		    	super.onDestroy();
-		    	
-		    	//stop audio only if audio exists
-		    	if (audio_included){
-		    		stopAudio();
-		    		//reset the audio flag
-		    		audio_included = false;
-		    	}
-		    }
 		    
 		    private void goBlooey(Throwable t){
 		    	
@@ -640,23 +607,71 @@ public class Reader extends Activity { // implements Parcelable {
 		    
 		    /*
 		     * Map Image Item
-		     * Method for displaying the map tile image
+		     * Method for displaying the map tile image. Every map has a trail!
 		     */
-		    public void displayMapImage(final String mapImage, final Coordinate[] c, final LinearLayout page){
+		    public void displayMapImage(final String mapImageFilename, final Coordinate[] mapCoordinates, final LinearLayout page){
 		    	
 			    //locate the file path where the images are stored on the SD CARD. 
-				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImage;
+				String myMapImagePath = "/sdcard/placebooks/unzipped" + packagePath + "/" + mapImageFilename;
 			    mapImgView = new ImageView(this);
 			    
-			    //arrMapCoordinates = c;	//copy the array to arrMapCoordinates[]
 
-			    //if(hasMapCoordinates){}
+			    //(1) Display map thumbnail and get the map coordinates
+			    if(mapImageFilename != null){
+					try{ 
+						
+						BitmapFactory.Options options = new BitmapFactory.Options();
+					    options.inSampleSize = 2;
+					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
+						Uri imgUri=Uri.parse(myMapImagePath);
+					    mapImgView.setImageURI(imgUri);
+					    //mapImgView.setImageBitmap(bm);
+						mapImgView.setLayoutParams(new LayoutParams(250, 250));	//350, 350 htc hd
+						page.addView(mapImgView); 
+						
+						/*
+						for (int i=0; i<c.length; i++){
+							mapCoordinatesLong[i] = (c[i].x);
+							mapCoordinatesLat[i] = (c[i].y);
+						}*/
+						
+						//map images are polygons with 5 coordinates (of lat/long)
+						c_x1 = mapCoordinates[0].x;
+						c_y1 = mapCoordinates[0].y;
+						c_x2 = mapCoordinates[1].x;
+						c_y2 = mapCoordinates[1].y;
+						c_x3 = mapCoordinates[2].x;
+						c_y3 = mapCoordinates[2].y;
+						c_x4 = mapCoordinates[3].x;
+						c_y4 = mapCoordinates[3].y;
+						c_x5 = mapCoordinates[4].x;
+						c_y5 = mapCoordinates[4].y;
+						
+						
+						
+			    	} catch (OutOfMemoryError E) {
+				    // release some (all) of the above objects
+						System.out.println("Out of Memory Exception");
+						TextView txtView = new TextView(Reader.this);
+						txtView.setText("Error: cannot load map file. Out of memory!");
+						page.addView(txtView);
+					}
+			    }
+			    
+			    else{
+			    	TextView t = new TextView(this);
+			    	t.setText("Error: cannot read map");
+			    	page.addView(t);
+			    }
+			    
+			    
+			    //(2) A Map will always have a Trail
 			    //Unmarshall the map trail coordinates
 			    try {
 					Serializer serializer = new Persister(); 
 					//use the simple framework to convert the gpx data from xml file to java objects
 					//REMEMBER TO CHANGE THIS FROM THE EXAMPLE TO THE REAL DYNAMIC THING! GET THE GPX FILEPATH FROM CONFIG.XML
-					File source = new File("sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/201/gpxdata.xml");
+					File source = new File("sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/" + pbkey /*201*/ + "/gpxdata.xml");
 					Gpx gpx = serializer.read(Gpx.class, source);
 
 					System.out.println("HERE THIS IS A TEST");
@@ -698,54 +713,8 @@ public class Reader extends Activity { // implements Parcelable {
 			          e.printStackTrace();
 			     }
 			     
-			     
 			    
 			    
-			    if(mapImage != null){
-					try{ 
-						
-						BitmapFactory.Options options = new BitmapFactory.Options();
-					    options.inSampleSize = 2;
-					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
-						Uri imgUri=Uri.parse(myMapImagePath);
-					    mapImgView.setImageURI(imgUri);
-					    //mapImgView.setImageBitmap(bm);
-						mapImgView.setLayoutParams(new LayoutParams(250, 250));	//350, 350 htc hd
-						page.addView(mapImgView); 
-						
-						/*
-						for (int i=0; i<c.length; i++){
-							mapCoordinatesLong[i] = (c[i].x);
-							mapCoordinatesLat[i] = (c[i].y);
-						}*/
-						
-						//map images are polygons with 5 coordinates (of lat/long)
-						c_x1 = c[0].x;
-						c_y1 = c[0].y;
-						c_x2 = c[1].x;
-						c_y2 = c[1].y;
-						c_x3 = c[2].x;
-						c_y3 = c[2].y;
-						c_x4 = c[3].x;
-						c_y4 = c[3].y;
-						c_x5 = c[4].x;
-						c_y5 = c[4].y;
-						
-						
-						
-			    	} catch (OutOfMemoryError E) {
-				    // release some (all) of the above objects
-						System.out.println("Out of Memory Exception");
-						TextView txtView = new TextView(Reader.this);
-						txtView.setText("Error: cannot load map file. Out of memory!");
-						page.addView(txtView);
-					}
-			    }
-			    else{
-			    	TextView t = new TextView(this);
-			    	t.setText("Error: cannot read map");
-			    	page.addView(t);
-			    }
 				 
 				//New custom view that adds a bit of spacing to the end of image items
 				View view = new View(this);
@@ -766,8 +735,10 @@ public class Reader extends Activity { // implements Parcelable {
 	     				    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.MapImageViewer");
-       	        	 intent.putExtra("mapImage", mapImage);
-       	        	 intent.putExtra("packagePath", packagePath);
+       	        	 intent.putExtra("mapImageFilename", mapImageFilename);
+       	        	 intent.putExtra("packagePath", "/sdcard/placebooks/unzipped" + packagePath);
+       	        	 System.out.println("mapImage+PackagePath= " +mapImageFilename + "/sdcard/placebooks/unzipped" + packagePath);
+
        	        	 
        	        	 //pass the map image lat/lon corner value
        	        	 intent.putExtra("c_x1", c_x1);
@@ -785,7 +756,9 @@ public class Reader extends Activity { // implements Parcelable {
        	        	 intent.putExtra("arrLat", arrGpsLatCoordinates);
        	        	 intent.putExtra("arrLon", arrGpsLonCoordinates);
        	        	 
-
+       	        	 //pass the geotagged media
+       	        	 //intent.putExtra("alGeoImageFilename", alGeoImageFilename);
+       	        	 intent.putExtra("pbkey", pbkey);
 
 	     		     overridePendingTransition(0, 0);
        	        	 startActivity(intent);	
@@ -887,30 +860,47 @@ public class Reader extends Activity { // implements Parcelable {
 					setContentView(textView);
 				}
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
-				pbtimestamp = book.getTimestamp();
+				pbtimestamp = book.getTimestamp();	//the book's DOB
+				//CustomApp customApp = (CustomApp)getApplicationContext();
+				//customApp.setPackagePath("/sdcard/placebooks/unzipped" + packagePath + "/");
+				System.out.println("PBKEY = " +pbkey);
 				
+				/*
 				page1 = (ArrayList<Point>)book.getPage1();
 				page2 = (ArrayList<Point>)book.getPage2();
 				page3 = (ArrayList<Point>)book.getPage3();
 				page4 = (ArrayList<Point>)book.getPage4();
 				page5 = (ArrayList<Point>)book.getPage5();
 				page6 = (ArrayList<Point>)book.getPage6();
-				
+				*/
 				
 			    //Pass the data into the data ArrayLists
-				for(Point item: page1) {
+				for(Point item: book.getPage1()) {
 					
 					String type = item.getType();
-					String data = item.getData();
+					String data = item.getData();	//can be TextString, Filename (e.g 123.jpg), 
 		        	String itemKey = item.getItemKey();
 		        	String url = item.getUrl();
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	//StringBuilder gpxData = item.getGpxData();
 					
 					if (type.equalsIgnoreCase("Text")){
 						displayText(data, ll);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -924,17 +914,13 @@ public class Reader extends Activity { // implements Parcelable {
 						 displayWebBundle(data,url, itemKey, ll );
 					}
 					else if (type.equalsIgnoreCase("MapImage")){
-						//if(hasGpx = true){
-							//displayMapImage(data, geomCo, ll, gpxData);
-						//}
-						
-						//else if (hasGpx = false){
+
 							displayMapImage(data, geomCo, ll);
-						//}
-						
-						//hasGpx = false;	//reset the flag back to false
+							
 					}
 					else if (type.equalsIgnoreCase("GPSTrace")){
+						//this is now - just get filepath to gpx.xml
+						
 						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
 						//msg.show();
 						//hasGpx = true;	//the map comes with a gpx trail
@@ -950,7 +936,7 @@ public class Reader extends Activity { // implements Parcelable {
 					//System.out.println("DATA========" + gpsData);
 
 				}
-				for(Point item: page2) {
+				for(Point item: book.getPage2()) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -962,6 +948,20 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll2);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll2);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -983,7 +983,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        
 
 				}
-				for(Point item: page3) {
+				for(Point item: book.getPage3()) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -995,6 +995,21 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll3);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll3);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -1016,7 +1031,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	
 
 				}
-				for(Point item: page4) {
+				for(Point item: book.getPage4()) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1029,6 +1044,21 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll4);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll4);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -1050,7 +1080,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	
 
 				}
-				for(Point item: page5) {
+				for(Point item: book.getPage5()) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1063,6 +1093,21 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll5);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll5);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -1083,7 +1128,7 @@ public class Reader extends Activity { // implements Parcelable {
 					}	
 
 				}
-				for(Point item: page6) {
+				for(Point item: book.getPage6()) {
 		        	String type = item.getType();
 					String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1096,6 +1141,21 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll6);
 					}
 					else if (type.equalsIgnoreCase("Image")){
+						
+						CustomApp customApp = (CustomApp)getApplicationContext();
+
+						if(geomCo!=null && data!=null){
+							try{
+								//alGeoImageFilename.add(data);
+								customApp.setAlGeoImageFilename(data);
+								customApp.setAlGeoImageCoordinates(geomCo);
+								customApp.setAlPlacebookKey(pbkey);
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
 						displayImage(data.toString(), ll6);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -1210,6 +1270,21 @@ public class Reader extends Activity { // implements Parcelable {
 			     return null;
 			 }
 			 
+			   
+			 
+			 @Override
+			    public void onDestroy(){
+			    	super.onDestroy();
+			    	
+			    	//stop audio only if audio exists
+			    	if (audio_included){
+			    		stopAudio();
+			    		//reset the audio flag
+			    		audio_included = false;
+			    		
+			    	}
+			    				    	
+			    }
 			 
 			 
 			
