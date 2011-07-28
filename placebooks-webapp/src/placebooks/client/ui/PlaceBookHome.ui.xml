@@ -6,8 +6,7 @@
 	<ui:style>		
 		.title 
 		{
-			font-size: 70px;
-			margin-left: 10px;
+			margin-top: 30px;
 		}
 		
 		.image 
@@ -23,7 +22,7 @@
 		
 		.overImage 
 		{
-			background: rgba(255,255,255,0.6);
+			background: rgba(255,255,255,0.8);
 			position: absolute;
 			left: 0px;
 			right: 0px;
@@ -71,7 +70,17 @@
 		
 		.search
 		{
+			font-size: 20pt;
+			width: 670px;
 			color: #666;
+			vertical-algin: top;
+			margin-top: 3px;
+		}
+		
+		.searchButton
+		{
+			font-size: 12pt;
+			width: 120px;
 		}
 	</ui:style>
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
@@ -80,9 +89,9 @@
 
 		<g:FlowPanel styleName="{res.style.content}">
 			<g:FlowPanel>
-				<g:Label styleName="{style.title}">PLACEBOOKS</g:Label>
+				<g:Image styleName="{style.title}" url="images/HeadlineBlack_800x100.png" />
 				<g:FlowPanel styleName="{style.imagePanel}">
-					<g:Image url="images/landscape.jpg" styleName="{style.image}" />
+					<g:Image url="images/SplashGraphic.png" styleName="{style.image}" />
 					<g:FlowPanel styleName="{style.overImage}"><g:Label styleName="{style.overImageTitle}">CREATE, SHARE, DOWNLOAD AND ENJOY</g:Label><g:HTML>
 PlaceBooks enable you to create digital booklets about your favourite places and interests.<br/>
 You can take them with you on your mobile phone to find your way around the places you visit and to locate the things that interest you.<br />
@@ -90,7 +99,7 @@ You can also share them with your friends and other PlaceBook users.
 					</g:HTML></g:FlowPanel>				
 				</g:FlowPanel>
 			</g:FlowPanel>
-			<g:FlowPanel ui:field="searchBar"><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox><g:Button ui:field="searchButton">Search PlaceBooks</g:Button></g:FlowPanel>
+			<g:FlowPanel ui:field="searchBar"><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox><g:Button ui:field="searchButton" styleName="{style.searchButton}">Search PlaceBooks</g:Button></g:FlowPanel>
 			<g:Label styleName="{style.listTitle}">WHAT YOU NEED TO MAKE A PLACEBOOK</g:Label>
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{res.chrome}" /><g:HTML styleName="{style.listText}"><b><a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">Google Chrome</a></b>, PlaceBooks is designed to work on Google Chrome. We recommend that you <a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">download</a> and install it on your computer. We do not support any other web browser.</g:HTML></g:FlowPanel>
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{res.phone_Android}" /><g:HTML styleName="{style.listText}"><b>A smart phone</b>, if you want to track your routes and generate geo-tagged content while you are out and about, either an <a href="http://androidphone.org.uk/guides/what-is-an-android-phone/">Android</a> phone or an <a href="http://www.apple.com/uk/iphone/">iPhone</a>.</g:HTML></g:FlowPanel>			

@@ -15,8 +15,10 @@ public class Point implements Comparable<Point>{
 	public String itemKey;
 	//public Geometry geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
 	public Coordinate[] co;
+//	public StringBuilder gpxData;
 
-	// without coordinates
+	
+	// without coordinates without url
 	public Point(String data, int panel, int order, String type, String itemKey){
 		this.data = data;
 		this.panel = panel;
@@ -25,7 +27,7 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 	}
 	
-	//with coordinates
+	//with coordinates without url
 	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co){
 		this.data = data;
 		this.panel = panel;
@@ -34,6 +36,17 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 		this.co = co;
 	}
+	
+	//with gpsData , without coordinates without url
+/*	public Point(String data, int panel, int order, String type, String itemKey, StringBuilder gpxData){
+		this.data = data;
+		this.panel = panel;
+		this.order = order;
+		this.type = type;
+		this.itemKey = itemKey;
+		this.gpxData = gpxData;
+}
+	*/
 	
 	//without coordinates, with url
 	public Point(String data, int panel, int order, String type, String itemKey, String url){
@@ -45,7 +58,7 @@ public class Point implements Comparable<Point>{
 		this.url = url;
 	}
 	
-	//with coordinates and url
+	//with coordinates and with url
 	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, String url){
 		this.data = data;
 		this.panel = panel;
@@ -83,7 +96,10 @@ public class Point implements Comparable<Point>{
 	public Coordinate[] getGeometryCoordinates(){
 		return co;
 	}
-	
+/*	public StringBuilder getGpxData(){
+		return gpxData;
+	}
+*/	
 	/*
 	 * Setter methods
 	 */
@@ -99,7 +115,10 @@ public class Point implements Comparable<Point>{
 	public void setOrder(int o){
 		this.order = o;
 	}
-	
+/*	public void setGpxData(StringBuilder gpxData){
+		this.gpxData = gpxData;
+	}
+*/	
 	
 	/*
 	 * Compare a given order number with this object.

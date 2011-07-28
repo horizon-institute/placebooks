@@ -352,6 +352,7 @@ public class Book extends Application{
 	
 	for(MapImageItem item: mapImageItems){
 		try{
+			GPSTraceItem gpstraceitem = new GPSTraceItem();
 			
 			Geometry geom;
 			Coordinate[] arrCoordinates;
@@ -359,8 +360,8 @@ public class Book extends Application{
 			
 			String filename = item.getFilename();
 			String type = item.getType();
-			int panel = item.getPanel();
-			int order = item.getOrder();
+			int panel = gpstraceitem.getPanel();//item.getPanel();
+			int order = gpstraceitem.getOrder();//item.getOrder();
 			String mapKey = item.getKey();
 			
 			if (item.getGeometry() != null){
@@ -487,25 +488,31 @@ public class Book extends Application{
 			//Geometry geom;
 			//Coordinate[] arrCoordinates;
 			Point pItems;
+			//Geometry g;
+			//Coordinate[] arrCo;
 			
 			String name = item.getName();
 			String type = item.getType();
 			int panel = item.getPanel();
 			int order = item.getOrder();
 			String key = item.getKey();
+			//StringBuilder gpxData = item.getGpxData();
+			
 			/*
 			if (item.getGeometry() != null){
 				//then it has coordinates
 				geom = item.getGeometry();
 				arrCoordinates = geom.getCoordinates();		//gets the lon/lat coordinates from the geometry and stores them into an array		
 				
-				pItems = new Point(filename, panel, order, type, wbKey, arrCoordinates, url);
+				pItems = new Point(name, panel, order, type, key, arrCoordinates);
 			}
 			else{
 				//no coordinates
-				pItems = new Point(filename, panel, order, type, wbKey, url);
+				//pItems = new Point(filename, panel, order, type, wbKey, url);
+				pItems = new Point(name, panel, order, type, key);//, gpxData);
 			}
 			*/
+			
 			pItems = new Point(name, panel, order, type, key);
 			
 			//add to page 1

@@ -13,29 +13,23 @@ import android.webkit.WebView;
 import android.webkit.WebSettings;
 import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
+import java.util.*;
 //import android.view.SurfaceHolder;
+//import com.google.android.maps.MapView;
+//import com.google.android.maps.Overlay.PixelCalculator;
 
 
-public class MapCanvas extends ImageView {
+public class MapCanvas extends WebView /* ImageView */{
 	
-	Context mContext;
-	String directory;
-	int px_lat;
-	int px_lon;
+	private Context mContext;
+	private String directory;
+	//pixel lat/lon values for the YAH marker
+	private int px_lat;
+	private int px_lon;
+	//arraylists for pixel lat/lons for the gps trail
+	private ArrayList<Integer> gpsLatPx = new ArrayList<Integer>();
+	private ArrayList<Integer> gpsLonPx = new ArrayList<Integer>();
 
-	
-	// Constructor (context, map image path, pixel for lat, pixel  for long) - these pixels will keep changing in relation to the gps
-//	public MapCanvas(Context context, /*String dir,*/ int px_lat, int px_lon){
-//		super(context);	
-		
-//		mContext = context;
-		//this.directory = dir;
-//		this.px_lat = px_lat;
-//		this.px_lon = px_lon;	
-		//Toast msg = Toast.makeText(mContext, "values passed are: \n" + px_lat + "\n and: " + px_lon, Toast.LENGTH_LONG);
-		//msg.show();
-		
-//	}
 	public MapCanvas(Context c){
 		super(c);
 		mContext = c.getApplicationContext();
@@ -50,6 +44,12 @@ public class MapCanvas extends ImageView {
 	public void setLon(int lon){
 		px_lon = lon;
 	}
+	public void setGpsLat(ArrayList<Integer> alLat){
+		this.gpsLatPx = alLat;
+	}
+	public void setGpsLon(ArrayList<Integer> alLon){
+		this.gpsLonPx = alLon;
+	}
 	
 
 	
@@ -58,29 +58,31 @@ public class MapCanvas extends ImageView {
 	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
-	/*	
-		BitmapFactory.Options options = new BitmapFactory.Options();
-	    options.inSampleSize = 1;
-	    Bitmap bm = BitmapFactory.decodeFile(directory, options);
-	 */   
-	    
-	    
-		//drawPoint(float x, float y, Paint paint)
-		
-		// custom drawing code here
+
         // y increases from top to bottom
         // x increases from left to right
       
-		Paint myPaint = new Paint();
-		myPaint.setStrokeWidth(3);
-		myPaint.setColor(0xFF097286);
-		//canvas.drawBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon), 184, 184, null);
+		Paint yahPen = new Paint();
+		yahPen.setStrokeWidth(3);
+		yahPen.setColor(0xFF097286);		
 		
-		//set canvas size to the size of the map image
-		//canvas.drawBitmap(bm,0, 0, null);
+		Paint trailPen = new Paint(Paint.ANTI_ALIAS_FLAG);
+		trailPen.setStyle(Paint.Style.STROKE); 
+		//calculate stroke with for current density
+		//trailPen.setStrokeWidth(1 /getResources().getDisplayMetrics().density);
+		trailPen.setStrokeWidth(4);
+		trailPen.setColor(Color.BLACK);	//color.RED 0xffff0000
 		
-		canvas.drawCircle(px_lat, px_lon, 10, myPaint);
-		//canvas.drawPoint(300, 444, myPaint);
+		//draw out the gps trail
+		for(int i=1; i<gpsLatPx.size(); i++){
+			canvas.drawLine(gpsLonPx.get(i), gpsLatPx.get(i), gpsLonPx.get(i-1), gpsLatPx.get(i-1), trailPen);			
+		}
+		
+		//draw the YAH dot
+		canvas.drawCircle(px_lon, px_lat, 10, yahPen);
+		System.out.println("pixel lon== " +px_lon + "pixel lat== " +px_lat);
+		
+		
 		invalidate();	
 		
 		

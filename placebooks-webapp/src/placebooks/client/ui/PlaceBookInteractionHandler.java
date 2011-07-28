@@ -302,6 +302,7 @@ public class PlaceBookInteractionHandler
 			{
 				insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			}
+			dragFrame.clearItemWidget();			
 		}
 		else if (dragState == DragState.resizing)
 		{
