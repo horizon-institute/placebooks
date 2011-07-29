@@ -409,7 +409,14 @@ public final class PlaceBooksAdminHelper
 			}
 
 			placebook = manager.merge(placebook);
-			placebook.calcBoundary();
+			try
+			{
+				placebook.calcBoundary();
+			}
+			catch(final Exception e)
+			{
+				log.warn("Error Calculating boundry", e);
+			}
 			manager.getTransaction().commit();
 
 			manager.getTransaction().begin();
