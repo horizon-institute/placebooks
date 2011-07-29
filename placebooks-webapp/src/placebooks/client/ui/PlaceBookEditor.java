@@ -1,9 +1,13 @@
 package placebooks.client.ui;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.Shelf;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -33,7 +37,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -174,13 +180,15 @@ public class PlaceBookEditor extends Composite
 
 	private PlaceBook placebook;
 
+	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
+	
 	private final PlaceController placeController;
 
 	private SaveContext saveContext = new SaveContext();
 
 	private int zoom = 100;
 
-	public PlaceBookEditor(final PlaceController placeController)
+	public PlaceBookEditor(final PlaceController placeController, final Shelf shelf)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
@@ -212,15 +220,71 @@ public class PlaceBookEditor extends Composite
 		Window.setTitle("PlaceBooks Editor");
 
 		toolbar.setPlaceController(placeController);		
-		toolbar.getLogin().add(new MenuItem("Print Preview")
+		toolbar.setShelf(shelf);
+		
+		menuItems.add(new MenuItem("Delete Placebook")
 		{
 			@Override
 			public void run()
 			{
-				placeController.goTo(new PlaceBookPreviewPlace(getCanvas().getPlaceBook()));
+				final Panel panel = new FlowPanel();
+				final PopupPanel dialogBox = new PopupPanel(true, true);
+				
+				Label warning = new Label("You will not be able to get your placebook back after deleting it. Are you sure?");
+				Button okbutton = new Button("Delete", new ClickHandler()
+				{
+					@Override
+					public void onClick(ClickEvent event)
+					{
+						PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+						{
+							@Override
+							public void failure(Request request, Response response)
+							{
+								dialogBox.hide();								
+							}							
+							
+							@Override
+							public void success(Request request, Response response)
+							{
+								dialogBox.hide();
+								placeController.goTo(new PlaceBookHomePlace());							
+							}
+						});						
+					}
+				});
+				Button cancelButton = new Button("Cancel", new ClickHandler()
+				{
+					@Override
+					public void onClick(ClickEvent event)
+					{
+						dialogBox.hide();						
+					}
+				});
+				
+				panel.add(warning);
+				panel.add(okbutton);
+				panel.add(cancelButton);
+				
+
+				dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
+				dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
+				dialogBox.setGlassEnabled(true);
+				dialogBox.setAnimationEnabled(true);
+				dialogBox.setWidget(panel);
+				dialogBox.center();
+				dialogBox.show();				
 			}
 		});
-		toolbar.getLogin().add(new MenuItem("Publish")
+		menuItems.add(new MenuItem("Print Preview")
+		{
+			@Override
+			public void run()
+			{
+				placeController.goTo(new PlaceBookPreviewPlace(toolbar.getShelf(), getCanvas().getPlaceBook()));
+			}
+		});
+		menuItems.add(new MenuItem("Publish")
 		{
 			@Override
 			public void run()
@@ -228,7 +292,7 @@ public class PlaceBookEditor extends Composite
 				final PopupPanel dialogBox = new PopupPanel();
 				dialogBox.setGlassEnabled(true);
 				dialogBox.setAnimationEnabled(true);
-				final PlaceBookPublish publish = new PlaceBookPublish(placeController, canvas);
+				final PlaceBookPublish publish = new PlaceBookPublish(toolbar, canvas);
 				publish.addClickHandler(new ClickHandler()
 				{
 					@Override
@@ -302,8 +366,6 @@ public class PlaceBookEditor extends Composite
 			title.getElement().setInnerText("No Title");
 		}
 
-		toolbar.setUser(newPlacebook.getOwner());
-
 		loadingPanel.setVisible(false);
 		canvas.reflow();
 	}
@@ -349,6 +411,13 @@ public class PlaceBookEditor extends Composite
 		setZoom(zoom - 20);
 	}
 
+	@UiHandler("menu")
+	void handlePlaceBookMenu(final ClickEvent event)
+	{
+		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement().getAbsoluteBottom(), false);
+		event.stopPropagation();
+	}
+	
 	@Override
 	protected void onAttach()
 	{
@@ -367,7 +436,7 @@ public class PlaceBookEditor extends Composite
 			panel.reflow();
 		}
 	}
-
+	
 	private void updatePlaceBook(final PlaceBook newPlacebook)
 	{
 		if (placebook != null && (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
@@ -377,7 +446,7 @@ public class PlaceBookEditor extends Composite
 			final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
-			placeController.goTo(new PlaceBookEditorPlace(placebook));
+			placeController.goTo(new PlaceBookEditorPlace(placebook, toolbar.getShelf()));
 		}
 		else
 		{
@@ -395,7 +464,6 @@ public class PlaceBookEditor extends Composite
 				title.getElement().setInnerText("No Title");
 			}
 
-			toolbar.setUser(newPlacebook.getOwner());
 			canvas.reflow();
 		}
 	}

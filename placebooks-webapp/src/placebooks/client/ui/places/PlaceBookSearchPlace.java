@@ -2,11 +2,10 @@ package placebooks.client.ui.places;
 
 import placebooks.client.model.Shelf;
 
-import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class PlaceBookSearchPlace extends Place
+public class PlaceBookSearchPlace extends PlaceBookPlace
 {
 	@Prefix("search")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookSearchPlace>
@@ -25,29 +24,21 @@ public class PlaceBookSearchPlace extends Place
 	}
 
 	private final String search;
-	private final Shelf shelf;
 
 	public PlaceBookSearchPlace(final String search)
 	{
-		super();
-		this.shelf = null;
+		super(null);
 		this.search = search;
 	}
 
 	public PlaceBookSearchPlace(final String search, final Shelf shelf)
 	{
-		super();
-		this.shelf = shelf;
+		super(shelf);
 		this.search = search;
 	}
 
 	public String getSearch()
 	{
 		return search;
-	}
-
-	public Shelf getShelf()
-	{
-		return shelf;
 	}
 }

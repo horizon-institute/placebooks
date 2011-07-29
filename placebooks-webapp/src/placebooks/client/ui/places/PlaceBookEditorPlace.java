@@ -1,12 +1,12 @@
 package placebooks.client.ui.places;
 
 import placebooks.client.model.PlaceBook;
+import placebooks.client.model.Shelf;
 
-import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class PlaceBookEditorPlace extends Place
+public class PlaceBookEditorPlace extends PlaceBookPlace
 {
 	@Prefix("edit")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditorPlace>
@@ -14,7 +14,7 @@ public class PlaceBookEditorPlace extends Place
 		@Override
 		public PlaceBookEditorPlace getPlace(final String token)
 		{
-			return new PlaceBookEditorPlace(token);
+			return new PlaceBookEditorPlace(token, null);
 		}
 
 		@Override
@@ -27,16 +27,16 @@ public class PlaceBookEditorPlace extends Place
 	private final PlaceBook placebook;
 	private final String placebookKey;
 
-	public PlaceBookEditorPlace(final PlaceBook placebook)
+	public PlaceBookEditorPlace(final PlaceBook placebook, final Shelf shelf)
 	{
-		super();
+		super(shelf);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookEditorPlace(final String placebookKey)
+	public PlaceBookEditorPlace(final String placebookKey, final Shelf shelf)
 	{
-		super();
+		super(shelf);
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}

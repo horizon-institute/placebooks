@@ -11,11 +11,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookShelf extends Composite
+public class PlaceBookLibrary extends Composite
 {
-	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookShelf>
+	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
 	{
 	}
 
@@ -29,13 +30,15 @@ public class PlaceBookShelf extends Composite
 
 	@UiField
 	PlaceBookToolbar toolbar;
+	
+	private Shelf shelf;
 
-	public PlaceBookShelf(final String title, final PlaceController placeController, final Shelf shelf)
+	public PlaceBookLibrary(final PlaceController placeController, final Shelf shelf)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		Window.setTitle("PlaceBooks " + title);
-		titleLabel.setText(title);
+		Window.setTitle("PlaceBooks Library");
+		titleLabel.setText("Library");
 
 		toolbar.setPlaceController(placeController);
 		toolbar.setShelf(shelf);
@@ -47,18 +50,24 @@ public class PlaceBookShelf extends Composite
 				setShelf(shelf);
 			}
 		});
-		GWT.log("Browse " + title + ": " + shelf);
+		GWT.log("Browse Library: " + shelf);
 		setShelf(shelf);
+		
+		RootPanel.get().getElement().getStyle().clearOverflow();				
 	}
 
 	private void setShelf(final Shelf shelf)
 	{
-		placebooks.clear();
-		if (shelf != null)
+		if(this.shelf != shelf)
 		{
-			for (final PlaceBookEntry entry : shelf.getEntries())
+			this.shelf = shelf;
+			placebooks.clear();
+			if (shelf != null)
 			{
-				placebooks.add(new PlaceBookEntryWidget(toolbar.getPlaceController(), entry));
+				for (final PlaceBookEntry entry : shelf.getEntries())
+				{
+					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));
+				}
 			}
 		}
 	}

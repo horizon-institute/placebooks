@@ -74,6 +74,7 @@
 			-moz-user-select: text;
 			-o-user-select: text;			
 			user-select: text;	
+			display: inline;
 		}
 		
 		.loadingLabel {
@@ -97,25 +98,32 @@
 			cursor: default;
 		}
 		
-		.zoomImage {
-			margin-right: 5px;
-			margin-top: 14px;
-			float:right;
-		}
-		
-		.zoomImage2 {
-			margin-left: 50px;
-			margin-right: 5px;
-			margin-top: 14px;
-			float:right;
-		}		
-		
 		.body {
 			-webkit-user-select: none;	
 			-moz-user-select: none;
 			-o-user-select: none;			
 			user-select: none;
 			overflow: hidden;			
+		}
+
+		.floatLeft {
+			float: left;
+		}
+		
+		.floatRight {
+			float: right;	
+		}
+		
+		.image {
+			margin-top: 13px
+		} 
+		
+		.imageButton {
+			padding: 0 5px;
+		}
+		
+		.imageButton:HOVER {
+			background-color: rgba(255,255,255,0.2);			
 		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
@@ -125,9 +133,10 @@
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.toolbar}">
 				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-				<g:Image styleName="{style.zoomImage}" resource="{res.zoom_in}" ui:field="zoomIn" />
-				<g:Image styleName="{style.zoomImage2}" resource="{res.zoom_out}" ui:field="zoomOut" />
-				<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />						
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image styleName="{style.image}" resource="{res.zoom_in}" /></p:MousePanel>
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image styleName="{style.image}" resource="{res.zoom_out}" /></p:MousePanel>
+				<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatLeft}" ui:field="menu"><g:Image styleName="{style.image}" resource="{res.placebook16}"/></p:MousePanel>						
 				<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
 			</g:FlowPanel>			
 			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />

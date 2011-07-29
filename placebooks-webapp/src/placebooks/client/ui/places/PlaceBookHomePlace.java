@@ -2,11 +2,10 @@ package placebooks.client.ui.places;
 
 import placebooks.client.model.Shelf;
 
-import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class PlaceBookHomePlace extends Place
+public class PlaceBookHomePlace extends PlaceBookPlace
 {
 	@Prefix("home")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookHomePlace>
@@ -24,20 +23,13 @@ public class PlaceBookHomePlace extends Place
 		}
 	}
 
-	private final Shelf shelf;
-
 	public PlaceBookHomePlace()
 	{
-		this.shelf = null;
+		super(null);
 	}
 
 	public PlaceBookHomePlace(final Shelf shelf)
 	{
-		this.shelf = shelf;
-	}
-
-	public Shelf getShelf()
-	{
-		return shelf;
+		super(shelf);
 	}
 }

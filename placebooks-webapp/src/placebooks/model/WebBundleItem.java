@@ -94,7 +94,7 @@ public class WebBundleItem extends PlaceBookItem
 		{
 			FileUtils.deleteDirectory(new File(webBundlePath));
 		}
-		catch (final IOException e)
+		catch (final Exception e)
 		{
 			log.error(e.toString());
 		}

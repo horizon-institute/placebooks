@@ -316,19 +316,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		this.shelfListener = shelfListener;
 	}
 
-	public void setUser(final User user)
-	{
-		if (user == null)
-		{
-			PlaceBookService.getShelf(shelfCallback);
-			getElement().getStyle().setDisplay(Display.NONE);
-		}
-		else
-		{
-			setUserInternal(user);
-		}
-	}
-
 	public void showMenu(final int x, final int y)
 	{
 		for (final MenuItem item : menuItems)

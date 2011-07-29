@@ -1,13 +1,12 @@
 package placebooks.client.ui.places;
 
 import placebooks.client.model.PlaceBook;
-import placebooks.client.model.User;
+import placebooks.client.model.Shelf;
 
-import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class PlaceBookEditorNewPlace extends Place
+public class PlaceBookEditorNewPlace extends PlaceBookPlace
 {
 	@Prefix("create")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditorNewPlace>
@@ -27,24 +26,23 @@ public class PlaceBookEditorNewPlace extends Place
 
 	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
 
-	private final User user;
-
 	public PlaceBookEditorNewPlace()
 	{
-		super();
-		this.user = null;
+		super(null);
 	}
 
-	public PlaceBookEditorNewPlace(final User user)
+	public PlaceBookEditorNewPlace(final Shelf shelf)
 	{
-		super();
-		this.user = user;
+		super(shelf);
 	}
 
 	public PlaceBook getPlaceBook()
 	{
 		final PlaceBook placebook = PlaceBook.parse(newPlaceBook);
-		placebook.setOwner(user);
+		if(getShelf() != null)
+		{
+			placebook.setOwner(getShelf().getUser());
+		}
 		return placebook;
 	}
 }

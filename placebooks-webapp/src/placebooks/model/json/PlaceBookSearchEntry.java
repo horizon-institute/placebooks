@@ -8,15 +8,23 @@ public class PlaceBookSearchEntry extends PlaceBookEntry
 {
 	@JsonProperty	
 	private int score;
+	
+	private String ownerName;
 
 	public PlaceBookSearchEntry(final PlaceBook p, final int score)
 	{
 		super(p);
 		this.score = score;
+		this.ownerName = p.getOwner().getName(); 
 	}
 
 	public int getScore()
 	{
 		return score;
+	}
+	
+	public String getOwnerName()
+	{
+		return ownerName;
 	}
 }

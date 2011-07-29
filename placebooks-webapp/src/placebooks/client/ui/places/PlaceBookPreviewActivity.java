@@ -6,21 +6,22 @@ import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
-import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.RootPanel;
 
-public class PlaceBookPreviewActivity extends AbstractActivity
+public class PlaceBookPreviewActivity extends PlaceBookActivity
 {
 	private final String key;
 	private final PlaceBook placebook;
 
-	public PlaceBookPreviewActivity(final PlaceBook placebook, final String key)
+	public PlaceBookPreviewActivity(PlaceBookPreviewPlace place)
 	{
-		this.key = key;
-		this.placebook = placebook;
+		super(place.getShelf());
+		this.key = place.getKey();
+		this.placebook = place.getPlaceBook();
 	}
 
 	@Override
@@ -44,6 +45,7 @@ public class PlaceBookPreviewActivity extends AbstractActivity
 			});
 		}
 
+		RootPanel.get().getElement().getStyle().clearOverflow();				
 		panel.setWidget(canvas);
 		canvas.reflow();
 	}

@@ -1,15 +1,15 @@
 package placebooks.client.ui;
 
 import placebooks.client.model.Shelf;
-import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookToolbarLogin.ShelfListener;
-import placebooks.client.ui.places.PlaceBookBrowsePlace;
+import placebooks.client.ui.places.PlaceBookLibraryPlace;
 import placebooks.client.ui.places.PlaceBookEditorNewPlace;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -18,6 +18,8 @@ public class PlaceBookToolbar extends FlowPanel
 	private final PlaceBookToolbarLogin login = new PlaceBookToolbarLogin();
 	private PlaceController placeController;
 
+	private ShelfListener shelfListener;
+	
 	private final PlaceBookToolbarItem homeItem = new PlaceBookToolbarItem("HOME", null, new ClickHandler()
 	{
 		@Override
@@ -33,7 +35,7 @@ public class PlaceBookToolbar extends FlowPanel
 		@Override
 		public void onClick(final ClickEvent event)
 		{
-			placeController.goTo(new PlaceBookEditorNewPlace(login.getShelf().getUser()));
+			placeController.goTo(new PlaceBookEditorNewPlace(login.getShelf()));
 		}
 	});
 	
@@ -43,9 +45,14 @@ public class PlaceBookToolbar extends FlowPanel
 		@Override
 		public void onClick(final ClickEvent event)
 		{
-			placeController.goTo(new PlaceBookBrowsePlace(login.getShelf()));
+			placeController.goTo(new PlaceBookLibraryPlace(login.getShelf()));
 		}
 	});
+	
+	public void login(final RequestCallback callback)
+	{
+		
+	}
 	
 	public PlaceBookToolbar()
 	{
@@ -59,25 +66,27 @@ public class PlaceBookToolbar extends FlowPanel
 		
 		createItem.setEnabled(false);
 		libraryItem.setEnabled(false);
+		
+		login.setShelfListener(new ShelfListener()
+		{
+			@Override
+			public void shelfChanged(Shelf shelf)
+			{
+				createItem.setEnabled(shelf != null);
+				libraryItem.setEnabled(shelf != null);
+				if(shelfListener != null)
+				{
+					shelfListener.shelfChanged(shelf);
+				}
+			}
+		});
 	}
 
 	public PlaceController getPlaceController()
 	{
 		return placeController;
 	}
-	
-	public PlaceBookToolbarLogin getLogin()
-	{
-		return login;
-	}
-	
-	public void setUser(final User user)
-	{
-		login.setUser(user);
-		createItem.setEnabled(user != null);
-		libraryItem.setEnabled(user != null);		
-	}
-
+		
 	public void setPlaceController(final PlaceController placeController)
 	{
 		login.setPlaceController(placeController);
@@ -87,10 +96,17 @@ public class PlaceBookToolbar extends FlowPanel
 	public void setShelf(final Shelf shelf)
 	{
 		login.setShelf(shelf);
+		createItem.setEnabled(shelf != null);
+		libraryItem.setEnabled(shelf != null);			
 	}
 
+	public Shelf getShelf()
+	{
+		return login.getShelf();
+	}
+	
 	public void setShelfListener(final ShelfListener shelfListener)
 	{
-		login.setShelfListener(shelfListener);
+		this.shelfListener = shelfListener;
 	}
 }

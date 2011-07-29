@@ -20,28 +20,25 @@ public class PlaceBookActivityMapper implements ActivityMapper
 	{
 		if (place instanceof PlaceBookEditorPlace)
 		{
-			return new PlaceBookEditorActivity(controller, ((PlaceBookEditorPlace) place).getPlaceBook(),
-					((PlaceBookEditorPlace) place).getKey());
+			return new PlaceBookEditorActivity(controller, (PlaceBookEditorPlace) place);
 		}
 		else if (place instanceof PlaceBookHomePlace)
 		{
 			return new PlaceBookHomeActivity(controller, ((PlaceBookHomePlace) place).getShelf());
 		}
-		else if (place instanceof PlaceBookBrowsePlace)
+		else if (place instanceof PlaceBookLibraryPlace)
 		{
-			return new PlaceBookBrowseActivity("Library", controller, ((PlaceBookBrowsePlace) place).getShelf());
+			return new PlaceBookLibraryActivity(controller, ((PlaceBookLibraryPlace) place).getShelf());
 		}
 		else if (place instanceof PlaceBookSearchPlace)
 		{
-			return new PlaceBookBrowseActivity("Search - " + ((PlaceBookSearchPlace) place).getSearch(), controller,
-					((PlaceBookSearchPlace) place).getShelf());
+			return new PlaceBookSearchActivity(controller, (PlaceBookSearchPlace) place);
 		}
 		else if (place instanceof PlaceBookEditorNewPlace)
 		{
-			return new PlaceBookEditorNewActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook());
+			return new PlaceBookEditorNewActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook(), ((PlaceBookEditorNewPlace) place).getShelf());
 		}
-		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity(
-				((PlaceBookPreviewPlace) place).getPlaceBook(), ((PlaceBookPreviewPlace) place).getKey()); }
+		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity((PlaceBookPreviewPlace) place); }
 		return null;
 	}
 
