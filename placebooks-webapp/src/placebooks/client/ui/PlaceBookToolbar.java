@@ -18,40 +18,47 @@ public class PlaceBookToolbar extends FlowPanel
 	private final PlaceBookToolbarLogin login = new PlaceBookToolbarLogin();
 	private PlaceController placeController;
 
+	private final PlaceBookToolbarItem homeItem = new PlaceBookToolbarItem("HOME", null, new ClickHandler()
+	{
+		@Override
+		public void onClick(final ClickEvent event)
+		{
+			placeController.goTo(new PlaceBookHomePlace(login.getShelf()));
+
+		}
+	});
+	
+	private final PlaceBookToolbarItem createItem = new PlaceBookToolbarItem("CREATE", Resources.INSTANCE.add(), new ClickHandler()
+	{
+		@Override
+		public void onClick(final ClickEvent event)
+		{
+			placeController.goTo(new PlaceBookEditorNewPlace(login.getShelf().getUser()));
+		}
+	});
+	
+	private final PlaceBookToolbarItem libraryItem = new PlaceBookToolbarItem("MY LIBRARY", Resources.INSTANCE.book(), new ClickHandler()
+	{
+
+		@Override
+		public void onClick(final ClickEvent event)
+		{
+			placeController.goTo(new PlaceBookBrowsePlace(login.getShelf()));
+		}
+	});
+	
 	public PlaceBookToolbar()
 	{
 		super();
 		setStyleName(Resources.INSTANCE.style().toolbar());
 
-		add(new PlaceBookToolbarItem("HOME", null, new ClickHandler()
-		{
-
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				placeController.goTo(new PlaceBookHomePlace(login.getShelf()));
-
-			}
-		}));
-		add(new PlaceBookToolbarItem("CREATE", Resources.INSTANCE.add(), new ClickHandler()
-		{
-
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				placeController.goTo(new PlaceBookEditorNewPlace(login.getShelf().getUser()));
-			}
-		}));
-		add(new PlaceBookToolbarItem("MY LIBRARY", Resources.INSTANCE.book(), new ClickHandler()
-		{
-
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				placeController.goTo(new PlaceBookBrowsePlace(login.getShelf()));
-			}
-		}));
+		add(homeItem);
+		add(createItem);
+		add(libraryItem);
 		add(login);
+		
+		createItem.setEnabled(false);
+		libraryItem.setEnabled(false);
 	}
 
 	public PlaceController getPlaceController()
@@ -67,6 +74,8 @@ public class PlaceBookToolbar extends FlowPanel
 	public void setUser(final User user)
 	{
 		login.setUser(user);
+		createItem.setEnabled(user != null);
+		libraryItem.setEnabled(user != null);		
 	}
 
 	public void setPlaceController(final PlaceController placeController)
