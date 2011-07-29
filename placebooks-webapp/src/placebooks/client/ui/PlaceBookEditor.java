@@ -414,7 +414,7 @@ public class PlaceBookEditor extends Composite
 	@UiHandler("menu")
 	void handlePlaceBookMenu(final ClickEvent event)
 	{
-		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement().getAbsoluteBottom(), false);
+		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement().getAbsoluteTop() + event.getRelativeElement().getOffsetHeight(), false);
 		event.stopPropagation();
 	}
 	

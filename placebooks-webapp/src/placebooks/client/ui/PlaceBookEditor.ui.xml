@@ -114,12 +114,11 @@
 			float: right;	
 		}
 		
-		.image {
-			margin-top: 13px
-		} 
-		
+
 		.imageButton {
 			padding: 0 5px;
+			padding-top: 2px;
+			height: 38px;
 		}
 		
 		.imageButton:HOVER {
@@ -133,10 +132,10 @@
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.toolbar}">
 				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image styleName="{style.image}" resource="{res.zoom_in}" /></p:MousePanel>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image styleName="{style.image}" resource="{res.zoom_out}" /></p:MousePanel>
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image resource="{res.zoom_in}" /></p:MousePanel>
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image resource="{res.zoom_out}" /></p:MousePanel>
 				<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatLeft}" ui:field="menu"><g:Image styleName="{style.image}" resource="{res.placebook16}"/></p:MousePanel>						
+				<p:MousePanel addStyleNames="{style.imageButton} {style.floatLeft}" ui:field="menu"><g:Image resource="{res.placebook16}"/></p:MousePanel>						
 				<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
 			</g:FlowPanel>			
 			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />
