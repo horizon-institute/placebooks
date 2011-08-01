@@ -11,8 +11,6 @@
 	<script src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A8192B153342C83FE0405F0ACA60441B" />
 	<script src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false" />
 	<script src="../openlayers/proj4js-compressed.js" />
-	<script src="../openlayers/defs/EPSG900913.js" />
-	<script src="../openlayers/defs/EPSG4326.js" />	
 	<script src="../openlayers/OpenLayers.js" />	
 	
 	<stylesheet src="http://fonts.googleapis.com/css?family=Mako&amp;v2"/>

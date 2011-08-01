@@ -17,12 +17,12 @@
 			position: absolute;
 			width: 16px;
 			height: 16px;
-			background-color: #447;
+			background: -webkit-linear-gradient(top,#669,#447);
 			padding: 3px;
 		}
 		
 		.menuButton:HOVER {
-			background-color: #669;
+			background: -webkit-linear-gradient(top,#88B,#669);
 		}		
 		
 		.dragSection {
@@ -31,12 +31,12 @@
 			position: absolute;
 			right: 22px;
 			height: 22px;
-			background-color: #447;
+			background: -webkit-linear-gradient(top,#669,#447);
 			min-height: 10px;
 			cursor:move;
 			line-height: 22px;
 			padding-left: 5px;
-			color: #BBC;
+			color: #111;
 		}
 		
 		.borderSection {

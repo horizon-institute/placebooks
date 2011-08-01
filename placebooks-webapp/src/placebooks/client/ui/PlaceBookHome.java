@@ -1,7 +1,5 @@
 package placebooks.client.ui;
 
-import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.places.PlaceBookSearchPlace;
 
@@ -11,14 +9,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -36,14 +33,13 @@ public class PlaceBookHome extends Composite
 	@UiField
 	PlaceBookToolbar toolbar;
 
-	private final PlaceController placeController;
-
 	public PlaceBookHome(final PlaceController controller)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
 		Window.setTitle("PlaceBooks");
-		this.placeController = controller;
+		
+		RootPanel.get().getElement().getStyle().clearOverflow();		
 	}
 
 	public PlaceBookHome(final PlaceController controller, final Shelf shelf)
@@ -51,9 +47,10 @@ public class PlaceBookHome extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		toolbar.setPlaceController(controller);
 		toolbar.setShelf(shelf);
-		this.placeController = controller;
 
 		Window.setTitle("PlaceBooks");
+		
+		RootPanel.get().getElement().getStyle().clearOverflow();		
 	}
 
 	@UiHandler("search")
@@ -93,13 +90,6 @@ public class PlaceBookHome extends Composite
 
 	private void search()
 	{
-		PlaceBookService.search(search.getText(), new AbstractCallback()
-		{
-			@Override
-			public void success(final Request request, final Response response)
-			{
-				placeController.goTo(new PlaceBookSearchPlace(search.getText(), Shelf.parse(response.getText())));
-			}
-		});
+		toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
 	}
 }

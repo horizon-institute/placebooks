@@ -45,7 +45,7 @@ public class PlaceBookCanvas extends FlowPanel
 	{
 		addImpl(item);
 		placebook.add(item.getItem());
-		refreshItemPlaceBook();
+		item.getItemWidget().setPlaceBook(placebook);
 	}
 
 	public Iterable<PlaceBookItemFrame> getItems()

@@ -2,6 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:p="urn:import:placebooks.client.ui"
+	xmlns:pw="urn:import:placebooks.client.ui.widget"	
 	>
 	<ui:style>		
 		.title 
@@ -70,17 +71,27 @@
 		
 		.search
 		{
-			font-size: 20pt;
-			width: 670px;
-			color: #666;
-			vertical-algin: top;
-			margin-top: 3px;
+			font-size: 20px;
+			width: 730px;
+			color: #888;
+			vertical-align: top;
+			margin-top: 5px;
 		}
 		
 		.searchButton
 		{
-			font-size: 12pt;
-			width: 120px;
+			margin-top: 2px;
+			background-color: #346;
+			padding: 3px 15px;
+			border: 1px solid #346;
+			float: right;
+			border-radius: 3px;
+		}
+		
+		.searchButton:HOVER
+		{
+			background-color: #457;
+			border: 1px outset #569;
 		}
 	</ui:style>
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
@@ -99,7 +110,7 @@ You can also share them with your friends and other PlaceBook users.
 					</g:HTML></g:FlowPanel>				
 				</g:FlowPanel>
 			</g:FlowPanel>
-			<g:FlowPanel ui:field="searchBar"><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox><g:Button ui:field="searchButton" styleName="{style.searchButton}">Search PlaceBooks</g:Button></g:FlowPanel>
+			<g:FlowPanel ui:field="searchBar"><pw:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></pw:MousePanel><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
 			<g:Label styleName="{style.listTitle}">WHAT YOU NEED TO MAKE A PLACEBOOK</g:Label>
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{res.chrome}" /><g:HTML styleName="{style.listText}"><b><a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">Google Chrome</a></b>, PlaceBooks is designed to work on Google Chrome. We recommend that you <a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">download</a> and install it on your computer. We do not support any other web browser.</g:HTML></g:FlowPanel>
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{res.phone_Android}" /><g:HTML styleName="{style.listText}"><b>A smart phone</b>, if you want to track your routes and generate geo-tagged content while you are out and about, either an <a href="http://androidphone.org.uk/guides/what-is-an-android-phone/">Android</a> phone or an <a href="http://www.apple.com/uk/iphone/">iPhone</a>.</g:HTML></g:FlowPanel>			

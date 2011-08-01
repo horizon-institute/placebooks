@@ -6,7 +6,6 @@ body {
 	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
 	margin: 0px;
-	overflow: hidden;	
 }
 
 a {
@@ -104,8 +103,9 @@ a:hover {
 }
 
 .widgetPanel {
-	position: absolute;
+	width: 100%;
 	overflow: hidden;
+	position: relative;
 }
 
 .content {
@@ -122,6 +122,11 @@ a:hover {
 	border-bottom: 1px solid #84817a;
 }
 
+.authorText {
+	font-size: 10px;
+	color: #555;
+}
+
 .toolbarItem {
 	float: left;
 	margin-left: 50px;
@@ -134,16 +139,34 @@ a:hover {
 	margin-left: 50px;
 	padding: 0 10px;
 	cursor: default;
+	opacity: 0.5;
 }
 
 .toolbarItem:HOVER {
-	background-color: #555;
+	background-color: rgba(255,255,255,0.2);
 	color: #FFF;
 }
 
 .toolbarLogin {
 	float: right;
 	margin-right: 50px;
+}
+
+.saveItemDisabled {
+	float: right;
+	padding: 0 10px;
+	cursor: default;
+	color: #555;
+}
+
+.saveItem {
+	float: right;
+	padding: 0 10px;
+	cursor: default;	
+}
+
+.saveItem:HOVER {
+	background-color: rgba(255,255,255,0.2);	
 }
 
 .frameWidgetPanel {
@@ -191,8 +214,8 @@ img {
 }
 
 .insert {
-	position: absolute;
-	visibility: hidden;
+	width: 100%;
+	position: relative;
 }
 
 .insertInner {
@@ -256,13 +279,13 @@ img {
 	display: inline-block;
 	padding: 5px;
 	margin: 10px auto;
-	width: 120px;
+	width: 150px;
 	text-align: center;
 	border-radius: 16px;			
 }
 		
 .placebookEntry:HOVER {
-	background-color: #667;
+	background-color: #DDD;
 }
 		
 .placebookEntryText {

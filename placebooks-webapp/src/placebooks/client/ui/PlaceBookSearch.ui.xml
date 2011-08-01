@@ -1,0 +1,60 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pw="urn:import:placebooks.client.ui.widget" xmlns:p="urn:import:placebooks.client.ui" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.title 
+		{
+			font-style: mako, sans-serif;
+			font-size: 26px;
+			font-weight: bold;
+			margin: 20px 0 10px 0;
+			color: #384967;
+		}
+		
+		.search
+		{
+			font-size: 20px;
+			width: 730px;
+			vertical-align: top;
+			margin-top: 5px;
+		}
+		
+		.searchButton
+		{
+			margin-top: 2px;
+			background-color: #346;
+			padding: 3px 15px;
+			border: 1px solid #346;
+			float: right;
+			border-radius: 3px;
+		}
+		
+		.searchButton:HOVER
+		{
+			background-color: #457;
+			border: 1px outset #569;
+		}		
+		
+		.searchBlock
+		{
+			padding: 30px 0;
+			background-color: #EEE;
+			border-bottom: 1px solid #CCC;
+			margin-bottom: 20px;
+		}
+	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<g:FlowPanel>
+		<p:PlaceBookToolbar ui:field="toolbar"/>
+		
+		<g:FlowPanel styleName="{style.searchBlock}">
+		<g:FlowPanel styleName="{res.style.content}">		
+			<g:FlowPanel><pw:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></pw:MousePanel><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
+		</g:FlowPanel>
+		</g:FlowPanel>
+		
+		<g:FlowPanel styleName="{res.style.content}">		
+			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
+		</g:FlowPanel>
+	</g:FlowPanel>
+</ui:UiBinder>

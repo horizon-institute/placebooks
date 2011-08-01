@@ -25,6 +25,8 @@ public interface PlaceBookCSS extends CssResource
 	String insert();
 
 	String insertInner();
+	
+	String authorText();
 
 	String listItem();
 
@@ -45,6 +47,10 @@ public interface PlaceBookCSS extends CssResource
 	String placebookEntry();
 
 	String placebookEntryText();
+	
+	String saveItem();
+	
+	String saveItemDisabled();
 
 	String popupPanel();
 

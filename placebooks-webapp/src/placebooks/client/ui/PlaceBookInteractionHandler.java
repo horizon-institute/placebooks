@@ -1,5 +1,7 @@
 package placebooks.client.ui;
 
+import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.PlaceBookItemWidget;
@@ -29,7 +31,7 @@ public class PlaceBookInteractionHandler
 		public void handleDragStart();
 	}
 
-	private enum DragState
+	public enum DragState
 	{
 		dragging, dragInit, resizeInit, resizing, waiting,
 	}
@@ -57,6 +59,11 @@ public class PlaceBookInteractionHandler
 
 	private int originx;
 	private int originy;
+	
+	public DragState getState()
+	{
+		return dragState;
+	}
 
 	private final SaveContext saveContext;
 
@@ -69,15 +76,29 @@ public class PlaceBookInteractionHandler
 		this.saveContext = saveContext;
 		this.factory = factory;
 
-		final SimplePanel innerPanel = new SimplePanel();
-		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());
-
 		dropMenu.setStyleName(Resources.INSTANCE.style().dropMenu());
 
+		final SimplePanel innerPanel = new SimplePanel();
+		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());		
 		insert.add(innerPanel);
 		insert.setStyleName(Resources.INSTANCE.style().insert());
 	}
 
+	public boolean canAdd(PlaceBookItem addItem)
+	{
+		if(addItem.is(ItemType.GPS))
+		{
+			for(PlaceBookItemFrame item: canvas.getItems())
+			{
+				if(item.getItem().is(ItemType.GPS))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	public PlaceBookCanvas getCanvas()
 	{
 		return canvas;
@@ -116,7 +137,7 @@ public class PlaceBookInteractionHandler
 		if (item == null) { return; }
 		if (dragState == DragState.waiting)
 		{
-			canvas.add(insert);
+			//canvas.add(insert);
 			dragState = DragState.dragInit;
 			this.dragItem = item;
 			originx = event.getClientX();
@@ -254,7 +275,7 @@ public class PlaceBookInteractionHandler
 			}
 			else
 			{
-				insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+				insert.removeFromParent();
 			}
 		}
 		else if (dragState == DragState.resizing)
@@ -278,7 +299,7 @@ public class PlaceBookInteractionHandler
 			GWT.log("Drag End");
 			// TODO Move to dragFrame detach
 			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
-			insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+			insert.removeFromParent();
 
 			final PlaceBookPanel newPanel = getPanel(event);
 			if (oldPanel != newPanel && oldPanel != null)
@@ -291,9 +312,9 @@ public class PlaceBookInteractionHandler
 			{
 				GWT.log("Add item");
 				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
-						.getOffsetHeight());
+								.getOffsetHeight());				
 				final PlaceBookItemFrame frame = factory.createFrame();
-				frame.setItemWidget(dragItem);
+				frame.setItemWidget(dragItem);				
 				canvas.add(frame);
 				newPanel.reflow();
 				saveContext.markChanged();

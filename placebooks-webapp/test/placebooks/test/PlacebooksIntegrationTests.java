@@ -7,16 +7,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.Vector;
-
 import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mortbay.log.Log;
 import org.w3c.dom.Node;
 
+import placebooks.client.PlaceBookService;
+import placebooks.model.PlaceBook;
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
@@ -28,18 +27,15 @@ import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.TextItem;
 import placebooks.model.User;
 
 /**
  * @author pszmp
  *
  */
-public class PlacebooksIntegrationTests
+public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 {
-//	private static final Logger log = 
-//		Logger.getLogger(PlacebooksIntegrationTests.class.getName());
-
-	final EntityManager pm = EMFSingleton.getEntityManager();
 
 	/**
 	 * @throws java.lang.Exception
@@ -60,21 +56,9 @@ public class PlacebooksIntegrationTests
 	}
 
 	@Test
-	public void testUserLogin()
-	{
-		placebooks.model.User testUser1 = UserManager.getUser(pm, "everytrail_test@live.co.uk");
-		assertEquals("everytrail_test@live.co.uk", testUser1.getEmail());
-		assertEquals("Everytrail Test User", testUser1.getName());
-
-		placebooks.model.User testUser2 = UserManager.getUser(pm, "placebooks.test@gmail.com");
-		assertEquals("placebooks.test@gmail.com", testUser2.getEmail());
-		assertEquals("Youtube Test User", testUser2.getName());
-	}
-
-	@Test
 	public void testToImageItemFromEverytrail()
 	{
-		User testUser = UserManager.getUser(pm, "everytrail_test@live.co.uk");
+		User testUser = logInPlacebooksTestUser();
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
 		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
@@ -106,7 +90,7 @@ public class PlacebooksIntegrationTests
 	public void testToGPSTraceItem()
 	{
 		//Log user in after getting details from db
-		User testUser = UserManager.getUser(pm, "everytrail_test@live.co.uk");
+		User testUser = UserManager.getUser(em, "everytrail_test@live.co.uk");
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
 		// Check login is ok then use the userid 
@@ -124,7 +108,7 @@ public class PlacebooksIntegrationTests
 
 		Node trackToUse = tracksResponse.getTracks().lastElement();
 		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
-		/*GPSTraceItem saved = (GPSTraceItem)*/ gpsTrace.saveUpdatedItem();
+		gpsTrace.saveUpdatedItem();
 	}
 
 	/*	@Test
@@ -143,9 +127,56 @@ public class PlacebooksIntegrationTests
 	@Test
 	public void testGetEverytrailData() throws Exception
 	{
-		User testUser = UserManager.getUser(pm, "everytrail_test@live.co.uk");
+		//User testUser = logInPlacebooksTestUser();
 		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
 		pacd.getEverytrailData();
 	}
 
+	@Test void testCreatePlaceBookWithItems() throws Exception
+	{
+		User u = logInPlacebooksTestUser();
+		PlaceBook p = new PlaceBook();
+		p.setOwner(u);
+		TextItem t = new TextItem();
+		t.setOwner(u);
+		t.setText("Test item text");
+		p.addItem(t);
+		em.persist(p);
+	}
+	
+	@Test void testEveryTrailTrackPackage() throws Exception
+	{
+		//Log user in after getting details from db
+		User testUser = logInPlacebooksTestUser();
+		LoginDetails details = testUser.getLoginDetails("Everytrail");		
+
+		// Check login is ok then use the userid 
+		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		assertEquals("success", loginResponse.getStatus());
+		assertEquals(details.getUserID(), loginResponse.getValue());
+
+
+
+		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks("1017230");
+		assertEquals("success", tracksResponse.getStatus());
+		assertEquals(2, tracksResponse.getTracks().size());
+
+		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null);
+
+		Node trackToUse = tracksResponse.getTracks().lastElement();
+		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
+		gpsTrace.saveUpdatedItem();
+		
+		User u = logInPlacebooksTestUser();
+		PlaceBook p = new PlaceBook();
+		p.setOwner(u);
+		TextItem t = new TextItem();
+		t.setOwner(u);
+		t.setText("Test item text");
+		p.addItem(t);
+		em.persist(p);
+		p.addItem(gpsTrace);
+		em.persist(p);
+	}
+	
 }

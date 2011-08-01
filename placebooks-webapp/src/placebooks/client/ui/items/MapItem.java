@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	private static final String MARKER_URL = GWT.getHostPageBaseURL() + "images/marker.png";
+	private static final String MARKER_URL = GWT.getHostPageBaseURL() + "images/Marker_025.png";
 
 	private final static String POINT_PREFIX = "POINT (";
 
@@ -96,8 +96,9 @@ public class MapItem extends PlaceBookItemWidget
 																				geometry.length() - 1));
 						final Marker marker = Marker.create(MARKER_URL,
 															lonlat.cloneLonLat().transform(map.getDisplayProjection(),
-																							map.getProjection()), 32,
-															32);
+																							map.getProjection()), 25,
+															25);
+						marker.getIcon().getImageDiv().setTitle(item.getMetadata("title", item.getKey()));
 						markerLayer.addMarker(marker);
 						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
 					}
