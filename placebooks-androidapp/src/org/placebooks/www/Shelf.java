@@ -205,7 +205,7 @@ public class Shelf extends ListActivity {
 		        try{
 		        	
 		        	JSONArray entries = json.getJSONArray("entries");
-		        	JSONObject u = json.getJSONObject("user");
+		        	//JSONObject jObject = json.getJSONObject("user");
 		        	
 			        for(int i=0;i<entries.length();i++){						
 					

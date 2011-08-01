@@ -41,7 +41,9 @@ import android.content.Intent;
 
 
 public class MapImageViewer extends Activity {
-	
+    
+	//private final CustomApp appState1 = ((CustomApp)getApplicationContext());
+
 	private String pbkey;
 	private ArrayList<String> alPbkey = new ArrayList<String>();
 	
@@ -106,10 +108,11 @@ public class MapImageViewer extends Activity {
 	
 	//ArrayLists for geo-tagged media
 	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
-	private ArrayList<Coordinate[]> customAppGeoImageCoordinates = new ArrayList<Coordinate[]>();
-	private ArrayList<Coordinate[]> alGeoImageCoordinates = new ArrayList<Coordinate[]>();
-	private double[] arrGeoImageLat;
-	private double[] arrGeoImageLon;
+	//private ArrayList<Coordinate[]> customAppGeoImageCoordinates = new ArrayList<Coordinate[]>();
+	//private ArrayList<Coordinate[]> alGeoImageCoordinates = new ArrayList<Coordinate[]>();
+	//private double[] arrGeoImageLat;
+	//private double[] arrGeoImageLon;
+	private ArrayList<Coordinate> alGeoImageCoordinate = new ArrayList<Coordinate>();
 	private ArrayList<Double> alGeoImageLat = new ArrayList<Double>();
 	private ArrayList<Double> alGeoImageLon = new ArrayList<Double>();
 	
@@ -147,19 +150,22 @@ public class MapImageViewer extends Activity {
 	        if(intent != null) arrGpsLat = intent.getDoubleArrayExtra("arrLat");
 	        if(intent != null) arrGpsLon = intent.getDoubleArrayExtra("arrLon");
 	        //geotagged media
-	       // if(intent != null) alGeoImageFilename = intent.getStringArrayListExtra("alGeoImageFilename");
-	        if(intent != null) pbkey = intent.getStringExtra("pbkey");
+	        if(intent != null) alGeoImageFilename = intent.getStringArrayListExtra("alGeoImageFilename");
+	        
+	        int len = intent.getIntExtra("coord_size", 0);
+	        for(int i = 0; i < len; i++)
+	        {
+	            double x = intent.getDoubleExtra("coord_x_" + i, 0.0);
+	            double y = intent.getDoubleExtra("coord_y_" + i, 0.0);
+	            //alGeoImageCoordinate.add(new Coordinate(x, y));
+	            alGeoImageLat.add(y);
+	            alGeoImageLon.add(x);
+	        }
 	   }
 	   catch(Exception e){
 		   e.printStackTrace();
 	   }
-	        
-	        CustomApp appState = ((CustomApp)getApplicationContext());
-	        alGeoImageFilename = appState.getAlGeoImageFilename();
-	        customAppGeoImageCoordinates = appState.getAlGeoImageCoordinates();
-	        alPbkey = appState.getAlPlacebookKey();
-	        
-
+	   		
 	        
 	        System.out.println("x= " + c_x1 + " y= " + c_y1);
 	        System.out.println("x= " + c_x2 + " y= " + c_y2);
@@ -267,37 +273,9 @@ public class MapImageViewer extends Activity {
 			    
 			    
 			    //if there are geotagged images
-		        if(customAppGeoImageCoordinates != null && alPbkey != null){
-		        
-				        for(int i=0; i<alPbkey.size(); i++){
-				        	if(alPbkey.get(i).equalsIgnoreCase(pbkey)){
-				        		//so if the coordinate is in this book we store it in our arraylist
-				        		alGeoImageCoordinates.add(customAppGeoImageCoordinates.get(i));
-				        	}
-				        }
-				        System.out.println("al geo image coordinates = " +alGeoImageCoordinates);
-				        
-				        arrGeoImageLat = new double[alGeoImageCoordinates.size()];
-				        arrGeoImageLon = new double[alGeoImageCoordinates.size()];
-				        
-				        //now we iterate through our arraylist of geotagged media coordinates and pull out the lat/lons
-				        for(int i=0; i<alGeoImageCoordinates.size(); i++){
-				        	Coordinate[] clat = alGeoImageCoordinates.get(i);
-				        	double lon = clat[0].x;
-				        	double lat = clat[0].y;
-				        	arrGeoImageLat[i] = lat;
-				        	arrGeoImageLon[i] = lon;
-				        }
-				        //finally convert the arrays to arraylists
-				        for (int i=0; i<arrGeoImageLat.length; i++){
-				        	alGeoImageLat.add(arrGeoImageLat[i]);
-				        }
-				        for (int i=0; i<arrGeoImageLon.length; i++){
-				        	alGeoImageLon.add(arrGeoImageLon[i]);
-				        }
-				        
+		        if(alGeoImageFilename != null && alGeoImageLat != null && alGeoImageLon != null){
+				        //call the calculateMediaPixelCoordinates() method to convert the lat/lons to pixel values
 					    calculateMediaPixelCoordinates();
-
 			    
 			        //now add the geotagged media to the view
 					if(alGeoImageLatPx != null && alGeoImageLonPx != null && alGeoImageFilename != null){
@@ -305,9 +283,11 @@ public class MapImageViewer extends Activity {
 							for(int i=0; i<alGeoImageFilename.size(); i++){
 								final int j = i;
 								
-								 Button b = new Button(this);
+								 ImageButton b = new ImageButton(this);
+								 Bitmap bmCam = BitmapFactory.decodeResource(getResources(),R.drawable.camera_icon);
+								 b.setImageBitmap(bmCam);
 								 RelativeLayout rl2 = new RelativeLayout(this);
-								 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(25, 25); //button size
+								 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(35, 25); //button size
 						         layoutParams.setMargins(alGeoImageLonPx.get(i), alGeoImageLatPx.get(i), 0, 50);
 						         
 								 rl.addView(b, layoutParams);
@@ -551,6 +531,15 @@ public class MapImageViewer extends Activity {
 		      imageWidth = 0;
 		      imagePixels = 0;
  
+		      alGpsLat = null;
+		      alGpsLon = null;
+		      alGeoImageFilename = null;
+		      alGeoImageCoordinate = null;
+		      alGeoImageLat = null;
+		      alGeoImageLon = null;
+		      alGeoImageLatPx = null;
+		      alGeoImageLonPx = null;
+		      
 	          System.gc();	//call the garbage collector
 	          finish();	//close the activity
 	         

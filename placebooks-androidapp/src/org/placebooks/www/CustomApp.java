@@ -30,11 +30,26 @@ public class CustomApp extends Application {
 	 public void setAlPlacebookKey(String key){
 		 this.alPlacebookKey.add(key);
 	 }
+	 public void destroyAlPlacebookKey(){
+		 this.alPlacebookKey = null;
+		 this.alPlacebookKey.clear();
+	 }
+	 public boolean checkPlacebookKey(String key){
+		 if(this.alPlacebookKey.contains(key))
+			 return true;
+		 else
+			 return false;
+	 }
+	 
 	 public ArrayList<String> getAlGeoImageFilename(){
 		 return alGeoImageFilename;
 	 }
 	 public void setAlGeoImageFilename(String filename){
 		 this.alGeoImageFilename.add(filename);
+	 }
+	 public void destroyAlGeoImageFilename(){
+		 this.alGeoImageFilename = null;
+		 this.alGeoImageFilename.clear();
 	 }
 	 
 	 public ArrayList<Coordinate[]> getAlGeoImageCoordinates(){
@@ -42,6 +57,10 @@ public class CustomApp extends Application {
 	 }
 	 public void setAlGeoImageCoordinates(Coordinate[] co){
 		 this.alGeoImageCoordinates.add(co);
+	 }
+	 public void destroyAlGeoImageCoordinates(){
+		 this.alGeoImageCoordinates = null;
+		 this.alGeoImageCoordinates.clear();
 	 }
 	 
 

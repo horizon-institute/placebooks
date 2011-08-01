@@ -84,7 +84,6 @@ import org.xml.sax.InputSource;
 //Implement a Listener (added the interface to the base class)
 public class Reader extends Activity { // implements Parcelable {
 	
-	
 	//TextView to display error if placebook doesn't display properly	
 	private TextView orgXmlTxt;		
 	
@@ -122,19 +121,11 @@ public class Reader extends Activity { // implements Parcelable {
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
     private String packagePath;
 	
-/*	
-	private ArrayList<Point> page1 = new ArrayList<Point>();
-	private ArrayList<Point> page2 = new ArrayList<Point>();
-	private ArrayList<Point> page3 = new ArrayList<Point>();
-	private ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
-	private ArrayList<Point> page5 = new ArrayList<Point>();
-	private ArrayList<Point> page6 = new ArrayList<Point>();
-*/	
 	
 	//Image Variables
 	private ImageView imgView;
-//	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
-
+	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
+	private ArrayList<Coordinate> alGeoImageCoordinate = new ArrayList<Coordinate>();
 	
 	
 	//Video Variables
@@ -161,9 +152,7 @@ public class Reader extends Activity { // implements Parcelable {
 	private double c_y4;
 	private double c_x5;
 	private double c_y5;
-	//public Coordinate[] arrMapCoordinates;
-	//private boolean hasGpx = false;
-	//private StringBuilder mapGpx;
+
 	private ArrayList<Double> gpsLatCoordinates = new ArrayList<Double>();
 	private ArrayList<Double> gpsLonCoordinates = new ArrayList<Double>();
 	private double[] arrGpsLatCoordinates;
@@ -728,7 +717,7 @@ public class Reader extends Activity { // implements Parcelable {
 		             @Override
 		             public void onClick(View v) {
 		            	 
-		            	Reader r = new Reader(); 
+		      //      	Reader r = new Reader(); 
 		            	 
 		            	 Intent intent = new Intent();
 	     				 	overridePendingTransition(0, 0);
@@ -757,8 +746,16 @@ public class Reader extends Activity { // implements Parcelable {
        	        	 intent.putExtra("arrLon", arrGpsLonCoordinates);
        	        	 
        	        	 //pass the geotagged media
-       	        	 //intent.putExtra("alGeoImageFilename", alGeoImageFilename);
-       	        	 intent.putExtra("pbkey", pbkey);
+       	        	 intent.putExtra("alGeoImageFilename", alGeoImageFilename);
+       	        	 int numCoords = alGeoImageCoordinate.size();
+	       	         intent.putExtra("coord_size", numCoords);
+	       	         for (int i = 0; i < numCoords; i++)
+	       	         {
+	       	             Coordinate coord = alGeoImageCoordinate.get(i);
+	       	             intent.putExtra("coord_x_" + i, coord.x);
+	       	             intent.putExtra("coord_y_" + i, coord.y);
+	       	         }
+       	        	 
 
 	     		     overridePendingTransition(0, 0);
        	        	 startActivity(intent);	
@@ -811,7 +808,6 @@ public class Reader extends Activity { // implements Parcelable {
 		 
 		         });
 		    	
- 
 		    }
 		    
 				
@@ -837,12 +833,7 @@ public class Reader extends Activity { // implements Parcelable {
 				 * try and catch because it might not exist..etc
 				 * The pbkey for this will be inserting upon a user clicking a placebook..depending on which one is clicked, it's corresponding placebook will get fetched
 				 */
-			//	FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/packages/home/" + username + "/placebooks-data/packages/" + key + "/config.xml");    /* 0001/config.xml");  //text.txt*/
 				FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/" + packagePath + "/config.xml");
-				//FileInputStream in = new FileInputStream("/sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/64/config.xml");
-
-			//	FileInputStream in = new FileInputStream("/sdcard/PlaceBooks/unzipped/stuart/placebook-data/packages/pack123/config.xml"); 
-
 				xr.parse(new InputSource(in));
 				
 			//	ArrayList<Book> parsedExampleDataSet = myExampleHandler.getParsedData();
@@ -861,18 +852,7 @@ public class Reader extends Activity { // implements Parcelable {
 				}
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
 				pbtimestamp = book.getTimestamp();	//the book's DOB
-				//CustomApp customApp = (CustomApp)getApplicationContext();
-				//customApp.setPackagePath("/sdcard/placebooks/unzipped" + packagePath + "/");
-				System.out.println("PBKEY = " +pbkey);
 				
-				/*
-				page1 = (ArrayList<Point>)book.getPage1();
-				page2 = (ArrayList<Point>)book.getPage2();
-				page3 = (ArrayList<Point>)book.getPage3();
-				page4 = (ArrayList<Point>)book.getPage4();
-				page5 = (ArrayList<Point>)book.getPage5();
-				page6 = (ArrayList<Point>)book.getPage6();
-				*/
 				
 			    //Pass the data into the data ArrayLists
 				for(Point item: book.getPage1()) {
@@ -887,20 +867,20 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll);
 					}
 					else if (type.equalsIgnoreCase("Image")){
-						CustomApp customApp = (CustomApp)getApplicationContext();
-
-						if(geomCo!=null && data!=null){
-							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
-
+						
+							if(geomCo!=null && data!=null){
+								try{
+									alGeoImageFilename.add(data);
+									for (int i=0; i<geomCo.length; i++){
+										alGeoImageCoordinate.add(geomCo[i]);
+									}
+	
+								}
+								catch(Exception e){
+									e.printStackTrace();
+								}
 							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-						}
+							
 						displayImage(data.toString(), ll);
 					}
 					else if (type.equalsIgnoreCase("Video")){
@@ -948,15 +928,14 @@ public class Reader extends Activity { // implements Parcelable {
 						displayText(data, ll2);
 					}
 					else if (type.equalsIgnoreCase("Image")){
-						CustomApp customApp = (CustomApp)getApplicationContext();
 
 						if(geomCo!=null && data!=null){
 							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
-
+								alGeoImageFilename.add(data);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoImageCoordinate.add(geomCo[i]);
+								}
+								
 							}
 							catch(Exception e){
 								e.printStackTrace();
@@ -996,14 +975,12 @@ public class Reader extends Activity { // implements Parcelable {
 					}
 					else if (type.equalsIgnoreCase("Image")){
 						
-						CustomApp customApp = (CustomApp)getApplicationContext();
-
 						if(geomCo!=null && data!=null){
 							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
+								alGeoImageFilename.add(data);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoImageCoordinate.add(geomCo[i]);
+								}
 
 							}
 							catch(Exception e){
@@ -1045,14 +1022,12 @@ public class Reader extends Activity { // implements Parcelable {
 					}
 					else if (type.equalsIgnoreCase("Image")){
 						
-						CustomApp customApp = (CustomApp)getApplicationContext();
-
 						if(geomCo!=null && data!=null){
 							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
+								alGeoImageFilename.add(data);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoImageCoordinate.add(geomCo[i]);
+								}
 
 							}
 							catch(Exception e){
@@ -1094,14 +1069,12 @@ public class Reader extends Activity { // implements Parcelable {
 					}
 					else if (type.equalsIgnoreCase("Image")){
 						
-						CustomApp customApp = (CustomApp)getApplicationContext();
-
 						if(geomCo!=null && data!=null){
 							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
+								alGeoImageFilename.add(data);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoImageCoordinate.add(geomCo[i]);
+								}
 
 							}
 							catch(Exception e){
@@ -1142,14 +1115,12 @@ public class Reader extends Activity { // implements Parcelable {
 					}
 					else if (type.equalsIgnoreCase("Image")){
 						
-						CustomApp customApp = (CustomApp)getApplicationContext();
-
 						if(geomCo!=null && data!=null){
 							try{
-								//alGeoImageFilename.add(data);
-								customApp.setAlGeoImageFilename(data);
-								customApp.setAlGeoImageCoordinates(geomCo);
-								customApp.setAlPlacebookKey(pbkey);
+								alGeoImageFilename.add(data);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoImageCoordinate.add(geomCo[i]);
+								}
 
 							}
 							catch(Exception e){
@@ -1283,7 +1254,7 @@ public class Reader extends Activity { // implements Parcelable {
 			    		audio_included = false;
 			    		
 			    	}
-			    				    	
+		    	
 			    }
 			 
 			 
