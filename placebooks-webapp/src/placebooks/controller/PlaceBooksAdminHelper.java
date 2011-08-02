@@ -99,15 +99,49 @@ public final class PlaceBooksAdminHelper
 		{
 			try
 			{
-				final TileHelper.MapMetadata md = TileHelper.getMap(p);
-				p.setGeometry(md.getBoundingBox());
+				p.calcBoundary();
+				final int timeout = 
+					Integer.parseInt(
+						PropertiesSingleton
+							.get(PlaceBooksAdminHelper.class.getClassLoader())
+							.getProperty(
+								PropertiesSingleton.IDEN_WGET_TIMEOUT, 
+								"20000"
+							)
+					);
+
 				em.getTransaction().begin();
-				MapImageItem mii = new MapImageItem(null, null, null, null);
-				p.addItem(mii);
-				mii.setPlaceBook(p);
-				mii.setOwner(p.getOwner());
-				mii.setGeometry(p.getGeometry());
-				mii.setPath(md.getFile().getPath());
+				/*final Runnable r = new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{*/
+						final TileHelper.MapMetadata md = 
+							TileHelper.getMap(p);
+						p.setGeometry(md.getBoundingBox());
+						MapImageItem mii = 
+							new MapImageItem(null, null, null, null);
+						p.addItem(mii);
+						mii.setPlaceBook(p);
+						mii.setOwner(p.getOwner());
+						mii.setGeometry(p.getGeometry());
+						mii.setPath(md.getFile().getPath());
+						/*}
+						catch (final Throwable e)
+						{
+							log.error(e.getMessage(), e);
+						}
+					}
+				};
+				final Thread t = new Thread(r);
+				t.start();
+				log.info("Waiting for process... allowing " + timeout
+						   + " millis");
+				Thread.sleep(timeout);
+				t.destroy();*/
+
 				em.getTransaction().commit();
 			}		
 			catch (final Throwable e)
@@ -217,12 +251,13 @@ public final class PlaceBooksAdminHelper
 		try
 		{
 
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			final Document config = builder.newDocument();
 
 			final Element root = p.createConfigurationRoot(config);
 			config.appendChild(root);
-
+			log.info("Writing item config data");
 			// Note: ImageItem, VideoItem and AudioItem write their data to a
 			// package directly as well as creating XML configuration
 			for (final PlaceBookItem item : p.getItems())
@@ -489,7 +524,7 @@ public final class PlaceBooksAdminHelper
 
 		final String webBundlePath = wbi.generateWebBundlePath();
 
-		wgetCmd.append("-P " + webBundlePath + " " 
+		wgetCmd.append(" -P " + webBundlePath + " " 
 					   + wbi.getSourceURL().toString());
 
 		log.info("wgetCmd=" + wgetCmd.toString());
@@ -498,18 +533,21 @@ public final class PlaceBooksAdminHelper
 			new File(webBundlePath).mkdirs())
 		{
 			final int timeout = 
-				Integer.parseInt(PropertiesSingleton
-									.get(PlaceBooksAdminHelper.class.getClassLoader())
-									.getProperty(
-										PropertiesSingleton.IDEN_WGET_TIMEOUT, 
-										"10000")
+				Integer.parseInt(
+					PropertiesSingleton
+						.get(PlaceBooksAdminHelper.class.getClassLoader())
+						.getProperty(
+							PropertiesSingleton.IDEN_WGET_TIMEOUT, 
+							"10000"
+						)
 				);
 			final ExecTimer t = new ExecTimer(timeout, wgetCmd.toString());
 			t.start();
 			final String urlStr = wbi.getSourceURL().toString();
 			final int protocol = urlStr.indexOf("://");
 			wbi.setWebBundlePath(webBundlePath);
-			wbi.setWebBundleName(urlStr.substring(protocol + 3, urlStr.length()));
+			wbi.setWebBundleName(urlStr.substring(protocol + 3, 
+												  urlStr.length()));
 			log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
 
 			return true;

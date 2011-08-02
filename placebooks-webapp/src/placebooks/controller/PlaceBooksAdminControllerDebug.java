@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -26,15 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import placebooks.model.AudioItem;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTracksResponse;
-import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
@@ -46,6 +38,10 @@ import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
 import placebooks.utils.InitializeDatabase;
+
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTripsResponse;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -488,97 +484,6 @@ public class PlaceBooksAdminControllerDebug
 
 	}
 
-	@RequestMapping(value = "/admin/everytrail")
-	public void getEverytrailData() throws Exception
-	{
-		EntityManager entityManager = EMFSingleton.getEntityManager();
-		User testUser = UserManager.getCurrentUser(entityManager);
-		LoginDetails details = testUser.getLoginDetails(EverytrailHelper.SERVICE_NAME);		
-		if(details == null)
-		{
-			return;
-		}
-		
-		EverytrailLoginResponse loginResponse = 
-			EverytrailHelper.UserLogin(details.getUsername(), 
-					details.getPassword());
-
-		if(loginResponse.getStatus().equals("error"))
-		{
-			throw new Exception("Everytrail Login Failed");
-		}
-		
-		entityManager.getTransaction().begin();
-		// Save user id
-		details.setUserID(loginResponse.getValue());
-		entityManager.getTransaction().commit();		
-		EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
-
-		for (Node trip : trips.getTrips())
-		{
-			// Get trip ID
-			final NamedNodeMap tripAttr = trip.getAttributes();
-			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
-			
-			//Get other trip attributes...
-			String tripName = "";
-			String tripGPX = "";
-			String tripKML = "";
-			//Then look at the properties in the child nodes to get url, title, description, etc.
-			final NodeList tripProperties = trip.getChildNodes();
-			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
-			{
-				final Node item = tripProperties.item(propertyIndex);
-				final String itemName = item.getNodeName();
-				//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-				if (itemName.equals("name"))
-				{
-					log.debug("Trip name is: " + item.getTextContent());
-					tripName = item.getTextContent();
-				}
-				if (itemName.equals("gpx"))
-				{
-					log.debug("Trip GPX is: " + item.getTextContent());
-					tripGPX = item.getTextContent();
-				}
-				if (itemName.equals("kml"))
-				{
-					log.debug("Trip KML is: " + item.getTextContent());
-					tripKML = item.getTextContent();
-				}
-			}
-			log.debug("Getting tracks for trip: " + tripId);
-			EverytrailTracksResponse tracks = 
-				EverytrailHelper.Tracks(tripId, details.getUsername(), 
-						details.getPassword());
-			for (Node track : tracks.getTracks())
-			{
-
-				GPSTraceItem gpsItem = new GPSTraceItem(testUser, null, "");
-				ItemFactory.toGPSTraceItem(testUser, track, gpsItem, tripId, tripName);
-				try
-				{
-					gpsItem.readTrace(CommunicationHelper.getConnection(new URL(tripGPX)).getInputStream());
-				}
-				catch(Exception e)
-				{
-					log.info(tripGPX + ": " + e.getMessage(), e);
-				}
-				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
-			}
-			
-			EverytrailPicturesResponse picturesResponse = 	
-				EverytrailHelper.TripPictures(tripId, details.getUsername(), details.getPassword(), tripName);
-
-			HashMap<String, Node> pictures = picturesResponse.getPicturesMap();		
-			for (Node picture : pictures.values())
-			{
-				ImageItem imageItem = new ImageItem(testUser, null, null, null);
-				ItemFactory.toImageItem(testUser, picture, imageItem, tripId, tripName);
-				imageItem = (ImageItem) imageItem.saveUpdatedItem();
-			}	
-		}
-	}
 
 	@RequestMapping(value = "/admin/debug/print_placebooks", 
 			method = RequestMethod.GET)

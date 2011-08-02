@@ -195,11 +195,11 @@ public class PlaceBook
 			try
 			{
 				Geometry empty = new WKTReader().read(
-									"POLYGON ((" + minLat + " " + minLon + ", "
-												 + minLat + " " + maxLon + ", "
-												 + maxLat + " " + maxLon + ", "
-												 + maxLat + " " + minLon + ", "
-												 + minLat + " " + minLon + "))");
+								"POLYGON ((" + minLat + " " + minLon + ", "
+											 + minLat + " " + maxLon + ", "
+											 + maxLat + " " + maxLon + ", "
+											 + maxLat + " " + minLon + ", "
+											 + minLat + " " + minLon + "))");
 				log.info("empty=" + empty);
 				if (bounds != null)
 					bounds = empty.union(bounds);
@@ -213,7 +213,7 @@ public class PlaceBook
 
 		}
 
-		if(bounds != null)
+		if (bounds != null)
 		{
 			geom = bounds.getBoundary();
 		}
@@ -233,6 +233,7 @@ public class PlaceBook
 
 		if (getTimestamp() != null)
 		{
+			log.info("Setting timestamp=" + this.getTimestamp().toString());
 			final Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(
 				config.createTextNode(this.getTimestamp().toString())
@@ -242,6 +243,7 @@ public class PlaceBook
 
 		if (getGeometry() != null)
 		{
+			log.info("Setting geometry=" + this.getGeometry().toText());
 			final Element geometry = config.createElement("geometry");
 			geometry.appendChild(
 				config.createTextNode(this.getGeometry().toText())
@@ -251,10 +253,13 @@ public class PlaceBook
 
 		if (!metadata.isEmpty())
 		{
+			log.info("Writing metadata to config");
 			final Element sElem = config.createElement("metadata");
-
+			log.info("metadata set size = " + metadata.size());
 			for (final Map.Entry<String, String> e : metadata.entrySet())
 			{
+				log.info("Metadata element key, value=" + e.getKey().toString()
+						 + ", " + e.getValue().toString());
 				final Element elem = 	
 					config.createElement(e.getKey().toString());
 				elem.appendChild(config.createTextNode(

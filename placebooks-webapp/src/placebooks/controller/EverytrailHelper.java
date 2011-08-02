@@ -240,8 +240,8 @@ public class EverytrailHelper
 				try
 				{
 					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double
-							.parseDouble(lat))));
+					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
+							.parseDouble(lon))));
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					imageItem.setGeometry(newGeom);
 				}
@@ -282,10 +282,10 @@ public class EverytrailHelper
 				}
 			}
 		}
-		catch (final Exception ex)
+		catch (final Exception e)
 		{
-			log.error("Problem checking Everytrail response: " + ex.getMessage());
-			log.debug(ex.getStackTrace());
+			log.error("Problem checking Everytrail response: " + e.toString());
+			log.debug(e.toString());
 		}
 		return new EverytrailResponseStatusData(status, value);
 	}
@@ -457,7 +457,7 @@ public class EverytrailHelper
 		final String postResponse = getPostResponseWithParams("trip/tracks", params);
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etTripTracksResponse", doc);
-
+		log.info("Tracks called parseResponseStatus, result=" + responseStatus.getStatus() + "," + responseStatus.getValue());
 		final Vector<Node> tracksList = new Vector<Node>();
 		if (responseStatus.getStatus().equals("success"))
 		{
@@ -539,6 +539,9 @@ public class EverytrailHelper
 			final String tripResponse = getPostResponseWithParams("trip/", params);
 			final Document tripDoc = parseResponseToXml(tripResponse);
 			final EverytrailResponseStatusData tripResultStatus = parseResponseStatus("etTripPicturesResponse", tripDoc);
+			log.info("TripPictures called parseResponseStatus, result="
+					 + tripResultStatus.getStatus() + ","
+					 + tripResultStatus.getValue());
 			if (tripResultStatus.getStatus().equals("success"))
 			{
 				final NodeList nameNodes = tripDoc.getElementsByTagName("name");;
@@ -566,6 +569,10 @@ public class EverytrailHelper
 		final String postResponse = getPostResponseWithParams("trip/pictures", params);
 		final Document doc = parseResponseToXml(postResponse);
 		resultStatus = parseResponseStatus("etTripPicturesResponse", doc);
+		log.info("TripPictures called (2) parseResponseStatus, result="
+				 + resultStatus.getStatus() + ","
+				 + resultStatus.getValue());
+
 		if (resultStatus.getStatus().equals("success"))
 		{
 			final NodeList pictureNodes = doc.getElementsByTagName("picture");;
@@ -716,6 +723,9 @@ public class EverytrailHelper
 		final String postResponse = getPostResponseWithParams("user/trips", params);
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etUserTripsResponse", doc);
+		log.info("Trips called parseResponseStatus, result="
+					 + responseStatus.getStatus() + ","
+					 + responseStatus.getValue());
 
 		final Vector<Node> tripsList = new Vector<Node>();
 		if (responseStatus.getStatus().equals("success"))
@@ -904,8 +914,12 @@ public class EverytrailHelper
 		final Document doc = parseResponseToXml(postResponse);
 		// Parse the XML response and construct the response data to return
 		log.debug(postResponse);
-		final EverytrailResponseStatusData responseStatus = EverytrailHelper
-		.parseResponseStatus("etUserLoginResponse", doc);
+		final EverytrailResponseStatusData responseStatus = 
+			EverytrailHelper.parseResponseStatus("etUserLoginResponse", doc);
+		log.info("UserLogin called parseResponseStatus, result="
+				 + responseStatus.getStatus() + ","
+				 + responseStatus.getValue());
+
 		loginStatus = responseStatus.getStatus();
 		loginStatusValue = responseStatus.getValue();
 		log.debug(responseStatus.getStatus());

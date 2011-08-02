@@ -148,6 +148,7 @@ public abstract class MediaItem extends PlaceBookItem
 				pm.getTransaction().rollback();
 				log.error("Rolling current delete all transaction back");
 			}
+			pm.close();
 		}
 		return returnItem;
 	}

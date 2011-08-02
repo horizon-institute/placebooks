@@ -302,7 +302,10 @@ public class GPSTraceItem extends PlaceBookItem
 
 
 		}
-		setGeometry(bounds.getBoundary());
+		if (bounds != null)
+			setGeometry(bounds.getBoundary());
+		else
+			log.error("Bounds was null");
 		
 		try
 		{

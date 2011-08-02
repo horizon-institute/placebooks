@@ -147,6 +147,11 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	public void addMetadataEntry(final String key, final String value)
 	{
 		metadata.put(key, value);
+	}
+
+	public void addMetadataEntryIndexed(final String key, final String value)
+	{
+		addMetadataEntry(key, value);
 		index.addAll(SearchHelper.getIndex(value));
 	}
 
@@ -342,8 +347,9 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 			if (em.getTransaction().isActive())
 			{
 				em.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
+				log.error("Rolling current saveUpdatedItem transaction back");
 			}
+			em.close();
 		}
 		return returnItem;
 	}
