@@ -62,8 +62,9 @@ public class ItemFactory
 		{
 			item = (IUpdateableExternal) q.getSingleResult();
 		}
-		catch(NoResultException ex)
+		catch (final NoResultException ex)
 		{
+			log.error(ex.toString());
 			item = null;
 		}
 		return item;
@@ -78,11 +79,10 @@ public class ItemFactory
 	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id, String tripName)
 	{
 		trackItem.toString();
-		log.debug(trackItem.getTextContent());
+		//log.debug(trackItem.getTextContent());
 
 		String track_id = "";
 		String track_name = "";
-		Geometry trackGeom = null;
 		
 		if(trip_id!=null)
 		{
@@ -91,7 +91,7 @@ public class ItemFactory
 
 		if(tripName!=null)
 		{
-			gpsItem.addMetadataEntry("trip_name", tripName)	;	
+			gpsItem.addMetadataEntryIndexed("trip_name", tripName)	;	
 		}
 
 		
@@ -125,77 +125,10 @@ public class ItemFactory
 				track_name = item.getTextContent();
 				log.debug("Track name is: " + track_name);
 			}
-			if (itemName.equals("trk"))
-			{
-				//Convert this into geometry
-				final NodeList trkProperties = item.getChildNodes();
-				for (int trkPropertyIndex = 0; trkPropertyIndex < trkProperties.getLength(); trkPropertyIndex++)
-				{
-					final Node trkItem = trkProperties.item(trkPropertyIndex);
-					final String trkItemName = trkItem.getNodeName();
-					//log.debug("Inspecting trk element property: " + trkItemName);
-
-					if (trkItemName.equals("name"))
-					{
-						log.debug("Processing track name " + trkItem.getTextContent());
-					}
-					if (trkItemName.equals("trkseg"))
-					{
-						//log.debug("Processing track segment " + trkItem.getTextContent());
-						ArrayList<Coordinate> points = new ArrayList<Coordinate>(); 
-						final NodeList trkSegProperties = trkItem.getChildNodes();
-						for (int trkSegPropertyIndex = 0; trkSegPropertyIndex < trkSegProperties.getLength(); trkSegPropertyIndex++)
-						{
-							final Node trkSegItem = trkSegProperties.item(trkSegPropertyIndex);
-							final String trkSegItemName = trkSegItem.getNodeName();
-
-							if (trkSegItemName.equals("trkpt"))
-							{
-								String lat = null;
-								String lon = null;
-								final NamedNodeMap locationAttributes = trkSegItem.getAttributes();
-								for (int locAttributeIndex = 0; locAttributeIndex < locationAttributes.getLength(); locAttributeIndex++)
-								{
-									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lat"))
-									{
-										lat = locationAttributes.item(locAttributeIndex).getNodeValue();
-									}
-									if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lon"))
-									{
-										lon = locationAttributes.item(locAttributeIndex).getNodeValue();
-									}
-								}
-								Coordinate coordinateToAdd = new Coordinate(Double.parseDouble(lon), Double.parseDouble(lat));
-								points.add(coordinateToAdd);
-							}
-						}
-						try
-						{
-							final GeometryFactory gf = new GeometryFactory();
-							Coordinate coordinates[] = new Coordinate[points.size()];
-							points.toArray(coordinates);
-							LineString lineString = gf.createLineString(coordinates);
-							if(trackGeom==null)
-							{
-								trackGeom = gf.createGeometry(lineString);
-							}
-							else
-							{
-								trackGeom = trackGeom.union(lineString);
-							}
-						}
-						catch (final Exception ex)
-						{
-							log.error("Couldn't get lat/lon data from Everytrail track.");
-							log.debug(ex.getClass());
-							log.debug(ex.getMessage());
-						}
-					}
-				}
-			}
+			
 		}
 
-		gpsItem.setGeometry(trackGeom);
+		gpsItem.setGeometry(null);
 		gpsItem.setExternalID("everytrail-" + track_id);
 		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 
@@ -226,7 +159,7 @@ public class ItemFactory
 		}
 		if(tripName!=null)
 		{
-			imageItem.addMetadataEntry("trip_name", tripName)	;	
+			imageItem.addMetadataEntryIndexed("trip_name", tripName)	;	
 		}
 				
 		
@@ -293,8 +226,8 @@ public class ItemFactory
 				try
 				{
 					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double
-							.parseDouble(lat))));
+					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
+							.parseDouble(lon))));
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;
 				}
@@ -335,8 +268,8 @@ public class ItemFactory
 		imageItem.setSourceURL(sourceUrl);
 		//= new ImageItem(testUser, geom, sourceUrl, image);
 		imageItem.setExternalID("everytrail-" + picture_id);
-		imageItem.addMetadataEntry("title", imageItemTitle);
-		imageItem.addMetadataEntry("description", itemDescription);
+		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
+		imageItem.addMetadataEntryIndexed("description", itemDescription);
 		imageItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 	}
 	
@@ -385,7 +318,7 @@ public class ItemFactory
 			final GeometryFactory gf = new GeometryFactory();
 			final GeoRssWhere where = youtubeVideo.getGeoCoordinates();
 			log.debug("Video location: " + where.getLongitude() + ", " + where.getLatitude());
-			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLongitude(), where.getLatitude())));
+			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLatitude(), where.getLongitude())));
 		}
 		catch (final NullPointerException e)
 		{

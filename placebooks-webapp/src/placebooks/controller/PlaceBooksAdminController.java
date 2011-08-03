@@ -8,7 +8,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.io.InputStream;
+
 import java.net.URL;
+
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +44,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import placebooks.model.EverytrailLoginResponse;
+import placebooks.model.EverytrailPicturesResponse;
+import placebooks.model.EverytrailTracksResponse;
+import placebooks.model.EverytrailTripsResponse;
 
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
@@ -144,9 +157,145 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
+	private static final Logger log = 
+		Logger.getLogger(PlaceBooksAdminController.class.getName());
 
 	private static final int MEGABYTE = 1048576;
+
+
+	@RequestMapping(value = "/admin/import_everytrail")
+	public void getEverytrailData()
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User user = UserManager.getCurrentUser(manager);
+
+		final LoginDetails details = 
+			user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
+
+		if (details == null)
+		{
+			log.error("Everytrail import failed, login details null");
+			return;
+		}
+		
+		final EverytrailLoginResponse loginResponse = 
+			EverytrailHelper.UserLogin(details.getUsername(), 
+					details.getPassword());
+
+		if (loginResponse.getStatus().equals("error"))
+		{
+			log.error("Everytrail login failed");
+			return;
+		}
+		
+		try
+		{
+
+			manager.getTransaction().begin();
+
+			// Save user id
+			details.setUserID(loginResponse.getValue());
+			manager.getTransaction().commit();		
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling Everytrail import back");
+				manager.close();
+				return;
+			}
+			else
+				manager.close();
+		}
+
+
+		final EverytrailTripsResponse trips = 
+			EverytrailHelper.Trips(loginResponse.getValue());
+
+		for (Node trip : trips.getTrips())
+		{
+			// Get trip ID
+			final NamedNodeMap tripAttr = trip.getAttributes();
+			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
+			
+			//Get other trip attributes...
+			String tripName = "";
+			String tripGPX = "";
+			String tripKML = "";
+			//Then look at the properties in the child nodes to get url, title, description, etc.
+			final NodeList tripProperties = trip.getChildNodes();
+			for (int propertyIndex = 0; 
+				 propertyIndex < tripProperties.getLength(); propertyIndex++)
+			{
+				log.info("Trip property, " + propertyIndex + " of "
+						 + tripProperties.getLength());
+				final Node item = tripProperties.item(propertyIndex);
+				final String itemName = item.getNodeName();
+				//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+				if (itemName.equals("name"))
+				{
+					log.debug("Trip name is: " + item.getTextContent());
+					tripName = item.getTextContent();
+				}
+				if (itemName.equals("gpx"))
+				{
+					log.debug("Trip GPX is: " + item.getTextContent());
+					tripGPX = item.getTextContent();
+				}
+				if (itemName.equals("kml"))
+				{
+					log.debug("Trip KML is: " + item.getTextContent());
+					tripKML = item.getTextContent();
+				}
+			}
+			log.debug("Getting tracks for trip: " + tripId);
+			EverytrailTracksResponse tracks = 
+				EverytrailHelper.Tracks(tripId, details.getUsername(), 
+						details.getPassword());
+			int i = 0;
+			for (Node track : tracks.getTracks())
+			{
+				log.info("Processing track " + i++ + " of " 
+						 + tracks.getTracks().size());
+				GPSTraceItem gpsItem = new GPSTraceItem(user, null, null);
+				ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, 
+										   tripName);
+				try
+				{
+					final InputStream is = 
+						CommunicationHelper.getConnection(
+							new URL(tripGPX)).getInputStream();
+					log.info("InputStream for tripGPX is " + is.toString());
+					gpsItem.readTrace(is);
+				}
+				catch (final Exception e)
+				{
+					log.info(tripGPX + ": " + e.getMessage(), e);
+				}
+				gpsItem = (GPSTraceItem)gpsItem.saveUpdatedItem();
+			}
+			
+			final EverytrailPicturesResponse picturesResponse = 	
+				EverytrailHelper.TripPictures(tripId, 
+					details.getUsername(), details.getPassword(), tripName);
+
+			final HashMap<String, Node> pictures = 
+				picturesResponse.getPicturesMap();
+			i = 0;
+			for (final Node picture : pictures.values())
+			{
+				log.info("Processing picture " + i++);
+				ImageItem imageItem = new ImageItem(user, null, null, null);
+				ItemFactory.toImageItem(user, picture, imageItem, tripId, 
+										tripName);
+				imageItem = (ImageItem)imageItem.saveUpdatedItem();
+			}
+		}
+		log.info("Finished Everytrail import");
+	}
+
 
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()

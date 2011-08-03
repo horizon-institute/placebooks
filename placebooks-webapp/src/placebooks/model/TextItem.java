@@ -9,6 +9,8 @@ import javax.persistence.Lob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.apache.commons.lang.StringUtils;
+
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.SearchHelper;
@@ -114,7 +116,7 @@ public class TextItem extends PlaceBookItem
 	public void setText(final String text)
 	{
 		this.text = text;
-		index.addAll(SearchHelper.getIndex(text));		
+		index.addAll(SearchHelper.getIndex(text.replaceAll("\\<.*?\\>","")));
 	}
 
 	@Override
@@ -123,7 +125,7 @@ public class TextItem extends PlaceBookItem
 		super.updateItem(item);
 		if(item instanceof TextItem)
 		{
-			setText(((TextItem) item).getText());
+			setText(((TextItem)item).getText());
 		}
 	}
 }

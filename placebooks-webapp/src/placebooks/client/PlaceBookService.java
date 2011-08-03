@@ -12,7 +12,7 @@ public class PlaceBookService
 {
 	public static void everytrail(final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/everytrail", callback);
+		serverRequest(getHostURL() + "placebooks/a/admin/import_everytrail", callback);
 	}
 
 	public static void getPaletteItems(final RequestCallback callback)
