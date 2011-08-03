@@ -69,6 +69,7 @@ import java.io.BufferedReader;
 //import android.os.Parcel;
 //import android.os.Parcelable;
 import java.io.FileReader;
+import 	android.os.AsyncTask;
 
 
 import java.io.File;
@@ -79,10 +80,11 @@ import javax.xml.xpath.*;
 
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import android.os.Handler;
 
 
 //Implement a Listener (added the interface to the base class)
-public class Reader extends Activity { // implements Parcelable {
+public class Reader extends Activity {
 	
 	//TextView to display error if placebook doesn't display properly	
 	private TextView orgXmlTxt;		
@@ -121,6 +123,12 @@ public class Reader extends Activity { // implements Parcelable {
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
     private String packagePath;
 	
+    private ArrayList<Point> page1 = new ArrayList<Point>();
+	private ArrayList<Point> page2 = new ArrayList<Point>();
+	private ArrayList<Point> page3 = new ArrayList<Point>();
+	private ArrayList<Point> page4 = new ArrayList<Point>();	//added 3 new pages
+	private ArrayList<Point> page5 = new ArrayList<Point>();
+	private ArrayList<Point> page6 = new ArrayList<Point>();
 	
 	//Image Variables
 	private ImageView imgView;
@@ -224,6 +232,7 @@ public class Reader extends Activity { // implements Parcelable {
 			        
 			        try {
 				        getMyXML();		//call method to parse XML		
+				        populatePages(); //populate each page
 
 					} catch (Exception e) {
 						
@@ -262,8 +271,9 @@ public class Reader extends Activity { // implements Parcelable {
 			            }
 			        });
 					
-
-					
+					// initializing and starting a new local Thread object
+			    //    Thread currentThread = new Thread(this);
+			    //    currentThread.start();
 			
 	 		 } //end of onCreate() Method
 	 		 
@@ -656,11 +666,12 @@ public class Reader extends Activity { // implements Parcelable {
 			    
 			    //(2) A Map will always have a Trail
 			    //Unmarshall the map trail coordinates
+
 			    try {
 					Serializer serializer = new Persister(); 
 					//use the simple framework to convert the gpx data from xml file to java objects
 					//REMEMBER TO CHANGE THIS FROM THE EXAMPLE TO THE REAL DYNAMIC THING! GET THE GPX FILEPATH FROM CONFIG.XML
-					File source = new File("sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/" + pbkey /*201*/ + "/gpxdata.xml");
+					File source = new File("sdcard/placebooks/unzipped/var/lib/placebooks-media/packages/" + pbkey + "/gpxdata.xml");
 					Gpx gpx = serializer.read(Gpx.class, source);
 
 					System.out.println("HERE THIS IS A TEST");
@@ -701,8 +712,7 @@ public class Reader extends Activity { // implements Parcelable {
 			     } catch (Exception e) {
 			          e.printStackTrace();
 			     }
-			     
-			    
+			     			    
 			    
 				 
 				//New custom view that adds a bit of spacing to the end of image items
@@ -853,9 +863,23 @@ public class Reader extends Activity { // implements Parcelable {
 				pbkey = book.getKey();		//the book key (folder name) is also stored in the config.xml file - so we can pull it out from that
 				pbtimestamp = book.getTimestamp();	//the book's DOB
 				
+				page1 = (ArrayList<Point>)book.getPage1();
+				page2 = (ArrayList<Point>)book.getPage2();
+				page3 = (ArrayList<Point>)book.getPage3();
+				page4 = (ArrayList<Point>)book.getPage4();
+				page5 = (ArrayList<Point>)book.getPage5();
+				page6 = (ArrayList<Point>)book.getPage6();
 				
-			    //Pass the data into the data ArrayLists
-				for(Point item: book.getPage1()) {
+			
+				in.close();
+				
+				return inLine.toString();    
+				
+			}
+			
+			public void populatePages(){
+				//Pass the data into the data ArrayLists
+				for(Point item: page1) {
 					
 					String type = item.getType();
 					String data = item.getData();	//can be TextString, Filename (e.g 123.jpg), 
@@ -916,7 +940,8 @@ public class Reader extends Activity { // implements Parcelable {
 					//System.out.println("DATA========" + gpsData);
 
 				}
-				for(Point item: book.getPage2()) {
+				
+	/*			for(Point item: page2) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -962,7 +987,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        
 
 				}
-				for(Point item: book.getPage3()) {
+				for(Point item: page3) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1008,7 +1033,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	
 
 				}
-				for(Point item: book.getPage4()) {
+				for(Point item: page4) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1055,7 +1080,7 @@ public class Reader extends Activity { // implements Parcelable {
 		        	
 
 				}
-				for(Point item: book.getPage5()) {
+				for(Point item: page5) {
 		        	String type = item.getType();
 		        	String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1101,7 +1126,7 @@ public class Reader extends Activity { // implements Parcelable {
 					}	
 
 				}
-				for(Point item: book.getPage6()) {
+				for(Point item: page6) {
 		        	String type = item.getType();
 					String data = item.getData();
 		        	String itemKey = item.getItemKey();
@@ -1147,12 +1172,7 @@ public class Reader extends Activity { // implements Parcelable {
 					}
 
 				}
-				
-			
-				in.close();
-				
-				return inLine.toString();    
-				
+				*/
 			}
 			
 			/*
@@ -1257,7 +1277,7 @@ public class Reader extends Activity { // implements Parcelable {
 		    	
 			    }
 			 
-			 
+
 			
 } //end of class
 

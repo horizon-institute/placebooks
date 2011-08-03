@@ -287,7 +287,7 @@ public class MapImageViewer extends Activity {
 								 Bitmap bmCam = BitmapFactory.decodeResource(getResources(),R.drawable.camera_icon);
 								 b.setImageBitmap(bmCam);
 								 RelativeLayout rl2 = new RelativeLayout(this);
-								 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(35, 25); //button size
+								 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(35, 25); //button size , was 35x25
 						         layoutParams.setMargins(alGeoImageLonPx.get(i), alGeoImageLatPx.get(i), 0, 50);
 						         
 								 rl.addView(b, layoutParams);
@@ -450,7 +450,7 @@ public class MapImageViewer extends Activity {
 		    System.out.println("longitude of where i am now ==" + longitude);
 		}
 		else{
-			Toast msg = Toast.makeText(this, "Cannot access GPS", Toast.LENGTH_LONG);
+			Toast msg = Toast.makeText(this, "Trying to find your GPS location", Toast.LENGTH_LONG);
 			msg.show();
 			}
 	

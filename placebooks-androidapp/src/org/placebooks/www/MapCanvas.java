@@ -79,7 +79,7 @@ public class MapCanvas extends ImageView {
 		trailPen.setStyle(Paint.Style.STROKE); 
 		//calculate stroke with for current density
 		//trailPen.setStrokeWidth(1 /getResources().getDisplayMetrics().density);
-		trailPen.setStrokeWidth(4);
+		trailPen.setStrokeWidth(8);
 		trailPen.setColor(Color.BLACK);	//color.RED 0xffff0000
 		
 		Paint mediaPen = new Paint();

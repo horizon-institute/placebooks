@@ -1,6 +1,6 @@
 package org.placebooks.www;
 
-//import android.app.Activity;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,42 +46,19 @@ import java.io.FileOutputStream;
 import org.apache.http.util.ByteArrayBuffer;
 import java.io.IOException;
 import android.view.View.OnClickListener; 
-//import android.view.LayoutInflater;
 
-//import java.net.URL;
-//import android.os.AsyncTask;
-//import android.content.res.Configuration;
 import android.app.AlertDialog;
-//import java.io.BufferedReader;
-//import java.io.InputStreamReader;
-//import java.io.OutputStreamWriter;
-//import java.io.DataOutputStream;
-//import android.webkit.CookieManager;
-
-//import org.apache.http.impl.client.DefaultHttpClient;
-//import org.apache.http.protocol.BasicHttpContext;
-//import org.apache.http.client.CookieStore;
-//import org.apache.http.impl.client.BasicCookieStore;
-//import org.apache.http.protocol.HttpContext;
-//import org.apache.http.client.protocol.ClientContext;
-//import org.apache.http.client.*;
-
-//import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.NameValuePair;
-//import org.apache.http.message.BasicNameValuePair;
-//import org.apache.http.client.entity.UrlEncodedFormEntity;
-//import org.apache.http.HttpResponse;
-//import org.apache.http.Header;
-//import java.io.ByteArrayOutputStream;
 import android.view.KeyEvent;
-
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
+import android.widget.GridView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 
-public class Shelf extends ListActivity {
+public class Shelf extends Activity/*extends ListActivity*/ {
 	
 	/* This variables need to be global, so we can used them onResume and onPause method to
     stop the listener */
@@ -114,7 +91,7 @@ public class Shelf extends ListActivity {
 	 @Override
 		public void onCreate(Bundle savedInstanceState) {
 		        super.onCreate(savedInstanceState);	//icicle
-		        setContentView(R.layout.shelflist);	//push shelf list layout into the content view
+		        setContentView(R.layout.bookshelf);//shelflist);	//push shelf list layout into the content view
 		        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
 
 		        
@@ -155,14 +132,14 @@ public class Shelf extends ListActivity {
 		        	//Toast msg = Toast.makeText(this, "cinr= " + cinr, Toast.LENGTH_LONG);
 					//msg.show();
 		        	
-		        	json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
-		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+		       // 	json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+		      /*  	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
 			        tv.setText("Reading the cached shelf But I DO have an Internet connection.");
 			        ll.addView(tv);
-		        	
-		/*   TAKEN OUT FOR TIME BEING TO TEST GPS LOCATION
-		 *      	
+		        */	
+		 //   TAKEN OUT FOR TIME BEING TO TEST GPS LOCATION
+		       	
 					String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
 				    System.out.println("URL ===== " + url);
 					json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
@@ -170,11 +147,11 @@ public class Shelf extends ListActivity {
 				    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
 				    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
 				          	
-				    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-					TextView tv = new TextView(Shelf.this);
-					tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
-					ll.addView(tv);
-		*/			
+				    //LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+				    //TextView tv = new TextView(Shelf.this);
+					//tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
+					//ll.addView(tv);
+					
 					
 		        	/*
 		        	 * Still working on
@@ -185,27 +162,36 @@ public class Shelf extends ListActivity {
 		        else if (!oc.isOnline(this)) {		//do a check if there is a shelf file on the sdcard
 		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
 			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
-		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+		    /*    	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 			        TextView tv = new TextView(this);
 			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time. If the shelf is blank then your memory card does not have your shelf file. Please try again with Internet access.");
 			        ll.addView(tv);
-			        
+			  */      
 			        
 		        }
 		        else {
 		        	// either no internet, no placebook shelf stored on the sd card, no books can be accessed
-		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+		    /*    	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
 		        	TextView tv = new TextView(this);
 		        	tv.setText("No data: You have not downloaded any placebooks and do not appear to be online. You need to enable the Internet to access your placebook shelf and then you can download your placebook/s. Another reason why you are not seeing your shelf might be due to your Internet security settings");
 		        	ll.addView(tv);
-		        }
+		      */
+		        	}
+		        
+		        
+		      
+		        
+		        
+		        
+		        
 		       
+		        GridView gridview = (GridView) findViewById(R.id.gridview);		       
 		        List<MyListItemModel> myListModel = new ArrayList<MyListItemModel>();
 
 		        try{
 		        	
 		        	JSONArray entries = json.getJSONArray("entries");
-		        	//JSONObject jObject = json.getJSONObject("user");
+		        	JSONObject jObject = json.getJSONObject("user");
 		        	
 			        for(int i=0;i<entries.length();i++){						
 					
@@ -264,7 +250,6 @@ public class Shelf extends ListActivity {
 					        		intent.putExtra("packagePath", item.getPackagePath());
 					        		startActivity(intent);	
 					        		
-					    	  
 
 							     } 
 							   };
@@ -278,18 +263,23 @@ public class Shelf extends ListActivity {
 			        		Log.e("log_tag", "Error parsing data "+e.toString());
 			        	}
 			        	
-			        	
-			        	
-			        	
-			        	//populates the list view using the adapter
+			        	/*
+			        	//listview code taken out. using a gridview now
 			        	MyListAdapter adapter = new MyListAdapter(this);	//create the Adapter
 			        	adapter.setModel(myListModel);		//pass the ArrayList into the Adapter
 			        	setListAdapter(adapter);			//assign Adapter
 			        	lv = getListView();				//call the ListView
 			        	lv.setTextFilterEnabled(true);  //enables filtering for the contents of the ListView.
+			        	*/
 			        	
-			        				        	
-		    
+			    ImageAdapter adapter = new ImageAdapter(this);
+			    adapter.setModel(myListModel);		//pass the ArrayList into the Adapter
+		        gridview.setAdapter(adapter);
+
+		        
+		        
+		        
+		        
 	 } //end of onCreate
 	 
 	 /*
@@ -541,9 +531,8 @@ public class Shelf extends ListActivity {
 			      Tel.listen(MyListener,PhoneStateListener.LISTEN_SIGNAL_STRENGTH);
 			   }
 
-			   /* ÑÑÑÑÑÑÑÑÑÐ */
-			    /* Start the PhoneState listener */
-			   /* ÑÑÑÑÑÑÑÑÑÐ */
+			   
+			    // Start the PhoneState listener
 			    private class MyPhoneStateListener extends PhoneStateListener
 			    {
 			      /* Get the Signal strength from the provider, each time there is an update */
@@ -592,56 +581,6 @@ public class Shelf extends ListActivity {
 			       return super.onKeyDown(keyCode, event);
 			   }
 			   
-			   
-			   
-	/*		   
-			   private class GetShelfTask extends AsyncTask<String, Void, Boolean> {
-
-				   @Override
-				       protected void onPreExecute() {
-				           super.onPreExecute();
-				           // show a progress dialog indicating that its loading
-      		        		myDialog = ProgressDialog.show( Shelf.this, " " , " Logging in.. ", true);	
-
-				       }
-
-				       @Override
-				       protected Boolean doInBackground(String... params) {
-				               // give your code that has to be loaded.
-       		        	//	new Thread() {
-	        		    //    	public void run() {
-	        		        		
-				    	   
-				    	    String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
-						    System.out.println("URL ===== " + url);
-							json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
-						          										  
-						    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
-						    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
-						          	
-						    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-							TextView tv = new TextView(Shelf.this);
-							tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
-							ll.addView(tv);	
-	        		        		
-	        		        		
-  
-	 	        		//        	}
-	 	        		//            }.start();    
-	        		        	
-       		        	
-				    	   return true;
-				       }
-
-				       @Override
-				       protected void onPostExecute(Boolean success) {
-				           super.onPostExecute(success);
-				           //dismiss your progress dialog
-                           	myDialog.dismiss();     
-
-				       }
-				   }
-			   
-	*/		   
+			   	   
 
 }	//end of public shelf
