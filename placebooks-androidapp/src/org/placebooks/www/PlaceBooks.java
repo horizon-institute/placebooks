@@ -156,7 +156,7 @@ public class PlaceBooks extends Activity{
 	        		        	public void run() {
 	        		        	try{
 		        		           final HttpClient httpClient = new DefaultHttpClient();
-		                   		   final HttpPost httpPost = new HttpPost("http://horizac1.miniserver.com/placebooks/j_spring_security_check");
+		                   		   final HttpPost httpPost = new HttpPost("http://www.placebooks.org/placebooks/j_spring_security_check");
 		
 		                   		   
 		                   		   try

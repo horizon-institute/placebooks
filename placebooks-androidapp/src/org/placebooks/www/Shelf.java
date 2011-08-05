@@ -163,7 +163,7 @@ public class Shelf extends ListActivity {
 		        	
 		/*   TAKEN OUT FOR TIME BEING TO TEST GPS LOCATION
 		 *      	
-					String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
+					String url =  "http://www.placebooks.org/placebooks/placebooks/a/admin/shelf/"+ username;
 				    System.out.println("URL ===== " + url);
 					json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 				          										  
@@ -354,7 +354,7 @@ public class Shelf extends ListActivity {
 	 public void downloadPlaceBook(String theKey, String downloadPath) {
 		 String dlPath = downloadPath;
 	     //String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
-		 String url = "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/" + theKey;
+		 String url = "http://www.placebooks.org/placebooks/placebooks/a/admin/package/" + theKey;
 		 new DownloadFileAsync(dlPath).execute(url);	
 		
 	    }
@@ -612,7 +612,7 @@ public class Shelf extends ListActivity {
 	        		    //    	public void run() {
 	        		        		
 				    	   
-				    	    String url =  "http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/"+ username;
+				    	    String url =  "http://www.placebooks.org/placebooks/placebooks/a/admin/shelf/"+ username;
 						    System.out.println("URL ===== " + url);
 							json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
 						          										  

@@ -18,7 +18,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS, {
 											(
 												"OpenSpace",
 												"http://openspace.ordnancesurvey.co.uk/osmapapi/" + "ts",
-												{ format:'image/png', key:"A8192B153342C83FE0405F0ACA60441B", url:"horizac1.miniserver.com" },
+												{ format:'image/png', key:"A9C6DDAB0B3AEA67E0405F0ACA603B6A", url:"www.placebooks.org" },
 												OpenLayers.Util.extend
 													(
 														options,
