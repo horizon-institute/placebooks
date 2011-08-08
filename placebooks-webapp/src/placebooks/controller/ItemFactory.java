@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
@@ -66,6 +67,12 @@ public class ItemFactory
 		{
 			log.error(ex.toString());
 			item = null;
+		}
+		catch(NonUniqueResultException ex)
+		{
+			log.error(ex.toString());
+			
+			 q.getFirstResult();
 		}
 		return item;
 	}
@@ -226,8 +233,8 @@ public class ItemFactory
 				try
 				{
 					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
-							.parseDouble(lon))));
+					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double
+							.parseDouble(lat))));
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;
 				}
@@ -318,7 +325,7 @@ public class ItemFactory
 			final GeometryFactory gf = new GeometryFactory();
 			final GeoRssWhere where = youtubeVideo.getGeoCoordinates();
 			log.debug("Video location: " + where.getLongitude() + ", " + where.getLatitude());
-			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLatitude(), where.getLongitude())));
+			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLongitude(), where.getLatitude())));
 		}
 		catch (final NullPointerException e)
 		{

@@ -11,3 +11,4 @@ build.properties
 .project
 .gwt
 placebooks.properties
+placebooks-webapp/build/placebooks.war
