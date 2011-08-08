@@ -229,6 +229,7 @@ public class PlaceBookEditor extends Composite
 			{
 				final Panel panel = new FlowPanel();
 				final PopupPanel dialogBox = new PopupPanel(true, true);
+				dialogBox.getElement().getStyle().setZIndex(2000);
 				
 				Label warning = new Label("You will not be able to get your placebook back after deleting it. Are you sure?");
 				Button okbutton = new Button("Delete", new ClickHandler()
