@@ -11,8 +11,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -37,7 +35,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * @author pszmp
@@ -233,8 +230,8 @@ public class ItemFactory
 				try
 				{
 					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lon), Double
-							.parseDouble(lat))));
+					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
+							.parseDouble(lon))));
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;
 				}
@@ -324,8 +321,8 @@ public class ItemFactory
 		{
 			final GeometryFactory gf = new GeometryFactory();
 			final GeoRssWhere where = youtubeVideo.getGeoCoordinates();
-			log.debug("Video location: " + where.getLongitude() + ", " + where.getLatitude());
-			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLongitude(), where.getLatitude())));
+			log.debug("Video location: " + where.getLatitude() + ", " + where.getLongitude());
+			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLatitude(), where.getLongitude())));
 		}
 		catch (final NullPointerException e)
 		{

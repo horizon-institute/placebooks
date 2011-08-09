@@ -4,7 +4,7 @@
 
 	<!-- Set catalina.home, hamcrest.home and junit.home in build.properties -->
 	<property file="build.properties" />
-	
+	<setproxy proxyhost="wwwcache.cs.nott.ac.uk" proxyport="3128"/>	
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
