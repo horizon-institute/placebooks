@@ -67,6 +67,7 @@ import placebooks.model.json.Shelf;
 import placebooks.model.json.UserShelf;
 import placebooks.model.json.PlaceBookEntry;
 import placebooks.model.json.PlaceBookSearchEntry;
+import placebooks.model.json.ServerInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -1201,4 +1202,26 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "Failed");
 	}
+
+
+	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
+	public ModelAndView getServerInfoJSON(final HttpServletRequest req, 
+										  final HttpServletResponse res)
+	{
+		final ServerInfo si = new ServerInfo();
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, si);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+		return null;
+	}
+
 }

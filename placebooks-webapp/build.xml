@@ -4,7 +4,7 @@
 
 	<!-- Set catalina.home, hamcrest.home and junit.home in build.properties -->
 	<property file="build.properties" />
-	<setproxy proxyhost="wwwcache.cs.nott.ac.uk" proxyport="3128"/>	
+
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
@@ -74,6 +74,20 @@
 			<fileset dir="${src.dir}/META-INF" />
 		</copy>
 	</target>
+
+	<target name="probe-proxy">
+		<condition property="proxy.enabled">
+		 	<and>
+				<isset property="proxy.host"/>
+				<isreachable host="${proxy.host}"/>
+		  	</and>
+		</condition>
+	</target>
+
+	<target name="proxy" depends="probe-proxy" if="proxy.enabled">
+		<setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}" />
+	</target>
+
 
 	<target name="jaxb-jar" description="Generate JAR from GPX bindings">
 		<jar jarfile="${lib.dir}/gpx-bindings.jar" 
@@ -166,7 +180,7 @@
 		</javadoc>
 	</target>
 
-	<target name="initdb" depends="compile,staging">
+	<target name="initdb" depends="compile,staging,proxy">
         <java classname="placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />
@@ -175,7 +189,7 @@
 		</java>
     </target>
 
-  	<target name="install" depends="war"
+  	<target name="install" depends="war,proxy"
    			description="Install application to servlet container">
 		<deploy url="${manager.url}" username="${manager.username}"
        			password="${manager.password}" path="/${basepackage.name}"
@@ -183,12 +197,13 @@
   	</target>
 
 	<target name="uninstall"
-   			description="Remove application on servlet container">
+   			description="Remove application on servlet container" 
+			depends="proxy">
 	    <undeploy url="${manager.url}" username="${manager.username}"
 		          password="${manager.password}" path="/${basepackage.name}"/>
   	</target>
 
- 	<target name="reload" depends="war"
+ 	<target name="reload" depends="war,proxy"
    			description="Reload application on servlet container">
 
     	<reload url="${manager.url}" username="${manager.username}"

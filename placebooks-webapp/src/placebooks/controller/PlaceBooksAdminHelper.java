@@ -100,7 +100,7 @@ public final class PlaceBooksAdminHelper
 			try
 			{
 				p.calcBoundary();
-				final int timeout = 
+				/*final int timeout = 
 					Integer.parseInt(
 						PropertiesSingleton
 							.get(PlaceBooksAdminHelper.class.getClassLoader())
@@ -109,7 +109,7 @@ public final class PlaceBooksAdminHelper
 								"20000"
 							)
 					);
-
+				*/
 				em.getTransaction().begin();
 				/*final Runnable r = new Runnable()
 				{

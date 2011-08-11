@@ -29,6 +29,14 @@ public final class TileHelper
 		Logger.getLogger(TileHelper.class.getName());
 
 
+	// Note, these are WGS84 converted coords from OSRefs corresponding to
+	// min/max of (0.0, 0.0) -> (800000.0, 1400000.0)
+	public static final LatLng TILE_MIN = 
+		new LatLng(49.766819598654784, -7.557163126828102);
+	public static final LatLng TILE_MAX = 
+		new LatLng(62.26423575761691, 5.714776960790655);
+
+
 	private static final String buildOpenSpaceQuery(final int layer, 
 													final int blockSizeX,
 													final int blockSizeY,
@@ -78,7 +86,7 @@ public final class TileHelper
 	}
 
 	public static final MapMetadata getMap(final PlaceBook p)
-		throws IOException, IllegalArgumentException
+		throws IOException, IllegalArgumentException, Exception
 	{
 		if (p.getGeometry() == null)
 		{
@@ -93,7 +101,7 @@ public final class TileHelper
 	}
 
 	public static final MapMetadata getMap(final PlaceBookItem pi)
-		throws IOException, IllegalArgumentException
+		throws IOException, IllegalArgumentException, Exception
 	{
 		return getMap(pi.getGeometry());
 	}
@@ -102,7 +110,7 @@ public final class TileHelper
 	// Geometry *must* be a boundary, i.e., four points
 	// Geometry g is updated with the boundaries of the map
 	public static final MapMetadata getMap(final Geometry g) 
-		throws IOException, IllegalArgumentException
+		throws IOException, IllegalArgumentException, Exception
 	{
 		log.info("getMap() geometry = " + g);
 		int layer = 5;
@@ -111,6 +119,7 @@ public final class TileHelper
 		int pixelX = 200;
 		int pixelY = 200;
 		String fmt = "png";
+		int maxTiles = 100;
 
 		try
 		{
@@ -145,7 +154,13 @@ public final class TileHelper
 					.get(TileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png")
 					.toLowerCase().trim();
-
+			maxTiles = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
+					)
+			);
 		}
 		catch (final Throwable e)
 		{
@@ -171,7 +186,15 @@ public final class TileHelper
 		OSRef[] bbox_ = new OSRef[2];
 		for (int i = 0; i < coords_.length; ++i)
 		{
-			bbox_[i] = new OSRef(new LatLng(coords_[i].x, coords_[i].y));
+			final LatLng latlng = new LatLng(coords_[i].x, coords_[i].y);
+			if (latlng.getLatitude() < TILE_MIN.getLatitude() ||
+				latlng.getLatitude() > TILE_MAX.getLatitude() ||
+				latlng.getLongitude() < TILE_MIN.getLongitude() ||
+				latlng.getLongitude() > TILE_MAX.getLongitude())
+			{
+				throw new IllegalArgumentException();
+			}
+			bbox_[i] = new OSRef(latlng);
 			log.info("Bounding box unnormalised, bbox["+i+"]="
 					 +bbox_[i].getEasting()+","+bbox_[i].getNorthing());
 		}
@@ -201,15 +224,27 @@ public final class TileHelper
 									) / incY);
 		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
 
+		if (eBlocks * nBlocks > maxTiles)
+			log.error("Tiler limiting fetches to " + maxTiles + " tiles");
+
+
 		final BufferedImage buf = 
 			new BufferedImage(pixelX * eBlocks, pixelY * nBlocks, 
 							  BufferedImage.TYPE_INT_RGB);
 		final Graphics graphics = buf.createGraphics();
 
 		int n = 0;
+		int b = 0;
 		for (int i = (int)bbox[0].getEasting(); i <= (int)bbox[1].getEasting(); 
 			 i += incX)
 		{
+			if (b++ > maxTiles)
+			{
+				log.error("Tiler stopped fetching: maxTiles being exceeded");
+
+				break;
+			}
+
 			int m = buf.getHeight();
 			for (int j = (int)bbox[0].getNorthing() - incY; 
 				 j <= (int)bbox[1].getNorthing() - incY; j += incY)
