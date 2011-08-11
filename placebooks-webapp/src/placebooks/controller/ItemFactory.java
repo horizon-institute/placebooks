@@ -35,6 +35,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author pszmp
@@ -230,8 +232,7 @@ public class ItemFactory
 				try
 				{
 					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
-							.parseDouble(lon))));
+					final Geometry newGeom = new WKTReader().read("POINT ( " + lat + " " + lon +" )"); 
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;
 				}
@@ -319,10 +320,16 @@ public class ItemFactory
 
 		try
 		{
-			final GeometryFactory gf = new GeometryFactory();
 			final GeoRssWhere where = youtubeVideo.getGeoCoordinates();
-			log.debug("Video location: " + where.getLatitude() + ", " + where.getLongitude());
-			geom = gf.toGeometry(new Envelope(new Coordinate(where.getLatitude(), where.getLongitude())));
+			log.debug("Video location: " + where.getLongitude() + ", " + where.getLatitude());
+			try
+			{
+				geom = new WKTReader().read("POINT ( " + where.getLatitude() + " " + where.getLongitude() +" )");
+			} catch (ParseException e)
+			{
+				log.error(e.getMessage());
+				e.printStackTrace();
+			} 
 		}
 		catch (final NullPointerException e)
 		{

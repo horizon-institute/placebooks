@@ -92,7 +92,7 @@ public class MapItem extends PlaceBookItemWidget
 					final String geometry = item.getGeometry();
 					if (geometry.startsWith(POINT_PREFIX))
 					{
-						final LonLat lonlat = LonLat.create(geometry.substring(	POINT_PREFIX.length(),
+						final LonLat lonlat = LonLat.createFromPoint(geometry.substring(	POINT_PREFIX.length(),
 																				geometry.length() - 1));
 						final Marker marker = Marker.create(MARKER_URL,
 															lonlat.cloneLonLat().transform(map.getDisplayProjection(),
@@ -151,7 +151,7 @@ public class MapItem extends PlaceBookItemWidget
 					if (positionItem != null)
 					{
 						GWT.log("Clicked at " + lonLat);
-						positionItem.setGeometry(POINT_PREFIX + lonLat.getLon() + " " + lonLat.getLat() + ")");
+						positionItem.setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
 
 						fireChanged();
 						fireFocusChanged(true);
