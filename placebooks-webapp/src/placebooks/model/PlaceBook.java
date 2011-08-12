@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.EnumSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
+import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
@@ -42,8 +44,35 @@ public class PlaceBook
 {
 	public enum State
 	{
-		UNPUBLISHED,
-		PUBLISHED
+		UNPUBLISHED(0),
+		PUBLISHED(1);
+		
+		private int value;
+		
+		private static final Map<Integer, State> lu = 
+			new HashMap<Integer, State>();
+
+		static
+		{
+			for (State s : EnumSet.allOf(State.class))
+				lu.put(s.getValue(), s);
+		}
+
+		private State(int value)
+		{
+			this.value = value;
+		}
+
+		public int getValue()
+		{
+			return value;
+		}
+
+		public static State get(int value)
+		{
+			return lu.get(value);
+		}
+
 	}
 
 	protected static final Logger log = 
@@ -343,7 +372,7 @@ public class PlaceBook
 		item.setPlaceBook(null);
 		return items.remove(item);
 	}
-
+	
 	public void setGeometry(final Geometry geom)
 	{
 		this.geom = geom;

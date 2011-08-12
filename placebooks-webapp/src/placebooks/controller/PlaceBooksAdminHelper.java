@@ -46,6 +46,8 @@ import placebooks.model.PlaceBookSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public final class PlaceBooksAdminHelper
 {
 	private static final Logger log = 
@@ -603,6 +605,45 @@ public final class PlaceBooksAdminHelper
 				rating = new Integer(0);
 			}
 			hits.put(p, new Integer(keywords.size() + rating.intValue()));
+		}
+
+		return hits.entrySet();
+	}
+
+	public static final Set<Map.Entry<PlaceBook, Double>> 
+		searchLocationForPlaceBooks(final EntityManager em, 
+									final Geometry geometry)
+	{
+		final List<PlaceBook> pbs = 
+			em.createQuery("SELECT p FROM PlaceBook p WHERE p.state = :state", 
+						   PlaceBook.class)
+				.setParameter("state", PlaceBook.State.PUBLISHED)
+				.getResultList();
+
+		final Map<PlaceBook, Double> hits = new HashMap<PlaceBook, Double>();
+		for (final PlaceBook p : pbs)
+		{
+			hits.put(p, p.getGeometry().distance(geometry));
+		}
+
+		return hits.entrySet();
+	}
+
+	public static final Set<Map.Entry<PlaceBookItem, Double>> 
+		searchLocationForPlaceBookItems(final EntityManager em, 
+										final Geometry geometry)
+	{
+		final List<PlaceBookItem> ps = 
+			em.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook.state = :state", 
+						   PlaceBookItem.class)
+				.setParameter("state", PlaceBook.State.PUBLISHED)
+				.getResultList();
+
+		final Map<PlaceBookItem, Double> hits = 
+			new HashMap<PlaceBookItem, Double>();
+		for (final PlaceBookItem p : ps)
+		{
+			hits.put(p, p.getGeometry().distance(geometry));
 		}
 
 		return hits.entrySet();

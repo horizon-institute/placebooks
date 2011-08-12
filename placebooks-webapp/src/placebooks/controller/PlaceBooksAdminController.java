@@ -63,10 +63,14 @@ import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
+import placebooks.model.json.ShelfEntry;
 import placebooks.model.json.Shelf;
 import placebooks.model.json.UserShelf;
 import placebooks.model.json.PlaceBookEntry;
+import placebooks.model.json.PlaceBookItemEntry;
 import placebooks.model.json.PlaceBookSearchEntry;
+import placebooks.model.json.PlaceBookDistanceEntry;
+import placebooks.model.json.PlaceBookItemDistanceEntry;
 import placebooks.model.json.ServerInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -594,9 +598,10 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
-										  final HttpServletResponse res,
-										  @PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(
+								final HttpServletRequest req, 
+								final HttpServletResponse res,
+								@PathVariable("owner") final String owner)
 	{
 		if (owner.trim().isEmpty()) { return null; }
 
@@ -796,6 +801,113 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	@RequestMapping(value = "/admin/location_search/placebook/{geometry}", 
+					method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBooksGET(
+							final HttpServletRequest req,
+							final HttpServletResponse res,
+							@PathVariable("geometry") final String geometry)
+	{
+		Geometry geometry_ = null;
+		try
+		{
+			geometry_ = new WKTReader().read(geometry);
+		}
+		catch (final ParseException e)
+		{
+			log.error(e.toString(), e);
+			return null;
+		}
+
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final StringBuffer out = new StringBuffer();
+		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
+		for (final Map.Entry<PlaceBook, Double> entry : 
+			 PlaceBooksAdminHelper.searchLocationForPlaceBooks(em, geometry_))
+		{
+			final PlaceBook p = entry.getKey();
+			if (p != null)
+			{
+				log.info("Search result: pb key=" + entry.getKey().getKey() 
+						 + ", distance=" + entry.getValue());
+				pbs.add(new PlaceBookDistanceEntry(p, entry.getValue()));
+			}	
+		}
+		em.close();
+
+		final Shelf s = new Shelf();
+		s.setEntries(pbs);
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/location_search/placebookitem/{geometry}", 
+					method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBookItemsGET(
+							final HttpServletRequest req,
+							final HttpServletResponse res,
+							@PathVariable("geometry") final String geometry)
+	{
+		Geometry geometry_ = null;
+		try
+		{
+			geometry_ = new WKTReader().read(geometry);
+		}
+		catch (final ParseException e)
+		{
+			log.error(e.toString(), e);
+			return null;
+		}
+
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final StringBuffer out = new StringBuffer();
+		final Collection<ShelfEntry> ps = new ArrayList<ShelfEntry>();
+		for (final Map.Entry<PlaceBookItem, Double> entry : 
+			 PlaceBooksAdminHelper
+			 	.searchLocationForPlaceBookItems(em, geometry_)
+			)
+		{
+			final PlaceBookItem p = entry.getKey();
+			if (p != null)
+			{
+				log.info("Search result: pbi key=" + entry.getKey().getKey() 
+						 + ", distance=" + entry.getValue());
+				ps.add(new PlaceBookItemDistanceEntry(p, entry.getValue()));
+			}	
+		}
+		em.close();
+
+		final Shelf s = new Shelf();
+		s.setEntries(ps);
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+
+	}
+
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
 	public ModelAndView searchGET(final HttpServletRequest req,
 								  final HttpServletResponse res,
@@ -806,8 +918,7 @@ public class PlaceBooksAdminController
 		
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
-		final Collection<PlaceBookEntry> pbs = 
-			new ArrayList<PlaceBookEntry>();
+		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Integer> entry : 
 			 PlaceBooksAdminHelper.search(em, terms))
 		{

@@ -31,10 +31,14 @@ public final class TileHelper
 
 	// Note, these are WGS84 converted coords from OSRefs corresponding to
 	// min/max of (0.0, 0.0) -> (800000.0, 1400000.0)
-	public static final LatLng TILE_MIN = 
-		new LatLng(49.766819598654784, -7.557163126828102);
+	public static final LatLng TILE_MIN = new OSRef(0, 0).toLatLng();
 	public static final LatLng TILE_MAX = 
-		new LatLng(62.26423575761691, 5.714776960790655);
+		new OSRef(799999.9, 1399999.9).toLatLng();
+	static
+	{
+		TILE_MIN.toWGS84();
+		TILE_MAX.toWGS84();
+	}
 
 
 	private static final String buildOpenSpaceQuery(final int layer, 

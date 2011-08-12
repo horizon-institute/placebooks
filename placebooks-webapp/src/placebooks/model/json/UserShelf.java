@@ -14,7 +14,7 @@ public class UserShelf extends Shelf
 
 	public UserShelf(final Collection<PlaceBook> pbs, final User user)
 	{
-		super(pbs);
+		super(pbs.toArray(new PlaceBook[0]));
 		this.user = user;
 	}
 	
