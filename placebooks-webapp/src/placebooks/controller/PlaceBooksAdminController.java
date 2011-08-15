@@ -708,8 +708,6 @@ public class PlaceBooksAdminController
 	public void publishPlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
 		log.info("Publish Placebook: " + json);
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -728,6 +726,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
@@ -757,8 +757,6 @@ public class PlaceBooksAdminController
 	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
 		log.info("Save Placebook: " + json);
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -777,6 +775,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 

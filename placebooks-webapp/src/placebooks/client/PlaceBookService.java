@@ -61,7 +61,7 @@ public class PlaceBookService
 	public static void publishPlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/publishplacebook",
-						"placebook=" + new JSONObject(placebook).toString(), callback);
+						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
 	public static void registerAccount(final String name, final String email, final String password,

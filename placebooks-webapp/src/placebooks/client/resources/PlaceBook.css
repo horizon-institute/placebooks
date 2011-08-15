@@ -31,6 +31,11 @@ a:hover {
 	box-shadow: 3px 3px 6px #222;
 }
 
+.dropIcon {
+	font-size: 8px;
+	vertical-align: top;
+}
+
 .toolbarMenuItem {
 	padding: 1px 8px;
 	cursor: default;

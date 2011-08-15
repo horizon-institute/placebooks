@@ -48,6 +48,8 @@ public interface PlaceBookCSS extends CssResource
 
 	String placebookEntryText();
 	
+	String dropIcon();
+	
 	String saveItem();
 	
 	String saveItemDisabled();

@@ -129,7 +129,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 		//User testUser = logInPlacebooksTestUser();
 		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
-		pacd.getEverytrailData();
+		//pacd.getEverytrailData();
 	}
 
 	@Test void testCreatePlaceBookWithItems() throws Exception
