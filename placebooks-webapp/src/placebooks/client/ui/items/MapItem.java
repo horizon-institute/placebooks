@@ -79,14 +79,17 @@ public class MapItem extends PlaceBookItemWidget
 
 	public void refreshMarkers()
 	{
+		GWT.log("Refresh Markers " + placebook);
+		markerLayer.clearMarkers();		
 		if (placebook == null) { return; }
 
 		positionItem = null;
 		interactionLabel.setVisible(false);
 		for (final PlaceBookItem item : placebook.getItems())
-		{
-			if (item.hasMetadata("mapItemID") && item.getMetadata("mapItemID").equals(getItem().getKey()))
+		{		
+			if (item.hasMetadata("mapItemID"))// && item.getMetadata("mapItemID").equals(getItem().getKey()))
 			{
+				GWT.log("Has mapItemID");				
 				if (item.getGeometry() != null)
 				{
 					final String geometry = item.getGeometry();
@@ -124,7 +127,6 @@ public class MapItem extends PlaceBookItemWidget
 			createMap();
 		}
 
-		markerLayer.clearMarkers();
 		refreshMarkers();
 	}
 
