@@ -17,7 +17,6 @@ import placebooks.client.ui.palette.Palette;
 import placebooks.client.ui.places.PlaceBookEditorPlace;
 import placebooks.client.ui.places.PlaceBookHomePlace;
 import placebooks.client.ui.places.PlaceBookPreviewPlace;
-import placebooks.client.ui.widget.RichTextArea;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
@@ -44,6 +43,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends Composite
@@ -167,7 +167,7 @@ public class PlaceBookEditor extends Composite
 	PlaceBookToolbarItem saveStatusPanel;
 
 	@UiField
-	RichTextArea title;
+	TextBox title;
 
 	@UiField
 	Label zoomLabel;
@@ -359,12 +359,12 @@ public class PlaceBookEditor extends Composite
 		if (newPlacebook.hasMetadata("title"))
 		{
 			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBooks Editor");
-			title.getElement().setInnerText(newPlacebook.getMetadata("title"));
+			title.setText(newPlacebook.getMetadata("title"));
 		}
 		else
 		{
 			Window.setTitle("PlaceBooks Editor");
-			title.getElement().setInnerText("No Title");
+			title.setText("No Title");
 		}
 
 		loadingPanel.setVisible(false);
@@ -396,7 +396,7 @@ public class PlaceBookEditor extends Composite
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
-		canvas.getPlaceBook().setMetadata("title", title.getElement().getInnerText());
+		canvas.getPlaceBook().setMetadata("title", title.getText());
 		saveContext.markChanged();
 	}
 
@@ -457,12 +457,12 @@ public class PlaceBookEditor extends Composite
 			if (newPlacebook.hasMetadata("title"))
 			{
 				Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
-				title.getElement().setInnerText(newPlacebook.getMetadata("title"));
+				title.setText(newPlacebook.getMetadata("title"));
 			}
 			else
 			{
 				Window.setTitle("PlaceBook Editor");
-				title.getElement().setInnerText("No Title");
+				title.setText("No Title");
 			}
 
 			canvas.reflow();

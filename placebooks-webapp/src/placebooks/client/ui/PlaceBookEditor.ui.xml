@@ -75,6 +75,10 @@
 			-o-user-select: text;			
 			user-select: text;	
 			display: inline;
+			border: 0px;
+			background: transparent;
+			font: 18px/40px mako, sans-serif;
+			width: 250px;			
 		}
 		
 		.loadingLabel {
@@ -114,13 +118,30 @@
 			float: right;	
 		}
 		
+		.placeBookMenu {
+			border: 1px solid black;
+			border-bottom: 0px;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			background-color: white;
+			font-size: 12px;
+			padding: 0 5px;
+			margin-top: 10px;
+			margin-right: 5px;
+			line-height: 30px;
+			cursor: default;
+		}
+		
+		.placeBookMenu:HOVER {
+			background-color: rgba(255,255,255,0.2);			
+		}		
 
 		.imageButton {
 			padding: 0 5px;
 			padding-top: 2px;
 			height: 38px;
 		}
-		
+				
 		.imageButton:HOVER {
 			background-color: rgba(255,255,255,0.2);			
 		}
@@ -135,8 +156,8 @@
 				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image resource="{res.zoom_in}" /></p:MousePanel>
 				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image resource="{res.zoom_out}" /></p:MousePanel>
 				<pb:PlaceBookToolbarItem ui:field="saveStatusPanel" />
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatLeft}" ui:field="menu"><g:Image resource="{res.placebook16}"/></p:MousePanel>						
-				<p:RichTextArea ui:field="title" styleName="{style.titleLabel}" />			
+				<p:MousePanel addStyleNames="{style.placeBookMenu} {style.floatLeft}" ui:field="menu"><!--<g:Image resource="{res.placebook16}"/>--><g:InlineLabel>PlaceBook&nbsp;</g:InlineLabel><g:InlineLabel styleName="{res.style.dropIcon}">&#9660;</g:InlineLabel></p:MousePanel>						
+				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />			
 			</g:FlowPanel>			
 			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />
 		</g:FlowPanel>	
