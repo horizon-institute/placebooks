@@ -19,6 +19,7 @@ public class PlaceBookEntryWidget extends FlowPanel
 
 	public PlaceBookEntryWidget(final PlaceBookToolbar toolbar, final PlaceBookEntry entry)
 	{
+		super();
 		title.setText(entry.getTitle());
 		setStyleName(Resources.INSTANCE.style().placebookEntry());
 		title.setStyleName(Resources.INSTANCE.style().placebookEntryText());
