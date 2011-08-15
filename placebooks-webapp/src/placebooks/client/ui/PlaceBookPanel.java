@@ -36,8 +36,10 @@ public class PlaceBookPanel extends FlowPanel
 	private final int panelIndex;
 
 	private final int row;
+	
+	private double width;
 
-	public PlaceBookPanel(final int index, final int columns, final boolean visible)
+	public PlaceBookPanel(final int index, final int columns, final double left, final double width, final boolean visible)
 	{
 		this.panelIndex = index;
 		column = index % columns;
@@ -62,7 +64,8 @@ public class PlaceBookPanel extends FlowPanel
 		{
 			setStyleName(Resources.INSTANCE.style().panelInvisible());
 		}
-		setWidth(100f / columns);
+		getElement().getStyle().setLeft(left, Unit.PCT);
+		setWidth(width);
 
 		innerPanel.setStyleName(Resources.INSTANCE.style().innerPanel());
 
@@ -113,18 +116,18 @@ public class PlaceBookPanel extends FlowPanel
 
 	public void resize()
 	{
-		final int panelHeight = getElement().getClientWidth() * 2;
+		final double panelHeight = getElement().getClientWidth() * 200 / (width * 3);
 
-		final int panelTop = ((panelHeight + 20) * row);
+		final double panelTop = ((panelHeight + 20) * row);
 
 		getElement().getStyle().setTop(panelTop, Unit.PX);
 		setHeight(panelHeight + "px");
 	}
 
-	public void setWidth(final float panelWidth)
+	private void setWidth(final double panelWidth)
 	{
+		this.width = panelWidth;
 		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
-		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
 
 		resize();
 	}

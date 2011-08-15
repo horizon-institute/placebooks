@@ -102,11 +102,27 @@ public class PlaceBookCanvas extends FlowPanel
 		{
 		}
 
+		final double pageWidth = 297;
+		final double usableWidth = 257;
+		final double panelWidth = pageWidth / columns;
+		final double shortPanelWidth = panelWidth - 20;
+		double left = 0;
 		for (int index = 0; index < (pages * columns); index++)
 		{
-			final PlaceBookPanel panel = new PlaceBookPanel(index, columns, panelsVisible);
+			double widthPCT = panelWidth / usableWidth * 100;
+			if((index % columns) == 0 || (index % columns) == columns - 1)
+			{
+				widthPCT = shortPanelWidth / usableWidth * 100;
+			}
+			if((index % columns) == 0)
+			{
+				left = 0;
+			}
+			final PlaceBookPanel panel = new PlaceBookPanel(index, columns, left, widthPCT, panelsVisible);
 			panels.add(panel);
 			add(panel);
+			
+			left += widthPCT;
 		}
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
