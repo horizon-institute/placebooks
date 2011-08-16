@@ -31,7 +31,8 @@ public final class PropertiesSingleton
 
 	public static final String IDEN_TILER_PIXEL_X = "tiler.x_pixels";
 	public static final String IDEN_TILER_PIXEL_Y = "tiler.y_pixels";
-	public static final String IDEN_TILER_MAX_TILES = "tiler.max_tiles";	
+	public static final String IDEN_TILER_MAX_TILES = "tiler.max_tiles";
+	public static final String IDEN_TILER_SQUARE = "tiler.square";	
 
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
 	public static final String IDEN_VIDEO_MAX_SIZE = "videoitem.size_limit";
