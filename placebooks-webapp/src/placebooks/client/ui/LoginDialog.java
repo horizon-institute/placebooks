@@ -1,6 +1,7 @@
 package placebooks.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -32,6 +33,9 @@ public class LoginDialog extends Composite
 
 	@UiField
 	Label titleLabel;
+	
+	@UiField
+	Label errorLabel;
 
 	@UiField
 	TextBox username;
@@ -62,7 +66,18 @@ public class LoginDialog extends Composite
 	{
 		return password.getText();
 	}
-
+	
+	public void setUsername(String username)
+	{
+		this.username.setText(username);
+	}
+	
+	public void setErrorText(String error)
+	{
+		errorLabel.setText(error);
+		errorLabel.getElement().getStyle().setDisplay(Display.BLOCK);
+	}
+	
 	public String getUsername()
 	{
 		return username.getText();

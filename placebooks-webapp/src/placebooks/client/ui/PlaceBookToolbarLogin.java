@@ -148,7 +148,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 					@Override
 					public void onClick(final ClickEvent event)
 					{
-						dialogBox.hide();
 						PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), "Everytrail",
 														new AbstractCallback()
 														{
@@ -156,6 +155,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 															public void success(final Request request,
 																	final Response response)
 															{
+																dialogBox.hide();																
 																everytrailsUpdate = true;
 																PlaceBookService.everytrail(new AbstractCallback()
 																{
@@ -169,6 +169,12 @@ public class PlaceBookToolbarLogin extends FlowPanel
 																	}
 																});
 															}
+
+															@Override
+															public void failure(Request request, Response response)
+															{
+																account.setErrorText("Everytrail Login Failed");																
+															}														
 														});
 					}
 				});
