@@ -99,6 +99,7 @@ public abstract class MediaItem extends PlaceBookItem
 	@Override
 	public void deleteItemData()
 	{
+		if(getPath() == null) { return; }
 		final File f = new File(getPath());
 		if (f.exists())
 			f.delete();
