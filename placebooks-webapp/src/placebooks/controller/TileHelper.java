@@ -124,6 +124,7 @@ public final class TileHelper
 		int pixelY = 200;
 		String fmt = "png";
 		int maxTiles = 100;
+		boolean square = false;
 
 		try
 		{
@@ -163,6 +164,13 @@ public final class TileHelper
 					.get(TileHelper.class.getClassLoader())
 					.getProperty(
 						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
+					)
+			);
+			square = Boolean.parseBoolean(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_SQUARE, "true"
 					)
 			);
 		}
@@ -218,15 +226,46 @@ public final class TileHelper
 		}
 
 
-		final int eBlocks = (int)Math.ceil(
-									(Math.abs(bbox[1].getEasting() 
-									 - bbox[0].getEasting())
-								 	) / incX);
-		final int nBlocks = (int)Math.ceil(
-									(Math.abs(bbox[1].getNorthing() 
-									   - bbox[0].getNorthing())
-									) / incY);
+		int eBlocks = (int)Math.ceil((Math.abs(bbox[1].getEasting() 
+									 	- bbox[0].getEasting())) / incX);
+		int nBlocks = (int)Math.ceil((Math.abs(bbox[1].getNorthing() 
+									   - bbox[0].getNorthing())) / incY);
+
 		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
+
+		if (square)
+		{
+			int diff = Math.abs(eBlocks - nBlocks);
+			if (diff > 0)
+			{
+				if (eBlocks > nBlocks)
+				{
+					nBlocks = eBlocks;
+					for ( ; diff > 0; --diff)
+					{
+						if (diff % 2 == 0)
+							bbox[0].setNorthing(bbox[0].getNorthing() - incY);
+						else
+							bbox[1].setNorthing(bbox[1].getNorthing() + incY);
+					}
+				}
+				else
+				{
+					eBlocks = nBlocks;
+					for ( ; diff > 0; --diff)
+					{
+						if (diff % 2 == 0)
+							bbox[0].setEasting(bbox[0].getEasting() - incX);
+						else
+							bbox[1].setEasting(bbox[1].getEasting() + incX);
+
+					}
+				}
+
+				log.info("Squared tiles out");
+			}
+		}
+
 
 		if (eBlocks * nBlocks > maxTiles)
 			log.error("Tiler limiting fetches to " + maxTiles + " tiles");
