@@ -215,8 +215,8 @@ public class PlaceBookInteractionHandler
 
 	private PlaceBookPanel getPanel(final MouseEvent<?> event)
 	{
-		final int canvasx = event.getRelativeX(canvas.getElement());
-		final int canvasy = event.getRelativeY(canvas.getElement());
+		final int canvasx = event.getX();//RelativeX(canvas.getElement());
+		final int canvasy = event.getY();//RelativeY(canvas.getElement());
 		for (final PlaceBookPanel panel : canvas.getPanels())
 		{
 			if (panel.isIn(canvasx, canvasy)) { return panel; }
@@ -318,10 +318,6 @@ public class PlaceBookInteractionHandler
 				canvas.add(frame);
 				newPanel.reflow();
 				saveContext.markChanged();
-			}
-			else
-			{
-				insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			}
 			dragFrame.clearItemWidget();			
 		}

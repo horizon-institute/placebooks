@@ -40,6 +40,7 @@ a:hover {
 .toolbarMenuItem:HOVER {
 	background: #555;
 }
+
 .dropMenu {
 	position: absolute;
 	opacity: 0;
@@ -69,19 +70,29 @@ a:hover {
 	opacity: 0.6;
 }
 
-.panelInvisible {
-	position: absolute;
-	overflow: visible;
-}
-
-.panel {
-	position: absolute;
+.page {
+	position: relative;
 	border: 1px solid #000;
 	background-color: #fff;
 	-moz-box-shadow: 3px 3px 4px #666;
 	-webkit-box-shadow: 3px 3px 4px #666;
 	box-shadow: 3px 3px 6px #666;
-	overflow: visible;	
+	overflow: visible;
+	margin-bottom: 20px;
+}
+
+.pageInvisible {
+	position: relative;
+	background-color: #fff;
+	overflow: visible;
+}
+
+.panel {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	background-color: #fff;
+	overflow: visible;
 }
 
 .listItem {
@@ -91,11 +102,7 @@ a:hover {
 }
 
 .canvas {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
+	position: relative;
 	overflow: visible;
 }
 
@@ -144,7 +151,7 @@ a:hover {
 }
 
 .toolbarItem:HOVER {
-	background-color: rgba(255,255,255,0.2);
+	background-color: rgba(255, 255, 255, 0.2);
 	color: #FFF;
 }
 
@@ -163,11 +170,11 @@ a:hover {
 .saveItem {
 	float: right;
 	padding: 0 10px;
-	cursor: default;	
+	cursor: default;
 }
 
 .saveItem:HOVER {
-	background-color: rgba(255,255,255,0.2);	
+	background-color: rgba(255, 255, 255, 0.2);
 }
 
 .frameWidgetPanel {
@@ -238,16 +245,7 @@ img {
 	overflow: hidden;
 }
 
-.panelleft {
-	border-right: 0px;
-}
-
-.panelright {
-	border-left: 1px dashed #ccc;
-}
-
-.panelcenter {
-	border-right: 0px;
+.panelEdge {
 	border-left: 1px dashed #ccc;
 }
 
@@ -282,13 +280,13 @@ img {
 	margin: 10px auto;
 	width: 150px;
 	text-align: center;
-	border-radius: 16px;			
+	border-radius: 16px;
 }
-		
+
 .placebookEntry:HOVER {
 	background-color: #DDD;
 }
-		
+
 .placebookEntryText {
 	margin-left: auto;
 	margin-right: auto;
