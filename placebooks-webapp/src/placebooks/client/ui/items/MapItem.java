@@ -57,12 +57,13 @@ public class MapItem extends PlaceBookItemWidget
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		panel.add(interactionLabel);
 		panel.setWidth("100%");
-		panel.setHeight("300px");
+		panel.setHeight("100%");
+//		panel.setHeight("300px");
 
-		if (!item.hasParameter("height"))
-		{
-			item.setParameter("height", 5000);
-		}
+//		if (!item.hasParameter("height"))
+//		{
+//			item.setParameter("height", 5000);
+//		}
 	}
 
 	@Override

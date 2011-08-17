@@ -137,7 +137,8 @@ public class PlaceBookCanvas extends FlowPanel
 				{
 					widthPCT = shortPanelWidth / usableWidth * 100;
 				}
-				final PlaceBookPanel panel = new PlaceBookPanel(index, columns, left, widthPCT, panelsVisible);
+				final int panelIndex = (pageIndex * columns) + index;
+				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
 				panels.add(panel);
 				page.add(panel);
 				

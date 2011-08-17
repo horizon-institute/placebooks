@@ -261,7 +261,7 @@ public class PlaceBookInteractionHandler
 			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
 			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
 
-			final PlaceBookPanel newPanel = getPanel(event);
+			final PlaceBookPanel newPanel = getPanel(event);		
 			if (oldPanel != newPanel && oldPanel != null)
 			{
 				oldPanel.reflow();
@@ -270,6 +270,7 @@ public class PlaceBookInteractionHandler
 
 			if (newPanel != null)
 			{
+				GWT.log("Drop into panel " + newPanel.getIndex());				
 				newPanel.reflow(insert, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
 			}
@@ -310,6 +311,7 @@ public class PlaceBookInteractionHandler
 
 			if (newPanel != null)
 			{
+				GWT.log("Drop into panel " + newPanel.getIndex());				
 				GWT.log("Add item");
 				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
 								.getOffsetHeight());				

@@ -20,7 +20,6 @@ import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
 
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -118,8 +117,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
 		createFrame();
 		this.interactionHandler = interactHandler;
-		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
-		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+		widgetPanel.setStyleName(Resources.INSTANCE.style().widgetInnerPanel());
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
 		widgetPanel.addDomHandler(highlightOff, MouseOutEvent.getType());
 

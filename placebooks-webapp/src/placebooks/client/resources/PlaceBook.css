@@ -116,6 +116,12 @@ a:hover {
 	position: relative;
 }
 
+.widgetInnerPanel {
+	margin: 5px;
+	overflow: hidden;
+	height: 100%;
+}
+
 .content {
 	margin: auto;
 	width: 800px;
