@@ -9,11 +9,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
-
-import placebooks.client.PlaceBookService;
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.UserManager;
