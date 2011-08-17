@@ -49,10 +49,13 @@ public class MapItem extends PlaceBookItemWidget
 	private RouteLayer routeLayer;
 
 	private String url;
+	
+	private final boolean controls;
 
-	MapItem(final PlaceBookItem item)
+	MapItem(final PlaceBookItem item, boolean controls)
 	{
 		super(item);
+		this.controls = controls;
 		initWidget(panel);
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		panel.add(interactionLabel);
@@ -142,7 +145,7 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null)
 		{
-			map = Map.create(panel.getElement());
+			map = Map.create(panel.getElement(), controls);
 			// map = OSMap.create(panel.getElement());
 			final ClickControl control = ClickControl.create(new EventHandler()
 			{
