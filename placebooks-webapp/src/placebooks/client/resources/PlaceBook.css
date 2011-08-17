@@ -114,12 +114,7 @@ a:hover {
 	width: 100%;
 	overflow: hidden;
 	position: relative;
-}
-
-.widgetInnerPanel {
-	margin: 5px;
-	overflow: hidden;
-	height: 100%;
+	margin-bottom: 5px;
 }
 
 .content {
@@ -249,6 +244,7 @@ img {
 	right: 0px;
 	bottom: 0px;
 	overflow: hidden;
+	margin: 5px;
 }
 
 .panelEdge {
@@ -257,8 +253,7 @@ img {
 
 .dragFrame {
 	position: absolute;
-	margin: 1px;
-	opacity: 0.6;
+	opacity: 0.7;
 	visibility: hidden;
 	z-index: 100;
 	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);

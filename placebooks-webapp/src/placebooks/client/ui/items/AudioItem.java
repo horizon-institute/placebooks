@@ -46,7 +46,7 @@ public class AudioItem extends PlaceBookItemWidget
 		}
 		else
 		{
-			audio.setHeight("auto");			
+			audio.getElement().getStyle().clearHeight();			
 		}			
 		if (url == null || !url.equals(getItem().getURL()))
 		{

@@ -237,6 +237,20 @@ public class PlaceBookInteractionHandler
 					canvas.remove(dragItemFrame);
 				}
 				dragFrame.setItemWidget(dragItem);
+				if(dragItem.getOffsetHeight() == 0)
+				{
+					GWT.log("Zero height");
+					if(dragItem.getItem().hasParameter("height"))
+					{
+						GWT.log("Height: " + dragItem.getItem().getParameter("height"));
+						final int heightPX = (int) (dragItem.getItem().getParameter("height") * canvas.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
+						dragItem.setHeight(heightPX + "px");
+					}
+					else
+					{
+						dragItem.setHeight("300px");
+					}
+				}
 				dragState = DragState.dragging;
 				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
 				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");

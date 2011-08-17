@@ -60,10 +60,10 @@ public class MapItem extends PlaceBookItemWidget
 		panel.setHeight("100%");
 //		panel.setHeight("300px");
 
-//		if (!item.hasParameter("height"))
-//		{
-//			item.setParameter("height", 5000);
-//		}
+		if (!item.hasParameter("height"))
+		{
+			item.setParameter("height", 5000);
+		}
 	}
 
 	@Override

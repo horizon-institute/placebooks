@@ -4,7 +4,6 @@
 	<ui:style>
 		.itemFrame {		
 			position: absolute;
-			margin: 1px;
 			-webkit-transition: opacity .5s linear, visibility .5s linear, z-index .5s linear;
 			transition: opacity .5s linear, visibility .5s linear, z-index .5s linear;
 			opacity: 0;
