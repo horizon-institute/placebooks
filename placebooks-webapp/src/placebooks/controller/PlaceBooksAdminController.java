@@ -5,18 +5,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.io.InputStream;
-
 import java.net.URL;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -44,17 +42,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import placebooks.model.AudioItem;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
-
-import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
@@ -63,10 +59,13 @@ import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.model.json.Shelf;
-import placebooks.model.json.UserShelf;
-import placebooks.model.json.PlaceBookEntry;
+import placebooks.model.json.PlaceBookDistanceEntry;
+import placebooks.model.json.PlaceBookItemDistanceEntry;
 import placebooks.model.json.PlaceBookSearchEntry;
+import placebooks.model.json.ServerInfo;
+import placebooks.model.json.Shelf;
+import placebooks.model.json.ShelfEntry;
+import placebooks.model.json.UserShelf;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -311,16 +310,29 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
-	public String addLoginDetails(@RequestParam final String username, @RequestParam final String password,
-			@RequestParam final String service)
+	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
+			@RequestParam final String service, final HttpServletResponse res)
 	{
+		if(service.equals(EverytrailHelper.SERVICE_NAME))
+		{
+			EverytrailLoginResponse response = EverytrailHelper.UserLogin(username, password);
+			log.info(response.getStatus() + ":" + response.getValue());
+			if(response.getStatus().equals("error"))
+			{
+				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);			
+				
+				return;
+			}
+		}		
+		
+		
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
-
+		
 		try
 		{
 			manager.getTransaction().begin();
-			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
+			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);			
 			manager.persist(loginDetails);
 			user.add(loginDetails);
 			manager.getTransaction().commit();
@@ -338,8 +350,6 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
-
-		return "redirect:/index.html";
 	}
 
 	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
@@ -600,9 +610,10 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, 
-										  final HttpServletResponse res,
-										  @PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(
+								final HttpServletRequest req, 
+								final HttpServletResponse res,
+								@PathVariable("owner") final String owner)
 	{
 		if (owner.trim().isEmpty()) { return null; }
 
@@ -709,8 +720,6 @@ public class PlaceBooksAdminController
 	public void publishPlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
 		log.info("Publish Placebook: " + json);
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -729,6 +738,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
@@ -758,8 +769,6 @@ public class PlaceBooksAdminController
 	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
 	{
 		log.info("Save Placebook: " + json);
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -778,6 +787,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			final ObjectMapper mapper = new ObjectMapper();
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 
@@ -802,6 +813,113 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	@RequestMapping(value = "/admin/location_search/placebook/{geometry}", 
+					method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBooksGET(
+							final HttpServletRequest req,
+							final HttpServletResponse res,
+							@PathVariable("geometry") final String geometry)
+	{
+		Geometry geometry_ = null;
+		try
+		{
+			geometry_ = new WKTReader().read(geometry);
+		}
+		catch (final ParseException e)
+		{
+			log.error(e.toString(), e);
+			return null;
+		}
+
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final StringBuffer out = new StringBuffer();
+		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
+		for (final Map.Entry<PlaceBook, Double> entry : 
+			 PlaceBooksAdminHelper.searchLocationForPlaceBooks(em, geometry_))
+		{
+			final PlaceBook p = entry.getKey();
+			if (p != null)
+			{
+				log.info("Search result: pb key=" + entry.getKey().getKey() 
+						 + ", distance=" + entry.getValue());
+				pbs.add(new PlaceBookDistanceEntry(p, entry.getValue()));
+			}	
+		}
+		em.close();
+
+		final Shelf s = new Shelf();
+		s.setEntries(pbs);
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+	}
+
+	@RequestMapping(value = "/admin/location_search/placebookitem/{geometry}", 
+					method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBookItemsGET(
+							final HttpServletRequest req,
+							final HttpServletResponse res,
+							@PathVariable("geometry") final String geometry)
+	{
+		Geometry geometry_ = null;
+		try
+		{
+			geometry_ = new WKTReader().read(geometry);
+		}
+		catch (final ParseException e)
+		{
+			log.error(e.toString(), e);
+			return null;
+		}
+
+		final EntityManager em = EMFSingleton.getEntityManager();
+		final StringBuffer out = new StringBuffer();
+		final Collection<ShelfEntry> ps = new ArrayList<ShelfEntry>();
+		for (final Map.Entry<PlaceBookItem, Double> entry : 
+			 PlaceBooksAdminHelper
+			 	.searchLocationForPlaceBookItems(em, geometry_)
+			)
+		{
+			final PlaceBookItem p = entry.getKey();
+			if (p != null)
+			{
+				log.info("Search result: pbi key=" + entry.getKey().getKey() 
+						 + ", distance=" + entry.getValue());
+				ps.add(new PlaceBookItemDistanceEntry(p, entry.getValue()));
+			}	
+		}
+		em.close();
+
+		final Shelf s = new Shelf();
+		s.setEntries(ps);
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, s);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+
+		return null;
+
+	}
+
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
 	public ModelAndView searchGET(final HttpServletRequest req,
 								  final HttpServletResponse res,
@@ -812,8 +930,7 @@ public class PlaceBooksAdminController
 		
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
-		final Collection<PlaceBookEntry> pbs = 
-			new ArrayList<PlaceBookEntry>();
+		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Integer> entry : 
 			 PlaceBooksAdminHelper.search(em, terms))
 		{
@@ -1208,4 +1325,26 @@ public class PlaceBooksAdminController
 
 		return new ModelAndView("message", "text", "Failed");
 	}
+
+
+	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
+	public ModelAndView getServerInfoJSON(final HttpServletRequest req, 
+										  final HttpServletResponse res)
+	{
+		final ServerInfo si = new ServerInfo();
+		try
+		{
+			final ObjectMapper mapper = new ObjectMapper();
+			final ServletOutputStream sos = res.getOutputStream();
+			res.setContentType("application/json");
+			mapper.writeValue(sos, si);
+			sos.flush();
+		}
+		catch (final IOException e)
+		{
+			log.error(e.toString());
+		}
+		return null;
+	}
+
 }

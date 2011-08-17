@@ -61,7 +61,7 @@ public class PlaceBookService
 	public static void publishPlaceBook(final PlaceBook placebook, final RequestCallback callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/publishplacebook",
-						"placebook=" + new JSONObject(placebook).toString(), callback);
+						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
 	public static void registerAccount(final String name, final String email, final String password,
@@ -99,8 +99,9 @@ public class PlaceBookService
 		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));
 		if (data != null)
 		{
-			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			builder.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 			GWT.log("Request data: " + URL.decodePathSegment(data));
+			GWT.log("Request data: " + data);			
 		}
 		try
 		{

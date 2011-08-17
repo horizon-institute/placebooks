@@ -11,10 +11,12 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 
 public class PlaceBookCanvas extends FlowPanel
 {
@@ -24,6 +26,7 @@ public class PlaceBookCanvas extends FlowPanel
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
+	private final List<Panel> pages = new ArrayList<Panel>();
 
 	private PlaceBook placebook;
 
@@ -65,6 +68,12 @@ public class PlaceBookCanvas extends FlowPanel
 
 	public void reflow()
 	{
+		for(final Panel page: pages)
+		{
+			final double panelHeight = getElement().getClientWidth() * 2 / 3;
+			page.setHeight(panelHeight + "px");
+		}
+		
 		for (final PlaceBookPanel panel : panels)
 		{
 			panel.reflow();
@@ -84,10 +93,10 @@ public class PlaceBookCanvas extends FlowPanel
 		assert placebook == null;
 		this.placebook = newPlaceBook;
 		clear();
-		int pages = DEFAULT_PAGES;
+		int pageCount = DEFAULT_PAGES;
 		try
 		{
-			pages = Integer.parseInt(newPlaceBook.getMetadata("pageCount"));
+			pageCount = Integer.parseInt(newPlaceBook.getMetadata("pageCount"));
 		}
 		catch (final Exception e)
 		{
@@ -96,17 +105,48 @@ public class PlaceBookCanvas extends FlowPanel
 		final int columns = DEFAULT_COLUMNS;
 		try
 		{
-			pages = Integer.parseInt(newPlaceBook.getMetadata("columns"));
+			pageCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
 		}
 		catch (final Exception e)
 		{
 		}
 
-		for (int index = 0; index < (pages * columns); index++)
+		final double pageWidth = 297;
+		final double usableWidth = 257;
+		final double panelWidth = pageWidth / columns;
+		final double shortPanelWidth = panelWidth - 20;
+		for(int pageIndex = 0; pageIndex < pageCount; pageIndex++)
 		{
-			final PlaceBookPanel panel = new PlaceBookPanel(index, columns, panelsVisible);
-			panels.add(panel);
-			add(panel);
+			final FlowPanel page = new FlowPanel();
+			if(panelsVisible)
+			{
+				page.setStyleName(Resources.INSTANCE.style().page());				
+				final double padding = 2000 / 297;
+				page.getElement().getStyle().setPadding(padding, Unit.PCT);
+			}
+			else
+			{
+				page.setStyleName(Resources.INSTANCE.style().pageInvisible());
+			}
+
+			double left = 0;			
+			for (int index = 0; index < columns; index++)
+			{
+				double widthPCT = panelWidth / usableWidth * 100;
+				if(index == 0 || index == columns - 1)
+				{
+					widthPCT = shortPanelWidth / usableWidth * 100;
+				}
+				final int panelIndex = (pageIndex * columns) + index;
+				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
+				panels.add(panel);
+				page.add(panel);
+				
+				left += widthPCT;
+			}
+			
+			add(page);
+			pages.add(page);
 		}
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())

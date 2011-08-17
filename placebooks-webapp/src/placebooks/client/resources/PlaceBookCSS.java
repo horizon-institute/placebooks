@@ -36,17 +36,17 @@ public interface PlaceBookCSS extends CssResource
 
 	String panel();
 
-	String panelcenter();
-
-	String panelInvisible();
-
-	String panelleft();
-
-	String panelright();
+	String page();
+	
+	String pageInvisible();
+	
+	String panelEdge();
 
 	String placebookEntry();
 
 	String placebookEntryText();
+	
+	String dropIcon();
 	
 	String saveItem();
 	

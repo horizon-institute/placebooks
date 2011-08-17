@@ -40,6 +40,14 @@ public class AudioItem extends PlaceBookItemWidget
 	@Override
 	public void refresh()
 	{
+		if (getItem().hasParameter("height"))
+		{
+			audio.setHeight("100%");
+		}
+		else
+		{
+			audio.getElement().getStyle().clearHeight();			
+		}			
 		if (url == null || !url.equals(getItem().getURL()))
 		{
 			url = getItem().getURL();

@@ -34,35 +34,18 @@ public class PlaceBookPanel extends FlowPanel
 	private final List<PlaceBookItemFrame> items = new ArrayList<PlaceBookItemFrame>();
 
 	private final int panelIndex;
-
-	private final int row;
-
-	public PlaceBookPanel(final int index, final int columns, final boolean visible)
+	
+	public PlaceBookPanel(final int index, final int columns, final double left, final double width, final boolean visible)
 	{
 		this.panelIndex = index;
 		column = index % columns;
-		row = index / columns;
-		if (visible)
+		setStyleName(Resources.INSTANCE.style().panel());		
+		if (visible && column != 0)
 		{
-			setStyleName(Resources.INSTANCE.style().panel());
-			if (column == 0)
-			{
-				addStyleName(Resources.INSTANCE.style().panelleft());
-			}
-			else if (column == (columns - 1))
-			{
-				addStyleName(Resources.INSTANCE.style().panelright());
-			}
-			else
-			{
-				addStyleName(Resources.INSTANCE.style().panelcenter());
-			}
+			addStyleName(Resources.INSTANCE.style().panelEdge());
 		}
-		else
-		{
-			setStyleName(Resources.INSTANCE.style().panelInvisible());
-		}
-		setWidth(100f / columns);
+		getElement().getStyle().setLeft(left, Unit.PCT);
+		getElement().getStyle().setWidth(width, Unit.PCT);
 
 		innerPanel.setStyleName(Resources.INSTANCE.style().innerPanel());
 
@@ -96,8 +79,6 @@ public class PlaceBookPanel extends FlowPanel
 	{
 		Collections.sort(items, orderComparator);
 
-		resize();
-
 		int order = 0;
 		for (final PlaceBookItemFrame item : items)
 		{
@@ -111,37 +92,18 @@ public class PlaceBookPanel extends FlowPanel
 		items.remove(item);
 	}
 
-	public void resize()
-	{
-		final int panelHeight = getElement().getClientWidth() * 2;
-
-		final int panelTop = ((panelHeight + 20) * row);
-
-		getElement().getStyle().setTop(panelTop, Unit.PX);
-		setHeight(panelHeight + "px");
-	}
-
-	public void setWidth(final float panelWidth)
-	{
-		getElement().getStyle().setWidth(panelWidth, Unit.PCT);
-		getElement().getStyle().setLeft(column * panelWidth, Unit.PCT);
-
-		resize();
-	}
-
 	boolean isIn(final int x, final int y)
 	{
-		final int left = getElement().getOffsetLeft();
-		final int width = getElement().getOffsetWidth();
-		final int top = getElement().getOffsetTop() - 20;
-		final int height = getElement().getOffsetHeight();
-		return left < x && x < (left + width) && top < y && y < (top + height);
+		final int left = getElement().getAbsoluteLeft();
+		final int right = getElement().getAbsoluteRight();
+		final int top = getElement().getAbsoluteTop() - 20;
+		final int bottom = getElement().getAbsoluteBottom();
+		return left < x && x < right && top < y && y < bottom;
 	}
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
 	{
 		Collections.sort(items, orderComparator);
-		resize();
 		
 		newItem.getItem().setParameter("panel", panelIndex);
 
@@ -171,7 +133,6 @@ public class PlaceBookPanel extends FlowPanel
 	void reflow(final Widget insert, final int inserty, final int height)
 	{
 		Collections.sort(items, orderComparator);
-		resize();
 
 		int top = 0;
 		int order = 0;
@@ -205,10 +166,11 @@ public class PlaceBookPanel extends FlowPanel
 		if (item.getItem().hasParameter("height") && item.getPanel() != null)
 		{
 			final int height = item.getItem().getParameter("height");
-			final double heightPCT = height / HEIGHT_PRECISION;
-			final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
+			final double heightPCT = height * 100 / HEIGHT_PRECISION;
+			heightString = heightPCT + "%";
+			//final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
 
-			heightString = heightPX + "px";
+			//heightString = heightPX + "px";
 		}
 		else
 		{

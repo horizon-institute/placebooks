@@ -31,6 +31,14 @@ public class VideoItem extends PlaceBookItemWidget
 	@Override
 	public void refresh()
 	{
+		if (getItem().hasParameter("height"))
+		{
+			video.setHeight("100%");
+		}
+		else
+		{
+			video.setHeight("auto");			
+		}		
 		if (url == null || !url.equals(getItem().getURL()))
 		{
 			url = getItem().getURL();

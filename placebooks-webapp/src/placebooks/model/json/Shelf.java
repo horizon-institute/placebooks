@@ -8,22 +8,22 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookItem;
 
 public class Shelf
 {
 	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
-	private Collection<PlaceBookEntry> entries = 
-		new ArrayList<PlaceBookEntry>();
+	private Collection<ShelfEntry> entries = new ArrayList<ShelfEntry>();
 
 	public Shelf()
 	{
 	}
 
-	public Shelf(final Collection<PlaceBook> pbs)
+	public Shelf(final PlaceBook pbs[])
 	{
-		log.info("Creating JSON Shelf...");
+		log.info("Creating JSON Shelf for PlaceBooks...");
 
 		for (final PlaceBook pb : pbs)
 		{
@@ -33,13 +33,30 @@ public class Shelf
 				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 			}
 
-			final PlaceBookEntry entry = new PlaceBookEntry(pb);
+			final ShelfEntry entry = new PlaceBookEntry(pb);
+			entries.add(entry);
+		}
+	}
+
+	public Shelf(final PlaceBookItem ps[])
+	{
+		log.info("Creating JSON Shelf for PlaceBookItems...");
+
+		for (final PlaceBookItem p : ps)
+		{
+			for (final Map.Entry<String, String> e : 
+				 p.getMetadata().entrySet())
+			{
+				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+			}
+
+			final ShelfEntry entry = new PlaceBookItemEntry(p);
 			entries.add(entry);
 		}
 	}
 
 
-	public void setEntries(final Collection<PlaceBookEntry> entries)
+	public void setEntries(final Collection<ShelfEntry> entries)
 	{
 		this.entries.clear();
 		this.entries.addAll(entries);

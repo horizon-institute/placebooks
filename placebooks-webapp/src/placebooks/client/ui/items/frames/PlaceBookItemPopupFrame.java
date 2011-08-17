@@ -20,7 +20,6 @@ import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
 
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,7 +30,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 {
@@ -114,12 +112,10 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public PlaceBookItemPopupFrame(final PlaceBookInteractionHandler interactHandler)
 	{
 		super();
-		rootPanel = new SimplePanel();
-		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		rootPanel = widgetPanel;
+		widgetPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
 		createFrame();
 		this.interactionHandler = interactHandler;
-		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
-		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
 		widgetPanel.addDomHandler(highlightOff, MouseOutEvent.getType());
 
@@ -156,7 +152,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 				interactionHandler.setupResize(event, PlaceBookItemPopupFrame.this);
 			}
 		}, MouseDownEvent.getType());
-		rootPanel.add(widgetPanel);
 
 		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems
@@ -180,7 +175,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		super.resize(height);
 
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
 	}
 
 	@Override
@@ -190,13 +185,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		itemWidget.setFocusHandler(focusHandler);
 		itemWidget.setChangeHandler(changeHandler);
 	}
-
-	// @Override
-	// protected void onLoad()
-	// {
-	// super.onLoad();
-	// ((Panel) getParent()).add(frame);
-	// }
 
 	@Override
 	public void setPanel(final PlaceBookPanel newPanel)

@@ -26,7 +26,7 @@ public class PlaceBookItemWidgetFactory
 		}
 		else if (item.is(ItemType.GPS))
 		{
-			return new MapItem(item);
+			return new MapItem(item, editable);
 		}
 		else if (item.is(ItemType.WEB)) { return new WebBundleItem(item); }
 		return null;

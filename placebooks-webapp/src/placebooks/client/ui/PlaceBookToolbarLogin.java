@@ -27,6 +27,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -36,7 +37,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	{
 		void shelfChanged(Shelf shelf);
 	}
-
+	
 	private static boolean everytrailsUpdate = false;
 	private final Label divider = new Label(" | ");
 	private final FlowPanel dropMenu = new FlowPanel();
@@ -59,7 +60,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		}
 	};
 
-	private final Label loginLabel = new Label("LOGIN");
+	private final HTML loginLabel = new HTML("LOGIN");
 
 	private final Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
@@ -147,7 +148,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 					@Override
 					public void onClick(final ClickEvent event)
 					{
-						dialogBox.hide();
 						PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), "Everytrail",
 														new AbstractCallback()
 														{
@@ -155,6 +155,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 															public void success(final Request request,
 																	final Response response)
 															{
+																dialogBox.hide();																
 																everytrailsUpdate = true;
 																PlaceBookService.everytrail(new AbstractCallback()
 																{
@@ -168,6 +169,12 @@ public class PlaceBookToolbarLogin extends FlowPanel
 																	}
 																});
 															}
+
+															@Override
+															public void failure(Request request, Response response)
+															{
+																account.setErrorText("Everytrail Login Failed");																
+															}														
 														});
 					}
 				});
@@ -359,7 +366,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			getElement().getStyle().setDisplay(Display.BLOCK);
 			divider.setVisible(false);
 			signupLabel.setVisible(false);
-			loginLabel.setText(user.getName());
+			loginLabel.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.INSTANCE.style().dropIcon() + "\">&#9660;</span>");
 
 			for (final LoginDetails details : user.getLoginDetails())
 			{

@@ -56,10 +56,12 @@ public class ImageItem extends PlaceBookItemWidget
 		if (getItem().hasParameter("height"))
 		{
 			image.setWidth("auto");
+			image.setHeight("100%");
 		}
 		else
 		{
 			image.setWidth("100%");
+			image.setHeight("auto");			
 		}
 		image.setUrl(getItem().getURL());
 	}

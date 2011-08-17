@@ -49,15 +49,19 @@ public class MapItem extends PlaceBookItemWidget
 	private RouteLayer routeLayer;
 
 	private String url;
+	
+	private final boolean controls;
 
-	MapItem(final PlaceBookItem item)
+	MapItem(final PlaceBookItem item, boolean controls)
 	{
 		super(item);
+		this.controls = controls;
 		initWidget(panel);
 		interactionLabel.setStyleName(Resources.INSTANCE.style().mapLabel());
 		panel.add(interactionLabel);
 		panel.setWidth("100%");
-		panel.setHeight("300px");
+		panel.setHeight("100%");
+//		panel.setHeight("300px");
 
 		if (!item.hasParameter("height"))
 		{
@@ -79,14 +83,17 @@ public class MapItem extends PlaceBookItemWidget
 
 	public void refreshMarkers()
 	{
+		GWT.log("Refresh Markers " + placebook);
+		markerLayer.clearMarkers();		
 		if (placebook == null) { return; }
 
 		positionItem = null;
 		interactionLabel.setVisible(false);
 		for (final PlaceBookItem item : placebook.getItems())
-		{
-			if (item.hasMetadata("mapItemID") && item.getMetadata("mapItemID").equals(getItem().getKey()))
+		{		
+			if (item.hasMetadata("mapItemID"))// && item.getMetadata("mapItemID").equals(getItem().getKey()))
 			{
+				GWT.log("Has mapItemID");				
 				if (item.getGeometry() != null)
 				{
 					final String geometry = item.getGeometry();
@@ -124,7 +131,6 @@ public class MapItem extends PlaceBookItemWidget
 			createMap();
 		}
 
-		markerLayer.clearMarkers();
 		refreshMarkers();
 	}
 
@@ -139,7 +145,7 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null)
 		{
-			map = Map.create(panel.getElement());
+			map = Map.create(panel.getElement(), controls);
 			// map = OSMap.create(panel.getElement());
 			final ClickControl control = ClickControl.create(new EventHandler()
 			{

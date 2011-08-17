@@ -215,8 +215,8 @@ public class PlaceBookInteractionHandler
 
 	private PlaceBookPanel getPanel(final MouseEvent<?> event)
 	{
-		final int canvasx = event.getRelativeX(canvas.getElement());
-		final int canvasy = event.getRelativeY(canvas.getElement());
+		final int canvasx = event.getX();//RelativeX(canvas.getElement());
+		final int canvasy = event.getY();//RelativeY(canvas.getElement());
 		for (final PlaceBookPanel panel : canvas.getPanels())
 		{
 			if (panel.isIn(canvasx, canvasy)) { return panel; }
@@ -237,6 +237,20 @@ public class PlaceBookInteractionHandler
 					canvas.remove(dragItemFrame);
 				}
 				dragFrame.setItemWidget(dragItem);
+				if(dragItem.getOffsetHeight() == 0)
+				{
+					GWT.log("Zero height");
+					if(dragItem.getItem().hasParameter("height"))
+					{
+						GWT.log("Height: " + dragItem.getItem().getParameter("height"));
+						final int heightPX = (int) (dragItem.getItem().getParameter("height") * canvas.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
+						dragItem.setHeight(heightPX + "px");
+					}
+					else
+					{
+						dragItem.setHeight("300px");
+					}
+				}
 				dragState = DragState.dragging;
 				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
 				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
@@ -261,7 +275,7 @@ public class PlaceBookInteractionHandler
 			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
 			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
 
-			final PlaceBookPanel newPanel = getPanel(event);
+			final PlaceBookPanel newPanel = getPanel(event);		
 			if (oldPanel != newPanel && oldPanel != null)
 			{
 				oldPanel.reflow();
@@ -270,6 +284,7 @@ public class PlaceBookInteractionHandler
 
 			if (newPanel != null)
 			{
+				GWT.log("Drop into panel " + newPanel.getIndex());				
 				newPanel.reflow(insert, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
 			}
@@ -310,6 +325,7 @@ public class PlaceBookInteractionHandler
 
 			if (newPanel != null)
 			{
+				GWT.log("Drop into panel " + newPanel.getIndex());				
 				GWT.log("Add item");
 				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
 								.getOffsetHeight());				
@@ -318,10 +334,6 @@ public class PlaceBookInteractionHandler
 				canvas.add(frame);
 				newPanel.reflow();
 				saveContext.markChanged();
-			}
-			else
-			{
-				insert.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			}
 			dragFrame.clearItemWidget();			
 		}
