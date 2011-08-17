@@ -18,6 +18,7 @@
 			height: 16px;
 			background: -webkit-linear-gradient(top,#669,#447);
 			padding: 3px;
+			border-top-right-radius: 5px;			
 		}
 		
 		.menuButton:HOVER {
@@ -36,6 +37,7 @@
 			line-height: 22px;
 			padding-left: 5px;
 			color: #111;
+			border-top-left-radius: 5px;			
 		}
 		
 		.borderSection {
