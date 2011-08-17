@@ -26,6 +26,7 @@ import placebooks.model.User;
  */
 public class PlacebooksTestSuper
 {
+	protected static String test_user_email = "everytrail_test@live.co.uk";
 	protected static String test_username = "placebooks_everytrail_test";
 	protected static String test_password = "testPass1!";		
 	protected static String test_user_id = "275539";
@@ -56,6 +57,12 @@ public class PlacebooksTestSuper
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(test_user_id, loginResponse.getValue());
 		return loginResponse.getValue();
+	}
+	
+	protected User getTestUser()
+	{
+		User testUser = UserManager.getUser(em, test_user_email);
+		return testUser;
 	}
 	
 	

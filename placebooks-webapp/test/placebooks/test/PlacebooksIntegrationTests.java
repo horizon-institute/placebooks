@@ -19,7 +19,7 @@ import placebooks.model.PlaceBook;
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.EverytrailHelper;
 import placebooks.controller.ItemFactory;
-import placebooks.controller.PlaceBooksAdminControllerDebug;
+import placebooks.controller.PlaceBooksAdminController;
 import placebooks.controller.UserManager;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
@@ -128,7 +128,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	public void testGetEverytrailData() throws Exception
 	{
 		//User testUser = logInPlacebooksTestUser();
-		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
+		PlaceBooksAdminController pacd = new PlaceBooksAdminController();
 		pacd.getEverytrailData();
 	}
 

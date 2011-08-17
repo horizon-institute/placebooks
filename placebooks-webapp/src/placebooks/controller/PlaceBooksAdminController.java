@@ -169,15 +169,22 @@ public class PlaceBooksAdminController
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
 
-		final LoginDetails details = 
-			user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
-
-		if (details == null)
-		{
-			log.error("Everytrail import failed, login details null");
-			return;
-		}
+		getEverytrailDataForUser(user);
+	}
 		
+	public void getEverytrailDataForUser(User user)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		
+		final LoginDetails details = 
+				user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
+
+			if (details == null)
+			{
+				log.error("Everytrail import failed, login details null");
+				return;
+			}
+			
 		final EverytrailLoginResponse loginResponse = 
 			EverytrailHelper.UserLogin(details.getUsername(), 
 					details.getPassword());
