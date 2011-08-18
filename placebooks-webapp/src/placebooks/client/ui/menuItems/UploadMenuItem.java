@@ -50,7 +50,7 @@ public class UploadMenuItem extends MenuItem
 		}
 		else if(item.getItem().is(ItemType.VIDEO))
 		{
-			status.setText("Maximum Video File Size: 20Mb");
+			status.setText("Maximum Video File Size: 25Mb");
 		}
 		else if(item.getItem().is(ItemType.AUDIO))
 		{
