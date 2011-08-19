@@ -285,7 +285,7 @@ public class PlaceBookInteractionHandler
 			if (newPanel != null)
 			{
 				GWT.log("Drop into panel " + newPanel.getIndex());				
-				newPanel.reflow(insert, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
+				newPanel.reflow(insert, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
 			}
 			else

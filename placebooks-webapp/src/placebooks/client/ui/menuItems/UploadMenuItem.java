@@ -3,10 +3,13 @@ package placebooks.client.ui.menuItems;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -20,6 +23,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -39,6 +43,19 @@ public class UploadMenuItem extends MenuItem
 	{
 		final Panel panel = new FlowPanel();
 		final FormPanel form = new FormPanel();
+		final Label status = new Label();
+		if(item.getItem().is(ItemType.IMAGE))
+		{
+			status.setText("Maximum Image File Size: 1Mb");
+		}
+		else if(item.getItem().is(ItemType.VIDEO))
+		{
+			status.setText("Maximum Video File Size: 25Mb");
+		}
+		else if(item.getItem().is(ItemType.AUDIO))
+		{
+			status.setText("Maximum Audio File Size: 10Mb");
+		}		
 		final FileUpload upload = new FileUpload();
 		final Hidden hidden = new Hidden("itemKey", item.getItem().getKey());
 		final PopupPanel dialogBox = new PopupPanel(true, true);
@@ -54,7 +71,16 @@ public class UploadMenuItem extends MenuItem
 				form.submit();
 			}
 		});
-
+		uploadButton.setEnabled(false);
+		upload.addChangeHandler(new ChangeHandler()
+		{		
+			@Override
+			public void onChange(ChangeEvent arg0)
+			{
+				uploadButton.setEnabled(true);			
+			}
+		});
+		
 		form.setAction(GWT.getHostPageBaseURL() + "/placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
@@ -64,8 +90,10 @@ public class UploadMenuItem extends MenuItem
 			@Override
 			public void onSubmit(final SubmitEvent event)
 			{
+				status.setVisible(true);
+				status.setText("Uploading File...");
+				uploadButton.setEnabled(false);
 				GWT.log("Uploading File");
-
 			}
 		});
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler()
@@ -88,6 +116,7 @@ public class UploadMenuItem extends MenuItem
 			}
 		});
 
+		panel.add(status);
 		panel.add(upload);
 		panel.add(hidden);
 		panel.add(uploadButton);
