@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -268,17 +269,34 @@ public class PlaceBooksAdminController
 				GPSTraceItem gpsItem = new GPSTraceItem(user, null, null);
 				ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, 
 										   tripName);
-				try
+				int tryCount = 0;
+				boolean keepTrying = true;
+				while(keepTrying)
 				{
-					final InputStream is = 
-						CommunicationHelper.getConnection(
-							new URL(tripGPX)).getInputStream();
-					log.info("InputStream for tripGPX is " + is.toString());
-					gpsItem.readTrace(is);
-				}
-				catch (final Exception e)
-				{
-					log.info(tripGPX + ": " + e.getMessage(), e);
+					try
+					{
+						final InputStream is = 
+								CommunicationHelper.getConnection(
+										new URL(tripGPX)).getInputStream();
+						log.info("InputStream for tripGPX is " + is.toString());
+						gpsItem.readTrace(is);
+					}
+					catch(UnknownHostException e)
+					{
+						log.info(tripGPX + ": " + e.getMessage(), e);
+						
+					}
+					catch (final Exception e)
+					{
+						log.info(tripGPX + ": " + e.getMessage(), e);
+						
+					}
+					tryCount++;
+					if(tryCount>3)
+					{
+						keepTrying = false;
+						log.error("Giving up getting " + tripGPX);
+					}
 				}
 				gpsItem = (GPSTraceItem)gpsItem.saveUpdatedItem();
 			}
