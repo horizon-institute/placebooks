@@ -40,7 +40,10 @@ public abstract class MediaItem extends PlaceBookItem
 	public MediaItem(final MediaItem m)
 	{
 		super(m);
-		this.path = new String(m.getPath());
+		if(m.getPath() != null)
+		{
+			this.path = new String(m.getPath());
+		}
 	}
 
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
