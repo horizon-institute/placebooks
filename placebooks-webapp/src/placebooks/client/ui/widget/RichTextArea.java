@@ -27,7 +27,7 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 		final Element div = DOM.createDiv();
 		setElement(div);
 		div.setAttribute("contentEditable", "true");
-		div.getStyle().setProperty("textAlign", "justify");
+		//div.getStyle().setProperty("textAlign", "justify");
 		sinkEvents(Event.ONPASTE);
 	}
 

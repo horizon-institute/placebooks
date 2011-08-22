@@ -83,7 +83,7 @@ public class MapItem extends PlaceBookItemWidget
 
 	public void refreshMarkers()
 	{
-		GWT.log("Refresh Markers " + placebook);
+		//GWT.log("Refresh Markers " + placebook);
 		markerLayer.clearMarkers();		
 		if (placebook == null) { return; }
 
@@ -92,8 +92,7 @@ public class MapItem extends PlaceBookItemWidget
 		for (final PlaceBookItem item : placebook.getItems())
 		{		
 			if (item.hasMetadata("mapItemID"))// && item.getMetadata("mapItemID").equals(getItem().getKey()))
-			{
-				GWT.log("Has mapItemID");				
+			{			
 				if (item.getGeometry() != null)
 				{
 					final String geometry = item.getGeometry();
@@ -107,7 +106,7 @@ public class MapItem extends PlaceBookItemWidget
 															25);
 						marker.getIcon().getImageDiv().setTitle(item.getMetadata("title", item.getKey()));
 						markerLayer.addMarker(marker);
-						GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
+						//GWT.log("Added marker for " + item.getKey() + " at " + lonlat);
 					}
 				}
 				else
@@ -188,7 +187,7 @@ public class MapItem extends PlaceBookItemWidget
 			map.removeLayer(routeLayer);
 		}
 
-		GWT.log("Map URL: " + getItem().getURL());
+		//GWT.log("Map URL: " + getItem().getURL());
 		routeLayer = RouteLayer.create("Route", getItem().getURL(), map.getDisplayProjection());
 		try
 		{

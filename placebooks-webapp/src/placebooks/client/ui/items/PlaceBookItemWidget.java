@@ -99,6 +99,11 @@ public abstract class PlaceBookItemWidget extends Composite
 			focusHandler.itemFocusChanged(focussed);
 		}
 	}
+	
+	public String resize()
+	{
+		return null;
+	}
 
 	protected void fireResized()
 	{
