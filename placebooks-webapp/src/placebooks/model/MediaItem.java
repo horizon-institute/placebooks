@@ -84,7 +84,7 @@ public abstract class MediaItem extends PlaceBookItem
 				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
 					+ getPlaceBook().getKey();
 
-		if (new File(path).exists() || new File(path).mkdirs())
+		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
 		{
 			final File dataFile = new File(getPath());
 			final FileInputStream fis = new FileInputStream(dataFile);

@@ -21,14 +21,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -148,7 +146,14 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 	public void addMetadataEntry(final String key, final String value)
 	{
-		metadata.put(key, value);
+		if(value == null)
+		{
+			metadata.remove(key);
+		}
+		else
+		{
+			metadata.put(key, value);
+		}
 	}
 
 	public void addMetadataEntryIndexed(final String key, final String value)

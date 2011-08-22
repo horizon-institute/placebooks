@@ -467,7 +467,7 @@ public class PlaceBooksAdminController
 			// mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 
 			res.setContentType("application/json");
-			log.info("Palette Items: " + mapper.writeValueAsString(pbs));
+			log.debug("Palette Items: " + mapper.writeValueAsString(pbs));
 			sos.flush();
 			sos.close();
 		}
@@ -740,7 +740,7 @@ public class PlaceBooksAdminController
 
 			res.setContentType("application/json");
 			final ServletOutputStream sos = res.getOutputStream();
-			log.info("Published Placebook:" + mapper.writeValueAsString(published));
+			log.debug("Published Placebook:" + mapper.writeValueAsString(published));
 			mapper.writeValue(sos, published);
 			sos.flush();
 		}
@@ -787,7 +787,7 @@ public class PlaceBooksAdminController
 
 			res.setContentType("application/json");
 			final ServletOutputStream sos = res.getOutputStream();
-			log.info("Saved Placebook:" + mapper.writeValueAsString(result));
+			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));
 			mapper.writeValue(sos, result);
 			sos.flush();
 		}
