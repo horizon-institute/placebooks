@@ -59,6 +59,7 @@ public class UploadMenuItem extends MenuItem
 		final FileUpload upload = new FileUpload();
 		final Hidden hidden = new Hidden("itemKey", item.getItem().getKey());
 		final PopupPanel dialogBox = new PopupPanel(true, true);
+		dialogBox.getElement().getStyle().setZIndex(2000);		
 		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4)
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
@@ -102,16 +103,31 @@ public class UploadMenuItem extends MenuItem
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
 				GWT.log("Upload Complete: " + event.getResults());
+				GWT.log("Upload Complete: " + event.toDebugString());				
 				item.getItemWidget().refresh();
+				item.getRootPanel().getElement().getStyle().setOpacity(0.5);
+				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");				
 				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
 				{
 					@Override
 					public void success(final Request request, final Response response)
 					{
 						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getRootPanel().getElement().getStyle().clearOpacity();
+						item.getRootPanel().getElement().getStyle().clearBackgroundColor();						
 						item.getItemWidget().update(placebookItem);
 						dialogBox.hide();						
 					}
+					
+					@Override
+					public void failure(final Request request, final Response response)
+					{
+						status.setText("Upload Failed");
+						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getRootPanel().getElement().getStyle().clearOpacity();
+						item.getRootPanel().getElement().getStyle().clearBackgroundColor();						
+						item.getItemWidget().update(placebookItem);	
+					}					
 				});
 			}
 		});
