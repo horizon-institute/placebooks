@@ -20,6 +20,10 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class PlaceBookCanvas extends FlowPanel
 {
+	public static final int A4Length = 297;
+	public static final int A4Width = 210;
+	public static final int Margin = 20;
+	
 	private static final int DEFAULT_COLUMNS = 3;
 	private static final int DEFAULT_PAGES = 2;
 
@@ -111,17 +115,18 @@ public class PlaceBookCanvas extends FlowPanel
 		{
 		}
 
-		final double pageWidth = 297;
-		final double usableWidth = 257;
-		final double panelWidth = pageWidth / columns;
-		final double shortPanelWidth = panelWidth - 20;
+		final double usableWidth = A4Length - (2 * Margin);
+		final double panelWidth = A4Length / columns;
+		final double shortPanelWidth = panelWidth - Margin;
 		for(int pageIndex = 0; pageIndex < pageCount; pageIndex++)
 		{
 			final FlowPanel page = new FlowPanel();
+			final FlowPanel pageInner = new FlowPanel();
+			page.add(pageInner);
 			if(panelsVisible)
 			{
 				page.setStyleName(Resources.INSTANCE.style().page());				
-				final double padding = 2000 / 297;
+				final double padding = 2000 / A4Length;
 				page.getElement().getStyle().setPadding(padding, Unit.PCT);
 			}
 			else
@@ -140,7 +145,7 @@ public class PlaceBookCanvas extends FlowPanel
 				final int panelIndex = (pageIndex * columns) + index;
 				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
 				panels.add(panel);
-				page.add(panel);
+				pageInner.add(panel);
 				
 				left += widthPCT;
 			}

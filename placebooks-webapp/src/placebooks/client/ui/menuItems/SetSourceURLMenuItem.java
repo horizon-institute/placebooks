@@ -31,7 +31,8 @@ public class SetSourceURLMenuItem extends MenuItem
 		textBox.setWidth("300px");
 		textBox.setValue(item.getItem().getSourceURL());
 
-		final PopupPanel dialogBox = new PopupPanel(false, true);
+		final PopupPanel dialogBox = new PopupPanel(true, true);
+		dialogBox.getElement().getStyle().setZIndex(2000);		
 
 		final Button closeButton = new Button("Set URL", new ClickHandler()
 		{

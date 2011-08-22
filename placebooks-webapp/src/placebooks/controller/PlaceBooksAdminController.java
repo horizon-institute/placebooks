@@ -1182,8 +1182,8 @@ public class PlaceBooksAdminController
 			}
 			finally
 			{
-				fis.close();
 				sos.close();
+				fis.close();
 			}
 		}
 		catch (final Throwable e)

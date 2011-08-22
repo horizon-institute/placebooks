@@ -200,18 +200,26 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			panel.add(frame);
 		}
 	}
+	
+	private void resize()
+	{
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+	}
 
 	@Override
 	public void updateFrame()
 	{
 		if (interactionHandler.getSelected() == this)
 		{
+			resize();
 			frame.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setOpacity(1);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		else if (highlighted && interactionHandler.getState() == DragState.waiting)
 		{
+			resize();			
 			rootPanel.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
 			frame.getElement().getStyle().setOpacity(0.8);

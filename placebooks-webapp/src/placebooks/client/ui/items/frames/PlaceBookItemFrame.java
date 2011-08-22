@@ -38,8 +38,14 @@ public abstract class PlaceBookItemFrame
 
 	public void resize(final String height)
 	{
+		String clientHeight = itemWidget.resize();
+		if(clientHeight != null && height.equals(""))
+		{
+			rootPanel.getElement().getStyle().setProperty("height", clientHeight);
+			return;
+		}
 		if (height.equals(rootPanel.getElement().getStyle().getHeight())) { return; }
-		rootPanel.getElement().getStyle().setProperty("height", height);
+		rootPanel.getElement().getStyle().setProperty("height", height);	
 	}
 
 	public void clearItemWidget()

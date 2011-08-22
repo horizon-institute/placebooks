@@ -2,7 +2,6 @@ package placebooks.client.ui.openlayers;
 
 import placebooks.client.JavaScriptInjector;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
@@ -10,7 +9,6 @@ public class Map extends JavaScriptObject
 {
 	public static Map create(final Element div, final boolean controls)
 	{
-		GWT.log("Create Map:" + controls);
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg4623().getText());
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg900913().getText());
 
