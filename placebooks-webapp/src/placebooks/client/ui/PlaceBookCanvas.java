@@ -11,7 +11,6 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -74,8 +73,8 @@ public class PlaceBookCanvas extends FlowPanel
 	{
 		for(final Panel page: pages)
 		{
-			final double panelHeight = getElement().getClientWidth() * 2 / 3;
-			page.setHeight(panelHeight + "px");
+			final double panelHeight = page.getOffsetWidth() * 2 / 3;
+			page.setHeight(panelHeight + "px");			
 		}
 		
 		for (final PlaceBookPanel panel : panels)
@@ -121,13 +120,11 @@ public class PlaceBookCanvas extends FlowPanel
 		for(int pageIndex = 0; pageIndex < pageCount; pageIndex++)
 		{
 			final FlowPanel page = new FlowPanel();
-			final FlowPanel pageInner = new FlowPanel();
-			page.add(pageInner);
 			if(panelsVisible)
 			{
 				page.setStyleName(Resources.INSTANCE.style().page());				
-				final double padding = 2000 / A4Length;
-				page.getElement().getStyle().setPadding(padding, Unit.PCT);
+				//final double padding = 2000 / A4Length;
+				//page.getElement().getStyle().setPadding(padding, Unit.PCT);
 			}
 			else
 			{
@@ -145,7 +142,7 @@ public class PlaceBookCanvas extends FlowPanel
 				final int panelIndex = (pageIndex * columns) + index;
 				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
 				panels.add(panel);
-				pageInner.add(panel);
+				page.add(panel);
 				
 				left += widthPCT;
 			}

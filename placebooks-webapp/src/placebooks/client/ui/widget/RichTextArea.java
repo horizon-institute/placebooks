@@ -1,6 +1,5 @@
 package placebooks.client.ui.widget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -35,15 +34,6 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 	{
 		this();
 		getElement().setInnerHTML(html);
-	}
-
-	@Override
-	public void onBrowserEvent(Event arg0)
-	{
-		GWT.log(arg0.getType() + " event");
-		GWT.log("" + arg0.getString());
-		GWT.log(arg0.toString());
-		super.onBrowserEvent(arg0);
 	}
 
 	@Override

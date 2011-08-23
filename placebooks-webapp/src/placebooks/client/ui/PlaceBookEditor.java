@@ -50,7 +50,7 @@ public class PlaceBookEditor extends Composite
 {
 	public class SaveContext extends Timer
 	{
-		// private SaveState state = SaveState.saved;
+		private SaveState state = SaveState.saved;
 		private static final int saveDelay = 2000;
 
 		public void markChanged()
@@ -61,6 +61,11 @@ public class PlaceBookEditor extends Composite
 			// changed = true;
 		}
 
+		public SaveState getState()
+		{
+			return state;
+		}
+		
 		public void refreshMap()
 		{
 			for (final PlaceBookItemFrame itemFrame : canvas.getItems())
@@ -103,7 +108,7 @@ public class PlaceBookEditor extends Composite
 
 		private void setState(final SaveState state)
 		{
-			// this.state = state;
+			this.state = state;
 			switch (state)
 			{
 				case saved:

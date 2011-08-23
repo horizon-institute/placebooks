@@ -50,7 +50,6 @@ public class PlaceBookLibrary extends Composite
 				setShelf(shelf);
 			}
 		});
-		GWT.log("Browse Library: " + shelf);
 		setShelf(shelf);
 		
 		RootPanel.get().getElement().getStyle().clearOverflow();				
