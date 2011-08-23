@@ -3,6 +3,7 @@ package placebooks.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,8 +31,8 @@ public abstract class MediaItem extends PlaceBookItem
 {
 	@JsonIgnore
 	protected String path; // Always points to a file, never a dir
-	
-	protected String hash; // File hash (MD5) - so clients can tell if file has changed 
+
+	protected String hash; // File hash (MD5) - so clients can tell if file has changed
 
 	MediaItem()
 	{
@@ -40,14 +41,22 @@ public abstract class MediaItem extends PlaceBookItem
 	public MediaItem(final MediaItem m)
 	{
 		super(m);
-		if(m.getPath() != null)
+		if (m.getPath() != null)
 		{
-			this.path = new String(m.getPath());
+			try
+			{
+				final File file = new File(m.getPath());
+				writeDataToDisk(file.getName(), new FileInputStream(file));
+			}
+			catch (final Exception e)
+			{
+				this.hash = m.hash;
+				this.path = new String(m.getPath());
+			}
 		}
 	}
 
-	public MediaItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String file)
+	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final String file)
 	{
 		super(owner, geom, sourceURL);
 		this.path = file;
@@ -62,9 +71,7 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			copyDataToPackage();
 			final Element filename = config.createElement("filename");
-			filename.appendChild(
-				config.createTextNode(new File(path).getName())
-			);
+			filename.appendChild(config.createTextNode(new File(path).getName()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -75,14 +82,44 @@ public abstract class MediaItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	public String attemptPathFix()
+	{
+		if (path != null) { return null; }
+
+		if (getKey() == null) { return null; }
+
+		log.info("Media path = null. Attempting fix");
+
+		final File path = new File(PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
+
+		if (!path.exists()) { return null; }
+
+		final File[] files = path.listFiles(new FilenameFilter()
+		{
+			@Override
+			public boolean accept(final File dir, final String name)
+			{
+				final int index = name.indexOf('.');
+				if (name.startsWith(getKey()) && index == name.length()) { return true; }
+				return false;
+			}
+		});
+
+		if (files.length == 1)
+		{
+			setPath(files[0].getPath());
+			log.info("Fixed media to " + this.path);
+			return this.path;
+		}
+		return null;
+	}
+
 	protected void copyDataToPackage() throws IOException
 	{
 		// Check package dir exists already
-		final String path = 
-			PropertiesSingleton
-				.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-					+ getPlaceBook().getKey();
+		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") + getPlaceBook().getKey();
 
 		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
 		{
@@ -102,12 +139,16 @@ public abstract class MediaItem extends PlaceBookItem
 	@Override
 	public void deleteItemData()
 	{
-		if(getPath() == null) { return; }
+		if (getPath() == null) { return; }
 		final File f = new File(getPath());
 		if (f.exists())
+		{
 			f.delete();
+		}
 		else
+		{
 			log.error("Problem deleting file " + f.getAbsolutePath());
+		}
 	}
 
 	public String getPath()
@@ -115,7 +156,9 @@ public abstract class MediaItem extends PlaceBookItem
 		return path;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
@@ -128,9 +171,9 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			pm.getTransaction().begin();
 			item = ItemFactory.GetExistingItem(this, pm);
-			if(item != null)
+			if (item != null)
 			{
-				
+
 				log.debug("Existing item found so updating");
 				item.update(this);
 				log.debug("Deleting file: " + this.getPath());
@@ -156,41 +199,37 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		return returnItem;
 	}
-	
+
 	public void setPath(final String filepath)
 	{
 		this.path = filepath;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
 	 */
 	@Override
-	public void updateItem(final IUpdateableExternal item) 
+	public void updateItem(final IUpdateableExternal item)
 	{
 		super.updateItem(item);
-		if(item instanceof MediaItem)
+		if (item instanceof MediaItem)
 		{
 			final MediaItem mediaItem = (MediaItem) item;
-			if(mediaItem.getPath() == null)
-			{
-				return;
-			}
-			if(mediaItem.getPath().equals(getPath()))
-			{
-				return;
-			}
+			if (mediaItem.getPath() == null) { return; }
+			if (mediaItem.getPath().equals(getPath())) { return; }
 			log.debug("Looking for " + mediaItem.getPath());
 			final File mediaFile = new File(mediaItem.getPath());
 			if (mediaFile.exists())
 			{
 				// @TODO Remove old file?
-				
+
 				try
 				{
 					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
 				}
-				catch (Exception e)
+				catch (final Exception e)
 				{
 					log.error(e.getMessage());
 				}
@@ -198,24 +237,21 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 	}
 
-	public void writeDataToDisk(final String name, final InputStream is) 
-		throws IOException
+	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
-		if(getKey() == null) { throw new IOException("Key is null"); }
-		
-		if (!new File(path).exists() && !new File(path).mkdirs()) 
-		{
-			throw new IOException("Failed to write file '" + path + "'"); 
-		}
+		if (getKey() == null) { throw new IOException("Key is null"); }
+
+		if (!new File(path).exists() && !new File(path).mkdirs()) { throw new IOException("Failed to write file '"
+				+ path + "'"); }
 
 		final int extIdx = name.lastIndexOf(".");
 		final String ext = name.substring(extIdx + 1, name.length());
 
-		String filePath = path + "/" + getKey() + "." + ext;
-		
+		final String filePath = path + "/" + getKey() + "." + ext;
+
 		InputStream input;
 		MessageDigest md = null;
 		try
@@ -223,11 +259,11 @@ public abstract class MediaItem extends PlaceBookItem
 			md = MessageDigest.getInstance("MD5");
 			input = new DigestInputStream(is, md);
 		}
-		catch(Exception e)
+		catch (final Exception e)
 		{
 			input = is;
 		}
-		
+
 		final OutputStream output = new FileOutputStream(new File(filePath));
 		int byte_;
 		while ((byte_ = input.read()) != -1)
@@ -237,29 +273,28 @@ public abstract class MediaItem extends PlaceBookItem
 		output.close();
 		is.close();
 
-		if(md != null)
+		if (md != null)
 		{
 			hash = String.format("%032x", new BigInteger(1, md.digest()));
 		}
-		
+
 		log.info("Wrote " + name + " file " + filePath);
-		EntityManager entityManager = EMFSingleton.getEntityManager();
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
 		setPath(filePath);
 		entityManager.merge(this);
 		entityManager.close();
 	}
-	
+
 	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException
 	{
-		if(getKey() == null)
+		if (getKey() == null)
 		{
-			final String path = 
-				PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
-				String filePath = path + "/" + System.currentTimeMillis() + name;
+				final String filePath = path + "/" + System.currentTimeMillis() + name;
 
 				log.info("Copying file to=" + filePath);
 				final FileOutputStream output = new FileOutputStream(new File(filePath));
@@ -271,10 +306,10 @@ public abstract class MediaItem extends PlaceBookItem
 				output.close();
 				input.close();
 				setPath(filePath);
-			}	
+			}
 			else
 			{
-				throw new IOException("Failed to write file '" + path + "'"); 
+				throw new IOException("Failed to write file '" + path + "'");
 			}
 		}
 		else
