@@ -41,19 +41,7 @@ public abstract class MediaItem extends PlaceBookItem
 	public MediaItem(final MediaItem m)
 	{
 		super(m);
-		if (m.getPath() != null)
-		{
-			try
-			{
-				final File file = new File(m.getPath());
-				writeDataToDisk(file.getName(), new FileInputStream(file));
-			}
-			catch (final Exception e)
-			{
-				this.hash = m.hash;
-				this.path = new String(m.getPath());
-			}
-		}
+		this.path = m.getPath();
 	}
 
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final String file)
