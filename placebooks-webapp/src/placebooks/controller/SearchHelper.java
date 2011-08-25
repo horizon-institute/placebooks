@@ -40,7 +40,7 @@ public final class SearchHelper
 				{
 					final CharTermAttribute attr = 
 						tokenStream.getAttribute(CharTermAttribute.class);
-					log.debug(attr.toString());
+					log.debug("Search term: \"" + attr.toString());
 					returnSet.add(attr.toString());
 				}
 			}

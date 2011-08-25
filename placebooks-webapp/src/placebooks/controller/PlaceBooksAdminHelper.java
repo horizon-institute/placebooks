@@ -373,7 +373,7 @@ public final class PlaceBooksAdminHelper
 					dbPlacebook.setItems(placebook.getItems());
 					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 					{
-						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+						dbPlacebook.addMetadataEntryIndexed(entry.getKey(), entry.getValue());
 					}
 
 					dbPlacebook.setGeometry(placebook.getGeometry());
