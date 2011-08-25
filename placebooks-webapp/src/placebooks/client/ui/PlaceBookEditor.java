@@ -304,6 +304,7 @@ public class PlaceBookEditor extends Composite
 					@Override
 					public void onClick(final ClickEvent event)
 					{
+						loadingPanel.setVisible(true);
 						dialogBox.hide();
 					}
 				});
