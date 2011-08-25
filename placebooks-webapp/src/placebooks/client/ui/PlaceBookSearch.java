@@ -53,7 +53,7 @@ public class PlaceBookSearch extends Composite
 		toolbar.setPlaceController(placeController);
 		toolbar.setShelf(shelf);
 		GWT.log("Search: " + searchString);
-		setShelf(shelf);
+		//setShelf(shelf);
 		
 		PlaceBookService.search(searchString, new AbstractCallback()
 		{
