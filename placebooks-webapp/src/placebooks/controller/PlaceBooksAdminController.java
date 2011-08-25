@@ -986,10 +986,7 @@ public class PlaceBooksAdminController
 
 			if (i != null)
 			{
-				if (i.getPath() == null)
-				{
-					i.attemptPathFix();
-				}
+				i.attemptPathFix();
 				if (i.getPath() != null)
 				{		
 					log.info(i.getPath());

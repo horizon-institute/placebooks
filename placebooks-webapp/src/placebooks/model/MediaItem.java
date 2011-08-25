@@ -72,11 +72,14 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public String attemptPathFix()
 	{
-		if (path != null) { return null; }
-
+		if(path != null && new File(path).exists())
+		{
+			return path;
+		}
+		
 		if (getKey() == null) { return null; }
 
-		log.info("Media path = null. Attempting fix");
+		log.info("Attempting to fix media path");
 
 		final File path = new File(PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
@@ -89,7 +92,7 @@ public abstract class MediaItem extends PlaceBookItem
 			public boolean accept(final File dir, final String name)
 			{
 				final int index = name.indexOf('.');
-				if (name.startsWith(getKey()) && index == name.length()) { return true; }
+				if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
 				return false;
 			}
 		});
