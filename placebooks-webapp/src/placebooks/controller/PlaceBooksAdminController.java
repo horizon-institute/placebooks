@@ -991,7 +991,8 @@ public class PlaceBooksAdminController
 					i.attemptPathFix();
 				}
 				if (i.getPath() != null)
-				{				
+				{		
+					log.info(i.getPath());
 					try
 					{
 						final File image = new File(i.getPath());
@@ -1258,17 +1259,13 @@ public class PlaceBooksAdminController
 
 			if (item instanceof MediaItem)
 			{
-				manager.getTransaction().commit();
 				((MediaItem) item).setSourceURL(null);
 				((MediaItem) item).writeDataToDisk(name, fileData.getInputStream());
-				manager.getTransaction().begin();
 			}
 			else if (item instanceof GPSTraceItem)
 			{
-				manager.getTransaction().commit();
 				((GPSTraceItem) item).setSourceURL(null);
 				((GPSTraceItem) item).readTrace(fileData.getInputStream());
-				manager.getTransaction().begin();
 			}
 
 			manager.getTransaction().commit();

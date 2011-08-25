@@ -267,10 +267,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 
 		log.info("Wrote " + name + " file " + filePath);
-		final EntityManager entityManager = EMFSingleton.getEntityManager();
 		setPath(filePath);
-		entityManager.merge(this);
-		entityManager.close();
 	}
 
 	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException

@@ -459,16 +459,16 @@ public class PlaceBookEditor extends Composite
 			placebook = newPlacebook;
 			canvas.updatePlaceBook(newPlacebook);
 
-			if (newPlacebook.hasMetadata("title"))
-			{
-				Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
-				title.setText(newPlacebook.getMetadata("title"));
-			}
-			else
-			{
-				Window.setTitle("PlaceBook Editor");
-				title.setText("No Title");
-			}
+//			if (newPlacebook.hasMetadata("title"))
+//			{
+//				Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
+//				title.setText(newPlacebook.getMetadata("title"));
+//			}
+//			else
+//			{
+//				Window.setTitle("PlaceBook Editor");
+//				title.setText("No Title");
+//			}
 
 			canvas.reflow();
 		}

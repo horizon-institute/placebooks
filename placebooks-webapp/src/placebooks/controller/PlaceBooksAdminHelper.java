@@ -299,6 +299,7 @@ public final class PlaceBooksAdminHelper
 			em.getTransaction().commit();
 
 			// Copy data on disk now that keys have been generated
+			em.getTransaction().begin();
 			for (final PlaceBookItem item : p_.getItems())
 			{
 				if (item instanceof MediaItem)
@@ -316,6 +317,7 @@ public final class PlaceBooksAdminHelper
 					wbi.setWebBundlePath(data);
 				}
 			}
+			em.getTransaction().commit();
 
 		}
 		catch (final Throwable e)

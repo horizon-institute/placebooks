@@ -100,8 +100,7 @@ public class PlaceBookService
 		if (data != null)
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			GWT.log("Request data: " + URL.decodePathSegment(data));
-			GWT.log("Request data: " + data);			
+			GWT.log("Request data: " + URL.decodePathSegment(data));			
 		}
 		try
 		{

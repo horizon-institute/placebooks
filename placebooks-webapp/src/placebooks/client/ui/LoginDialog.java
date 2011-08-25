@@ -101,14 +101,6 @@ public class LoginDialog extends Composite
 		submit.setEnabled(true);
 	}
 
-	//
-	// @UiHandler("submit")
-	// void createAccount(final ClickEvent event)
-	// {
-	// submit.setEnabled(false);
-	//
-	// }
-
 	@UiHandler("password")
 	void submitOnReturn(final KeyPressEvent event)
 	{
