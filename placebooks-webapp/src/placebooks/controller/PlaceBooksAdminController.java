@@ -986,7 +986,9 @@ public class PlaceBooksAdminController
 
 			if (i != null)
 			{
+				em.getTransaction().begin();
 				i.attemptPathFix();
+				em.getTransaction().commit();
 				if (i.getPath() != null)
 				{		
 					log.info(i.getPath());
@@ -1038,13 +1040,9 @@ public class PlaceBooksAdminController
 
 			if (m != null)
 			{
-				path = m.getPath();
-				if (path == null)
-				{
-					em.getTransaction().begin();
-					m.attemptPathFix();
-					em.getTransaction().commit();
-				}
+				em.getTransaction().begin();
+				m.attemptPathFix();
+				em.getTransaction().commit();
 			}
 			else
 			{
