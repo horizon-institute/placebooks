@@ -30,6 +30,8 @@ public interface Resources extends ClientBundle
 	ImageResource error();
 
 	ImageResource everytrail();
+	
+	ImageResource Logo_016();
 
 	ImageResource folder();
 

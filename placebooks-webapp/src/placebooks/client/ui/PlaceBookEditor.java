@@ -320,6 +320,8 @@ public class PlaceBookEditor extends Composite
 				dialogBox.getElement().getStyle().setTop(50, Unit.PX);
 			}
 		});
+				
+		title.setMaxLength(64);
 
 		updatePalette();
 		final Timer timer = new Timer()

@@ -90,6 +90,13 @@ public class PlaceBookHome extends Composite
 
 	private void search()
 	{
-		toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
+		if(search.getText().equals("Search PlaceBooks"))
+		{
+			toolbar.getPlaceController().goTo(new PlaceBookSearchPlace("", toolbar.getShelf()));			
+		}
+		else
+		{
+			toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
+		}
 	}
 }

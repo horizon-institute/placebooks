@@ -1,0 +1,20 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pw="urn:import:placebooks.client.ui.widget" xmlns:p="urn:import:placebooks.client.ui" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<g:FlowPanel>
+		<p:PlaceBookToolbar ui:field="toolbar"/>
+		<g:HTMLPanel styleName="{res.style.content}">
+<br />
+To install the Android PlaceBooks App you need to:
+<ol>
+<li>Connect your android phone to your computer and mount the SD card.</li>
+<li>Download <a href="PlaceBooks.apk">Placebooks.apk</a> and copy it to your phone's SD card.</li>
+<li>Unmount the SD card from the computer.</li>
+<li>On the phone, go to the Android Market and install an app called 'App Installer'</li>
+<li>Open App Installer and install PlaceBooks.apk from the SD card (you may have to check 'allow apps to be installed from sd card' in your settings)</li>
+<li>Open the PlaceBooks app and you're off</li>
+</ol>
+</g:HTMLPanel>
+	</g:FlowPanel>
+</ui:UiBinder>
