@@ -113,6 +113,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		this.metadata = new HashMap<String, String>(p.getMetadata());
 		
 		index.setPlaceBookItem(this);
+		this.index.addAll(p.getSearchIndex().getIndex());
 
 		if(p.getTimestamp() != null)
 		{
@@ -146,7 +147,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 	public void addMetadataEntry(final String key, final String value)
 	{
-		if(value == null)
+		if (value == null)
 		{
 			metadata.remove(key);
 		}

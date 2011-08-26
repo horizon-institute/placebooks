@@ -221,7 +221,6 @@ public class PlaceBooksAdminController
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
 			{
-				log.info("Trip property, " + propertyIndex + " of " + tripProperties.getLength());
 				final Node item = tripProperties.item(propertyIndex);
 				final String itemName = item.getNodeName();
 				// log.debug("Inspecting property: " + itemName + " which is " +
@@ -452,7 +451,7 @@ public class PlaceBooksAdminController
 			// mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 
 			res.setContentType("application/json");
-			log.debug("Palette Items: " + mapper.writeValueAsString(pbs));
+			//log.debug("Palette Items: " + mapper.writeValueAsString(pbs));
 			sos.flush();
 			sos.close();
 		}
