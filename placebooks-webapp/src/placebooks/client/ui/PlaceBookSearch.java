@@ -1,5 +1,10 @@
 package placebooks.client.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
@@ -75,9 +80,34 @@ public class PlaceBookSearch extends Composite
 			placebooks.clear();
 			if (shelf != null)
 			{
+				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 				for (final PlaceBookEntry entry : shelf.getEntries())
 				{
-					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));
+					if(entry.getScore() > 0 || search.getText().equals(""))
+					{
+						entries.add(entry);
+					}
+				}
+				
+				Collections.sort(entries, new Comparator<PlaceBookEntry>()
+				{
+					@Override
+					public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
+					{
+						if(o2.getScore() != o1.getScore())
+						{
+							return o2.getScore() - o1.getScore();
+						}
+						else
+						{
+							return o1.getTitle().compareTo(o2.getTitle());
+						}
+					}
+				});
+				
+				for(final PlaceBookEntry entry: entries)
+				{
+					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));					
 				}
 			}
 		}
