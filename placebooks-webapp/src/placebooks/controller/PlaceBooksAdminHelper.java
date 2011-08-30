@@ -355,14 +355,21 @@ public final class PlaceBooksAdminHelper
 							if(item instanceof GPSTraceItem)
 							{
 								// Remove any MapImageItem if removing a GPSTraceItem
-								for(PlaceBookItem mapItem: placebook.getItems())
+								for(PlaceBookItem mapItem: dbPlacebook.getItems())
 								{
 									if(mapItem instanceof MapImageItem)
 									{
 										mapItem.deleteItemData();
 										manager.remove(mapItem);
-										placebook.removeItem(mapItem);
 									}
+								}
+								
+								for(PlaceBookItem mapItem: placebook.getItems())
+								{
+									if(mapItem instanceof MapImageItem)
+									{
+										placebook.removeItem(mapItem);
+									}									
 								}
 							}
 							item.deleteItemData();
