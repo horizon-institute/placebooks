@@ -97,7 +97,8 @@ public final class PlaceBooksAdminHelper
 		
 		// Mapping
 		// TODO: PlaceBook can only have 1 MapImageItem for the moment
-		if (!p.hasPlaceBookItemClass(MapImageItem.class))
+		if (!p.hasPlaceBookItemClass(MapImageItem.class) &&
+			p.hasPlaceBookItemClass(GPSTraceItem.class))
 		{
 			try
 			{
