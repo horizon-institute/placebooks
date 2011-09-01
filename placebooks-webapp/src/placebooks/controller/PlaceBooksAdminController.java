@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -284,7 +283,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
-	public void viewPlaceBook(final HttpServletResponse res, @PathVariable("key") final String key)
+	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();	
 		try
@@ -298,22 +297,37 @@ public class PlaceBooksAdminController
 					{
 						return;
 					}
+
+					String urlbase;
+					if(req.getServerPort() != 80)
+					{
+						urlbase = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/";
+					}
+					else
+					{
+						urlbase = req.getScheme() + "://" + req.getServerName() + req.getContextPath() + "/";						
+					}
+
 					
 					final PrintWriter writer = res.getWriter();
-					writer.write("<!doctype html>\n");
+					writer.write("<!doctype html>");
 					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
-					writer.write("xmlns:og=\"http://ogp.me/ns#\"");
-					writer.write("xmlns:fb=\"http://www.facebook.com/2008/fbml\">");
+					writer.write(" xmlns:og=\"http://ogp.me/ns#\"");
+					writer.write(" xmlns:fb=\"http://www.facebook.com/2008/fbml\">");
 					writer.write("<head>");
-					writer.write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
-					writer.write("<title>PlaceBooks</title>");
-					writer.write("<script type=\"text/javascript\" src=\"../../../placebooks.PlaceBookEditor/placebooks.PlaceBookEditor.nocache.js\"></script>");
-					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
-					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
+					writer.write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");					
+					writer.write("<title>" + placebook.getMetadataValue("title") + "</title>");
 					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
-					writer.write("<meta property=\"og:image\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
-					writer.write("<meta property=\"og:description\" content=\"" + placebook.getMetadataValue("description") + "\"/>");		
-					writer.write("<style>@media print {	.printHidden { display: none; }	}</style>");					
+					writer.write("<meta property=\"og:type\" content=\"article\"/>");
+//					writer.write("<meta property=\"og:url\" content=\"" + urlbase + "#preview:" + placebook.getKey() + "\"/>");
+					if(placebook.getMetadataValue("placebookImage") != null)
+					{
+						writer.write("<meta property=\"og:image\" content=\"" + urlbase + "placebooks/a/admin/serve/imageitem/"+placebook.getMetadataValue("placebookImage") + "\"/>");
+					}
+					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
+					writer.write("<meta property=\"og:description\" content=\"" + placebook.getMetadataValue("description") + "\"/>");					
+					writer.write("<meta http-equiv=\"Refresh\" content=\"0; url=" + urlbase + "#preview:" + placebook.getKey() + "\" />");					
+					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
 					writer.write("</head>");
 					writer.write("<body></body>");
 					writer.write("</html>");					
