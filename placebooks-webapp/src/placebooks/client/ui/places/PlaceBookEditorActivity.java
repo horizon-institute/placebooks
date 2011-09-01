@@ -17,7 +17,7 @@ public class PlaceBookEditorActivity extends PlaceBookActivity
 	private final String key;
 	private final PlaceBook placebook;
 	private final PlaceController placeController;
-	
+
 	private PlaceBookEditor editor;
 
 	public PlaceBookEditorActivity(final PlaceController controller, final PlaceBookEditorPlace place)
@@ -26,6 +26,13 @@ public class PlaceBookEditorActivity extends PlaceBookActivity
 		this.key = place.getKey();
 		this.placebook = place.getPlaceBook();
 		this.placeController = controller;
+	}
+
+	@Override
+	public String mayStop()
+	{
+		if (editor != null && editor.getSaveContext().getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
+		return super.mayStop();
 	}
 
 	@Override
@@ -50,15 +57,5 @@ public class PlaceBookEditorActivity extends PlaceBookActivity
 		}
 
 		panel.setWidget(editor);
-	}
-
-	@Override
-	public String mayStop()
-	{
-		if(editor != null && editor.getSaveContext().getState() != SaveState.saved)
-		{
-			return "The current PlaceBook has unsaved changes. Are you sure you want to leave?";
-		}
-		return super.mayStop();
 	}
 }

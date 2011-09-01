@@ -28,8 +28,8 @@ public class PlaceBookAppInstall extends Composite
 
 		toolbar.setPlaceController(placeController);
 		toolbar.setShelf(shelf);
-		
+
 		Window.setTitle("PlaceBooks App Install Instructions");
-		RootPanel.get().getElement().getStyle().clearOverflow();				
+		RootPanel.get().getElement().getStyle().clearOverflow();
 	}
 }

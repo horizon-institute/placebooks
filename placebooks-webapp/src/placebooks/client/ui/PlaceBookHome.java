@@ -38,8 +38,8 @@ public class PlaceBookHome extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 
 		Window.setTitle("PlaceBooks");
-		
-		RootPanel.get().getElement().getStyle().clearOverflow();		
+
+		RootPanel.get().getElement().getStyle().clearOverflow();
 	}
 
 	public PlaceBookHome(final PlaceController controller, final Shelf shelf)
@@ -49,8 +49,8 @@ public class PlaceBookHome extends Composite
 		toolbar.setShelf(shelf);
 
 		Window.setTitle("PlaceBooks");
-		
-		RootPanel.get().getElement().getStyle().clearOverflow();		
+
+		RootPanel.get().getElement().getStyle().clearOverflow();
 	}
 
 	@UiHandler("search")
@@ -90,9 +90,9 @@ public class PlaceBookHome extends Composite
 
 	private void search()
 	{
-		if(search.getText().equals("Search PlaceBooks"))
+		if (search.getText().equals("Search PlaceBooks"))
 		{
-			toolbar.getPlaceController().goTo(new PlaceBookSearchPlace("", toolbar.getShelf()));			
+			toolbar.getPlaceController().goTo(new PlaceBookSearchPlace("", toolbar.getShelf()));
 		}
 		else
 		{

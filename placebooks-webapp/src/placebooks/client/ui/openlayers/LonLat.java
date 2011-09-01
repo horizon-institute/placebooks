@@ -35,7 +35,6 @@ public class LonLat extends JavaScriptObject
 		return lonlat;
 	}
 
-	
 	protected LonLat()
 	{
 	}

@@ -15,6 +15,12 @@ public abstract class PlaceBookItemFrame
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
+	public void clearItemWidget()
+	{
+		widgetPanel.clear();
+		this.itemWidget = null;
+	}
+
 	public PlaceBookItem getItem()
 	{
 		return itemWidget.getItem();
@@ -35,24 +41,26 @@ public abstract class PlaceBookItemFrame
 		return rootPanel;
 	}
 
+	protected void itemWidgetResized()
+	{
+		if (panel != null)
+		{
+			panel.reflow();
+		}
+	}
+
 	public void resize(final String height)
 	{
-		String clientHeight = itemWidget.resize();
-		if(clientHeight != null && height.equals(""))
+		final String clientHeight = itemWidget.resize();
+		if (clientHeight != null && height.equals(""))
 		{
 			rootPanel.getElement().getStyle().setProperty("height", clientHeight);
 			return;
 		}
 		if (height.equals(rootPanel.getElement().getStyle().getHeight())) { return; }
-		rootPanel.getElement().getStyle().setProperty("height", height);	
+		rootPanel.getElement().getStyle().setProperty("height", height);
 	}
 
-	public void clearItemWidget()
-	{
-		widgetPanel.clear();
-		this.itemWidget = null;
-	}
-	
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		this.itemWidget = itemWidget;
@@ -94,13 +102,5 @@ public abstract class PlaceBookItemFrame
 	public void updateFrame()
 	{
 
-	}
-
-	protected void itemWidgetResized()
-	{
-		if (panel != null)
-		{
-			panel.reflow();
-		}
 	}
 }

@@ -22,7 +22,7 @@ public class PlaceBookCanvas extends FlowPanel
 	public static final int A4Length = 297;
 	public static final int A4Width = 210;
 	public static final int Margin = 20;
-	
+
 	private static final int DEFAULT_COLUMNS = 3;
 	private static final int DEFAULT_PAGES = 2;
 
@@ -54,6 +54,27 @@ public class PlaceBookCanvas extends FlowPanel
 		item.getItemWidget().setPlaceBook(placebook);
 	}
 
+	private void addImpl(final PlaceBookItemFrame item)
+	{
+		if (item == null) { return; }
+		items.add(item);
+		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));
+	}
+
+	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
+	{
+		for (final PlaceBookItemFrame frame : items)
+		{
+			if (frame.getItem().getKey() != null)
+			{
+				if (frame.getItem().getKey().equals(item.getKey())) { return frame; }
+			}
+			else if (item.hasMetadata("tempID")
+					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
+		}
+		return null;
+	}
+
 	public Iterable<PlaceBookItemFrame> getItems()
 	{
 		return items;
@@ -71,15 +92,23 @@ public class PlaceBookCanvas extends FlowPanel
 
 	public void reflow()
 	{
-		for(final Panel page: pages)
+		for (final Panel page : pages)
 		{
 			final double panelHeight = page.getOffsetWidth() * 2 / 3;
-			page.setHeight(panelHeight + "px");			
+			page.setHeight(panelHeight + "px");
 		}
-		
+
 		for (final PlaceBookPanel panel : panels)
 		{
 			panel.reflow();
+		}
+	}
+
+	private final void refreshItemPlaceBook()
+	{
+		for (final PlaceBookItemFrame item : items)
+		{
+			item.getItemWidget().setPlaceBook(placebook);
 		}
 	}
 
@@ -88,6 +117,12 @@ public class PlaceBookCanvas extends FlowPanel
 		removeImpl(item);
 		placebook.remove(item.getItem());
 		refreshItemPlaceBook();
+	}
+
+	private void removeImpl(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+		item.setPanel(null);
 	}
 
 	public void setPlaceBook(final PlaceBook newPlaceBook, final PlaceBookItemFrameFactory factory,
@@ -117,25 +152,25 @@ public class PlaceBookCanvas extends FlowPanel
 		final double usableWidth = A4Length - (2 * Margin);
 		final double panelWidth = A4Length / columns;
 		final double shortPanelWidth = panelWidth - Margin;
-		for(int pageIndex = 0; pageIndex < pageCount; pageIndex++)
+		for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
 		{
 			final FlowPanel page = new FlowPanel();
-			if(panelsVisible)
+			if (panelsVisible)
 			{
-				page.setStyleName(Resources.INSTANCE.style().page());				
-				//final double padding = 2000 / A4Length;
-				//page.getElement().getStyle().setPadding(padding, Unit.PCT);
+				page.setStyleName(Resources.INSTANCE.style().page());
+				// final double padding = 2000 / A4Length;
+				// page.getElement().getStyle().setPadding(padding, Unit.PCT);
 			}
 			else
 			{
 				page.setStyleName(Resources.INSTANCE.style().pageInvisible());
 			}
 
-			double left = 0;			
+			double left = 0;
 			for (int index = 0; index < columns; index++)
 			{
 				double widthPCT = panelWidth / usableWidth * 100;
-				if(index == 0 || index == columns - 1)
+				if (index == 0 || index == columns - 1)
 				{
 					widthPCT = shortPanelWidth / usableWidth * 100;
 				}
@@ -143,10 +178,10 @@ public class PlaceBookCanvas extends FlowPanel
 				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
 				panels.add(panel);
 				page.add(panel);
-				
+
 				left += widthPCT;
 			}
-			
+
 			add(page);
 			pages.add(page);
 		}
@@ -181,40 +216,5 @@ public class PlaceBookCanvas extends FlowPanel
 
 		refreshItemPlaceBook();
 		reflow();
-	}
-
-	private void addImpl(final PlaceBookItemFrame item)
-	{
-		if (item == null) { return; }
-		items.add(item);
-		item.setPanel(panels.get(item.getItem().getParameter("panel", 0)));
-	}
-
-	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
-	{
-		for (final PlaceBookItemFrame frame : items)
-		{
-			if (frame.getItem().getKey() != null)
-			{
-				if (frame.getItem().getKey().equals(item.getKey())) { return frame; }
-			}
-			else if (item.hasMetadata("tempID")
-					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
-		}
-		return null;
-	}
-
-	private final void refreshItemPlaceBook()
-	{
-		for (final PlaceBookItemFrame item : items)
-		{
-			item.getItemWidget().setPlaceBook(placebook);
-		}
-	}
-
-	private void removeImpl(final PlaceBookItemFrame item)
-	{
-		items.remove(item);
-		item.setPanel(null);
 	}
 }

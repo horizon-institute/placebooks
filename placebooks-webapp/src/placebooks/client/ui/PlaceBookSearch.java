@@ -41,10 +41,10 @@ public class PlaceBookSearch extends Composite
 
 	@UiField
 	PlaceBookToolbar toolbar;
-	
+
 	@UiField
 	TextBox search;
-	
+
 	private Shelf shelf;
 
 	public PlaceBookSearch(final String searchString, final PlaceController placeController, final Shelf shelf)
@@ -54,65 +54,24 @@ public class PlaceBookSearch extends Composite
 		Window.setTitle("PlaceBooks Search - " + searchString);
 
 		search.setText(searchString);
-		
+
 		toolbar.setPlaceController(placeController);
 		toolbar.setShelf(shelf);
 		GWT.log("Search: " + searchString);
-		//setShelf(shelf);
-		
+		// setShelf(shelf);
+
 		PlaceBookService.search(searchString, new AbstractCallback()
 		{
 			@Override
-			public void success(Request request, Response response)
+			public void success(final Request request, final Response response)
 			{
-				setShelf(Shelf.parse(response.getText()));				
+				setShelf(Shelf.parse(response.getText()));
 			}
 		});
-		
-		RootPanel.get().getElement().getStyle().clearOverflow();				
+
+		RootPanel.get().getElement().getStyle().clearOverflow();
 	}
 
-	private void setShelf(final Shelf shelf)
-	{
-		if(this.shelf != shelf)
-		{
-			this.shelf = shelf;
-			placebooks.clear();
-			if (shelf != null)
-			{
-				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-				for (final PlaceBookEntry entry : shelf.getEntries())
-				{
-					if(entry.getScore() > 0 || search.getText().equals(""))
-					{
-						entries.add(entry);
-					}
-				}
-				
-				Collections.sort(entries, new Comparator<PlaceBookEntry>()
-				{
-					@Override
-					public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
-					{
-						if(o2.getScore() != o1.getScore())
-						{
-							return o2.getScore() - o1.getScore();
-						}
-						else
-						{
-							return o1.getTitle().compareTo(o2.getTitle());
-						}
-					}
-				});
-				
-				for(final PlaceBookEntry entry: entries)
-				{
-					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));					
-				}
-			}
-		}
-	}
-	
 	@UiHandler("searchButton")
 	void handleSearch(final ClickEvent event)
 	{
@@ -131,5 +90,46 @@ public class PlaceBookSearch extends Composite
 	private void search()
 	{
 		toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
-	}	
+	}
+
+	private void setShelf(final Shelf shelf)
+	{
+		if (this.shelf != shelf)
+		{
+			this.shelf = shelf;
+			placebooks.clear();
+			if (shelf != null)
+			{
+				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+				for (final PlaceBookEntry entry : shelf.getEntries())
+				{
+					if (entry.getScore() > 0 || search.getText().equals(""))
+					{
+						entries.add(entry);
+					}
+				}
+
+				Collections.sort(entries, new Comparator<PlaceBookEntry>()
+				{
+					@Override
+					public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
+					{
+						if (o2.getScore() != o1.getScore())
+						{
+							return o2.getScore() - o1.getScore();
+						}
+						else
+						{
+							return o1.getTitle().compareTo(o2.getTitle());
+						}
+					}
+				});
+
+				for (final PlaceBookEntry entry : entries)
+				{
+					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));
+				}
+			}
+		}
+	}
 }

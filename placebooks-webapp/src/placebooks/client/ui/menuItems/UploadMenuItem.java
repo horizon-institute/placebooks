@@ -44,22 +44,22 @@ public class UploadMenuItem extends MenuItem
 		final Panel panel = new FlowPanel();
 		final FormPanel form = new FormPanel();
 		final Label status = new Label();
-		if(item.getItem().is(ItemType.IMAGE))
+		if (item.getItem().is(ItemType.IMAGE))
 		{
 			status.setText("Maximum Image File Size: 1Mb");
 		}
-		else if(item.getItem().is(ItemType.VIDEO))
+		else if (item.getItem().is(ItemType.VIDEO))
 		{
 			status.setText("Maximum Video File Size: 25Mb");
 		}
-		else if(item.getItem().is(ItemType.AUDIO))
+		else if (item.getItem().is(ItemType.AUDIO))
 		{
 			status.setText("Maximum Audio File Size: 10Mb");
-		}		
+		}
 		final FileUpload upload = new FileUpload();
 		final Hidden hidden = new Hidden("itemKey", item.getItem().getKey());
 		final PopupPanel dialogBox = new PopupPanel(true, true);
-		dialogBox.getElement().getStyle().setZIndex(2000);		
+		dialogBox.getElement().getStyle().setZIndex(2000);
 		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4)
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
@@ -74,14 +74,14 @@ public class UploadMenuItem extends MenuItem
 		});
 		uploadButton.setEnabled(false);
 		upload.addChangeHandler(new ChangeHandler()
-		{		
+		{
 			@Override
-			public void onChange(ChangeEvent arg0)
+			public void onChange(final ChangeEvent arg0)
 			{
-				uploadButton.setEnabled(true);			
+				uploadButton.setEnabled(true);
 			}
 		});
-		
+
 		form.setAction(PlaceBookService.getHostURL() + "/placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
@@ -103,31 +103,31 @@ public class UploadMenuItem extends MenuItem
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
 				GWT.log("Upload Complete: " + event.getResults());
-				GWT.log("Upload Complete: " + event.toDebugString());				
+				GWT.log("Upload Complete: " + event.toDebugString());
 				item.getItemWidget().refresh();
 				item.getRootPanel().getElement().getStyle().setOpacity(0.5);
-				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");				
+				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
 				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
 				{
-					@Override
-					public void success(final Request request, final Response response)
-					{
-						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
-						item.getRootPanel().getElement().getStyle().clearOpacity();
-						item.getRootPanel().getElement().getStyle().clearBackgroundColor();						
-						item.getItemWidget().update(placebookItem);
-						dialogBox.hide();						
-					}
-					
 					@Override
 					public void failure(final Request request, final Response response)
 					{
 						status.setText("Upload Failed");
 						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
 						item.getRootPanel().getElement().getStyle().clearOpacity();
-						item.getRootPanel().getElement().getStyle().clearBackgroundColor();						
-						item.getItemWidget().update(placebookItem);	
-					}					
+						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
+						item.getItemWidget().update(placebookItem);
+					}
+
+					@Override
+					public void success(final Request request, final Response response)
+					{
+						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						item.getRootPanel().getElement().getStyle().clearOpacity();
+						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
+						item.getItemWidget().update(placebookItem);
+						dialogBox.hide();
+					}
 				});
 			}
 		});

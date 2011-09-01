@@ -59,11 +59,6 @@ public class PlaceBookInteractionHandler
 
 	private int originx;
 	private int originy;
-	
-	public DragState getState()
-	{
-		return dragState;
-	}
 
 	private final SaveContext saveContext;
 
@@ -79,26 +74,23 @@ public class PlaceBookInteractionHandler
 		dropMenu.setStyleName(Resources.INSTANCE.style().dropMenu());
 
 		final SimplePanel innerPanel = new SimplePanel();
-		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());		
+		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());
 		insert.add(innerPanel);
 		insert.setStyleName(Resources.INSTANCE.style().insert());
 	}
 
-	public boolean canAdd(PlaceBookItem addItem)
+	public boolean canAdd(final PlaceBookItem addItem)
 	{
-		if(addItem.is(ItemType.GPS))
+		if (addItem.is(ItemType.GPS))
 		{
-			for(PlaceBookItemFrame item: canvas.getItems())
+			for (final PlaceBookItemFrame item : canvas.getItems())
 			{
-				if(item.getItem().is(ItemType.GPS))
-				{
-					return false;
-				}
+				if (item.getItem().is(ItemType.GPS)) { return false; }
 			}
 		}
 		return true;
 	}
-	
+
 	public PlaceBookCanvas getCanvas()
 	{
 		return canvas;
@@ -109,9 +101,148 @@ public class PlaceBookInteractionHandler
 		return saveContext;
 	}
 
+	private PlaceBookPanel getPanel(final MouseEvent<?> event)
+	{
+		final int canvasx = event.getX();// RelativeX(canvas.getElement());
+		final int canvasy = event.getY();// RelativeY(canvas.getElement());
+		for (final PlaceBookPanel panel : canvas.getPanels())
+		{
+			if (panel.isIn(canvasx, canvasy)) { return panel; }
+		}
+		return null;
+	}
+
 	public PlaceBookItemFrame getSelected()
 	{
 		return selected;
+	}
+
+	public DragState getState()
+	{
+		return dragState;
+	}
+
+	private void handleDrag(final MouseEvent<?> event)
+	{
+		if (dragState == DragState.dragInit)
+		{
+			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
+			if (distance > DRAG_DISTANCE)
+			{
+				GWT.log("Drag Start");
+				if (dragItemFrame != null)
+				{
+					canvas.remove(dragItemFrame);
+				}
+				dragFrame.setItemWidget(dragItem);
+				if (dragItem.getOffsetHeight() == 0)
+				{
+					if (dragItem.getItem().hasParameter("height"))
+					{
+						final int heightPX = (int) (dragItem.getItem().getParameter("height")
+								* canvas.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
+						dragItem.setHeight(heightPX + "px");
+					}
+					else
+					{
+						dragItem.setHeight("300px");
+					}
+				}
+				dragState = DragState.dragging;
+				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
+				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
+
+				offsetx = dragFrame.getRootPanel().getOffsetWidth() / 2;
+				offsety = 10;
+			}
+		}
+		else if (dragState == DragState.resizeInit)
+		{
+			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
+			if (distance > RESIZE_DISTANCE)
+			{
+				GWT.log("Resize Start");
+				setSelected(dragItemFrame);
+				dragState = DragState.resizing;
+			}
+		}
+
+		if (dragState == DragState.dragging)
+		{
+			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
+			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
+
+			final PlaceBookPanel newPanel = getPanel(event);
+			if (oldPanel != newPanel && oldPanel != null)
+			{
+				oldPanel.reflow();
+			}
+			oldPanel = newPanel;
+
+			if (newPanel != null)
+			{
+				newPanel.reflow(insert, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
+						.getOffsetHeight() + 14);
+			}
+			else
+			{
+				insert.removeFromParent();
+			}
+		}
+		else if (dragState == DragState.resizing)
+		{
+			final int y = event.getClientY();
+			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 13;
+			final int canvasHeight = canvas.getPanels().iterator().next().getOffsetHeight();
+			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
+
+			dragItemFrame.getItem().setParameter("height", heightPCT);
+			dragItemFrame.getItemWidget().refresh();
+			dragItemFrame.getPanel().reflow();
+		}
+		event.stopPropagation();
+	}
+
+	private void handleDragEnd(final MouseEvent<?> event)
+	{
+		if (dragState == DragState.dragging)
+		{
+			GWT.log("Drag End");
+			// TODO Move to dragFrame detach
+			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
+			insert.removeFromParent();
+
+			final PlaceBookPanel newPanel = getPanel(event);
+			if (oldPanel != newPanel && oldPanel != null)
+			{
+				oldPanel.reflow();
+			}
+			oldPanel = newPanel;
+
+			if (newPanel != null)
+			{
+				GWT.log("Dropped into panel " + newPanel.getIndex());
+				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
+						.getOffsetHeight());
+				final PlaceBookItemFrame frame = factory.createFrame();
+				frame.setItemWidget(dragItem);
+				canvas.add(frame);
+				newPanel.reflow();
+				saveContext.markChanged();
+			}
+			dragFrame.clearItemWidget();
+		}
+		else if (dragState == DragState.resizing)
+		{
+			saveContext.markChanged();
+		}
+		dragState = DragState.waiting;
+	}
+
+	private void hideMenu()
+	{
+		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		dropMenu.getElement().getStyle().setOpacity(0);
 	}
 
 	public void setSelected(final PlaceBookItemFrame selectedItem)
@@ -137,7 +268,7 @@ public class PlaceBookInteractionHandler
 		if (item == null) { return; }
 		if (dragState == DragState.waiting)
 		{
-			//canvas.add(insert);
+			// canvas.add(insert);
 			dragState = DragState.dragInit;
 			this.dragItem = item;
 			originx = event.getClientX();
@@ -211,138 +342,5 @@ public class PlaceBookInteractionHandler
 		dropMenu.getElement().getStyle().setLeft(left, Unit.PX);
 		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		dropMenu.getElement().getStyle().setOpacity(1);
-	}
-
-	private PlaceBookPanel getPanel(final MouseEvent<?> event)
-	{
-		final int canvasx = event.getX();//RelativeX(canvas.getElement());
-		final int canvasy = event.getY();//RelativeY(canvas.getElement());
-		for (final PlaceBookPanel panel : canvas.getPanels())
-		{
-			if (panel.isIn(canvasx, canvasy)) { return panel; }
-		}
-		return null;
-	}
-
-	private void handleDrag(final MouseEvent<?> event)
-	{
-		if (dragState == DragState.dragInit)
-		{
-			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
-			if (distance > DRAG_DISTANCE)
-			{
-				GWT.log("Drag Start");
-				if (dragItemFrame != null)
-				{
-					canvas.remove(dragItemFrame);
-				}
-				dragFrame.setItemWidget(dragItem);
-				if(dragItem.getOffsetHeight() == 0)
-				{
-					if(dragItem.getItem().hasParameter("height"))
-					{
-						final int heightPX = (int) (dragItem.getItem().getParameter("height") * canvas.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
-						dragItem.setHeight(heightPX + "px");
-					}
-					else
-					{
-						dragItem.setHeight("300px");
-					}
-				}
-				dragState = DragState.dragging;
-				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
-				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
-
-				offsetx = dragFrame.getRootPanel().getOffsetWidth() / 2;
-				offsety = 10;
-			}
-		}
-		else if (dragState == DragState.resizeInit)
-		{
-			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
-			if (distance > RESIZE_DISTANCE)
-			{
-				GWT.log("Resize Start");
-				setSelected(dragItemFrame);
-				dragState = DragState.resizing;
-			}
-		}
-
-		if (dragState == DragState.dragging)
-		{
-			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
-			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
-
-			final PlaceBookPanel newPanel = getPanel(event);		
-			if (oldPanel != newPanel && oldPanel != null)
-			{
-				oldPanel.reflow();
-			}
-			oldPanel = newPanel;
-
-			if (newPanel != null)
-			{			
-				newPanel.reflow(insert, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
-						.getOffsetHeight() + 14);
-			}
-			else
-			{
-				insert.removeFromParent();
-			}
-		}
-		else if (dragState == DragState.resizing)
-		{
-			final int y = event.getClientY();
-			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 13;
-			final int canvasHeight = canvas.getPanels().iterator().next().getOffsetHeight();
-			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
-
-			dragItemFrame.getItem().setParameter("height", heightPCT);
-			dragItemFrame.getItemWidget().refresh();
-			dragItemFrame.getPanel().reflow();
-		}
-		event.stopPropagation();
-	}
-
-	private void handleDragEnd(final MouseEvent<?> event)
-	{
-		if (dragState == DragState.dragging)
-		{
-			GWT.log("Drag End");
-			// TODO Move to dragFrame detach
-			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
-			insert.removeFromParent();
-
-			final PlaceBookPanel newPanel = getPanel(event);
-			if (oldPanel != newPanel && oldPanel != null)
-			{
-				oldPanel.reflow();
-			}
-			oldPanel = newPanel;
-
-			if (newPanel != null)
-			{
-				GWT.log("Dropped into panel " + newPanel.getIndex());				
-				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
-								.getOffsetHeight());				
-				final PlaceBookItemFrame frame = factory.createFrame();
-				frame.setItemWidget(dragItem);				
-				canvas.add(frame);
-				newPanel.reflow();
-				saveContext.markChanged();
-			}
-			dragFrame.clearItemWidget();			
-		}
-		else if (dragState == DragState.resizing)
-		{
-			saveContext.markChanged();
-		}
-		dragState = DragState.waiting;
-	}
-
-	private void hideMenu()
-	{
-		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		dropMenu.getElement().getStyle().setOpacity(0);
 	}
 }

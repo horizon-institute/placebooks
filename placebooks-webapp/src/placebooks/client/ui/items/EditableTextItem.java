@@ -62,21 +62,23 @@ public class EditableTextItem extends PlaceBookItemWidget
 	}
 
 	@Override
-	public String resize()
-	{
-		super.resize();
-		if(getParent() != null)
-		{
-			final double scale = getParent().getOffsetWidth() / 300d;
-			textPanel.getElement().setAttribute("style", "width: 300px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale(" + scale + ")");
-			return (getOffsetHeight() * scale) + "px";
-		}
-		return null;
-	}
-
-	@Override
 	public void refresh()
 	{
 		textPanel.getElement().setInnerHTML(item.getText());
+	}
+
+	@Override
+	public String resize()
+	{
+		super.resize();
+		if (getParent() != null)
+		{
+			final double scale = getParent().getOffsetWidth() / 300d;
+			textPanel.getElement().setAttribute("style",
+												"width: 300px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale("
+														+ scale + ")");
+			return (getOffsetHeight() * scale) + "px";
+		}
+		return null;
 	}
 }

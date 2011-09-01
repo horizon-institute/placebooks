@@ -37,25 +37,6 @@ public class AudioItem extends PlaceBookItemWidget
 		initWidget(audio);
 	}
 
-	@Override
-	public void refresh()
-	{
-		if (getItem().hasParameter("height"))
-		{
-			audio.setHeight("100%");
-		}
-		else
-		{
-			audio.getElement().getStyle().clearHeight();			
-		}			
-		if (url == null || !url.equals(getItem().getURL()))
-		{
-			url = getItem().getURL();
-			audio.setSrc(url);
-			checkSize();
-		}
-	}
-
 	private void checkSize()
 	{
 		if (audio.getOffsetHeight() == 0)
@@ -66,6 +47,25 @@ public class AudioItem extends PlaceBookItemWidget
 		{
 			loadTimer.cancel();
 			fireResized();
+		}
+	}
+
+	@Override
+	public void refresh()
+	{
+		if (getItem().hasParameter("height"))
+		{
+			audio.setHeight("100%");
+		}
+		else
+		{
+			audio.getElement().getStyle().clearHeight();
+		}
+		if (url == null || !url.equals(getItem().getURL()))
+		{
+			url = getItem().getURL();
+			audio.setSrc(url);
+			checkSize();
 		}
 	}
 }

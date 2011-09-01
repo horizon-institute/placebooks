@@ -43,14 +43,15 @@ public class PlaceBookEditor implements EntryPoint
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
 		final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
-		
+
 		Place defaultPlace = new PlaceBookHomePlace();
-		
-		if(GWT.getHostPageBaseURL().endsWith("/a/view/"))
+
+		if (GWT.getHostPageBaseURL().endsWith("/a/view/"))
 		{
-			defaultPlace = new PlaceBookPreviewPlace(null, Window.Location.getPath().substring(Window.Location.getPath().lastIndexOf('/') + 1));
-		}	
-		
+			defaultPlace = new PlaceBookPreviewPlace(null, Window.Location.getPath()
+					.substring(Window.Location.getPath().lastIndexOf('/') + 1));
+		}
+
 		historyHandler.register(placeController, eventBus, defaultPlace);
 
 		RootPanel.get().add(appWidget);

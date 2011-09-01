@@ -18,7 +18,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
-public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyUpHandlers, HasFocusHandlers, HasBlurHandlers
+public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyUpHandlers, HasFocusHandlers,
+		HasBlurHandlers
 {
 	public RichTextArea()
 	{
@@ -26,7 +27,7 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 		final Element div = DOM.createDiv();
 		setElement(div);
 		div.setAttribute("contentEditable", "true");
-		//div.getStyle().setProperty("textAlign", "justify");
+		// div.getStyle().setProperty("textAlign", "justify");
 		sinkEvents(Event.ONPASTE);
 	}
 
@@ -49,14 +50,14 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 	}
 
 	@Override
+	public HandlerRegistration addKeyPressHandler(final KeyPressHandler keyPressHandler)
+	{
+		return addDomHandler(keyPressHandler, KeyPressEvent.getType());
+	}
+
+	@Override
 	public HandlerRegistration addKeyUpHandler(final KeyUpHandler keyUpHandler)
 	{
 		return addDomHandler(keyUpHandler, KeyUpEvent.getType());
 	}
-	
-	@Override
-	public HandlerRegistration addKeyPressHandler(final KeyPressHandler keyPressHandler)
-	{
-		return addDomHandler(keyPressHandler, KeyPressEvent.getType());
-	}	
 }

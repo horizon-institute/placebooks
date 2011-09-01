@@ -20,7 +20,7 @@ public class Marker extends JavaScriptObject
 	/*-{
 		return this.events;
 	}-*/;
-	
+
 	public final native Icon getIcon()
 	/*-{
 		return this.icon;

@@ -19,7 +19,7 @@ public class PlaceBookPreviewActivity extends PlaceBookActivity
 	private final PlaceBook placebook;
 	private final PlaceController controller;
 
-	public PlaceBookPreviewActivity(PlaceController controller, PlaceBookPreviewPlace place)
+	public PlaceBookPreviewActivity(final PlaceController controller, final PlaceBookPreviewPlace place)
 	{
 		super(place.getShelf());
 		this.key = place.getKey();
@@ -48,7 +48,7 @@ public class PlaceBookPreviewActivity extends PlaceBookActivity
 			});
 		}
 
-		RootPanel.get().getElement().getStyle().clearOverflow();				
+		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(preview);
 		preview.getCanvas().reflow();
 	}

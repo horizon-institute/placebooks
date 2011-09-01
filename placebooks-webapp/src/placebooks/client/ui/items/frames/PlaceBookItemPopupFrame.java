@@ -154,8 +154,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}, MouseDownEvent.getType());
 
 		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
-		menuItems
-				.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));
@@ -164,9 +163,20 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new UploadMenuItem(this));
-		
+
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
+	}
+
+	void add(final MenuItem menuItem)
+	{
+		menuItems.add(menuItem);
+	}
+
+	private void resize()
+	{
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
 	}
 
 	@Override
@@ -176,6 +186,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+	}
+
+	private void setHighlight(final boolean highlight)
+	{
+		if (highlighted != highlight)
+		{
+			highlighted = highlight;
+			updateFrame();
+		}
 	}
 
 	@Override
@@ -200,12 +219,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			panel.add(frame);
 		}
 	}
-	
-	private void resize()
-	{
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
-	}
 
 	@Override
 	public void updateFrame()
@@ -219,7 +232,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 		else if (highlighted && interactionHandler.getState() == DragState.waiting)
 		{
-			resize();			
+			resize();
 			rootPanel.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
 			frame.getElement().getStyle().setOpacity(0.8);
@@ -231,20 +244,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			frame.getElement().getStyle().setZIndex(0);
 			frame.getElement().getStyle().setOpacity(0);
 			frame.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		}
-	}
-
-	void add(final MenuItem menuItem)
-	{
-		menuItems.add(menuItem);
-	}
-
-	private void setHighlight(final boolean highlight)
-	{
-		if (highlighted != highlight)
-		{
-			highlighted = highlight;
-			updateFrame();
 		}
 	}
 }

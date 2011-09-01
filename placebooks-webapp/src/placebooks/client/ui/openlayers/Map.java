@@ -12,10 +12,7 @@ public class Map extends JavaScriptObject
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg4623().getText());
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg900913().getText());
 
-		if(controls)
-		{
-			return createControlsMap(div);
-		}
+		if (controls) { return createControlsMap(div); }
 		return createMap(div);
 	}
 
@@ -36,7 +33,6 @@ public class Map extends JavaScriptObject
 		});
 	}-*/;
 
-	
 	private final static native Map createMap(final Element div)
 	/*-{
 		return new $wnd.OpenLayers.Map(div, {

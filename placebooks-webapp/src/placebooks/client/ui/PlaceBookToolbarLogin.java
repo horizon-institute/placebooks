@@ -37,7 +37,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	{
 		void shelfChanged(Shelf shelf);
 	}
-	
+
 	private static boolean everytrailsUpdate = false;
 	private final Label divider = new Label(" | ");
 	private final FlowPanel dropMenu = new FlowPanel();
@@ -152,10 +152,17 @@ public class PlaceBookToolbarLogin extends FlowPanel
 														new AbstractCallback()
 														{
 															@Override
+															public void failure(final Request request,
+																	final Response response)
+															{
+																account.setErrorText("Everytrail Login Failed");
+															}
+
+															@Override
 															public void success(final Request request,
 																	final Response response)
 															{
-																dialogBox.hide();																
+																dialogBox.hide();
 																everytrailsUpdate = true;
 																PlaceBookService.everytrail(new AbstractCallback()
 																{
@@ -169,12 +176,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 																	}
 																});
 															}
-
-															@Override
-															public void failure(Request request, Response response)
-															{
-																account.setErrorText("Everytrail Login Failed");																
-															}														
 														});
 					}
 				});
@@ -301,7 +302,7 @@ public class PlaceBookToolbarLogin extends FlowPanel
 	}
 
 	public void setPlaceController(final PlaceController placeController)
-	{	
+	{
 		this.placeController = placeController;
 	}
 
@@ -316,24 +317,6 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		{
 			setShelfInternal(shelf);
 		}
-	}
-
-	public void setShelfListener(final ShelfListener shelfListener)
-	{
-		this.shelfListener = shelfListener;
-	}
-
-	public void showMenu(final int x, final int y)
-	{
-		for (final MenuItem item : menuItems)
-		{
-			item.refresh();
-		}
-		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
-		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		dropMenu.getElement().getStyle().setOpacity(0.9);
-		hideMenuTimer.cancel();
 	}
 
 	private void setShelfInternal(final Shelf shelf)
@@ -357,6 +340,11 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		}
 	}
 
+	public void setShelfListener(final ShelfListener shelfListener)
+	{
+		this.shelfListener = shelfListener;
+	}
+
 	private void setUserInternal(final User user)
 	{
 		if (this.user == user) { return; }
@@ -366,7 +354,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			getElement().getStyle().setDisplay(Display.BLOCK);
 			divider.setVisible(false);
 			signupLabel.setVisible(false);
-			loginLabel.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.INSTANCE.style().dropIcon() + "\">&#9660;</span>");
+			loginLabel.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.INSTANCE.style().dropIcon()
+					+ "\">&#9660;</span>");
 
 			for (final LoginDetails details : user.getLoginDetails())
 			{
@@ -396,5 +385,18 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			signupLabel.setVisible(true);
 			loginLabel.setText("LOGIN");
 		}
+	}
+
+	public void showMenu(final int x, final int y)
+	{
+		for (final MenuItem item : menuItems)
+		{
+			item.refresh();
+		}
+		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
+		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
+		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+		dropMenu.getElement().getStyle().setOpacity(0.9);
+		hideMenuTimer.cancel();
 	}
 }
