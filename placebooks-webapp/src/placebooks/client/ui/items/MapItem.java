@@ -1,5 +1,6 @@
 package placebooks.client.ui.items;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
@@ -20,7 +21,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	private static final String MARKER_URL = GWT.getHostPageBaseURL() + "images/Marker_025.png";
+	private static final String MARKER_URL = PlaceBookService.getHostURL() + "images/Marker_025.png";
 
 	private final static String POINT_PREFIX = "POINT (";
 

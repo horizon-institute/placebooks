@@ -3,10 +3,10 @@ package placebooks.client.ui.palette;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookInteractionHandler;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -15,7 +15,7 @@ public class Palette extends FlowPanel
 	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\""
-			+ GWT.getHostPageBaseURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
+			+ PlaceBookService.getHostURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
 
 	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
 	private static final String NEW_TEXT_HEADER_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Header\"},\"parameters\":{},\"text\":\"<div style='font-size: 25px; font-weight:bold;'>Header</div>\"}";	

@@ -4,6 +4,7 @@ import placebooks.client.resources.Resources;
 import placebooks.client.ui.places.PlaceBookActivityMapper;
 import placebooks.client.ui.places.PlaceBookHistoryMapper;
 import placebooks.client.ui.places.PlaceBookHomePlace;
+import placebooks.client.ui.places.PlaceBookPreviewPlace;
 
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -12,6 +13,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.web.bindery.event.shared.EventBus;
@@ -24,7 +26,6 @@ public class PlaceBookEditor implements EntryPoint
 	// private final PlaceBookList list = new PlaceBookList();
 
 	private SimplePanel appWidget = new SimplePanel();
-	private Place defaultPlace = new PlaceBookHomePlace();
 
 	@Override
 	public void onModuleLoad()
@@ -42,6 +43,14 @@ public class PlaceBookEditor implements EntryPoint
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
 		final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
+		
+		Place defaultPlace = new PlaceBookHomePlace();
+		
+		if(GWT.getHostPageBaseURL().endsWith("/a/view/"))
+		{
+			defaultPlace = new PlaceBookPreviewPlace(null, Window.Location.getPath().substring(Window.Location.getPath().lastIndexOf('/') + 1));
+		}	
+		
 		historyHandler.register(placeController, eventBus, defaultPlace);
 
 		RootPanel.get().add(appWidget);

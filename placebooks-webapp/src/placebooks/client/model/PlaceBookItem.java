@@ -1,5 +1,6 @@
 package placebooks.client.model;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.resources.Resources;
 
 import com.google.gwt.core.client.GWT;
@@ -132,12 +133,12 @@ public class PlaceBookItem extends JavaScriptObject
 		{
 			if (getHash() != null)
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key + "?"
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key + "?"
 						+ getHash();
 			}
 			else
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
 			}
 		}
 

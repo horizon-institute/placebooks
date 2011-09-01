@@ -82,7 +82,7 @@ public class UploadMenuItem extends MenuItem
 			}
 		});
 		
-		form.setAction(GWT.getHostPageBaseURL() + "/placebooks/a/admin/add_item/upload");
+		form.setAction(PlaceBookService.getHostURL() + "/placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setWidget(panel);

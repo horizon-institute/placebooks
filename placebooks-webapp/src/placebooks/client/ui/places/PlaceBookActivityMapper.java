@@ -42,7 +42,7 @@ public class PlaceBookActivityMapper implements ActivityMapper
 		{
 			return new PlaceBookEditorNewActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook(), ((PlaceBookEditorNewPlace) place).getShelf());
 		}
-		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity((PlaceBookPreviewPlace) place); }
+		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity(controller, (PlaceBookPreviewPlace) place); }
 		return null;
 	}
 

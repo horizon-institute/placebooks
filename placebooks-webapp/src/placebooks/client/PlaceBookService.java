@@ -82,14 +82,17 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
 	}
 
-	private static String getHostURL()
+	public static String getHostURL()
 	{
-		final String url = GWT.getHostPageBaseURL();
+		if(GWT.getModuleBaseURL().endsWith(GWT.getModuleName() + "/"))
+		{
+			return GWT.getModuleBaseURL().substring(0, (GWT.getModuleBaseURL().length() - GWT.getModuleName().length() - 1));
+		}
 		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
 		// "taxishare-ui/".length())
 		// + "taxishare-service/"; }
 
-		return url;
+		return GWT.getModuleBaseURL();
 	}
 
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,

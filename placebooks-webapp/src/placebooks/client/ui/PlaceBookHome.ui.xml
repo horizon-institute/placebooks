@@ -100,9 +100,9 @@
 
 		<g:FlowPanel styleName="{res.style.content}">
 			<g:FlowPanel>
-				<g:Image styleName="{style.title}" url="images/HeadlineBlack_800x100.png" />
+				<g:Image styleName="{style.title}" resource="{res.headline}" />
 				<g:FlowPanel styleName="{style.imagePanel}">
-					<g:Image url="images/SplashGraphic.png" styleName="{style.image}" />
+					<g:Image resource="{res.splash}" styleName="{style.image}" />
 					<g:FlowPanel styleName="{style.overImage}"><g:Label styleName="{style.overImageTitle}">CREATE, SHARE, DOWNLOAD AND ENJOY</g:Label><g:HTML>
 PlaceBooks enable you to create digital booklets about your favourite places and interests.<br/>
 You can take them with you on your mobile phone to find your way around the places you visit and to locate the things that interest you.<br />

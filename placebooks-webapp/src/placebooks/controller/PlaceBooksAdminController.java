@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -56,6 +57,7 @@ import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBook.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
@@ -281,6 +283,58 @@ public class PlaceBooksAdminController
 		log.info("Finished Everytrail import");
 	}
 
+	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
+	public void viewPlaceBook(final HttpServletResponse res, @PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();	
+		try
+		{
+			final PlaceBook placebook = manager.find(PlaceBook.class, key);
+			if (placebook != null)
+			{
+				try
+				{
+					if(placebook.getState() != State.PUBLISHED)
+					{
+						return;
+					}
+					
+					final PrintWriter writer = res.getWriter();
+					writer.write("<!doctype html>\n");
+					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
+					writer.write("xmlns:og=\"http://ogp.me/ns#\"");
+					writer.write("xmlns:fb=\"http://www.facebook.com/2008/fbml\">");
+					writer.write("<head>");
+					writer.write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
+					writer.write("<title>PlaceBooks</title>");
+					writer.write("<script type=\"text/javascript\" src=\"../../../placebooks.PlaceBookEditor/placebooks.PlaceBookEditor.nocache.js\"></script>");
+					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
+					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
+					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
+					writer.write("<meta property=\"og:image\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
+					writer.write("<meta property=\"og:description\" content=\"" + placebook.getMetadataValue("description") + "\"/>");		
+					writer.write("</head>");
+					writer.write("<body></body>");
+					writer.write("</html>");					
+					writer.flush();
+					writer.close();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
+	}
+	
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()
 	{
@@ -1036,7 +1090,6 @@ public class PlaceBooksAdminController
 		try
 		{
 			final MediaItem m = em.find(MediaItem.class, key);
-
 			if (m != null)
 			{
 				em.getTransaction().begin();
@@ -1047,6 +1100,7 @@ public class PlaceBooksAdminController
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
+			path = m.getPath();			
 		}
 		catch (final Throwable e)
 		{

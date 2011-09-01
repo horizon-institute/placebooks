@@ -61,6 +61,10 @@ public class PlaceBook extends JavaScriptObject
 		}
 		return defaultValue;
 	}-*/;
+	
+	public final native String getState() /*-{
+		return this.state;
+	}-*/;
 
 	public final native User getOwner() /*-{
 										return this.owner;
