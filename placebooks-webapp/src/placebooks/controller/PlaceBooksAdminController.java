@@ -313,6 +313,7 @@ public class PlaceBooksAdminController
 					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
 					writer.write("<meta property=\"og:image\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
 					writer.write("<meta property=\"og:description\" content=\"" + placebook.getMetadataValue("description") + "\"/>");		
+					writer.write("<style>@media print {	.printHidden { display: none; }	}</style>");					
 					writer.write("</head>");
 					writer.write("<body></body>");
 					writer.write("</html>");					
