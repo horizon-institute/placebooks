@@ -1,0 +1,20 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pb="urn:import:placebooks.client.ui"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.likePanel {
+			padding: 10px 30px;
+			background: #EEE;
+			border-bottom: 1px solid #CCC;
+			display: none;
+		}
+	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<g:FlowPanel>
+		<g:FlowPanel styleName="printHidden">
+			<pb:PlaceBookToolbar ui:field="toolbar" />
+			<g:FlowPanel styleName="{style.likePanel}" ui:field="likePanel" />
+		</g:FlowPanel>		
+		<g:FlowPanel ui:field="canvasPanel" />
+	</g:FlowPanel>
+</ui:UiBinder>

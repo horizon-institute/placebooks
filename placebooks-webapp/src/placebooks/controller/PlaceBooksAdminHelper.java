@@ -97,7 +97,8 @@ public final class PlaceBooksAdminHelper
 		
 		// Mapping
 		// TODO: PlaceBook can only have 1 MapImageItem for the moment
-		if (!p.hasPlaceBookItemClass(MapImageItem.class))
+		if (!p.hasPlaceBookItemClass(MapImageItem.class) &&
+			p.hasPlaceBookItemClass(GPSTraceItem.class))
 		{
 			try
 			{
@@ -299,6 +300,7 @@ public final class PlaceBooksAdminHelper
 			em.getTransaction().commit();
 
 			// Copy data on disk now that keys have been generated
+			em.getTransaction().begin();
 			for (final PlaceBookItem item : p_.getItems())
 			{
 				if (item instanceof MediaItem)
@@ -316,6 +318,7 @@ public final class PlaceBooksAdminHelper
 					wbi.setWebBundlePath(data);
 				}
 			}
+			em.getTransaction().commit();
 
 		}
 		catch (final Throwable e)
@@ -353,14 +356,21 @@ public final class PlaceBooksAdminHelper
 							if(item instanceof GPSTraceItem)
 							{
 								// Remove any MapImageItem if removing a GPSTraceItem
-								for(PlaceBookItem mapItem: placebook.getItems())
+								for(PlaceBookItem mapItem: dbPlacebook.getItems())
 								{
 									if(mapItem instanceof MapImageItem)
 									{
 										mapItem.deleteItemData();
 										manager.remove(mapItem);
-										placebook.removeItem(mapItem);
 									}
+								}
+								
+								for(PlaceBookItem mapItem: placebook.getItems())
+								{
+									if(mapItem instanceof MapImageItem)
+									{
+										placebook.removeItem(mapItem);
+									}									
 								}
 							}
 							item.deleteItemData();
@@ -371,7 +381,7 @@ public final class PlaceBooksAdminHelper
 					dbPlacebook.setItems(placebook.getItems());
 					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 					{
-						dbPlacebook.addMetadataEntry(entry.getKey(), entry.getValue());
+						dbPlacebook.addMetadataEntryIndexed(entry.getKey(), entry.getValue());
 					}
 
 					dbPlacebook.setGeometry(placebook.getGeometry());

@@ -1,8 +1,8 @@
 package placebooks.client.model;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.resources.Resources;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.resources.client.ImageResource;
@@ -132,12 +132,12 @@ public class PlaceBookItem extends JavaScriptObject
 		{
 			if (getHash() != null)
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key + "?"
-						+ getHash();
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key
+						+ "?" + getHash();
 			}
 			else
 			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
 			}
 		}
 
@@ -155,6 +155,12 @@ public class PlaceBookItem extends JavaScriptObject
 	public final boolean is(final ItemType type)
 	{
 		return getClassName().equals(type.getTypeName());
+	}
+
+	private boolean isMedia(final String shortClass)
+	{
+		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
+				|| shortClass.equals("videoitem");
 	}
 
 	public final native void removeMetadata(String name)
@@ -208,10 +214,4 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setText(String newText) /*-{
 														this.text = newText;
 														}-*/;
-
-	private boolean isMedia(final String shortClass)
-	{
-		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
-				|| shortClass.equals("videoitem");
-	}
 }

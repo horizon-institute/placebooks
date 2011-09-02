@@ -4,6 +4,7 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.PlaceBookEditor;
+import placebooks.client.ui.PlaceBookEditor.SaveState;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
@@ -17,6 +18,8 @@ public class PlaceBookEditorActivity extends PlaceBookActivity
 	private final PlaceBook placebook;
 	private final PlaceController placeController;
 
+	private PlaceBookEditor editor;
+
 	public PlaceBookEditorActivity(final PlaceController controller, final PlaceBookEditorPlace place)
 	{
 		super(place.getShelf());
@@ -26,9 +29,16 @@ public class PlaceBookEditorActivity extends PlaceBookActivity
 	}
 
 	@Override
+	public String mayStop()
+	{
+		if (editor != null && editor.getSaveContext().getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
+		return super.mayStop();
+	}
+
+	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		final PlaceBookEditor editor = new PlaceBookEditor(placeController, shelf);
+		editor = new PlaceBookEditor(placeController, shelf);
 		if (placebook != null)
 		{
 			editor.setPlaceBook(placebook);

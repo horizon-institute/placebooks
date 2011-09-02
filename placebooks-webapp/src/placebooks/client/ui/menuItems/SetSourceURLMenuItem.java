@@ -32,7 +32,7 @@ public class SetSourceURLMenuItem extends MenuItem
 		textBox.setValue(item.getItem().getSourceURL());
 
 		final PopupPanel dialogBox = new PopupPanel(true, true);
-		dialogBox.getElement().getStyle().setZIndex(2000);		
+		dialogBox.getElement().getStyle().setZIndex(2000);
 
 		final Button closeButton = new Button("Set URL", new ClickHandler()
 		{

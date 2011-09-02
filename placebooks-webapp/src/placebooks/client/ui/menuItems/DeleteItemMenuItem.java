@@ -11,8 +11,7 @@ public class DeleteItemMenuItem extends MenuItem
 	private final SaveContext context;
 	private final PlaceBookItemFrame item;
 
-	public DeleteItemMenuItem(final SaveContext context, final PlaceBookCanvas canvas,
-			final PlaceBookItemFrame item)
+	public DeleteItemMenuItem(final SaveContext context, final PlaceBookCanvas canvas, final PlaceBookItemFrame item)
 	{
 		super("Delete");
 		this.canvas = canvas;
@@ -23,9 +22,9 @@ public class DeleteItemMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		PlaceBookPanel panel = item.getPanel();
+		final PlaceBookPanel panel = item.getPanel();
 		canvas.remove(item);
-		if(panel != null)
+		if (panel != null)
 		{
 			panel.reflow();
 		}

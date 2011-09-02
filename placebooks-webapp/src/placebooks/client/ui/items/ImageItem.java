@@ -50,22 +50,6 @@ public class ImageItem extends PlaceBookItemWidget
 		});
 	}
 
-	@Override
-	public void refresh()
-	{
-		if (getItem().hasParameter("height"))
-		{
-			image.setWidth("auto");
-			image.setHeight("100%");
-		}
-		else
-		{
-			image.setWidth("100%");
-			image.setHeight("auto");			
-		}
-		image.setUrl(getItem().getURL());
-	}
-
 	private void checkSize()
 	{
 		if (image.getHeight() == 0)
@@ -77,5 +61,21 @@ public class ImageItem extends PlaceBookItemWidget
 			loadTimer.cancel();
 			fireResized();
 		}
+	}
+
+	@Override
+	public void refresh()
+	{
+		if (getItem().hasParameter("height"))
+		{
+			image.setWidth("auto");
+			image.setHeight("100%");
+		}
+		else
+		{
+			image.setWidth("100%");
+			image.setHeight("auto");
+		}
+		image.setUrl(getItem().getURL());
 	}
 }

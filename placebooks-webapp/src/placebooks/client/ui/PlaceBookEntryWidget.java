@@ -30,14 +30,14 @@ public class PlaceBookEntryWidget extends FlowPanel
 		}
 		else
 		{
-			image.setResource(Resources.INSTANCE.placebook128());			
+			image.setResource(Resources.INSTANCE.placebook128());
 			setTitle("Edit " + entry.getTitle());
 		}
 
 		add(image);
 		add(title);
-		
-		if(entry.getOwnerName() != null)
+
+		if (entry.getOwnerName() != null)
 		{
 			author.setText("by " + entry.getOwnerName());
 			author.setStyleName(Resources.INSTANCE.style().authorText());

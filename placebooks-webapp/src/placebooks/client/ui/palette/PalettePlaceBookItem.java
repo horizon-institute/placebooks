@@ -40,7 +40,7 @@ public class PalettePlaceBookItem extends PaletteItem
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				if(dragHandler.canAdd(item))
+				if (dragHandler.canAdd(item))
 				{
 					dragHandler.setupDrag(event, createItem(), null);
 				}

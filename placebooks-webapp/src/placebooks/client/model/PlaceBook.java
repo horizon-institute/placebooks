@@ -43,6 +43,15 @@ public class PlaceBook extends JavaScriptObject
 		};
 	}
 
+	private final native JsArray<PlaceBookItem> getItemsInternal()
+	/*-{
+		if(!('items' in this))
+		{
+			this.items = new Array();
+		}
+		return this.items;
+	}-*/;
+
 	public final native String getKey()
 	/*-{
 		return this.id;
@@ -65,6 +74,10 @@ public class PlaceBook extends JavaScriptObject
 	public final native User getOwner() /*-{
 										return this.owner;
 										}-*/;
+
+	public final native String getState() /*-{
+											return this.state;
+											}-*/;
 
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
@@ -91,15 +104,6 @@ public class PlaceBook extends JavaScriptObject
 	}-*/;
 
 	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
-
-	private final native JsArray<PlaceBookItem> getItemsInternal()
-	/*-{
-		if(!('items' in this))
-		{
-			this.items = new Array();
-		}
-		return this.items;
-	}-*/;
 
 	// @Persistent
 	// private Date timestamp;

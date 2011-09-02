@@ -33,7 +33,11 @@ public interface Resources extends ClientBundle
 
 	ImageResource folder();
 
+	ImageResource headline();
+
 	ImageResource image();
+
+	ImageResource Logo_016();
 
 	ImageResource map();
 
@@ -45,16 +49,14 @@ public interface Resources extends ClientBundle
 
 	ImageResource picture();
 
-	ImageResource search_025();
-	
-	@Source("Placebook_016.png")
-	ImageResource placebook16();
+	@Source("Placebook_128.png")
+	ImageResource placebook_published();
 
 	@Source("Placebook_blue.png")
 	ImageResource placebook128();
-	
-	@Source("Placebook_128.png")
-	ImageResource placebook_published();
+
+	@Source("Placebook_016.png")
+	ImageResource placebook16();
 
 	ImageResource progress();
 
@@ -63,6 +65,10 @@ public interface Resources extends ClientBundle
 	ImageResource progress3();
 
 	ImageResource save();
+
+	ImageResource search_025();
+
+	ImageResource splash();
 
 	@Source("PlaceBook.css")
 	PlaceBookCSS style();

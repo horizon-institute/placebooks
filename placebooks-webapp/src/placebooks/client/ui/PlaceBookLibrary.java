@@ -30,7 +30,7 @@ public class PlaceBookLibrary extends Composite
 
 	@UiField
 	PlaceBookToolbar toolbar;
-	
+
 	private Shelf shelf;
 
 	public PlaceBookLibrary(final PlaceController placeController, final Shelf shelf)
@@ -50,15 +50,14 @@ public class PlaceBookLibrary extends Composite
 				setShelf(shelf);
 			}
 		});
-		GWT.log("Browse Library: " + shelf);
 		setShelf(shelf);
-		
-		RootPanel.get().getElement().getStyle().clearOverflow();				
+
+		RootPanel.get().getElement().getStyle().clearOverflow();
 	}
 
 	private void setShelf(final Shelf shelf)
 	{
-		if(this.shelf != shelf)
+		if (this.shelf != shelf)
 		{
 			this.shelf = shelf;
 			placebooks.clear();

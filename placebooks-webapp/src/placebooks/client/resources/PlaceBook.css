@@ -85,6 +85,7 @@ a:hover {
 	position: relative;
 	background-color: #fff;
 	overflow: visible;
+	page-break-after: always;	
 }
 
 .panel {

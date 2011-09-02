@@ -4,6 +4,8 @@ import com.google.gwt.resources.client.CssResource;
 
 public interface PlaceBookCSS extends CssResource
 {
+	String authorText();
+
 	String canvas();
 
 	String content();
@@ -13,6 +15,8 @@ public interface PlaceBookCSS extends CssResource
 	String dialogGlass();
 
 	String dragFrame();
+
+	String dropIcon();
 
 	String dropMenu();
 
@@ -25,8 +29,6 @@ public interface PlaceBookCSS extends CssResource
 	String insert();
 
 	String insertInner();
-	
-	String authorText();
 
 	String listItem();
 
@@ -34,25 +36,23 @@ public interface PlaceBookCSS extends CssResource
 
 	String menuItem();
 
+	String page();
+
+	String pageInvisible();
+
 	String panel();
 
-	String page();
-	
-	String pageInvisible();
-	
 	String panelEdge();
 
 	String placebookEntry();
 
 	String placebookEntryText();
-	
-	String dropIcon();
-	
-	String saveItem();
-	
-	String saveItemDisabled();
 
 	String popupPanel();
+
+	String saveItem();
+
+	String saveItemDisabled();
 
 	String textitem();
 

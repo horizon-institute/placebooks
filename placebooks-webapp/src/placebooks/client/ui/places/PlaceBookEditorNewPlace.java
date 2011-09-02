@@ -39,7 +39,7 @@ public class PlaceBookEditorNewPlace extends PlaceBookPlace
 	public PlaceBook getPlaceBook()
 	{
 		final PlaceBook placebook = PlaceBook.parse(newPlaceBook);
-		if(getShelf() != null)
+		if (getShelf() != null)
 		{
 			placebook.setOwner(getShelf().getUser());
 		}

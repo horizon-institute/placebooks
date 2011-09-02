@@ -28,25 +28,6 @@ public class VideoItem extends PlaceBookItemWidget
 		initWidget(video);
 	}
 
-	@Override
-	public void refresh()
-	{
-		if (getItem().hasParameter("height"))
-		{
-			video.setHeight("100%");
-		}
-		else
-		{
-			video.setHeight("auto");			
-		}		
-		if (url == null || !url.equals(getItem().getURL()))
-		{
-			url = getItem().getURL();
-			video.setSrc(url);
-			checkSize();
-		}
-	}
-
 	private void checkSize()
 	{
 		if (video.getVideoHeight() == 0)
@@ -57,6 +38,25 @@ public class VideoItem extends PlaceBookItemWidget
 		{
 			loadTimer.cancel();
 			fireResized();
+		}
+	}
+
+	@Override
+	public void refresh()
+	{
+		if (getItem().hasParameter("height"))
+		{
+			video.setHeight("100%");
+		}
+		else
+		{
+			video.setHeight("auto");
+		}
+		if (url == null || !url.equals(getItem().getURL()))
+		{
+			url = getItem().getURL();
+			video.setSrc(url);
+			checkSize();
 		}
 	}
 }

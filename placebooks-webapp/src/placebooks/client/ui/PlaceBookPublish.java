@@ -69,6 +69,7 @@ public class PlaceBookPublish extends Composite
 	public PlaceBookPublish(final PlaceBookToolbar toolbar, final PlaceBookCanvas canvas)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+		title.setMaxLength(64);
 		title.setText(canvas.getPlaceBook().getMetadata("title", "No Title"));
 		description.setText(canvas.getPlaceBook().getMetadata("description", ""));
 		activity.setText(canvas.getPlaceBook().getMetadata("activity", ""));

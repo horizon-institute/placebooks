@@ -8,9 +8,9 @@ public abstract class PlaceBookActivity extends AbstractActivity
 {
 	protected final Shelf shelf;
 
-	protected PlaceBookActivity(Shelf shelf)
+	protected PlaceBookActivity(final Shelf shelf)
 	{
 		this.shelf = shelf;
 	}
-	
+
 }

@@ -33,7 +33,7 @@ public class LoginDialog extends Composite
 
 	@UiField
 	Label titleLabel;
-	
+
 	@UiField
 	Label errorLabel;
 
@@ -57,32 +57,6 @@ public class LoginDialog extends Composite
 		submit.addClickHandler(clickHandler);
 	}
 
-	public void focus()
-	{
-		username.setFocus(true);
-	}
-
-	public String getPassword()
-	{
-		return password.getText();
-	}
-	
-	public void setUsername(String username)
-	{
-		this.username.setText(username);
-	}
-	
-	public void setErrorText(String error)
-	{
-		errorLabel.setText(error);
-		errorLabel.getElement().getStyle().setDisplay(Display.BLOCK);
-	}
-	
-	public String getUsername()
-	{
-		return username.getText();
-	}
-
 	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyUpEvent event)
 	{
@@ -101,13 +75,31 @@ public class LoginDialog extends Composite
 		submit.setEnabled(true);
 	}
 
-	//
-	// @UiHandler("submit")
-	// void createAccount(final ClickEvent event)
-	// {
-	// submit.setEnabled(false);
-	//
-	// }
+	public void focus()
+	{
+		username.setFocus(true);
+	}
+
+	public String getPassword()
+	{
+		return password.getText();
+	}
+
+	public String getUsername()
+	{
+		return username.getText();
+	}
+
+	public void setErrorText(final String error)
+	{
+		errorLabel.setText(error);
+		errorLabel.getElement().getStyle().setDisplay(Display.BLOCK);
+	}
+
+	public void setUsername(final String username)
+	{
+		this.username.setText(username);
+	}
 
 	@UiHandler("password")
 	void submitOnReturn(final KeyPressEvent event)

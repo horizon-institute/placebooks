@@ -4,7 +4,6 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -15,6 +14,12 @@ public abstract class PlaceBookItemFrame
 	protected PlaceBookPanel panel;
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
+
+	public void clearItemWidget()
+	{
+		widgetPanel.clear();
+		this.itemWidget = null;
+	}
 
 	public PlaceBookItem getItem()
 	{
@@ -36,24 +41,26 @@ public abstract class PlaceBookItemFrame
 		return rootPanel;
 	}
 
+	protected void itemWidgetResized()
+	{
+		if (panel != null)
+		{
+			panel.reflow();
+		}
+	}
+
 	public void resize(final String height)
 	{
-		String clientHeight = itemWidget.resize();
-		if(clientHeight != null && height.equals(""))
+		final String clientHeight = itemWidget.resize();
+		if (clientHeight != null && height.equals(""))
 		{
 			rootPanel.getElement().getStyle().setProperty("height", clientHeight);
 			return;
 		}
 		if (height.equals(rootPanel.getElement().getStyle().getHeight())) { return; }
-		rootPanel.getElement().getStyle().setProperty("height", height);	
+		rootPanel.getElement().getStyle().setProperty("height", height);
 	}
 
-	public void clearItemWidget()
-	{
-		widgetPanel.clear();
-		this.itemWidget = null;
-	}
-	
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		this.itemWidget = itemWidget;
@@ -61,7 +68,6 @@ public abstract class PlaceBookItemFrame
 		widgetPanel.clear();
 		if (itemWidget.getParent() != null)
 		{
-			GWT.log("Item has parent");
 			itemWidget.removeFromParent();
 		}
 		widgetPanel.add(itemWidget);
@@ -96,13 +102,5 @@ public abstract class PlaceBookItemFrame
 	public void updateFrame()
 	{
 
-	}
-
-	protected void itemWidgetResized()
-	{
-		if (panel != null)
-		{
-			panel.reflow();
-		}
 	}
 }

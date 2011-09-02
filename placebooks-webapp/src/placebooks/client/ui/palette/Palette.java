@@ -3,10 +3,10 @@ package placebooks.client.ui.palette;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.PlaceBookInteractionHandler;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -15,12 +15,12 @@ public class Palette extends FlowPanel
 	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\""
-			+ GWT.getHostPageBaseURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
+			+ PlaceBookService.getHostURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
 
 	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\",\"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
-	private static final String NEW_TEXT_HEADER_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Header\"},\"parameters\":{},\"text\":\"<div style='font-size: 25px; font-weight:bold;'>Header</div>\"}";	
+	private static final String NEW_TEXT_HEADER_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Header\"},\"parameters\":{},\"text\":\"<div style='font-size: 25px; font-weight:bold;'>Header</div>\"}";
 	private static final String NEW_TEXT_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Body Text\"},\"parameters\":{},\"text\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"}";
-	private static final String NEW_TEXT_LIST_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Bulleted List\"},\"parameters\":{},\"text\":\"<ul style='margin: 3px 0px;'><li>List Item</li><li>List Item</li><li>List Item</li></ul>\"}";	
+	private static final String NEW_TEXT_LIST_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Bulleted List\"},\"parameters\":{},\"text\":\"<ul style='margin: 3px 0px;'><li>List Item</li><li>List Item</li><li>List Item</li></ul>\"}";
 	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"http://www.cs.nott.ac.uk/~ktg/sample_iPod.mp4\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 	private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
@@ -30,13 +30,47 @@ public class Palette extends FlowPanel
 	{
 	}
 
+	private PaletteFolder findFolder(final PaletteFolder root, final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = getPath(folder);
+
+		PaletteFolder current = root;
+		for (final PaletteFolder pathElement : path)
+		{
+			final PaletteFolder equiv = current.getFolder(pathElement.getName());
+			if (equiv != null)
+			{
+				current = equiv;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return current;
+	}
+
+	private List<PaletteFolder> getPath(final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = new ArrayList<PaletteFolder>();
+
+		PaletteFolder current = folder;
+		while (current.getParentFolder() != null)
+		{
+			path.add(0, current);
+			current = current.getParentFolder();
+		}
+
+		return path;
+	}
+
 	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookInteractionHandler dragHandler)
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 
 		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_HEADER_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_LIST_ITEM), dragHandler));		
+		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_LIST_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_IMAGE_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_VIDEO_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_WEB_ITEM), dragHandler));
@@ -83,39 +117,5 @@ public class Palette extends FlowPanel
 		{
 			add(paletteItem);
 		}
-	}
-
-	private PaletteFolder findFolder(final PaletteFolder root, final PaletteFolder folder)
-	{
-		final List<PaletteFolder> path = getPath(folder);
-
-		PaletteFolder current = root;
-		for (final PaletteFolder pathElement : path)
-		{
-			final PaletteFolder equiv = current.getFolder(pathElement.getName());
-			if (equiv != null)
-			{
-				current = equiv;
-			}
-			else
-			{
-				break;
-			}
-		}
-		return current;
-	}
-
-	private List<PaletteFolder> getPath(final PaletteFolder folder)
-	{
-		final List<PaletteFolder> path = new ArrayList<PaletteFolder>();
-
-		PaletteFolder current = folder;
-		while (current.getParentFolder() != null)
-		{
-			path.add(0, current);
-			current = current.getParentFolder();
-		}
-
-		return path;
 	}
 }

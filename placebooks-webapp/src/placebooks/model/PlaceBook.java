@@ -130,12 +130,11 @@ public class PlaceBook
 			this.geom = null;
 		}
 		this.timestamp = (Date)p.getTimestamp().clone();
-		
-		index.setPlaceBook(this);
-
-		// Note: search index should be built up as this PlaceBook is cloned
 
 		this.metadata = new HashMap<String, String>(p.getMetadata());
+
+		index.setPlaceBook(this);
+		this.index.addAll(p.getSearchIndex().getIndex());
 
         for (PlaceBookItem item : p.getItems())
 		{
@@ -176,9 +175,22 @@ public class PlaceBook
 		items.add(item);
 		item.setPlaceBook(this);
 	}
+
 	public void addMetadataEntry(final String key, final String value)
 	{
-		metadata.put(key, value);
+		if (value == null)
+		{
+			metadata.remove(key);
+		}
+		else
+		{
+			metadata.put(key, value);
+		}
+	}
+
+	public void addMetadataEntryIndexed(final String key, final String value)
+	{
+		addMetadataEntry(key, value);
 		index.addAll(SearchHelper.getIndex(value));
 	}
 
@@ -397,5 +409,10 @@ public class PlaceBook
 	public void setTimestamp(final Date timestamp)
 	{
 		this.timestamp = timestamp;
+	}
+
+	public final PlaceBookSearchIndex getSearchIndex()
+	{
+		return index;
 	}
 }

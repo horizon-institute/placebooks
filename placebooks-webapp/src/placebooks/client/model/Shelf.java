@@ -25,7 +25,7 @@ public class Shelf extends JavaScriptObject
 		};
 	}
 
-	public final native User getUser() /*-{ return this.user; }-*/;
-
 	private final native JsArray<PlaceBookEntry> getEntriesImpl() /*-{ return this.entries; }-*/;
+
+	public final native User getUser() /*-{ return this.user; }-*/;
 }

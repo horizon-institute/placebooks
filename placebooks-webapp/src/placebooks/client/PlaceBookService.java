@@ -10,9 +10,25 @@ import com.google.gwt.json.client.JSONObject;
 
 public class PlaceBookService
 {
+	public static void deletePlaceBook(final String key, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
+	}
+
 	public static void everytrail(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/import_everytrail", callback);
+	}
+
+	public static String getHostURL()
+	{
+		if (GWT.getModuleBaseURL().endsWith(GWT.getModuleName() + "/")) { return GWT.getModuleBaseURL()
+				.substring(0, (GWT.getModuleBaseURL().length() - GWT.getModuleName().length() - 1)); }
+		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
+		// "taxishare-ui/".length())
+		// + "taxishare-service/"; }
+
+		return GWT.getModuleBaseURL();
 	}
 
 	public static void getPaletteItems(final RequestCallback callback)
@@ -25,11 +41,6 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/placebook/" + key, callback);
 	}
 
-	public static void deletePlaceBook(final String key, final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
-	}
-	
 	public static void getPlaceBookItem(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/placebookitem/" + key, callback);
@@ -82,16 +93,6 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
 	}
 
-	private static String getHostURL()
-	{
-		final String url = GWT.getHostPageBaseURL();
-		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
-		// "taxishare-ui/".length())
-		// + "taxishare-service/"; }
-
-		return url;
-	}
-
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
 			final RequestCallback callback)
 	{
@@ -101,7 +102,6 @@ public class PlaceBookService
 		{
 			builder.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 			GWT.log("Request data: " + URL.decodePathSegment(data));
-			GWT.log("Request data: " + data);			
 		}
 		try
 		{

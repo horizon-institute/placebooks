@@ -35,12 +35,46 @@ public abstract class PlaceBookItemWidget extends Composite
 		this.item = item;
 	}
 
+	protected void fireChanged()
+	{
+		if (changeHandler != null)
+		{
+			changeHandler.itemChanged();
+		}
+	}
+
+	protected void fireFocusChanged(final boolean focussed)
+	{
+		if (focusHandler != null)
+		{
+			focusHandler.itemFocusChanged(focussed);
+		}
+	}
+
+	protected void fireResized()
+	{
+		if (resizeHandler != null)
+		{
+			resizeHandler.itemResized();
+		}
+	}
+
 	public PlaceBookItem getItem()
 	{
 		return item;
 	}
 
+	int getOrder()
+	{
+		return item.getParameter("order", 0);
+	}
+
 	public abstract void refresh();
+
+	public String resize()
+	{
+		return null;
+	}
 
 	public void setChangeHandler(final ChangeHandler changeHandler)
 	{
@@ -70,46 +104,12 @@ public abstract class PlaceBookItemWidget extends Composite
 			item.removeMetadata("tempID");
 			newItem.removeMetadata("tempID");
 		}
-		
+
 		if (newItem.getHash() != null)
 		{
 			item.setHash(newItem.getHash());
-			item.setSourceURL(newItem.getSourceURL());			
+			item.setSourceURL(newItem.getSourceURL());
 		}
 		refresh();
-	}
-
-	int getOrder()
-	{
-		return item.getParameter("order", 0);
-	}
-
-	protected void fireChanged()
-	{
-		if (changeHandler != null)
-		{
-			changeHandler.itemChanged();
-		}
-	}
-
-	protected void fireFocusChanged(final boolean focussed)
-	{
-		if (focusHandler != null)
-		{
-			focusHandler.itemFocusChanged(focussed);
-		}
-	}
-	
-	public String resize()
-	{
-		return null;
-	}
-
-	protected void fireResized()
-	{
-		if (resizeHandler != null)
-		{
-			resizeHandler.itemResized();
-		}
 	}
 }

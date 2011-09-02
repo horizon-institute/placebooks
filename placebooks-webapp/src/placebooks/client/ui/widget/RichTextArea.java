@@ -1,6 +1,5 @@
 package placebooks.client.ui.widget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -19,7 +18,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
-public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyUpHandlers, HasFocusHandlers, HasBlurHandlers
+public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyUpHandlers, HasFocusHandlers,
+		HasBlurHandlers
 {
 	public RichTextArea()
 	{
@@ -27,7 +27,7 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 		final Element div = DOM.createDiv();
 		setElement(div);
 		div.setAttribute("contentEditable", "true");
-		//div.getStyle().setProperty("textAlign", "justify");
+		// div.getStyle().setProperty("textAlign", "justify");
 		sinkEvents(Event.ONPASTE);
 	}
 
@@ -35,15 +35,6 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 	{
 		this();
 		getElement().setInnerHTML(html);
-	}
-
-	@Override
-	public void onBrowserEvent(Event arg0)
-	{
-		GWT.log(arg0.getType() + " event");
-		GWT.log("" + arg0.getString());
-		GWT.log(arg0.toString());
-		super.onBrowserEvent(arg0);
 	}
 
 	@Override
@@ -59,14 +50,14 @@ public class RichTextArea extends Widget implements HasKeyPressHandlers, HasKeyU
 	}
 
 	@Override
+	public HandlerRegistration addKeyPressHandler(final KeyPressHandler keyPressHandler)
+	{
+		return addDomHandler(keyPressHandler, KeyPressEvent.getType());
+	}
+
+	@Override
 	public HandlerRegistration addKeyUpHandler(final KeyUpHandler keyUpHandler)
 	{
 		return addDomHandler(keyUpHandler, KeyUpEvent.getType());
 	}
-	
-	@Override
-	public HandlerRegistration addKeyPressHandler(final KeyPressHandler keyPressHandler)
-	{
-		return addDomHandler(keyPressHandler, KeyPressEvent.getType());
-	}	
 }

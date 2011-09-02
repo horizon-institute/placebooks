@@ -17,8 +17,10 @@ public class PlaceBookEntry extends JavaScriptObject
 	public final native int getNumItems() /*-{ return this.numItems; }-*/;
 
 	public final native String getOwner() /*-{ return this.owner; }-*/;
-	
-	public final native String getOwnerName() /*-{ return this.ownerName; }-*/;	
+
+	public final native String getOwnerName() /*-{ return this.ownerName; }-*/;
+
+	public final native int getScore() /*-{ return this.score; }-*/;
 
 	public final native String getState() /*-{ return this.state; }-*/;
 

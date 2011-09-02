@@ -57,6 +57,7 @@ import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBook.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
@@ -157,11 +158,9 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	private static final Logger log = 
-		Logger.getLogger(PlaceBooksAdminController.class.getName());
+	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
 
 	private static final int MEGABYTE = 1048576;
-
 
 	@RequestMapping(value = "/admin/import_everytrail")
 	public void getEverytrailData()
@@ -194,7 +193,7 @@ public class PlaceBooksAdminController
 			log.error("Everytrail login failed");
 			return;
 		}
-		
+
 		try
 		{
 
@@ -202,7 +201,7 @@ public class PlaceBooksAdminController
 
 			// Save user id
 			details.setUserID(loginResponse.getValue());
-			manager.getTransaction().commit();		
+			manager.getTransaction().commit();
 		}
 		finally
 		{
@@ -217,30 +216,26 @@ public class PlaceBooksAdminController
 				manager.close();
 		}
 
-
-		final EverytrailTripsResponse trips = 
-			EverytrailHelper.Trips(loginResponse.getValue());
+		final EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
 
 		for (Node trip : trips.getTrips())
 		{
 			// Get trip ID
 			final NamedNodeMap tripAttr = trip.getAttributes();
 			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
-			
-			//Get other trip attributes...
+
+			// Get other trip attributes...
 			String tripName = "";
 			String tripGPX = "";
 			String tripKML = "";
-			//Then look at the properties in the child nodes to get url, title, description, etc.
+			// Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
-			for (int propertyIndex = 0; 
-				 propertyIndex < tripProperties.getLength(); propertyIndex++)
+			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
 			{
-				log.info("Trip property, " + propertyIndex + " of "
-						 + tripProperties.getLength());
 				final Node item = tripProperties.item(propertyIndex);
 				final String itemName = item.getNodeName();
-				//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+				// log.debug("Inspecting property: " + itemName + " which is " +
+				// item.getTextContent());
 				if (itemName.equals("name"))
 				{
 					log.debug("Trip name is: " + item.getTextContent());
@@ -265,8 +260,7 @@ public class PlaceBooksAdminController
 			int i = 0;
 			for (Node track : tracks.getTracks())
 			{
-				log.info("Processing track " + i++ + " of " 
-						 + tracks.getTracks().size());
+				log.info("Processing track " + i++ + " of " + tracks.getTracks().size());
 				GPSTraceItem gpsItem = new GPSTraceItem(user, null, null);
 				ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, 
 										   tripName);
@@ -299,29 +293,95 @@ public class PlaceBooksAdminController
 						log.error("Giving up getting " + tripGPX);						
 					}
 				}
-				gpsItem = (GPSTraceItem)gpsItem.saveUpdatedItem();
+				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
-			
-			final EverytrailPicturesResponse picturesResponse = 	
-				EverytrailHelper.TripPictures(tripId, 
-					details.getUsername(), details.getPassword(), tripName);
 
-			final HashMap<String, Node> pictures = 
-				picturesResponse.getPicturesMap();
+			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.TripPictures(	tripId,
+																								details.getUsername(),
+																								details.getPassword(),
+																								tripName);
+
+			final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
 			i = 0;
 			for (final Node picture : pictures.values())
 			{
 				log.info("Processing picture " + i++);
 				ImageItem imageItem = new ImageItem(user, null, null, null);
-				ItemFactory.toImageItem(user, picture, imageItem, tripId, 
-										tripName);
-				imageItem = (ImageItem)imageItem.saveUpdatedItem();
+				ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
+				imageItem = (ImageItem) imageItem.saveUpdatedItem();
 			}
 		}
 		log.info("Finished Everytrail import");
 	}
 
+	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
+	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();	
+		try
+		{
+			final PlaceBook placebook = manager.find(PlaceBook.class, key);
+			if (placebook != null)
+			{
+				try
+				{
+					if(placebook.getState() != State.PUBLISHED)
+					{
+						return;
+					}
 
+					String urlbase;
+					if(req.getServerPort() != 80)
+					{
+						urlbase = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/";
+					}
+					else
+					{
+						urlbase = req.getScheme() + "://" + req.getServerName() + req.getContextPath() + "/";						
+					}
+
+					
+					final PrintWriter writer = res.getWriter();
+					writer.write("<!doctype html>");
+					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
+					writer.write(" xmlns:og=\"http://ogp.me/ns#\"");
+					writer.write(" xmlns:fb=\"http://www.facebook.com/2008/fbml\">");
+					writer.write("<head>");
+					writer.write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");					
+					writer.write("<title>" + placebook.getMetadataValue("title") + "</title>");
+					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
+					writer.write("<meta property=\"og:type\" content=\"article\"/>");
+//					writer.write("<meta property=\"og:url\" content=\"" + urlbase + "#preview:" + placebook.getKey() + "\"/>");
+					if(placebook.getMetadataValue("placebookImage") != null)
+					{
+						writer.write("<meta property=\"og:image\" content=\"" + urlbase + "placebooks/a/admin/serve/imageitem/"+placebook.getMetadataValue("placebookImage") + "\"/>");
+					}
+					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
+					writer.write("<meta property=\"og:description\" content=\"" + placebook.getMetadataValue("description") + "\"/>");					
+					writer.write("<meta http-equiv=\"Refresh\" content=\"0; url=" + urlbase + "#preview:" + placebook.getKey() + "\" />");					
+					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
+					writer.write("</head>");
+					writer.write("<body></body>");
+					writer.write("</html>");					
+					writer.flush();
+					writer.close();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
+	}
+	
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()
 	{
@@ -332,26 +392,25 @@ public class PlaceBooksAdminController
 	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
 			@RequestParam final String service, final HttpServletResponse res)
 	{
-		if(service.equals(EverytrailHelper.SERVICE_NAME))
+		if (service.equals(EverytrailHelper.SERVICE_NAME))
 		{
 			EverytrailLoginResponse response = EverytrailHelper.UserLogin(username, password);
 			log.info(response.getStatus() + ":" + response.getValue());
-			if(response.getStatus().equals("error"))
+			if (response.getStatus().equals("error"))
 			{
-				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);			
-				
+				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
 				return;
 			}
-		}		
-		
-		
+		}
+
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
-		
+
 		try
 		{
 			manager.getTransaction().begin();
-			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);			
+			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
 			manager.persist(loginDetails);
 			user.add(loginDetails);
 			manager.getTransaction().commit();
@@ -493,7 +552,7 @@ public class PlaceBooksAdminController
 			// mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
 
 			res.setContentType("application/json");
-			log.info("Palette Items: " + mapper.writeValueAsString(pbs));
+			//log.debug("Palette Items: " + mapper.writeValueAsString(pbs));
 			sos.flush();
 			sos.close();
 		}
@@ -629,25 +688,20 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(
-								final HttpServletRequest req, 
-								final HttpServletResponse res,
-								@PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("owner") final String owner)
 	{
 		if (owner.trim().isEmpty()) { return null; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = 
-			pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", 
-						   User.class);
+		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
 		uq.setParameter("email", owner.trim());
 		try
 		{
 			final User user = uq.getSingleResult();
 
-			final TypedQuery<PlaceBook> q = 
-			pm.createQuery("SELECT p FROM PlaceBook p WHERE p.owner = :user",
-						   PlaceBook.class);
+			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
+															PlaceBook.class);
 
 			q.setParameter("user", user);
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -684,19 +738,14 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, 
-									final HttpServletResponse res,
-									@PathVariable("key") final String key)
+	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
 		final PlaceBook p = pm.find(PlaceBook.class, key);
 		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
-		if (zipFile == null) 
-		{
-			return new ModelAndView("message", "text", 
-									"Making and compressing package");
-		}
+		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
 
 		try
 		{
@@ -715,8 +764,7 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/zip");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" 
-												 + p.getKey() + ".zip\"");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" + p.getKey() + ".zip\"");
 			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
@@ -758,7 +806,7 @@ public class PlaceBooksAdminController
 		try
 		{
 			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
@@ -766,7 +814,7 @@ public class PlaceBooksAdminController
 
 			res.setContentType("application/json");
 			final ServletOutputStream sos = res.getOutputStream();
-			log.info("Published Placebook:" + mapper.writeValueAsString(published));
+			log.debug("Published Placebook:" + mapper.writeValueAsString(published));
 			mapper.writeValue(sos, published);
 			sos.flush();
 		}
@@ -807,13 +855,13 @@ public class PlaceBooksAdminController
 		try
 		{
 			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);			
+			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 
 			res.setContentType("application/json");
 			final ServletOutputStream sos = res.getOutputStream();
-			log.info("Saved Placebook:" + mapper.writeValueAsString(result));
+			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));
 			mapper.writeValue(sos, result);
 			sos.flush();
 		}
@@ -832,12 +880,9 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/admin/location_search/placebook/{geometry}", 
-					method = RequestMethod.GET)
-	public ModelAndView searchLocationPlaceBooksGET(
-							final HttpServletRequest req,
-							final HttpServletResponse res,
-							@PathVariable("geometry") final String geometry)
+	@RequestMapping(value = "/admin/location_search/placebook/{geometry}", method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBooksGET(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("geometry") final String geometry)
 	{
 		Geometry geometry_ = null;
 		try
@@ -853,16 +898,15 @@ public class PlaceBooksAdminController
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
-		for (final Map.Entry<PlaceBook, Double> entry : 
-			 PlaceBooksAdminHelper.searchLocationForPlaceBooks(em, geometry_))
+		for (final Map.Entry<PlaceBook, Double> entry : PlaceBooksAdminHelper
+				.searchLocationForPlaceBooks(em, geometry_))
 		{
 			final PlaceBook p = entry.getKey();
 			if (p != null)
 			{
-				log.info("Search result: pb key=" + entry.getKey().getKey() 
-						 + ", distance=" + entry.getValue());
+				log.info("Search result: pb key=" + entry.getKey().getKey() + ", distance=" + entry.getValue());
 				pbs.add(new PlaceBookDistanceEntry(p, entry.getValue()));
-			}	
+			}
 		}
 		em.close();
 
@@ -884,12 +928,9 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/location_search/placebookitem/{geometry}", 
-					method = RequestMethod.GET)
-	public ModelAndView searchLocationPlaceBookItemsGET(
-							final HttpServletRequest req,
-							final HttpServletResponse res,
-							@PathVariable("geometry") final String geometry)
+	@RequestMapping(value = "/admin/location_search/placebookitem/{geometry}", method = RequestMethod.GET)
+	public ModelAndView searchLocationPlaceBookItemsGET(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("geometry") final String geometry)
 	{
 		Geometry geometry_ = null;
 		try
@@ -905,18 +946,15 @@ public class PlaceBooksAdminController
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> ps = new ArrayList<ShelfEntry>();
-		for (final Map.Entry<PlaceBookItem, Double> entry : 
-			 PlaceBooksAdminHelper
-			 	.searchLocationForPlaceBookItems(em, geometry_)
-			)
+		for (final Map.Entry<PlaceBookItem, Double> entry : PlaceBooksAdminHelper
+				.searchLocationForPlaceBookItems(em, geometry_))
 		{
 			final PlaceBookItem p = entry.getKey();
 			if (p != null)
 			{
-				log.info("Search result: pbi key=" + entry.getKey().getKey() 
-						 + ", distance=" + entry.getValue());
+				log.info("Search result: pbi key=" + entry.getKey().getKey() + ", distance=" + entry.getValue());
 				ps.add(new PlaceBookItemDistanceEntry(p, entry.getValue()));
-			}	
+			}
 		}
 		em.close();
 
@@ -940,26 +978,23 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
-	public ModelAndView searchGET(final HttpServletRequest req,
-								  final HttpServletResponse res,
-								  @PathVariable("terms") final String terms)
+	public ModelAndView searchGET(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("terms") final String terms)
 	{
 		final long timeStart = System.nanoTime();
 		final long timeEnd;
-		
+
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
-		for (final Map.Entry<PlaceBook, Integer> entry : 
-			 PlaceBooksAdminHelper.search(em, terms))
+		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(em, terms))
 		{
 			final PlaceBook p = entry.getKey();
 			if (p != null && p.getState() == PlaceBook.State.PUBLISHED)
 			{
-				log.info("Search result: pb key=" + entry.getKey().getKey() 
-						 + ", score=" + entry.getValue());
+				log.info("Search result: pb key=" + entry.getKey().getKey() + ", score=" + entry.getValue());
 				pbs.add(new PlaceBookSearchEntry(p, entry.getValue()));
-			}	
+			}
 		}
 		em.close();
 
@@ -980,13 +1015,12 @@ public class PlaceBooksAdminController
 
 		timeEnd = System.nanoTime();
 		log.info("Search execution time = " + (timeEnd - timeStart) + " ns");
-		
+
 		return null;
 	}
 
 	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
-	public ModelAndView searchPOST(final HttpServletRequest req,
-								   final HttpServletResponse res)
+	public ModelAndView searchPOST(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final StringBuffer out = new StringBuffer();
 		final String[] terms = req.getParameter("terms").split("\\s");
@@ -1050,27 +1084,34 @@ public class PlaceBooksAdminController
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
 
-			if (i != null && i.getPath() != null)
+			if (i != null)
 			{
-				try
-				{
-					final File image = new File(i.getPath());
-					final ImageInputStream iis = ImageIO.createImageInputStream(image);
-					final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-					String fmt = "png";
-					while (readers.hasNext())
+				em.getTransaction().begin();
+				i.attemptPathFix();
+				em.getTransaction().commit();
+				if (i.getPath() != null)
+				{		
+					log.info(i.getPath());
+					try
 					{
-						final ImageReader read = readers.next();
-						fmt = read.getFormatName();
-					}
+						final File image = new File(i.getPath());
+						final ImageInputStream iis = ImageIO.createImageInputStream(image);
+						final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+						String fmt = "png";
+						while (readers.hasNext())
+						{
+							final ImageReader read = readers.next();
+							fmt = read.getFormatName();
+						}
 
-					final OutputStream out = res.getOutputStream();
-					ImageIO.write(ImageIO.read(image), fmt, out);
-					out.close();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
+						final OutputStream out = res.getOutputStream();
+						ImageIO.write(ImageIO.read(image), fmt, out);
+						out.close();
+					}
+					catch (final IOException e)
+					{
+						log.error(e.toString());
+					}
 				}
 			}
 		}
@@ -1096,15 +1137,17 @@ public class PlaceBooksAdminController
 		try
 		{
 			final MediaItem m = em.find(MediaItem.class, key);
-
-			if (m != null && m.getPath() != null)
+			if (m != null)
 			{
-				path = m.getPath();
+				em.getTransaction().begin();
+				m.attemptPathFix();
+				em.getTransaction().commit();
 			}
 			else
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
+			path = m.getPath();			
 		}
 		catch (final Throwable e)
 		{
@@ -1311,17 +1354,13 @@ public class PlaceBooksAdminController
 
 			if (item instanceof MediaItem)
 			{
-				manager.getTransaction().commit();
-				((MediaItem) item).setSourceURL(null);				
+				((MediaItem) item).setSourceURL(null);
 				((MediaItem) item).writeDataToDisk(name, fileData.getInputStream());
-				manager.getTransaction().begin();
 			}
-			else if(item instanceof GPSTraceItem)
+			else if (item instanceof GPSTraceItem)
 			{
-				manager.getTransaction().commit();
-				((GPSTraceItem)item).setSourceURL(null);				
-				((GPSTraceItem)item).readTrace(fileData.getInputStream());
-				manager.getTransaction().begin();				
+				((GPSTraceItem) item).setSourceURL(null);
+				((GPSTraceItem) item).readTrace(fileData.getInputStream());
 			}
 
 			manager.getTransaction().commit();
@@ -1345,10 +1384,8 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Failed");
 	}
 
-
 	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
-	public ModelAndView getServerInfoJSON(final HttpServletRequest req, 
-										  final HttpServletResponse res)
+	public ModelAndView getServerInfoJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final ServerInfo si = new ServerInfo();
 		try
