@@ -131,12 +131,14 @@ public class EverytrailHelperTest extends PlacebooksTestSuper
 	@Test
 	public void testTripsString()
 	{
-		EverytrailTripsResponse response = EverytrailHelper.Trips(test_user_id);
+		EverytrailTripsResponse response = EverytrailHelper.Trips("273791");
 		//Just for debugging
-		log.debug(response.getTrips());
+		log.debug("Trips got: " + response.getTrips().size());
+		int count = 0;
 		for(Node t : response.getTrips())
 		{
-			log.debug(t.getTextContent());
+			count++;
+			log.debug("Trip [" + count + "]: "+  t.getTextContent());
 		}
 
 		assertEquals("success",response.getStatus());

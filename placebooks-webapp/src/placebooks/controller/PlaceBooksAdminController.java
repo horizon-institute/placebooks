@@ -258,6 +258,7 @@ public class PlaceBooksAdminController
 				}
 			}
 			log.debug("Getting tracks for trip: " + tripId);
+			// There should only be one track for a trip I think - debug this..., 
 			EverytrailTracksResponse tracks = 
 				EverytrailHelper.Tracks(tripId, details.getUsername(), 
 						details.getPassword());
@@ -281,21 +282,21 @@ public class PlaceBooksAdminController
 						log.info("InputStream for tripGPX is " + is.toString());
 						gpsItem.readTrace(is);
 					}
-					catch(UnknownHostException e)
+					catch(final UnknownHostException e)
 					{
-						log.info(tripGPX + ": " + e.getMessage(), e);
+						log.info("Unknown host for " + tripGPX + ": " + e.getMessage(), e);
 						
 					}
 					catch (final Exception e)
 					{
-						log.info(tripGPX + ": " + e.getMessage(), e);
+						log.info("Other exception for " + tripGPX + ": " + e.getMessage(), e);
 						
 					}
 					tryCount++;
 					if(tryCount>3)
 					{
 						keepTrying = false;
-						log.error("Giving up getting " + tripGPX);
+						log.error("Giving up getting " + tripGPX);						
 					}
 				}
 				gpsItem = (GPSTraceItem)gpsItem.saveUpdatedItem();
