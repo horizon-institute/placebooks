@@ -134,7 +134,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	@Test
 	public void testGetEverytrailDataForAUser() throws Exception
 	{
-		User user = UserManager.getUser(em,  "mcp@cs.nott.ac.uk");
+		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
 		PlaceBooksAdminController pacd = new PlaceBooksAdminController();
 		pacd.getEverytrailDataForUser(user);
 	}
