@@ -11,10 +11,15 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
@@ -56,23 +61,35 @@ public class ItemFactory
 	{
 		IUpdateableExternal item = null;
 		log.debug("Querying externalID " +  itemToSave.getExternalID());
-		Query q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where placebookitem.externalID = ?1", PlaceBookItem.class);
+		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
 		q.setParameter(1, itemToSave.getExternalID());
 		try
 		{
-			item = (IUpdateableExternal) q.getSingleResult();
+			Collection<PlaceBookItem> l = q.getResultList();
+			if(l.size()==1)
+			{
+				item = (IUpdateableExternal) l.iterator().next();
+			}
+			else if(l.size()>1)
+			{
+				EntityTransaction t = em.getTransaction();
+				log.warn("Removing duplicate Everytrail items for " + itemToSave.getExternalID());
+				for(PlaceBookItem o : l)
+				{
+					log.debug("Removing: " + o.getKey());
+					em.remove(o);
+				}
+				em.flush();
+			}
+			
 		}
 		catch (final NoResultException ex)
 		{
 			log.error(ex.toString());
 			item = null;
 		}
-		catch(NonUniqueResultException ex)
-		{
-			log.error(ex.toString());
-			
-			 q.getFirstResult();
-		}
+
+
 		return item;
 	}
 

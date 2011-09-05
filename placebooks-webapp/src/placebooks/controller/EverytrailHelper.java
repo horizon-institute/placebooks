@@ -717,8 +717,7 @@ public class EverytrailHelper
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etUserTripsResponse", doc);
 		log.info("Trips called parseResponseStatus, result="
-					 + responseStatus.getStatus() + ","
-					 + responseStatus.getValue());
+					 + responseStatus.getStatus());
 
 		final Vector<Node> tripsList = new Vector<Node>();
 		if (responseStatus.getStatus().equals("success"))
