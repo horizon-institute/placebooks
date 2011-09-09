@@ -9,7 +9,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -167,6 +171,13 @@ public class PlaceBooksAdminController
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
 
+		getEverytrailDataForUser(user);
+	}
+		
+	public void getEverytrailDataForUser(User user)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		
 		final LoginDetails details = user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
 
 		if (details == null)
@@ -175,8 +186,7 @@ public class PlaceBooksAdminController
 			return;
 		}
 
-		final EverytrailLoginResponse loginResponse = EverytrailHelper.UserLogin(	details.getUsername(),
-																					details.getPassword());
+		final EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
 
 		if (loginResponse.getStatus().equals("error"))
 		{
@@ -186,7 +196,6 @@ public class PlaceBooksAdminController
 
 		try
 		{
-
 			manager.getTransaction().begin();
 
 			// Save user id
@@ -206,6 +215,8 @@ public class PlaceBooksAdminController
 				manager.close();
 		}
 
+		ArrayList<String> imported_ids = new ArrayList<String>(); 
+		
 		final EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
 
 		for (Node trip : trips.getTrips())
@@ -216,8 +227,9 @@ public class PlaceBooksAdminController
 
 			// Get other trip attributes...
 			String tripName = "";
-			String tripGPX = "";
-			String tripKML = "";
+			String tripGpxUrlString = "";
+			URL tripGpxUrl = null;
+			String tripKmlUrlString = "";
 			// Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
@@ -234,36 +246,85 @@ public class PlaceBooksAdminController
 				if (itemName.equals("gpx"))
 				{
 					log.debug("Trip GPX is: " + item.getTextContent());
-					tripGPX = item.getTextContent();
+					tripGpxUrlString = item.getTextContent();
 				}
 				if (itemName.equals("kml"))
 				{
 					log.debug("Trip KML is: " + item.getTextContent());
-					tripKML = item.getTextContent();
+					tripKmlUrlString = item.getTextContent();
 				}
 			}
 			log.debug("Getting tracks for trip: " + tripId);
-			EverytrailTracksResponse tracks = EverytrailHelper.Tracks(	tripId, details.getUsername(),
-																		details.getPassword());
+			// There should only be one track for a trip I think - debug this..., 
+			EverytrailTracksResponse tracks = EverytrailHelper.Tracks(tripId, details.getUsername(), details.getPassword());
+			log.debug("There are " + tracks.getTracks().size() + " tracks...");
 			int i = 0;
+			boolean getGpxSuccess = false;
+			int tracksCreated = 0;
 			for (Node track : tracks.getTracks())
 			{
 				log.info("Processing track " + i++ + " of " + tracks.getTracks().size());
-				GPSTraceItem gpsItem = new GPSTraceItem(user, null, null);
-				ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, tripName);
-				try
+				int tryCount = 0;
+				boolean keepTrying = true;
+				String gpxString = "";
+				while(keepTrying)
 				{
-					final InputStream is = CommunicationHelper.getConnection(new URL(tripGPX)).getInputStream();
-					log.info("InputStream for tripGPX is " + is.toString());
-					gpsItem.readTrace(is);
+					try
+					{
+						tripGpxUrl = new URL(tripGpxUrlString);
+						
+						URLConnection con = CommunicationHelper.getConnection(tripGpxUrl);
+						InputStream is = con.getInputStream();
+						StringBuilder sb = new StringBuilder();
+						int bufferSize = 1024;
+						byte[] buffer = new byte[bufferSize];
+						int readBytes = 0;
+						do
+						{
+							readBytes = is.read(buffer, 0, bufferSize);
+							if(readBytes>0)
+							{
+								sb.append(new String(buffer, 0, readBytes));
+								//log.debug("Read bytes:" + readBytes);
+							}
+						}
+						while(readBytes>0);
+						getGpxSuccess = true;
+						gpxString = sb.toString();
+						log.info("InputStream for tripGPX is " + gpxString);
+						keepTrying=false;
+					}
+					catch(final UnknownHostException e)
+					{
+						getGpxSuccess = false;
+						log.info("Unknown host for " + tripGpxUrlString + ": " + e.getMessage(), e);
+						
+					}
+					catch (final Exception e)
+					{
+						getGpxSuccess = false;
+						log.info("Other exception for " + tripGpxUrlString + ": " + e.getMessage(), e);
+					}
+					tryCount++;
+					if(tryCount>3)
+					{
+						keepTrying = false;
+						log.error("Giving up getting " + tripGpxUrlString);		
+						getGpxSuccess = false;
+					}
 				}
-				catch (final Exception e)
+				if(getGpxSuccess)
 				{
-					log.info(tripGPX + ": " + e.getMessage(), e);
+					GPSTraceItem gpsItem;
+					gpsItem = new GPSTraceItem(user, tripGpxUrl, gpxString);
+					ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, tripName);
+					gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
+					imported_ids.add(gpsItem.getExternalID());
+					tracksCreated++;
 				}
-				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
 			}
-
+			log.debug("Tracks created this import: " + tracksCreated);
+			
 			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.TripPictures(	tripId,
 																								details.getUsername(),
 																								details.getPassword(),
@@ -277,9 +338,47 @@ public class PlaceBooksAdminController
 				ImageItem imageItem = new ImageItem(user, null, null, null);
 				ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
 				imageItem = (ImageItem) imageItem.saveUpdatedItem();
-			}
+				imported_ids.add(imageItem.getExternalID());
+			}			 
 		}
-		log.info("Finished Everytrail import");
+		log.debug("Removing deleted items...");
+		int deletedItems = 0;
+		try
+		{
+			manager.getTransaction().begin();
+			TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT placebookitem FROM PlaceBookItem AS placebookitem WHERE (placebookitem.owner = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
+			q.setParameter(1, user);
+			Collection<PlaceBookItem> items = q.getResultList();
+			for(PlaceBookItem placebookitem: items)
+			{
+				if(!imported_ids.contains(placebookitem.getExternalID()))
+				{
+					log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+					manager.remove(placebookitem);
+					deletedItems++;
+				}
+				else
+				{
+					log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+				}
+			}
+			
+			manager.getTransaction().commit();
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling Everytrail cleanup back");
+				manager.close();
+				return;
+			}
+			else
+				manager.close();
+		}
+		
+		log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");
 	}
 
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)

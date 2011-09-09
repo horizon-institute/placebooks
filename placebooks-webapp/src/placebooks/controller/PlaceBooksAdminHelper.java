@@ -608,6 +608,10 @@ public final class PlaceBooksAdminHelper
 			final Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
+			if(index.getPlaceBookItem() == null || index.getPlaceBookItem().getPlaceBook() == null)
+			{
+				continue;
+			}
 			final PlaceBook p = index.getPlaceBookItem().getPlaceBook();
 			Integer rating = hits.get(p);
 			if (rating == null)

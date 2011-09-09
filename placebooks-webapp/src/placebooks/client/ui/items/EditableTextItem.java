@@ -71,18 +71,21 @@ public class EditableTextItem extends PlaceBookItemWidget
 	public String resize()
 	{
 		super.resize();
-		if (getParent() != null && getParent().getParent() != null)
+		if (getParent() != null)
 		{
-			final String panelWidthString = getParent().getParent().getElement().getStyle().getWidth();
 			double panelWidth = 300;
-			if(panelWidthString != null && panelWidthString.endsWith("%"))
+			if(getParent().getParent() != null && getParent().getParent().getParent() != null)
 			{
-				double percent = Double.parseDouble(panelWidthString.substring(0,panelWidthString.length() - 1));
-				panelWidth = (900d * 100d) / percent;  
+				final String panelWidthString = getParent().getParent().getParent().getElement().getStyle().getWidth();				
+				if(panelWidthString != null && panelWidthString.endsWith("%"))
+				{
+					double percent = Double.parseDouble(panelWidthString.substring(0, panelWidthString.length() - 1));
+					panelWidth = (900d * percent) / 100d;
+				}
 			}
 			final double scale = getParent().getOffsetWidth() / panelWidth;
 			textPanel.getElement().setAttribute("style",
-												"width: " + panelWidth + "px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale("
+												"width: "+ panelWidth +"px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale("
 														+ scale + ")");
 			return (getOffsetHeight() * scale) + "px";
 		}

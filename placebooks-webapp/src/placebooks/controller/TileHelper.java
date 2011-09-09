@@ -41,13 +41,14 @@ public final class TileHelper
 	}
 
 
-	private static final String buildOpenSpaceQuery(final int layer, 
+	private static final String buildOpenSpaceQuery(final String layer, 
 													final int blockSizeX,
 													final int blockSizeY,
 													final int width,
 													final int height,
 													final OSRef ref,
-													final String format)
+													final String format,
+													final String product)
 	{
 		final String baseURL = 
 			PropertiesSingleton
@@ -69,6 +70,10 @@ public final class TileHelper
 		final int x2 = x1 + blockSizeX;
 		final int y2 = y1 + blockSizeY;
 
+		String productStr = "";
+		if (product != null)
+			productStr = "&PRODUCT=" + product;
+
 		final String url = baseURL
 					 + "?FORMAT=" + format
 					 + "&KEY=" + apiKey
@@ -77,7 +82,8 @@ public final class TileHelper
 					 + "&VERSION=1.1.1"
 					 + "&REQUEST=GetMap"
 					 + "&EXCEPTIONS=application%5Cvnd.ogc.se_inimage"
-					 + "&LAYERS=" + Integer.toString(layer)
+					 + "&LAYERS=" + layer
+					 + productStr
 					 + "&SRS=EPSG%3A27700"
 					 + "&BBOX=" 
 					 	+ Integer.toString(x1) + "," + Integer.toString(y1)
@@ -117,7 +123,8 @@ public final class TileHelper
 		throws IOException, IllegalArgumentException, Exception
 	{
 		log.info("getMap() geometry = " + g);
-		int layer = 5;
+		String layer = "5";
+		String product = null;
 		int incX = 1000;
 		int incY = 1000;
 		int pixelX = 200;
@@ -128,11 +135,13 @@ public final class TileHelper
 
 		try
 		{
-			layer = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5")
-			);
+			layer = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5");
+			product = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_PRODUCT, 
+							null);
 			incX = Integer.parseInt(
 				PropertiesSingleton
 					.get(TileHelper.class.getClassLoader())
@@ -296,7 +305,8 @@ public final class TileHelper
 				// %5C = \
 				final String url = 
 					buildOpenSpaceQuery(layer, incX, incY, pixelX, pixelY, 
-										new OSRef(i, j), "image%5C" + fmt
+										new OSRef(i, j), "image%5C" + fmt,
+										product
 					);
 				try
 				{
