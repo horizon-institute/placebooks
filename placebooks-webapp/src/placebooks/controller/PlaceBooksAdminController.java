@@ -1167,12 +1167,13 @@ public class PlaceBooksAdminController
 				{		
 					try
 					{
-						final File image = new File(i.getPath());
+						File image = new File(i.getPath());
 						if(!image.exists())
 						{
 							log.error("Image '" + i.getPath() + "' does not exist for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
 							final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
 							i.writeNewFileToDisk(i.getKey() + ".jpg", conn.getInputStream());
+							image = new File(i.getPath());
 						}
 						final ImageInputStream iis = ImageIO.createImageInputStream(image);
 						final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
