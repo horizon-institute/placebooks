@@ -83,9 +83,13 @@ public abstract class MediaItem extends PlaceBookItem
 
 		final File path = new File(PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
+		if (!path.isDirectory())
+		{ 
+			log.debug("Can't open directory: " + path.getAbsolutePath());
+			return null;
+		}
 
-		if (!path.exists()) { return null; }
-
+		
 		final File[] files = path.listFiles(new FilenameFilter()
 		{
 			@Override
@@ -103,6 +107,7 @@ public abstract class MediaItem extends PlaceBookItem
 			log.info("Fixed media to " + this.path);
 			return this.path;
 		}
+		log.debug("Can't fix path for: " + this.path);
 		return null;
 	}
 
@@ -144,6 +149,8 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public String getPath()
 	{
+		// First check that the path is valid and try and fix if needed...
+		attemptPathFix();
 		return path;
 	}
 

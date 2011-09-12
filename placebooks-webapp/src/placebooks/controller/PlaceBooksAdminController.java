@@ -1145,23 +1145,35 @@ public class PlaceBooksAdminController
 			@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving Image Item " + key);
+		log.info("Serving Image Item: " + key);
 
 		try
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
+			log.info("ImageItem path:" + (i.getPath()!=null ? i.getPath() : "null"));
 
 			if (i != null)
 			{
 				em.getTransaction().begin();
-				i.attemptPathFix();
 				em.getTransaction().commit();
+				
+				if(i.getPath() == null )
+				{
+					log.error("No image path for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
+					final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
+					i.writeNewFileToDisk(i.getKey() + ".jpg", conn.getInputStream());
+				}
 				if (i.getPath() != null)
 				{		
-					log.info(i.getPath());
 					try
 					{
 						final File image = new File(i.getPath());
+						if(!image.exists())
+						{
+							log.error("Image '" + i.getPath() + "' does not exist for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
+							final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
+							i.writeNewFileToDisk(i.getKey() + ".jpg", conn.getInputStream());
+						}
 						final ImageInputStream iis = ImageIO.createImageInputStream(image);
 						final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
 						String fmt = "png";
@@ -1178,6 +1190,7 @@ public class PlaceBooksAdminController
 					catch (final IOException e)
 					{
 						log.error(e.toString());
+						res.setStatus(404);
 					}
 				}
 			}

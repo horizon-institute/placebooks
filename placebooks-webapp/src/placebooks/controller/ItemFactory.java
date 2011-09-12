@@ -150,7 +150,7 @@ public class ItemFactory
 			}
 			
 		}
-
+		gpsItem.addMetadataEntryIndexed("title", track_name);
 		gpsItem.setGeometry(null);
 		gpsItem.setExternalID("everytrail-" + track_id);
 		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
