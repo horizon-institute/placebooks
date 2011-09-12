@@ -192,7 +192,7 @@ public final class PlaceBooksAdminHelper
 				.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
 
-		final File zipFile = new File(pkgZPath + p.getKey() + ".zip");
+		final File zipFile = new File(pkgZPath + "/" +  p.getKey() + ".zip");
 
 		try
 		{
