@@ -42,6 +42,19 @@
 			border-bottom: 1px solid #CCC;
 			margin-bottom: 20px;
 		}
+		
+		.loading
+		{
+			text-align: center;
+			margin-top: 100px;
+		}
+		
+		.loadingLabel 
+		{
+			font-size: 18px;
+			margin-left: 5px;
+			color: #555;
+		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<g:FlowPanel>
@@ -54,6 +67,7 @@
 		</g:FlowPanel>
 		
 		<g:FlowPanel styleName="{res.style.content}">		
+			<g:FlowPanel styleName="{style.loading}" ui:field="indicator"><g:Image resource='{res.progress3}' /><g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>		
 			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
 		</g:FlowPanel>
 	</g:FlowPanel>

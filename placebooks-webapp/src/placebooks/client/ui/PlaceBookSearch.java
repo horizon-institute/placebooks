@@ -43,6 +43,9 @@ public class PlaceBookSearch extends Composite
 	PlaceBookToolbar toolbar;
 
 	@UiField
+	Panel indicator;
+	
+	@UiField
 	TextBox search;
 
 	private Shelf shelf;
@@ -88,7 +91,7 @@ public class PlaceBookSearch extends Composite
 	}
 
 	private void search()
-	{
+	{		
 		toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
 	}
 
@@ -97,6 +100,7 @@ public class PlaceBookSearch extends Composite
 		if (this.shelf != shelf)
 		{
 			this.shelf = shelf;
+			indicator.setVisible(false);
 			placebooks.clear();
 			if (shelf != null)
 			{
