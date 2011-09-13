@@ -341,7 +341,7 @@ public class PlaceBooksAdminController
 				imported_ids.add(imageItem.getExternalID());
 			}			 
 		}
-		log.debug("Removing deleted items...");
+		log.debug("Checking for deleted items...");
 		int deletedItems = 0;
 		try
 		{
