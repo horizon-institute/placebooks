@@ -26,6 +26,7 @@ public final class SearchHelper
 		{
 			final Analyzer analyzer = new EnglishAnalyzer(org.apache.lucene.util.Version.LUCENE_31);
 			final TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(input));
+			StringBuilder sb = new StringBuilder();
 			while (tokenStream.incrementToken())
 			{
 				if (maxTokens > 0 && returnSet.size() >= maxTokens)
@@ -36,10 +37,14 @@ public final class SearchHelper
 				if (tokenStream.hasAttribute(CharTermAttribute.class))
 				{
 					final CharTermAttribute attr = tokenStream.getAttribute(CharTermAttribute.class);
-					log.debug("Search term: \"" + attr.toString() + "\"");
+					sb.append("\"");
+					sb.append(attr.toString());
+					sb.append("\" ");
 					returnSet.add(attr.toString());
+					
 				}
 			}
+			log.debug("Search terms: " + sb.toString());
 		}
 		catch (final Exception e)
 		{

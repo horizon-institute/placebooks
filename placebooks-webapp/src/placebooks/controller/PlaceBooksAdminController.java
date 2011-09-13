@@ -245,12 +245,12 @@ public class PlaceBooksAdminController
 				}
 				if (itemName.equals("gpx"))
 				{
-					log.debug("Trip GPX is: " + item.getTextContent());
+					log.debug("Trip GPX found, length: " + item.getTextContent().length());
 					tripGpxUrlString = item.getTextContent();
 				}
 				if (itemName.equals("kml"))
 				{
-					log.debug("Trip KML is: " + item.getTextContent());
+					log.debug("Trip KML found, length " +  + item.getTextContent().length());
 					tripKmlUrlString = item.getTextContent();
 				}
 			}
@@ -263,7 +263,7 @@ public class PlaceBooksAdminController
 			int tracksCreated = 0;
 			for (Node track : tracks.getTracks())
 			{
-				log.info("Processing track " + i++ + " of " + tracks.getTracks().size());
+				log.info("Processing track " + ++i + " of " + tracks.getTracks().size());
 				int tryCount = 0;
 				boolean keepTrying = true;
 				String gpxString = "";
@@ -291,13 +291,13 @@ public class PlaceBooksAdminController
 						while(readBytes>0);
 						getGpxSuccess = true;
 						gpxString = sb.toString();
-						log.info("InputStream for tripGPX is " + gpxString);
+						log.debug("InputStream for tripGPX is (first ~30 chars): " + gpxString.substring(0, Math.min(30, gpxString.length())));
 						keepTrying=false;
 					}
 					catch(final UnknownHostException e)
 					{
 						getGpxSuccess = false;
-						log.info("Unknown host for " + tripGpxUrlString + ": " + e.getMessage(), e);
+						log.info("Unknown host for track " + (i) + " of " +tracks.getTracks().size() + " "  + tripGpxUrlString + ": " + e.getMessage(), e);
 						
 					}
 					catch (final Exception e)
