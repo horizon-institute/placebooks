@@ -1161,7 +1161,7 @@ public class PlaceBooksAdminController
 				{
 					log.error("No image path for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
 					final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
-					i.writeNewFileToDisk(i.getKey() + ".jpg", conn.getInputStream());
+					i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
 				}
 				if (i.getPath() != null)
 				{		
@@ -1172,7 +1172,7 @@ public class PlaceBooksAdminController
 						{
 							log.error("Image '" + i.getPath() + "' does not exist for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
 							final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
-							i.writeNewFileToDisk(i.getKey() + ".jpg", conn.getInputStream());
+							i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
 							image = new File(i.getPath());
 						}
 						final ImageInputStream iis = ImageIO.createImageInputStream(image);

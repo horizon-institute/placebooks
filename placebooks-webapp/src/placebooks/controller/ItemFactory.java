@@ -273,7 +273,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeNewFileToDisk(picture_id + ".jpg", conn.getInputStream());
+				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());
 			}
 			catch (final IOException ex)
 			{

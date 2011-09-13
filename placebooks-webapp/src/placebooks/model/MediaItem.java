@@ -240,15 +240,20 @@ public abstract class MediaItem extends PlaceBookItem
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
-		if (getKey() == null) { throw new IOException("Key is null"); }
-
+		String saveName = name;
+		if (getKey() == null)
+		{
+			saveName = System.currentTimeMillis() +"-" + saveName;
+			log.info("Saving new file as: " + saveName);			
+		}
+		
 		if (!new File(path).exists() && !new File(path).mkdirs()) { throw new IOException("Failed to write file '"
 				+ path + "'"); }
 
-		final int extIdx = name.lastIndexOf(".");
-		final String ext = name.substring(extIdx + 1, name.length());
+		final int extIdx = saveName.lastIndexOf(".");
+		final String ext = saveName.substring(extIdx + 1, saveName.length());
 
-		final String filePath = path + "/" + getKey() + "." + ext;
+		final String filePath = path + "/" + saveName + "." + ext;
 
 		InputStream input;
 		MessageDigest md = null;
@@ -276,40 +281,8 @@ public abstract class MediaItem extends PlaceBookItem
 			hash = String.format("%032x", new BigInteger(1, md.digest()));
 		}
 
-		log.info("Wrote " + name + " file " + filePath);
+		log.info("Wrote " + saveName + " file " + filePath);
 		setPath(filePath);
 	}
 
-	public void writeNewFileToDisk(final String name, final InputStream input) throws IOException
-	{
-		if (getKey() == null)
-		{
-			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
-			if (new File(path).exists() || new File(path).mkdirs())
-			{
-				final String filePath = path + "/" + System.currentTimeMillis() + name;
-
-				log.info("Copying file to=" + filePath);
-				final FileOutputStream output = new FileOutputStream(new File(filePath));
-				int byte_;
-				while ((byte_ = input.read()) != -1)
-				{
-					output.write(byte_);
-				}
-				output.close();
-				input.close();
-				setPath(filePath);
-			}
-			else
-			{
-				throw new IOException("Failed to write file '" + path + "'");
-			}
-		}
-		else
-		{
-			writeDataToDisk(name, input);
-		}
-	}
 }
