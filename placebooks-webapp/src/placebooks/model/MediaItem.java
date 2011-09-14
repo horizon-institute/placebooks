@@ -115,7 +115,7 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 		// Check package dir exists already
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") + getPlaceBook().getKey();
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getKey();
 
 		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
 		{
@@ -247,8 +247,10 @@ public abstract class MediaItem extends PlaceBookItem
 			log.info("Saving new file as: " + saveName);			
 		}
 		
-		if (!new File(path).exists() && !new File(path).mkdirs()) { throw new IOException("Failed to write file '"
-				+ path + "'"); }
+		if (!new File(saveName).exists() && !new File(saveName).mkdirs())
+		{
+			throw new IOException("Failed to write file '" + saveName + "'"); 
+		}
 
 		final int extIdx = saveName.lastIndexOf(".");
 		final String ext = saveName.substring(extIdx + 1, saveName.length());
