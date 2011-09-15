@@ -52,7 +52,7 @@ public interface Resources extends ClientBundle
 	@Source("Placebook_128.png")
 	ImageResource placebook_published();
 
-	@Source("Placebook_blue.png")
+	@Source("Placebook_Blue.png")
 	ImageResource placebook128();
 
 	@Source("Placebook_016.png")
@@ -66,6 +66,7 @@ public interface Resources extends ClientBundle
 
 	ImageResource save();
 
+	@Source("Search_025.png")
 	ImageResource search_025();
 
 	ImageResource splash();
