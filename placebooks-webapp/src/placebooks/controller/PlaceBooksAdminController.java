@@ -173,11 +173,11 @@ public class PlaceBooksAdminController
 
 		getEverytrailDataForUser(user);
 	}
-		
+
 	public void getEverytrailDataForUser(User user)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		
+
 		final LoginDetails details = user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
 
 		if (details == null)
@@ -216,7 +216,8 @@ public class PlaceBooksAdminController
 		}
 
 		ArrayList<String> imported_ids = new ArrayList<String>(); 
-		
+		ArrayList<String> available_ids = new ArrayList<String>(); 
+
 		final EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
 
 		for (Node trip : trips.getTrips())
@@ -224,114 +225,42 @@ public class PlaceBooksAdminController
 			// Get trip ID
 			final NamedNodeMap tripAttr = trip.getAttributes();
 			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
+			String tripName = "Unknown trip";
+			
+			available_ids.add("everytrail-" + tripId);
 
-			// Get other trip attributes...
-			String tripName = "";
-			String tripGpxUrlString = "";
-			URL tripGpxUrl = null;
-			String tripKmlUrlString = "";
-			// Then look at the properties in the child nodes to get url, title, description, etc.
+			GPSTraceItem gpsItem = new GPSTraceItem(user);
+			try
+			{
+				ItemFactory.toGPSTraceItem(user, trip, gpsItem);
+				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
+				imported_ids.add(gpsItem.getExternalID());
+			}
+			catch(Exception e)
+			{
+				log.error("Problem importing Trip " + tripId, e);
+			}
+
+			//Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
 			{
 				final Node item = tripProperties.item(propertyIndex);
 				final String itemName = item.getNodeName();
-				// log.debug("Inspecting property: " + itemName + " which is " +
-				// item.getTextContent());
+				//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
 				if (itemName.equals("name"))
 				{
 					log.debug("Trip name is: " + item.getTextContent());
 					tripName = item.getTextContent();
 				}
-				if (itemName.equals("gpx"))
-				{
-					log.debug("Trip GPX is: " + item.getTextContent());
-					tripGpxUrlString = item.getTextContent();
-				}
-				if (itemName.equals("kml"))
-				{
-					log.debug("Trip KML is: " + item.getTextContent());
-					tripKmlUrlString = item.getTextContent();
-				}
 			}
-			log.debug("Getting tracks for trip: " + tripId);
-			// There should only be one track for a trip I think - debug this..., 
-			EverytrailTracksResponse tracks = EverytrailHelper.Tracks(tripId, details.getUsername(), details.getPassword());
-			log.debug("There are " + tracks.getTracks().size() + " tracks...");
-			int i = 0;
-			boolean getGpxSuccess = false;
-			int tracksCreated = 0;
-			for (Node track : tracks.getTracks())
-			{
-				log.info("Processing track " + i++ + " of " + tracks.getTracks().size());
-				int tryCount = 0;
-				boolean keepTrying = true;
-				String gpxString = "";
-				while(keepTrying)
-				{
-					try
-					{
-						tripGpxUrl = new URL(tripGpxUrlString);
-						
-						URLConnection con = CommunicationHelper.getConnection(tripGpxUrl);
-						InputStream is = con.getInputStream();
-						StringBuilder sb = new StringBuilder();
-						int bufferSize = 1024;
-						byte[] buffer = new byte[bufferSize];
-						int readBytes = 0;
-						do
-						{
-							readBytes = is.read(buffer, 0, bufferSize);
-							if(readBytes>0)
-							{
-								sb.append(new String(buffer, 0, readBytes));
-								//log.debug("Read bytes:" + readBytes);
-							}
-						}
-						while(readBytes>0);
-						getGpxSuccess = true;
-						gpxString = sb.toString();
-						log.info("InputStream for tripGPX is " + gpxString);
-						keepTrying=false;
-					}
-					catch(final UnknownHostException e)
-					{
-						getGpxSuccess = false;
-						log.info("Unknown host for " + tripGpxUrlString + ": " + e.getMessage(), e);
-						
-					}
-					catch (final Exception e)
-					{
-						getGpxSuccess = false;
-						log.info("Other exception for " + tripGpxUrlString + ": " + e.getMessage(), e);
-					}
-					tryCount++;
-					if(tryCount>3)
-					{
-						keepTrying = false;
-						log.error("Giving up getting " + tripGpxUrlString);		
-						getGpxSuccess = false;
-					}
-				}
-				if(getGpxSuccess)
-				{
-					GPSTraceItem gpsItem;
-					gpsItem = new GPSTraceItem(user, tripGpxUrl, gpxString);
-					ItemFactory.toGPSTraceItem(user, track, gpsItem, tripId, tripName);
-					gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
-					imported_ids.add(gpsItem.getExternalID());
-					tracksCreated++;
-				}
-			}
-			log.debug("Tracks created this import: " + tracksCreated);
-			
 			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.TripPictures(	tripId,
-																								details.getUsername(),
-																								details.getPassword(),
-																								tripName);
+					details.getUsername(),
+					details.getPassword(),
+					tripName);
 
 			final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
-			i = 0;
+			int i = 0;
 			for (final Node picture : pictures.values())
 			{
 				log.info("Processing picture " + i++);
@@ -339,9 +268,11 @@ public class PlaceBooksAdminController
 				ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
 				imageItem = (ImageItem) imageItem.saveUpdatedItem();
 				imported_ids.add(imageItem.getExternalID());
+				available_ids.add(imageItem.getExternalID());
 			}			 
 		}
-		log.debug("Removing deleted items...");
+
+		log.debug("Checking for deleted items...");
 		int deletedItems = 0;
 		try
 		{
@@ -351,7 +282,7 @@ public class PlaceBooksAdminController
 			Collection<PlaceBookItem> items = q.getResultList();
 			for(PlaceBookItem placebookitem: items)
 			{
-				if(!imported_ids.contains(placebookitem.getExternalID()))
+				if(!available_ids.contains(placebookitem.getExternalID()))
 				{
 					log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
 					manager.remove(placebookitem);
@@ -362,7 +293,7 @@ public class PlaceBooksAdminController
 					log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
 				}
 			}
-			
+
 			manager.getTransaction().commit();
 		}
 		finally
@@ -377,7 +308,7 @@ public class PlaceBooksAdminController
 			else
 				manager.close();
 		}
-		
+
 		log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");
 	}
 
@@ -407,7 +338,7 @@ public class PlaceBooksAdminController
 						urlbase = req.getScheme() + "://" + req.getServerName() + req.getContextPath() + "/";						
 					}
 
-					
+
 					final PrintWriter writer = res.getWriter();
 					writer.write("<!doctype html>");
 					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
@@ -418,7 +349,7 @@ public class PlaceBooksAdminController
 					writer.write("<title>" + placebook.getMetadataValue("title") + "</title>");
 					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title") + "\"/>");
 					writer.write("<meta property=\"og:type\" content=\"article\"/>");
-//					writer.write("<meta property=\"og:url\" content=\"" + urlbase + "#preview:" + placebook.getKey() + "\"/>");
+					//					writer.write("<meta property=\"og:url\" content=\"" + urlbase + "#preview:" + placebook.getKey() + "\"/>");
 					if(placebook.getMetadataValue("placebookImage") != null)
 					{
 						writer.write("<meta property=\"og:image\" content=\"" + urlbase + "placebooks/a/admin/serve/imageitem/"+placebook.getMetadataValue("placebookImage") + "\"/>");
@@ -448,7 +379,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-	
+
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()
 	{
@@ -588,7 +519,7 @@ public class PlaceBooksAdminController
 		}
 		final TypedQuery<PlaceBookItem> q = manager
 				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
-								PlaceBookItem.class);
+						PlaceBookItem.class);
 		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
@@ -711,7 +642,7 @@ public class PlaceBooksAdminController
 			if (user != null)
 			{
 				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-																	PlaceBook.class);
+						PlaceBook.class);
 				q.setParameter("owner", user);
 
 				final Collection<PlaceBook> pbs = q.getResultList();
@@ -768,7 +699,7 @@ public class PlaceBooksAdminController
 			final User user = uq.getSingleResult();
 
 			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-															PlaceBook.class);
+					PlaceBook.class);
 
 			q.setParameter("user", user);
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -1145,23 +1076,36 @@ public class PlaceBooksAdminController
 			@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving Image Item " + key);
+		log.info("Serving Image Item: " + key);
 
 		try
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
+			log.info("ImageItem path:" + (i.getPath()!=null ? i.getPath() : "null"));
 
 			if (i != null)
 			{
 				em.getTransaction().begin();
-				i.attemptPathFix();
 				em.getTransaction().commit();
+
+				if(i.getPath() == null )
+				{
+					log.error("No image path for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
+					final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
+					i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
+				}
 				if (i.getPath() != null)
 				{		
-					log.info(i.getPath());
 					try
 					{
-						final File image = new File(i.getPath());
+						File image = new File(i.getPath());
+						if(!image.exists())
+						{
+							log.error("Image '" + i.getPath() + "' does not exist for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
+							final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
+							i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
+							image = new File(i.getPath());
+						}
 						final ImageInputStream iis = ImageIO.createImageInputStream(image);
 						final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
 						String fmt = "png";
@@ -1178,6 +1122,7 @@ public class PlaceBooksAdminController
 					catch (final IOException e)
 					{
 						log.error(e.toString());
+						res.setStatus(404);
 					}
 				}
 			}
@@ -1375,7 +1320,7 @@ public class PlaceBooksAdminController
 					if (dLimit != null && iden != null)
 					{
 						final int maxSize = Integer.parseInt(PropertiesSingleton.get(	PlaceBooksAdminHelper.class
-																								.getClassLoader())
+								.getClassLoader())
 								.getProperty(iden, dLimit));
 						if ((item.getSize() / MEGABYTE) > maxSize) { throw new Exception("File too big, limit = "
 								+ Integer.toString(maxSize) + "Mb"); }

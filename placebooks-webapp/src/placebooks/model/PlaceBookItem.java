@@ -145,7 +145,8 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 				 + ", timestamp=" + this.timestamp.toString());
 	}
 
-	public void addMetadataEntry(final String key, final String value)
+	private final static int VALUE_LENGTH_LIMIT = 511;
+	public void addMetadataEntry(String key, String value)
 	{
 		if (value == null)
 		{
@@ -153,6 +154,16 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		}
 		else
 		{
+			if(key.length()>VALUE_LENGTH_LIMIT)
+			{
+				log.warn("Metadata Key entry too long, truncating: " + key);
+				key = key.substring(0,  VALUE_LENGTH_LIMIT);
+			}
+			if(value.length()>511)
+			{
+				log.warn("Metadata Value entry too long, truncating: " + value);
+				value = value.substring(0,  VALUE_LENGTH_LIMIT);
+			}
 			metadata.put(key, value);
 		}
 	}

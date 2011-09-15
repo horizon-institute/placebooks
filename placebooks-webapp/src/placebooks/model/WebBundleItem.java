@@ -103,7 +103,7 @@ public class WebBundleItem extends PlaceBookItem
 	public String generateWebBundlePath()
 	{
 		return PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
+				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + "/" + getKey();
 	}
 
 	@Override

@@ -349,7 +349,7 @@ public class PlaceBook
 	{
 		return PropertiesSingleton
 					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + getKey();
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getKey();
 	}
 
 	public State getState()

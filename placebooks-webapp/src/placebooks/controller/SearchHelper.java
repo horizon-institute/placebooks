@@ -12,8 +12,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public final class SearchHelper
 {
-	protected static final Logger log = 
-		Logger.getLogger(SearchHelper.class.getName());
+	protected static final Logger log = Logger.getLogger(SearchHelper.class.getName());
 
 	public static Set<String> getIndex(final String input)
 	{
@@ -25,10 +24,9 @@ public final class SearchHelper
 		final Set<String> returnSet = new HashSet<String>();
 		try
 		{
-			final Analyzer analyzer =
-				new EnglishAnalyzer(org.apache.lucene.util.Version.LUCENE_31);
-			final TokenStream tokenStream = 
-				analyzer.tokenStream("content", new StringReader(input));
+			final Analyzer analyzer = new EnglishAnalyzer(org.apache.lucene.util.Version.LUCENE_31);
+			final TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(input));
+			StringBuilder sb = new StringBuilder();
 			while (tokenStream.incrementToken())
 			{
 				if (maxTokens > 0 && returnSet.size() >= maxTokens)
@@ -38,12 +36,15 @@ public final class SearchHelper
 
 				if (tokenStream.hasAttribute(CharTermAttribute.class))
 				{
-					final CharTermAttribute attr = 
-						tokenStream.getAttribute(CharTermAttribute.class);
-					log.debug("Search term: \"" + attr.toString());
+					final CharTermAttribute attr = tokenStream.getAttribute(CharTermAttribute.class);
+					sb.append("\"");
+					sb.append(attr.toString());
+					sb.append("\" ");
 					returnSet.add(attr.toString());
+					
 				}
 			}
+			log.debug("Search terms: " + sb.toString());
 		}
 		catch (final Exception e)
 		{
