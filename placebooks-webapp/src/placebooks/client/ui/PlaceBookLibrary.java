@@ -63,9 +63,16 @@ public class PlaceBookLibrary extends Composite
 			placebooks.clear();
 			if (shelf != null)
 			{
+				int index = 0;
 				for (final PlaceBookEntry entry : shelf.getEntries())
 				{
-					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));
+					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(toolbar, entry);
+					if(index % 5 == 0)
+					{
+						widget.getElement().getStyle().setProperty("clear", "left");
+					}
+					index++;
+					placebooks.add(widget);
 				}
 			}
 		}

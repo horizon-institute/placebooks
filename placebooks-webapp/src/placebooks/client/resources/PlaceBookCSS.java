@@ -43,7 +43,7 @@ public interface PlaceBookCSS extends CssResource
 	String panel();
 
 	String panelEdge();
-
+	
 	String placebookEntry();
 
 	String placebookEntryText();
