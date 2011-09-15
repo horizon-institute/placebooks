@@ -94,110 +94,40 @@ public class ItemFactory
 		return item;
 	}
 
-	/**
-	 * Convert an Everytrail track to a GPSTraceItem
-	 * @param owner User creating this item
-	 * @param trackItem the track item as a DOM node from EverytrailTracks response
-	 * @param tripName 
-	 */
-	public static void toGPSTraceItem(final User owner, final Node trackItem, GPSTraceItem gpsItem, String trip_id, String tripName)
-	{
-		trackItem.toString();
-		//log.debug(trackItem.getTextContent());
-
-		String track_id = "";
-		String track_name = "";
-
-		if(trip_id!=null)
-		{
-			gpsItem.addMetadataEntry("trip", trip_id)	;	
-		}
-
-		if(tripName!=null)
-		{
-			gpsItem.addMetadataEntryIndexed("trip_name", tripName)	;	
-		}
-
-
-		//First look at node attributes to get the unique id
-		final NamedNodeMap trackAttributes = trackItem.getAttributes();
-		for (int attributeIndex = 0; attributeIndex < trackAttributes.getLength(); attributeIndex++)
-		{
-			if (trackAttributes.item(attributeIndex).getNodeName().equals("id"))
-			{
-				track_id = trackAttributes.item(attributeIndex).getNodeValue();
-			}
-		}
-		if(track_id.equals(""))
-		{
-			log.error("Can't get track id");
-		}
-		else
-		{
-			log.debug("Track id is: " + track_id);
-		}
-
-		//Then look at the properties in the child nodes to get url, title, description, etc.
-		final NodeList trackProperties = trackItem.getChildNodes();
-		for (int propertyIndex = 0; propertyIndex < trackProperties.getLength(); propertyIndex++)
-		{
-			final Node item = trackProperties.item(propertyIndex);
-			final String itemName = item.getNodeName();
-			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-			if (itemName.equals("name"))
-			{
-				track_name = item.getTextContent();
-				log.debug("Track name is: " + track_name);
-			}
-
-		}
-		gpsItem.addMetadataEntryIndexed("title", track_name);
-		gpsItem.setGeometry(null);
-		gpsItem.setExternalID("everytrail-" + track_id);
-		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
-
-	}
 
 	/**
 	 * Convert an Everytrail track to a GPSTraceItem
 	 * @param owner User creating this item
 	 * @param trackItem the track item as a DOM node from EverytrailTracks response
+	 * @param tripId 
 	 * @param tripName 
 	 * @throws Exception 
 	 */
-	public static void toGPSTraceItem(final User owner, final Node tripItem, GPSTraceItem gpsItem) throws Exception
+	public static void toGPSTraceItem(final User owner, final Node tripItem, GPSTraceItem gpsItem, String tripId, String tripName) throws Exception
 	{
-		tripItem.toString();
+		//tripItem.toString();
 		//log.debug(tripItem.getTextContent());
 
 		gpsItem.setGeometry(null);
 		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 
-		
-		//First look at node attributes to get the unique id
-		String tripId = "";
-		String tripName = "";
-		String tripGpxUrlString = "";
-		URL tripGpxUrl = null;
-
-		final NamedNodeMap trackAttributes = tripItem.getAttributes();
-		for (int attributeIndex = 0; attributeIndex < trackAttributes.getLength(); attributeIndex++)
-		{
-			if (trackAttributes.item(attributeIndex).getNodeName().equals("id"))
-			{
-				tripId = trackAttributes.item(attributeIndex).getNodeValue();
-			}
-		}
-		if(tripId.equals(""))
-		{
-			log.error("Can't get trip id");
-			throw new Exception("Can't get trip id for EveryTrail item");
-		}
-		else
+		if(tripId!=null)
 		{
 			log.debug("Trip id is: " + tripId);
 			gpsItem.setExternalID("everytrail-" + tripId);
+			gpsItem.addMetadataEntry("trip", tripId)	;	
 		}
+		
+		if(tripName!=null)
+		{
+			log.debug("Trip name is: " + tripName);
+			gpsItem.addMetadataEntryIndexed("trip_name", tripName);	
+			gpsItem.addMetadataEntryIndexed("title", tripName);
+		}
+		
+		
+		String tripGpxUrlString = "";
+		URL tripGpxUrl = null;
 		
 		//Then look at the properties in the child nodes to get url, title, description, etc.
 		final NodeList tripProperties = tripItem.getChildNodes();
@@ -206,11 +136,6 @@ public class ItemFactory
 			final Node item = tripProperties.item(propertyIndex);
 			final String itemName = item.getNodeName();
 			//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-			if (itemName.equals("name"))
-			{
-				log.debug("Trip name is: " + item.getTextContent());
-				tripName = item.getTextContent();
-			}
 			if (itemName.equals("gpx"))
 			{
 				log.debug("Trip GPX URL found, length: " + item.getTextContent().length());
@@ -235,8 +160,6 @@ public class ItemFactory
 			log.error("Can't create GPX URL: " + tripGpxUrlString, e);
 		}
 		
-		gpsItem.addMetadataEntryIndexed("title", tripName);
-		
 		
 		int tryCount = 0;
 		boolean keepTrying = true;
@@ -245,7 +168,6 @@ public class ItemFactory
 		{
 			try
 			{
-
 				URLConnection con = CommunicationHelper.getConnection(tripGpxUrl);
 				InputStream is = con.getInputStream();
 				gpsItem.readTrace(is);
@@ -271,6 +193,8 @@ public class ItemFactory
 		}
 	}
 
+	
+	
 
 
 
@@ -410,6 +334,7 @@ public class ItemFactory
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
 		imageItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
 	}
+
 
 	public static VideoItem toVideoItem(final User owner, final VideoEntry youtubeVideo)
 	{

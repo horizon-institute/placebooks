@@ -244,18 +244,22 @@ public abstract class MediaItem extends PlaceBookItem
 		if (getKey() == null)
 		{
 			saveName = System.currentTimeMillis() +"-" + saveName;
-			log.info("Saving new file as: " + saveName);			
 		}
-		
-		if (!new File(saveName).exists() && !new File(saveName).mkdirs())
+		else
 		{
-			throw new IOException("Failed to write file '" + saveName + "'"); 
+			final int extIdx = saveName.lastIndexOf(".");
+			final String ext = saveName.substring(extIdx + 1, saveName.length());
+			saveName = getKey() + "." + ext;;
 		}
+		log.info("Saving new file as: " + saveName);			
 
-		final int extIdx = saveName.lastIndexOf(".");
-		final String ext = saveName.substring(extIdx + 1, saveName.length());
 
-		final String filePath = path + "/" + saveName + "." + ext;
+		final String filePath = path + "/" + saveName;
+		
+		if (!new File(path).exists() && !new File(path).mkdirs())
+		{
+			throw new IOException("Failed to create folder: " + path); 
+		}
 
 		InputStream input;
 		MessageDigest md = null;
