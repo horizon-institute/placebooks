@@ -225,22 +225,9 @@ public class PlaceBooksAdminController
 			// Get trip ID
 			final NamedNodeMap tripAttr = trip.getAttributes();
 			final String tripId = tripAttr.getNamedItem("id").getNodeValue();
-			String tripName = "Unknown trip";
+			log.debug("IMPORT: Trip ID is " + tripId + " **************");
 			
-			available_ids.add("everytrail-" + tripId);
-
-			GPSTraceItem gpsItem = new GPSTraceItem(user);
-			try
-			{
-				ItemFactory.toGPSTraceItem(user, trip, gpsItem);
-				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
-				imported_ids.add(gpsItem.getExternalID());
-			}
-			catch(Exception e)
-			{
-				log.error("Problem importing Trip " + tripId, e);
-			}
-
+			String tripName = "Unknown trip";
 			//Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
@@ -254,6 +241,22 @@ public class PlaceBooksAdminController
 					tripName = item.getTextContent();
 				}
 			}
+			
+			available_ids.add("everytrail-" + tripId);
+
+			GPSTraceItem gpsItem = new GPSTraceItem(user);
+			try
+			{
+				ItemFactory.toGPSTraceItem(user, trip, gpsItem, tripId, tripName);
+				gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
+				imported_ids.add(gpsItem.getExternalID());
+			}
+			catch(Exception e)
+			{
+				log.error("Problem importing Trip " + tripId, e);
+			}
+
+
 			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.TripPictures(	tripId,
 					details.getUsername(),
 					details.getPassword(),
