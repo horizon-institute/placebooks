@@ -62,6 +62,14 @@ public class GPSTraceItem extends PlaceBookItem
 		setTrace(new String(g.getTrace()));
 	}
 
+	public GPSTraceItem(final User owner)
+	{
+		// Geometry is set from calculating the GPX boundaries
+		super();
+		setOwner(owner);
+	}
+
+	
 	public GPSTraceItem(final User owner, final URL sourceURL, 
 						final String trace)
 	{
