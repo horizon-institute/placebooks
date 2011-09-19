@@ -5,14 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +22,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +49,6 @@ import org.w3c.dom.NodeList;
 import placebooks.model.AudioItem;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
@@ -62,6 +57,7 @@ import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBook.State;
 import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.json.PlaceBookDistanceEntry;
@@ -228,6 +224,7 @@ public class PlaceBooksAdminController
 			log.debug("IMPORT: Trip ID is " + tripId + " **************");
 			
 			String tripName = "Unknown trip";
+			String tripDescription = ""; 
 			//Then look at the properties in the child nodes to get url, title, description, etc.
 			final NodeList tripProperties = trip.getChildNodes();
 			for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
@@ -240,10 +237,31 @@ public class PlaceBooksAdminController
 					log.debug("Trip name is: " + item.getTextContent());
 					tripName = item.getTextContent();
 				}
+				if (itemName.equals("description"))
+				{
+					log.debug("Trip description is: " + item.getTextContent());
+					tripDescription = item.getTextContent();
+				}
 			}
-			
 			available_ids.add("everytrail-" + tripId);
+			
+			if(tripDescription.length()>0)
+			{
+				TextItem descriptionItem = new TextItem();
+				descriptionItem.setOwner(user);
+				final String externalId = "everytrail-" + tripId + "-textItem";
+				descriptionItem.setExternalID(externalId);
+				descriptionItem.setText(tripDescription);
+				descriptionItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
+				descriptionItem.addMetadataEntryIndexed("trip_name", tripName);	
+				descriptionItem.addMetadataEntryIndexed("title", tripName);
+				descriptionItem.addMetadataEntry("trip", tripId);	
+				descriptionItem.saveUpdatedItem();
+				available_ids.add(externalId);
+				imported_ids.add(externalId);
+			}
 
+			
 			GPSTraceItem gpsItem = new GPSTraceItem(user);
 			try
 			{
