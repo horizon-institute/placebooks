@@ -544,6 +544,11 @@ public class PlaceBooksAdminController
 		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
+		
+		// Add preset items to the Palette
+		final ArrayList<PlaceBookItem> presetItems = PresetItemsHelper.getPresetItems(user);
+		pbs.addAll(presetItems);
+		
 		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
 		log.info("User " + user.getName());
 		try
