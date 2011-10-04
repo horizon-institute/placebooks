@@ -1,32 +1,21 @@
 package org.placebooks.www;
 
-//import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-//import org.xml.sax.Attributes;
-//import java.lang.StringBuilder; 
-
 import android.util.Log;
-import java.text.ParseException;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.SAXParserFactory; 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 
-/**
+/*
  * SAX document handler to create instances of our custom object models from the information stored
  * in the XML document. This “document handler” is a listener for the various events that are fired
  * by the SAX parser based on the contents of your XML document.
  */
 
 public class XMLHandler extends DefaultHandler {
+	
 	Book myBook;
 	TextItem titem;
 	ImageItem imitem;
@@ -36,11 +25,11 @@ public class XMLHandler extends DefaultHandler {
 	MapImageItem mimitem;
 	WebBundleItem wbitem;
 	
-	StringBuilder url,text,filename, panel, order, geometry, name, timestamp, data, gpx, attrLatLon;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
+	StringBuilder url,text,filename, panel, order, geometry, name, timestamp, data, gpx, attrLatLon, height;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
 
 	
 	/*
-	 * fields
+	 * Fields
 	 */
 	 private boolean in_key = false;
 	 private boolean in_timestamp = false;
@@ -58,6 +47,7 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_imageFilename = false;
 	 private boolean in_imagePanel = false;
 	 private boolean in_imageOrder = false;
+	 private boolean in_imageHeight = false;
 	 
 	 private boolean in_placebooksVideo = false;
 	 private boolean in_videoGeometry = false;
@@ -85,35 +75,35 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_webBundleOrder = false;
 	 
 	 private boolean in_placebooksGPSTrace = false;
-	 private boolean in_gpsTraceName = false;
+	 private boolean in_gpsTraceFilename = false;
 	 private boolean in_gpsTraceGeometry = false;
 	 private boolean in_gpsTracePanel = false;
 	 private boolean in_gpsTraceOrder = false;
 	 
 	 
 	 public Book getParsedData() {
-		 //return the book;
+		 //Return the book;
 		 return myBook;
 	 }
 
 	 /* 
-	  * methods
+	  * Methods
 	  */
 	 @Override
 	 public void startDocument() throws SAXException {
-		//start of reading the xml document so we want to create a new book for our items
+		//Start of reading the xml document so we want to create a new book for our items
 		myBook = new Book();
 	 }
 
 	 @Override
 	 public void endDocument() throws SAXException {
-		 // Nothing to do;
-		 Log.d("xml", "here");
+		 //Nothing to do;
+		 Log.d("XMLHandler", "here");
 	 }
 
 
 
-	 /** Gets called on opening tags like:
+	 /* Gets called on opening tags like:
 	  * <tag>
 	  * Can provide attribute(s), when xml was like:
 	  * <tag attribute="attributeValue">*/
@@ -133,7 +123,7 @@ public class XMLHandler extends DefaultHandler {
 			 titem = new TextItem();
 			 titem.setType("Text");	// NEWLY ADDED
 			 
-			 String attr = atts.getValue("key");		//text item key
+			 String attr = atts.getValue("key");	//Text item key
              titem.setKey(attr);
 
 		 }
@@ -142,7 +132,7 @@ public class XMLHandler extends DefaultHandler {
 			 imitem = new ImageItem();
 			 imitem.setType("Image");	// NEWLY ADDED
 			 
-			 String attr = atts.getValue("key");		//image item key
+			 String attr = atts.getValue("key");		//Image item key
              imitem.setKey(attr);
 
 		 }
@@ -151,7 +141,7 @@ public class XMLHandler extends DefaultHandler {
 			 vitem = new VideoItem();
 			 vitem.setType("Video");	// NEWLY ADDED
 			 
-			 String attr = atts.getValue("key");		//video item key
+			 String attr = atts.getValue("key");		//Video item key
              vitem.setKey(attr);
 
 		 }
@@ -160,7 +150,7 @@ public class XMLHandler extends DefaultHandler {
 			 aitem = new AudioItem();
 			 aitem.setType("Audio");	// NEWLY ADDED
 			 
-			 String attr = atts.getValue("key");		//audio item key
+			 String attr = atts.getValue("key");		//Audio item key
              aitem.setKey(attr);
 
 		 }
@@ -231,6 +221,10 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_webBundleFilename = true;
 				 filename = new StringBuilder();
 			 }
+			 else if (this.in_placebooksGPSTrace){
+				 this.in_gpsTraceFilename = true;
+				 filename = new StringBuilder();
+			 }
 		  }
 		 else if(localName.equalsIgnoreCase("panel")){
 			 
@@ -264,7 +258,7 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 
 			 
-		 } //end of else if panel
+		 } //End of else if panel
 		 else if(localName.equalsIgnoreCase("order")){
 			 
 			  if(this.in_placebooksText){
@@ -297,7 +291,15 @@ public class XMLHandler extends DefaultHandler {
 				  order = new StringBuilder();
 			  }
 			  
-		   }//end of else if order
+		   }//End of else if order
+		 
+		 else if(localName.equalsIgnoreCase("height")){
+			 
+			 if(this.in_placebooksImage){
+				 this.in_imageHeight = true;
+				 height = new StringBuilder();
+			 }
+		 }
 		 
 		 else if(localName.equalsIgnoreCase("geometry")){
 			 
@@ -328,27 +330,14 @@ public class XMLHandler extends DefaultHandler {
 			 }
 			 
 			 
-		 } //end of else if geometry
+		 } //End of else if geometry
 		 
-		
-
-		 
-	    else if(localName.equalsIgnoreCase("title")){
-	    //this is just for the metadata in gpstraceitem for now (the title)
-	    	if(this.in_placebooksGPSTrace){
-	    		this.in_gpsTraceName = true;
-	    		name = new StringBuilder();
-	    	}	    
-	    }
-	
-
 		 
 	    else if(localName.equalsIgnoreCase("timestamp")){
 	    	this.in_timestamp = true;
 	    	timestamp = new StringBuilder();
 	    }
 
-		 
 			  	
 	 }
 
@@ -425,8 +414,8 @@ public class XMLHandler extends DefaultHandler {
 				 text = null;
 			 }else if(this.in_placebooksImage){
 				 this.in_imageUrl = false;
-				// imitem.setText(text.toString());
-				// text = null;
+				 //imitem.setText(text.toString());
+				 //text = null;
 			 }              	
 		 }
 		 else if (localName.equalsIgnoreCase("filename")) {
@@ -453,6 +442,10 @@ public class XMLHandler extends DefaultHandler {
 				 this.in_webBundleFilename = false;
 				 wbitem.setFilename(filename.toString());
 				 filename = null;			 
+			 }
+			 else if(this.in_placebooksGPSTrace){
+				 this.in_gpsTraceFilename = false;
+				 gpsitem.setGpxFilename(filename.toString());
 			 }
 			 
 		 }
@@ -539,6 +532,15 @@ public class XMLHandler extends DefaultHandler {
 			 
 		 }//end of else if order
 		 
+		 else if (localName.equalsIgnoreCase("height")){
+			 
+			 if(this.in_placebooksImage){
+				 this.in_imageHeight = false;
+				 imitem.setImageHeight(Integer.parseInt(height.toString()));
+				 height = null;
+			 }
+		 }
+		 
 		 else if (localName.equalsIgnoreCase("geometry")){
 			 
 			 if(this.in_placebooksText){
@@ -621,15 +623,6 @@ public class XMLHandler extends DefaultHandler {
 				 
 		}
 		 
-		 	 
-		 
-		  else if(localName.equalsIgnoreCase("title")){
-			   if(this.in_placebooksGPSTrace){
-			    		this.in_gpsTraceName = false;
-			    		gpsitem.setName(name.toString());
-			    		name = null;
-			    	}	    
-		 }
 		
 		 
 		  else if(localName.equalsIgnoreCase("timestamp")){
@@ -637,21 +630,18 @@ public class XMLHandler extends DefaultHandler {
 		    	myBook.setTimestamp(timestamp.toString());
 		    	timestamp = null;
 
-		    	
-		    	//also get other timestamps..e.g every item will have a timestamp
+		    	//Also get other timestamps..e.g every item will have a timestamp
 		    }
 
- 
-		 
- 
+  
 	 }
 	 
 
-	 /** Gets called on the following structure:
+	 /* Gets called on the following structure:
 	  * <tag>characters</tag> */
 	 @Override
 	 public void characters(char ch[], int start, int length) {
-		 //text item
+		 //Text item
 		 
 		 if (this.in_textGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -670,7 +660,7 @@ public class XMLHandler extends DefaultHandler {
 		 }
 		 
 		 
-		 //image item
+		 //Image item
 		 
 		 if (this.in_imageGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -688,8 +678,12 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_imageOrder){
 			 order.append(ch, start, length).toString();
 		 }
+		 else if (this.in_imageHeight){
+			 height.append(ch, start, length).toString();
+		 }
 		 
-		 //video item
+		 
+		 //Video item
 		 
 		 else if (this.in_videoGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -704,7 +698,7 @@ public class XMLHandler extends DefaultHandler {
 			 order.append(ch, start, length).toString();
 		 }
 		 
-		 //audio item
+		 //Audio item
 		 
 		 else if (this.in_audioGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -719,7 +713,7 @@ public class XMLHandler extends DefaultHandler {
 			 order.append(ch, start, length).toString();
 		 }
 		
-		 //map image item
+		 //Map image item
 		 
 		 else if (this.in_mapImageGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -734,7 +728,7 @@ public class XMLHandler extends DefaultHandler {
 			 order.append(ch, start, length).toString();
 		 }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 		 
-		 //web bundle item
+		 //Web bundle item
 		 
 		 else if (this.in_webBundleGeometry){
 			 geometry.append(ch, start, length).toString();
@@ -752,9 +746,10 @@ public class XMLHandler extends DefaultHandler {
 			 order.append(ch, start, length).toString();
 		 }
 		 
-		 //gps trace item
-		 else if (this.in_gpsTraceName){
-			 name.append(ch, start, length).toString();
+		 //Gps trace item
+
+		 else if (this.in_gpsTraceFilename){
+			 filename.append(ch, start, length).toString();
 		 }
 		 else if (this.in_gpsTracePanel){
 			 panel.append(ch, start, length).toString();
@@ -763,19 +758,16 @@ public class XMLHandler extends DefaultHandler {
 			 order.append(ch, start, length).toString();
 		 }
 		 
-		 //get the geometries too
+		 //Get the geometries too
 		 
 		 
 		 else if (this.in_timestamp){
 			 timestamp.append(ch, start, length).toString();
 		 }
 		 
-	 } //end of void characters
+	 } //End of void characters
 	 
  
 	 
  }
 	 
-		 
-
-//}

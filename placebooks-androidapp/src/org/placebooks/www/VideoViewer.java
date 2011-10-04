@@ -10,8 +10,6 @@ import android.widget.Gallery;
 import android.widget.MediaController;
 import android.widget.VideoView;
 import android.widget.TextView;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 public class VideoViewer extends Activity {
@@ -20,25 +18,26 @@ public class VideoViewer extends Activity {
  private String packagePath;
  private VideoView videoView;
  private MediaController ctlr;
+ private String unzippedDir;
 	
 	
 	 @Override
  	 public void onCreate(Bundle savedInstanceState) {
-	        super.onCreate(savedInstanceState);	//icicle
+	        super.onCreate(savedInstanceState);	
 
-	        //View v = new View(this);
-	        //LinearLayout ll = new LinearLayout(this);
-	        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
-
+	        getWindow().setWindowAnimations(0);	//Do not animate the view when it gets pushed on the screen
 	        setContentView(R.layout.videoview);
 	        
+	        CustomApp appState = ((CustomApp)getApplicationContext());
+	        unzippedDir = appState.getUnzippedDir();
+
 	        
-	         // get the extras (video filename) out of the new intent
+	         //Get the extras (video filename) out of the new intent
 	        Intent intent = getIntent();
 	        if(intent != null) videoFile = intent.getStringExtra("video");
 	        if(intent != null) packagePath = intent.getStringExtra("path");
 	        
-	        File clip=new File(Environment.getExternalStorageDirectory(), "/placebooks/unzipped" + packagePath + "/" + videoFile);
+	        File clip=new File(unzippedDir + packagePath + File.separator + videoFile);
 
 	        try{
 				if (clip.exists()) {
@@ -56,19 +55,17 @@ public class VideoViewer extends Activity {
 						videoView.start();
 	                    setContentView(videoView);
 		        
-		        
 				}
 				else{
 					TextView tv = new TextView(this);
 					tv.setText("File does not exist");
 					setContentView(tv);
 					
-					
 				}
 	        }
 	        
 	        catch (OutOfMemoryError E) {
-			    // release some (all) of the above objects
+			    //Release some (all) of the above objects
 					System.out.println("Out of Memory Exception");
 					TextView txtView = new TextView(VideoViewer.this);
 					txtView.setText("Error: Out of Memory - video file is too big to load!");
@@ -84,8 +81,8 @@ public class VideoViewer extends Activity {
 	      videoFile = null;
 	      ctlr = null;
 
-         System.gc();	//call the garbage collector
-         finish();	//close the activity
+         System.gc();	//Call the garbage collector
+         finish();	//Close the activity
        
 	   }
 	 

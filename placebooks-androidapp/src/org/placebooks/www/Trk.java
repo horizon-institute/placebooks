@@ -12,6 +12,9 @@ public class Trk {
 	@Element(required=false)
 	public String number;
 	
+	@Element(required=false)
+	public String name;
+	
 	@ElementList
     public ArrayList<Trkpt> trkseg;
 	

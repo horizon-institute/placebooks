@@ -9,8 +9,8 @@ public class TextItem extends Item {
 	public String getURL() {
 		return url;
 	}
-	public void setURL(String uRL) {
-		url = uRL;
+	public void setURL(String url) {
+		this.url = url;
 	}
 	public String getText() {
 		return this.text;
@@ -21,7 +21,7 @@ public class TextItem extends Item {
 	
 	@Override
 	public String toString() {
-		return "Text=" + text + "\nURL=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" + super.getOrder(); 
+		return "Text=" + text + "\nurl=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" + super.getOrder(); 
 	}
 	
 }

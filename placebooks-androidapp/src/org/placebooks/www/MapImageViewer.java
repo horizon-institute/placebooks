@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -42,37 +44,26 @@ import android.content.Intent;
 
 public class MapImageViewer extends Activity {
     
-	//private final CustomApp appState1 = ((CustomApp)getApplicationContext());
-
-	private String pbkey;
-	private ArrayList<String> alPbkey = new ArrayList<String>();
-	
-	private ScrollView sv;
-	//private LinearLayout ll;
 	private RelativeLayout rl;
 	private MapCanvas mapCanvas;
 	private String mapImageFilename;
 	private String packagePath;
-
 	
-	//the phones current longitude and latitude
+	//The phones current longitude and latitude
 	private double longitude;
 	private double latitude;
-	//t-values for our current position on our map image (scaled)
-	private double t1;
-    private double t2;
+
     private Bitmap bm;
-    //map image dimensions
+    //Map image dimensions
     private int mapHeight;
     private int mapWidth;
     
-    //map image pixel equivalence for the lat/lon
+    //Map image pixel equivalence for the lat/lon
     private int pixel_lat;
     private int pixel_lon;
     
     String myMapImagePath; //imagePath+mapImage
 
-	
 
     //mapImage lat/lon coordinates for the gps
     private double c_x1;	//lat1
@@ -88,7 +79,6 @@ public class MapImageViewer extends Activity {
 	//mapImage height, width, pixels
 	private int imageHeight;
 	private int imageWidth;
-	private int imagePixels;	//number of pixels in the map image
 	//mapImage pixel values
 	private int ptl_x;		//top-left-x
 	private int ptl_y;		//top-left-y
@@ -108,14 +98,8 @@ public class MapImageViewer extends Activity {
 	
 	//ArrayLists for geo-tagged media
 	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
-	//private ArrayList<Coordinate[]> customAppGeoImageCoordinates = new ArrayList<Coordinate[]>();
-	//private ArrayList<Coordinate[]> alGeoImageCoordinates = new ArrayList<Coordinate[]>();
-	//private double[] arrGeoImageLat;
-	//private double[] arrGeoImageLon;
-	private ArrayList<Coordinate> alGeoImageCoordinate = new ArrayList<Coordinate>();
 	private ArrayList<Double> alGeoImageLat = new ArrayList<Double>();
 	private ArrayList<Double> alGeoImageLon = new ArrayList<Double>();
-	
 	
 	//ArrayLists for the lat/lon pixel values for the geotagged media
 	private ArrayList<Integer> alGeoImageLatPx = new ArrayList<Integer>();
@@ -124,15 +108,12 @@ public class MapImageViewer extends Activity {
 	
 	@Override
 	 public void onCreate(Bundle savedInstanceState) {
-	        super.onCreate(savedInstanceState);	//icicle
-	        getWindow().setWindowAnimations(0);	//do not animate the view when it gets pushed on the screen
+	        super.onCreate(savedInstanceState);
+	        getWindow().setWindowAnimations(0);	//Do not animate the view when it gets pushed on the screen
 	        
-	        //mapCanvas = new MapCanvas(this);
-	        //setContentView(mapCanvas);
-	        //setContentView(R.layout.mapimageview);
 	        
 	   try{     
-	    	// get the extraS out of the new intent (get all the coordinates for the map corners)
+	    	//Get the extras out of the new intent (get all the coordinates for the map corners)
 	        Intent intent = getIntent();
 	        if(intent != null) mapImageFilename = intent.getStringExtra("mapImageFilename");
 	        if(intent != null) packagePath = intent.getStringExtra("packagePath");
@@ -146,10 +127,10 @@ public class MapImageViewer extends Activity {
 	        if(intent != null) c_y4 = intent.getDoubleExtra("c_y4", c_y4);
 	        if(intent != null) c_x5 = intent.getDoubleExtra("c_x5", c_x5);
 	        if(intent != null) c_y5 = intent.getDoubleExtra("c_y5", c_y5);
-	        //gps trail data
+	        //Gps trail data
 	        if(intent != null) arrGpsLat = intent.getDoubleArrayExtra("arrLat");
 	        if(intent != null) arrGpsLon = intent.getDoubleArrayExtra("arrLon");
-	        //geotagged media
+	        //Geotagged media
 	        if(intent != null) alGeoImageFilename = intent.getStringArrayListExtra("alGeoImageFilename");
 	        
 	        int len = intent.getIntExtra("coord_size", 0);
@@ -157,7 +138,6 @@ public class MapImageViewer extends Activity {
 	        {
 	            double x = intent.getDoubleExtra("coord_x_" + i, 0.0);
 	            double y = intent.getDoubleExtra("coord_y_" + i, 0.0);
-	            //alGeoImageCoordinate.add(new Coordinate(x, y));
 	            alGeoImageLat.add(y);
 	            alGeoImageLon.add(x);
 	        }
@@ -173,57 +153,14 @@ public class MapImageViewer extends Activity {
 	        System.out.println("x= " + c_x4 + " y= " + c_y4);
 	        System.out.println("x= " + c_x5 + " y= " + c_y5);
 	        
-	        
-	        myMapImagePath = packagePath + "/" + mapImageFilename;
+	        myMapImagePath = packagePath + File.separator + mapImageFilename;
 	        
 	        try {
-	        	
-			    	//make bitmap of the map image
-			    	BitmapFactory.Options options = new BitmapFactory.Options();
-				    options.inSampleSize = 1;
-				   // bm = BitmapFactory.decodeStream(is, null, options);
-				    bm = BitmapFactory.decodeFile(myMapImagePath, options);	 
-		        
-			    
-			    
-			    imageHeight = bm.getHeight();
-			    imageWidth = bm.getWidth();
-			
-			    
-			    // calculate the pixels in the image
-			    imagePixels = (bm.getWidth()) * (bm.getHeight());
-			    /* now work out the lat/lon for each corner
-			     *  E.G
-			     *  
-			     *  0,400		600,400			(tl_x, tl_y)	(tr_x, tr_y)
-			     * 
-			     * 	0,0		    600,0			(bl_x, bl_y)	(br_x, br_y)
-			     */
-			    ptl_x = 0;
-			    ptl_y = bm.getHeight();
-			    pbl_x = 0;
-			    pbl_y = 0;
-			    ptr_x = bm.getWidth();
-			    ptr_y = bm.getHeight();
-			    pbr_x = bm.getWidth();
-			    pbr_y = 0;
-			    
-			    System.out.println("pixel top left x = " + ptl_x);
-			    System.out.println("pixel top left y = " + ptl_y);
-			    System.out.println("pixel bottom left x = " + pbl_x);
-			    System.out.println("pixel bottom left y = " + pbl_y);
-			    System.out.println("pixel top right x = " + ptr_x);
-			    System.out.println("pixel top right y = " + ptr_y);
-			    System.out.println("pixel bottom left x = " + pbr_x);
-			    System.out.println("pixel bottom left y = " + pbr_y);
-			    
-
-			    	
-			    //Now get the mobile's current longitude and latitude
-			    //find best location provider that features high accuracy and draws as little power as possible
+	        	 //Get the mobile's current longitude and latitude
+			    //Find best location provider that features high accuracy and draws as little power as possible
 				LocationManager locationManager;
 			    String context = Context.LOCATION_SERVICE;
-			    locationManager = (LocationManager)getSystemService(context);	//finds your current location
+			    locationManager = (LocationManager)getSystemService(context);	//Finds your current location
 			    
 			    Criteria criteria = new Criteria();
 			    criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -231,106 +168,179 @@ public class MapImageViewer extends Activity {
 			    criteria.setBearingRequired(false);
 			    criteria.setCostAllowed(true);
 			    criteria.setPowerRequirement(Criteria.POWER_LOW);
-				    
-			    String provider = locationManager.getBestProvider(criteria, true);
-			    //String provider2 = LocationManager.GPS_PROVIDER;
-			    //int time = 10; //milliseconds
-			    //int distance = 30;	//meters
-			    Location location = locationManager.getLastKnownLocation(provider);
-			    //.requestLocationUpdates(provider, time, distance,locationListener);	//method to get updates whenever the current location changes, using a location listener
-			    updateWithNewLocation(location);
-			    locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
-
-			    
-			    
-			    calculatePixelYAHCoordinates();	//call the method to calculate the pixel equivalence for the YAH coordinates
-			    calculateGpsTrail();	//call the method to calculate the gps trail
-			    
-			    System.out.println("Map Width===== " + mapWidth);
-			    System.out.println("Map Height===== " + mapHeight);
-			    System.out.println("Number of pixels===== " + (mapWidth*mapHeight));
-			    
-			    
-			    
-			    //draw the map on the canvas with the location
-			    mapCanvas = new MapCanvas(this);
-			    //set the lat/lon pixel values for the YAH marker
-			    mapCanvas.setLat(pixel_lat);
-			    mapCanvas.setLon(pixel_lon);
-			    //now set the lat/lon pixel values for the trail
-			    mapCanvas.setGpsLat(alGpsLat);
-			    mapCanvas.setGpsLon(alGpsLon);
-			    
-			    BitmapDrawable bmd = new BitmapDrawable(bm);
-			    mapCanvas.setImageDrawable(bmd);
-		        mapCanvas.setScaleType(ScaleType.CENTER);	//needs to focus on the yah dot
-			     
-			    //ll = new LinearLayout(this);
-			    //ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//sets our custom image view to the same size as our map image
-			    rl = new RelativeLayout(this);
-			    rl.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));
-			    
-			    
-			    
-			    //if there are geotagged images
-		        if(alGeoImageFilename != null && alGeoImageLat != null && alGeoImageLon != null){
-				        //call the calculateMediaPixelCoordinates() method to convert the lat/lons to pixel values
-					    calculateMediaPixelCoordinates();
-			    
-			        //now add the geotagged media to the view
-					if(alGeoImageLatPx != null && alGeoImageLonPx != null && alGeoImageFilename != null){
-						
-							for(int i=0; i<alGeoImageFilename.size(); i++){
-								final int j = i;
-								
-								 ImageButton b = new ImageButton(this);
-								 Bitmap bmCam = BitmapFactory.decodeResource(getResources(),R.drawable.camera_icon);
-								 b.setImageBitmap(bmCam);
-								 RelativeLayout rl2 = new RelativeLayout(this);
-								 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(35, 25); //button size , was 35x25
-						         layoutParams.setMargins(alGeoImageLonPx.get(i), alGeoImageLatPx.get(i), 0, 50);
-						         
-								 rl.addView(b, layoutParams);
+	        	
+	            String provider = locationManager.getBestProvider(criteria, true);
+	            
+	            if (provider != null){
+			            	
+					    //String provider2 = LocationManager.GPS_PROVIDER;
+					    //int time = 10; //milliseconds
+					    //int distance = 30;	//meters
+					    Location location = locationManager.getLastKnownLocation(provider);
+					    //.requestLocationUpdates(provider, time, distance,locationListener);	//Method to get updates whenever the current location changes, using a location listener
+					    updateWithNewLocation(location);
+					    locationManager.requestLocationUpdates(provider, 2000, 10, locationListener);	
+	            }
+	            else{
+	            	//Alert user that GPS is turned off and they will not be able to see tracking
+	            	Toast msg = Toast.makeText(this, "Please turn on GPS for live tracking", Toast.LENGTH_LONG);
+	    			msg.show();
+	            }
+			        	
+					    //Make bitmap of the map image
+					    BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inSampleSize = 1;
+						//bm = BitmapFactory.decodeStream(is, null, options);
+						bm = BitmapFactory.decodeFile(myMapImagePath, options);	 
+				        
+					    
+					    imageHeight = bm.getHeight();
+					    imageWidth = bm.getWidth();
 					
-								//Toast msg = Toast.makeText(MapImageViewer.this,  "imagepath=" + imagePath + "\nimage file path = " + imageFilepath.get(j), Toast.LENGTH_LONG);
-								//msg.show();
-								 
-								//create an onClick event for the button
-								b.setOnClickListener(new OnClickListener() {
-						             @Override
-						             public void onClick(View v) {
-						            	
-						            	Intent intent = new Intent();
-						            	overridePendingTransition(0, 0);
-					     				intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+					    
+					    //Calculate the pixels in the image
+					    //int imagePixels = (bm.getWidth()) * (bm.getHeight());
+					    
+					    /*Now work out the lat/lon for each corner
+					     *  E.G
+					     *  
+					     *  0,400		600,400			(tl_x, tl_y)	(tr_x, tr_y)
+					     * 
+					     * 	0,0		    600,0			(bl_x, bl_y)	(br_x, br_y)
+					     */
+					    ptl_x = 0;
+					    ptl_y = bm.getHeight();
+					    pbl_x = 0;
+					    pbl_y = 0;
+					    ptr_x = bm.getWidth();
+					    ptr_y = bm.getHeight();
+					    pbr_x = bm.getWidth();
+					    pbr_y = 0;
+					    
+					    System.out.println("pixel top left x = " + ptl_x);
+					    System.out.println("pixel top left y = " + ptl_y);
+					    System.out.println("pixel bottom left x = " + pbl_x);
+					    System.out.println("pixel bottom left y = " + pbl_y);
+					    System.out.println("pixel top right x = " + ptr_x);
+					    System.out.println("pixel top right y = " + ptr_y);
+					    System.out.println("pixel bottom left x = " + pbr_x);
+					    System.out.println("pixel bottom left y = " + pbr_y);
+					    
+					    	if(provider!= null){
+					    		calculatePixelYAHCoordinates();	//Call the method to calculate the pixel equivalence for the YAH coordinates
+					    	}
+					    	calculateGpsTrail();	//Call the method to calculate the gps trail
+					    
+						    System.out.println("Map Width = " + mapWidth);
+						    System.out.println("Map Height = " + mapHeight);
+						    System.out.println("Number of pixels = " + (mapWidth * mapHeight));
+						    
+						    //Draw the map on the canvas with the location
+						    mapCanvas = new MapCanvas(this);
+					    	if(provider!= null){
+							    mapCanvas.setLongitude(longitude);
+							    mapCanvas.setLatitude(latitude);
+							    //Set the lat/lon pixel values for the YAH marker
+							    mapCanvas.setLat(pixel_lat);
+							    mapCanvas.setLon(pixel_lon);
+					    	}
+						    //Now set the lat/lon pixel values for the trail
+						    mapCanvas.setGpsLat(alGpsLat);
+						    mapCanvas.setGpsLon(alGpsLon);
+					    
+					    
+					    BitmapDrawable bmd = new BitmapDrawable(bm);
+					    mapCanvas.setImageDrawable(bmd);
+					     
+					    //LinearLayout ll = new LinearLayout(MapImageViewer.this);
+					    //ll.addView(mapCanvas, new LinearLayout.LayoutParams(imageWidth, imageHeight));	//Sets our custom image view to the same size as our map image
+					    rl = new RelativeLayout(MapImageViewer.this);
+					    rl.addView(mapCanvas, new RelativeLayout.LayoutParams(imageWidth, imageHeight));
+					    
+					    
+					    //If there are geotagged images
+				        if(alGeoImageFilename != null && alGeoImageLat != null && alGeoImageLon != null){
+						        //Call the calculateMediaPixelCoordinates() method to convert the lat/lons to pixel values
+							    calculateMediaPixelCoordinates();
+					    
+					        //Now add the geotagged media to the view
+							if(alGeoImageLatPx != null && alGeoImageLonPx != null && alGeoImageFilename != null){
+								
+									for(int i=0; i<alGeoImageFilename.size(); i++){
+										final int j = i;
+										
+										//Get mobile screen resolution
+								        DisplayMetrics dm = new DisplayMetrics();
+								        getWindowManager().getDefaultDisplay().getMetrics(dm);
+								        //Assign the resolution to the variables
+								        //screenWidth = dm.widthPixels;	//320 on the LG phone
+								        //screenHeight = dm.heightPixels;	//480 on the LG phone
+								        //double w = screenWidth/11;
+								        //double h = screenHeight/22.82;
+										
+										 ImageButton b = new ImageButton(this);
+										 b.setBackgroundColor(android.R.color.transparent);	//Makes the button background transparent
 		
-				        	        	intent.setClassName("org.placebooks.www", "org.placebooks.www.ImageViewer");
-				        	        	intent.putExtra("imagePath", packagePath +"/" + alGeoImageFilename.get(j));
-					     				overridePendingTransition(0, 0);
-				        	        	startActivity(intent);	
-						             } //end of public void
-								});
-							}
-						}
-							
-		        }
-		        else{
-		        	//no geotagged photos so no need to do anything here
-		        	
-		        }		
-			    
-			    
-
-			    ScrollView sv = new ScrollView(this);
-		        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
-		        sv.addView(rl);
-		        
-		        HorizontalScrollView hsv = new HorizontalScrollView(this);
-		        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
-		        hsv.addView(sv);
-			    
-		        setContentView(hsv);
-		        mapCanvas.invalidate();
+										 
+											 Bitmap bmCam = BitmapFactory.decodeResource(getResources(),R.drawable.camera_icon); //photo_marker_50x32
+											 b.setImageBitmap(bmCam);
+											 RelativeLayout rl2 = new RelativeLayout(this);
+											 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(32, 20); //Button size , was 35x25 then 32x22
+									         layoutParams.setMargins(alGeoImageLonPx.get(i), alGeoImageLatPx.get(i), 0, 50);
+									         //layoutParams.setMargins(alGeoImageLatPx.get(i), alGeoImageLonPx.get(i), 0, 50);
+		
+											 
+											 rl.addView(b, layoutParams);
+											 //ll.addView(b, layoutParams);
+										 
+										//Toast msg = Toast.makeText(MapImageViewer.this,  "icon pos=" + alGeoImageLonPx.get(i).toString() + " " + alGeoImageLatPx.get(i).toString(), Toast.LENGTH_LONG);
+										//msg.show();
+										 
+										//Create an onClick event for the button
+										b.setOnClickListener(new OnClickListener() {
+								             @Override
+								             public void onClick(View v) {
+								            	
+								            	//Vibration to alert users
+										        //Get instance of Vibrator from current Context
+										        Vibrator vib = (Vibrator) getSystemService(MapImageViewer.this.VIBRATOR_SERVICE);
+										        // Vibrate for 300 milliseconds
+										        vib.vibrate(300); 
+								            	 
+								            	Intent intent = new Intent();
+								            	overridePendingTransition(0, 0);
+							     				intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				
+						        	        	intent.setClassName("org.placebooks.www", "org.placebooks.www.ImageViewer");
+						        	        	intent.putExtra("imagePath", packagePath + File.separator + alGeoImageFilename.get(j));
+							     				overridePendingTransition(0, 0);
+						        	        	startActivity(intent);	
+								             } //End of public void
+										});
+									}
+								}
+									
+				        }
+				        else{
+				        	
+				        	//No geotagged photos so no need to do anything here
+				        	
+				        }		
+					    
+					    
+					    ScrollView sv = new ScrollView(MapImageViewer.this);
+				        sv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
+				        sv.addView(rl);
+				        
+				        HorizontalScrollView hsv = new HorizontalScrollView(MapImageViewer.this);
+				        hsv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));//, LayoutParams.WRAP_CONTENT));
+				        hsv.addView(sv);
+		
+				        
+				        setContentView(hsv);
+				        mapCanvas.invalidate();
+	            
+			   
 		        
 	        }
 	        catch(Exception e){
@@ -351,7 +361,7 @@ public class MapImageViewer extends Activity {
 	        }
 	        
 	        
-	} //end of onCreate
+	} //End of onCreate
 	
 	
 	
@@ -397,15 +407,15 @@ public class MapImageViewer extends Activity {
 			}
 			
 			public void onProviderDisabled(String provider){
-				//update application if provider disabled
+				//Update application if provider disabled
 				updateWithNewLocation(null);
 			}
 			
 			public void onProviderEnabled(String provider){
-				//update application if provider enabled
+				//Update application if provider enabled
 			}
 			public void onStatusChanged(String provider, int status, Bundle extras){
-				//update application if provider hardware status changed
+				//Update application if provider hardware status changed
 			}
 		};
 		
@@ -428,11 +438,11 @@ public class MapImageViewer extends Activity {
 			pixel_lat = imageHeight - (int)(answer1);
 			
 			System.out.println("TOP: Latitude " +latitude + " - c_x1= " + c_x1);
-			System.out.println("BOTTOM: c_x4= " + c_x4 + " -c_x1= " +c_x1 + " /by imgWidth = " +(double)imageWidth);
-			System.out.println("c_x4-c_x1 == " + bottomp1);
+			System.out.println("BOTTOM: c_x4= " + c_x4 + " -c_x1= " +c_x1 + " /by imgWidth = " + (double)imageWidth);
+			System.out.println("c_x4-c_x1 = " + bottomp1);
 			
 			System.out.println("top answer= " +top + " bottom answer= " + bottomp2);
-			System.out.println("lat answer1 (600-) === " +answer1);
+			System.out.println("lat answer1 (600-) = " +answer1);
 			System.out.println("pixel_lon = " +pixel_lon);
 			
 			//lon x-axis
@@ -481,8 +491,8 @@ public class MapImageViewer extends Activity {
 					float answer2 = (float)(top2) / (bottomp4);
 					alGpsLon.add(imageWidth - (int)(answer2));
 				 
-					System.out.println("GPS PIXEL CALCULATION LAT= " +alGpsLat.get(i));
-					System.out.println("GPS PIXEL CALCULATION LON= " +alGpsLon.get(i));
+					System.out.println("GPS PIXEL CALCULATION LAT = " +alGpsLat.get(i));
+					System.out.println("GPS PIXEL CALCULATION LON = " +alGpsLon.get(i));
 
 		      }
 						
@@ -493,18 +503,18 @@ public class MapImageViewer extends Activity {
 			
 			
 			for(int i=0; i<alGeoImageFilename.size(); i++){
-				
+								
 				try{
 					
-					//lat y-axis
-				 	double top = (alGeoImageLat.get(i)-c_x1);
+					//lon x-axis
+				 	double top = (alGeoImageLon.get(i)-c_x1);
 					double bottomp1 = (c_x4-c_x1);
 					float bottomp2 = (float)(bottomp1) / (float)imageWidth;
 					float answer1 = (float)(top)/(bottomp2);
 					alGeoImageLatPx.add(imageHeight - (int)(answer1));
 					
-					//lon x-axis
-					double top2 = (alGeoImageLon.get(i)-c_y1);
+					//lat y-axis
+					double top2 = (alGeoImageLat.get(i)-c_y1);
 					double bottomp3 = (c_y3-c_y1);
 					float bottomp4 = (float) bottomp3 / (float)imageHeight;
 					float answer2 = (float)(top2) / (bottomp4);
@@ -525,23 +535,20 @@ public class MapImageViewer extends Activity {
 	       public void onDestroy() {
 	         super.onDestroy();
 	          bm.recycle();		//clears the bitmap 
-	          //important to put this code back in when MapCanvas extends imageView
-	          mapCanvas.setImageDrawable(null);    //sets the custom imageView to null and cleans it
+	          //Important to put this code back in when MapCanvas extends imageView
+	          mapCanvas.setImageDrawable(null);    //Sets the custom imageView to null and cleans it
 		      imageHeight = 0;
 		      imageWidth = 0;
-		      imagePixels = 0;
- 
 		      alGpsLat = null;
 		      alGpsLon = null;
 		      alGeoImageFilename = null;
-		      alGeoImageCoordinate = null;
 		      alGeoImageLat = null;
 		      alGeoImageLon = null;
 		      alGeoImageLatPx = null;
 		      alGeoImageLonPx = null;
 		      
-	          System.gc();	//call the garbage collector
-	          finish();	//close the activity
+	          System.gc();	//Call the garbage collector
+	          finish();	//Close the activity
 	         
 		   }
 		   
@@ -560,7 +567,7 @@ public class MapImageViewer extends Activity {
 		   }
 	
 		   
-		 //decodes image and scales it to reduce memory consumption
+		 //Decodes image and scales it to reduce memory consumption
 			 private Bitmap decodeFile(File f){
 			     try {
 			         //Decode image size

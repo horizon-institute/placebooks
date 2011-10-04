@@ -1,6 +1,5 @@
 package org.placebooks.www;
 
-import java.util.*;//List;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -49,8 +48,6 @@ public class Gpx {
 		public Trk getTrk(){
 			return trk;
 		}
-
-		
 
 
 	}

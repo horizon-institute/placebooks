@@ -4,8 +4,11 @@
    android:layout_height="wrap_content"
    android:orientation="vertical"
 	android:layout_x="201px"
-	android:layout_y="165px"
-	android:gravity="center_horizontal">
+	android:layout_y="15px"
+	android:gravity="center_horizontal"
+	android:layout_gravity="top"
+	
+	>
    
    <ImageButton android:id="@+id/icon_redbutton"
       android:clickable="true"
@@ -32,7 +35,8 @@
       android:layout_height="wrap_content"
       android:text="TextView"
       android:gravity="center_horizontal"
-      android:textColor="#000000">
+      android:textColor="#000000"
+      android:maxLines="2">
    </TextView>
    
 </LinearLayout>

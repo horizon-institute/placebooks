@@ -23,7 +23,7 @@ public class WebBundleItem extends Item {
 	@Override
 	public String toString() {
 
-		return "\nFilename=" + filename + "\nURL=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
+		return "\nFilename=" + filename + "\nurl=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
 		
 	}
 	

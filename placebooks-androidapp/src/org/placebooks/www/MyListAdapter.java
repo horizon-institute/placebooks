@@ -9,8 +9,6 @@ import java.util.*;
 import android.widget.*;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.view.View.OnClickListener;
-
 
 
 public class MyListAdapter extends BaseAdapter {
@@ -20,14 +18,14 @@ public class MyListAdapter extends BaseAdapter {
     ArrayList<HashMap<String, String>> mylist;
     private LayoutInflater mInflater;
     private Context context;
+    private String unzippedDir;
 
-
-     /*
-      * Constructor takes in the context from the shelf class and
-      * set the LayoutInflater
-      */
+    /*
+     * Constructor takes in the context from the shelf class and
+     * set the LayoutInflater
+     */
     public MyListAdapter(Context c){//(View renderer) {
-       // this.renderer = renderer;
+       //this.renderer = renderer;
     	this.context=c;
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -41,6 +39,10 @@ public class MyListAdapter extends BaseAdapter {
     public void setModel(List<MyListItemModel> items){
         this.items = items;
         notifyDataSetChanged();
+    }
+    
+    public void setUnzippedDir(String dir){
+    	this.unzippedDir = dir;
     }
 
     @Override
@@ -84,8 +86,8 @@ public class MyListAdapter extends BaseAdapter {
         final Button button2 = (Button)convertView.findViewById(R.id.btn_view);
         button2.setOnClickListener(item.view_listener);
         
-        //check if the package has already been downloaded to the SDCard
-		File f = new File(Environment.getExternalStorageDirectory()+ "/PlaceBooks/unzipped" + item.getPackagePath());
+        //Check if the package has already been downloaded to the SDCard
+		File f = new File(Environment.getExternalStorageDirectory() + unzippedDir + item.getPackagePath());
 		if(f.exists()){
 			//If exists then hide 'download' button and show 'view' button
 			//button2.setText("View");
