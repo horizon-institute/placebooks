@@ -58,6 +58,8 @@ public interface Resources extends ClientBundle
 	@Source("Placebook_016.png")
 	ImageResource placebook16();
 
+	ImageResource placebook_open();
+	
 	ImageResource progress();
 
 	ImageResource progress2();

@@ -21,6 +21,23 @@ public class Shelf
 	{
 	}
 
+	public Shelf(final Iterable<PlaceBook> placebooks)
+	{
+		log.info("Creating JSON Shelf for PlaceBooks...");
+		
+		for (final PlaceBook pb : placebooks)
+		{
+			for (final Map.Entry<String, String> e : 
+				 pb.getMetadata().entrySet())
+			{
+				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+			}
+
+			final ShelfEntry entry = new PlaceBookEntry(pb);
+			entries.add(entry);
+		}
+	}
+	
 	public Shelf(final PlaceBook pbs[])
 	{
 		log.info("Creating JSON Shelf for PlaceBooks...");

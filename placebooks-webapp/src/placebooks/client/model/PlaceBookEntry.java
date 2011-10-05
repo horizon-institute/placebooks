@@ -23,6 +23,8 @@ public class PlaceBookEntry extends JavaScriptObject
 	public final native int getScore() /*-{ return this.score; }-*/;
 
 	public final native String getState() /*-{ return this.state; }-*/;
+	
+	public final native String getPreviewImage() /*-{ return this.previewImage; }-*/;	
 
 	public final String getTitle()
 	{

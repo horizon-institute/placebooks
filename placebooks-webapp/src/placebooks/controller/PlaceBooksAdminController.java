@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -19,13 +18,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +64,7 @@ import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.json.PlaceBookDistanceEntry;
+import placebooks.model.json.PlaceBookEntry;
 import placebooks.model.json.PlaceBookItemDistanceEntry;
 import placebooks.model.json.PlaceBookSearchEntry;
 import placebooks.model.json.ServerInfo;
@@ -665,7 +665,51 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
+	
+	@RequestMapping(value = "/randomized/{count}", method = RequestMethod.GET)	
+	public void getRandomPlaceBooksJSON(final HttpServletResponse res, @PathVariable("count") final int count)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.state= :state",
+																PlaceBook.class);
+			q.setParameter("state", State.PUBLISHED);
 
+			final List<PlaceBook> pbs = q.getResultList();
+			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();
+			final Random random = new Random();
+			for(int index = 0; index < count; index ++)
+			{
+				int rindex = random.nextInt(pbs.size());
+				PlaceBookSearchEntry entry = new PlaceBookSearchEntry(pbs.get(rindex), 0);
+				result.add(entry);
+				pbs.remove(rindex);
+			}
+			
+			log.info("Converting " + result.size() + " PlaceBooks to JSON");
+			try
+			{
+				final Shelf shelf = new Shelf();
+				shelf.setEntries(result);
+				final ObjectMapper mapper = new ObjectMapper();
+				log.info("Shelf: " + mapper.writeValueAsString(shelf));
+				final ServletOutputStream sos = res.getOutputStream();
+				res.setContentType("application/json");
+				mapper.writeValue(sos, shelf);
+				sos.flush();
+			}
+			catch (final Exception e)
+			{
+				log.error(e.toString());
+			}
+		}
+		finally
+		{
+			manager.close();
+		}
+	}
+	
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
 	public void getPlaceBookJSON(final HttpServletResponse res, @PathVariable("key") final String key)
 	{

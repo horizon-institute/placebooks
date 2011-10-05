@@ -35,6 +35,12 @@ public class PlaceBookService
 	{
 		serverRequest(getHostURL() + "placebooks/a/palette", callback);
 	}
+	
+
+	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
+	}	
 
 	public static void getPlaceBook(final String key, final RequestCallback callback)
 	{
