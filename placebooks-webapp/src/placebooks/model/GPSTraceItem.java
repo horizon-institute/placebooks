@@ -62,6 +62,14 @@ public class GPSTraceItem extends PlaceBookItem
 		setTrace(new String(g.getTrace()));
 	}
 
+	public GPSTraceItem(final User owner)
+	{
+		// Geometry is set from calculating the GPX boundaries
+		super();
+		setOwner(owner);
+	}
+
+	
 	public GPSTraceItem(final User owner, final URL sourceURL, 
 						final String trace)
 	{
@@ -76,11 +84,8 @@ public class GPSTraceItem extends PlaceBookItem
 		try
 		{
 			// Check package dir exists already
-			final String path = 
-				PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") 
-						+ getPlaceBook().getKey();
+			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getKey();
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{

@@ -186,10 +186,7 @@ public final class PlaceBooksAdminHelper
 				return null;
 			}
 		}
-
-		final String pkgZPath = 
-			PropertiesSingleton
-				.get(PlaceBooksAdminHelper.class.getClassLoader())
+		final String pkgZPath = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_PKG_Z, "");
 
 		final File zipFile = new File(pkgZPath + "/" +  p.getKey() + ".zip");

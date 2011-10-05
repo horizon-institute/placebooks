@@ -32,7 +32,7 @@ public class PlaceBookEditor implements EntryPoint
 	{
 		Resources.INSTANCE.style().ensureInjected();
 
-		final EventBus eventBus = (EventBus) new SimpleEventBus();
+		final EventBus eventBus = new SimpleEventBus();
 		final PlaceController placeController = new PlaceController(eventBus);
 
 		// Start ActivityManager for the main widget with our ActivityMapper

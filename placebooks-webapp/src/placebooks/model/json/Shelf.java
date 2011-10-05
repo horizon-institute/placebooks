@@ -44,12 +44,12 @@ public class Shelf
 
 		for (final PlaceBook pb : pbs)
 		{
-			for (final Map.Entry<String, String> e : 
-				 pb.getMetadata().entrySet())
+			StringBuilder logString = new StringBuilder();
+			for (final Map.Entry<String, String> e : pb.getMetadata().entrySet())
 			{
-				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
 			}
-
+			log.debug("Shelf entries: " + logString.toString());
 			final ShelfEntry entry = new PlaceBookEntry(pb);
 			entries.add(entry);
 		}
@@ -61,12 +61,12 @@ public class Shelf
 
 		for (final PlaceBookItem p : ps)
 		{
-			for (final Map.Entry<String, String> e : 
-				 p.getMetadata().entrySet())
+			StringBuilder logString = new StringBuilder();
+			for (final Map.Entry<String, String> e : p.getMetadata().entrySet())
 			{
-				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
 			}
-
+			log.debug("Shelf entries: " + logString.toString());
 			final ShelfEntry entry = new PlaceBookItemEntry(p);
 			entries.add(entry);
 		}

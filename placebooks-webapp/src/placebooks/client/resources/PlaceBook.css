@@ -287,12 +287,12 @@ img {
 }
 
 .placebookEntry {
-	display: inline-block;
 	padding: 5px;
 	margin: 10px auto;
 	width: 150px;
 	text-align: center;
 	border-radius: 16px;
+	float: left;
 }
 
 .placebookEntry:HOVER {

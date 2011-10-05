@@ -667,9 +667,7 @@ public class PlaceBooksAdminControllerDebug
 						throw new Exception("Unsupported file type");
 					}
 
-					final String path = 
-						PropertiesSingleton
-						.get(this.getClass().getClassLoader())
+					final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 						.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 					if (!new File(path).exists() && !new File(path).mkdirs()) 
@@ -687,12 +685,8 @@ public class PlaceBooksAdminControllerDebug
 					if (prefix.contentEquals("video"))
 					{
 						int maxSize = Integer.parseInt(
-								PropertiesSingleton
-								.get(PlaceBooksAdminHelper.class.getClassLoader())
-								.getProperty(
-										PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
-										"20"
-								)
+								PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, "20")
 						);
 						if ((item.getSize() / MEGABYTE) > maxSize)
 							throw new Exception("File too big");

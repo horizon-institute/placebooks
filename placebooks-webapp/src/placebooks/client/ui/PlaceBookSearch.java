@@ -129,9 +129,16 @@ public class PlaceBookSearch extends Composite
 					}
 				});
 
+				int index = 0;
 				for (final PlaceBookEntry entry : entries)
 				{
-					placebooks.add(new PlaceBookEntryWidget(toolbar, entry));
+					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(toolbar, entry);
+					if(index % 5 == 0)
+					{
+						widget.getElement().getStyle().setProperty("clear", "left");
+					}
+					index++;
+					placebooks.add(widget);
 				}
 			}
 		}

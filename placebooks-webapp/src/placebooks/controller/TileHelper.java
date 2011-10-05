@@ -338,9 +338,7 @@ public final class TileHelper
 		File mapFile = null;
 		try
 		{
-			final String path = 
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
+			final String path = PropertiesSingleton.get(TileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 			if (!new File(path).exists() && !new File(path).mkdirs()) 

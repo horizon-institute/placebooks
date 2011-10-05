@@ -60,5 +60,15 @@ public class WebBundleItem extends PlaceBookItemWidget
 			url = getItem().getURL();
 			frame.setUrl(url);
 		}
+		if (getItem().hasParameter("height"))
+		{
+			frame.setWidth("auto");
+			frame.setHeight("100%");
+		}
+		else
+		{
+			frame.setWidth("100%");
+			frame.setHeight("auto");
+		}	
 	}
 }
