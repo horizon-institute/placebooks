@@ -30,9 +30,9 @@ import com.vividsolutions.jts.geom.Geometry;
 public abstract class MediaItem extends PlaceBookItem
 {
 	@JsonIgnore
-	protected String path; // Always points to a file, never a dir
+	private String path; // Always points to a file, never a dir
 
-	protected String hash; // File hash (MD5) - so clients can tell if file has changed
+	private String hash; // File hash (MD5) - so clients can tell if file has changed
 
 	MediaItem()
 	{
@@ -72,42 +72,38 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public String attemptPathFix()
 	{
-		if(path != null && new File(path).exists())
-		{
-			return path;
-		}
-		
+		if (path != null && new File(path).exists()) { return path; }
+
 		if (getKey() == null) { return null; }
 
-		log.info("Attempting to fix media path");
+		log.info("Attempting to fix media path: " + path);
 
-		final File path = new File(PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
-		if (!path.isDirectory())
-		{ 
-			log.debug("Can't open directory: " + path.getAbsolutePath());
-			return null;
-		}
-
-		
-		final File[] files = path.listFiles(new FilenameFilter()
+		try
 		{
-			@Override
-			public boolean accept(final File dir, final String name)
+			final File path = getSavePath();
+			final File[] files = path.listFiles(new FilenameFilter()
 			{
-				final int index = name.indexOf('.');
-				if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
-				return false;
-			}
-		});
+				@Override
+				public boolean accept(final File dir, final String name)
+				{
+					final int index = name.indexOf('.');
+					if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
+					return false;
+				}
+			});
 
-		if (files.length == 1)
-		{
-			setPath(files[0].getPath());
-			log.info("Fixed media to " + this.path);
-			return this.path;
+			if (files.length == 1)
+			{
+				setPath(files[0].getPath());
+				log.info("Fixed media to " + this.path);
+				return this.path;
+			}
+			log.debug("Can't fix path for: " + this.path);
 		}
-		log.debug("Can't fix path for: " + this.path);
+		catch (final Exception e)
+		{
+			log.warn(e.getMessage(), e);
+		}
 		return null;
 	}
 
@@ -152,6 +148,17 @@ public abstract class MediaItem extends PlaceBookItem
 		// First check that the path is valid and try and fix if needed...
 		attemptPathFix();
 		return path;
+	}
+
+	private File getSavePath() throws IOException
+	{
+		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+		final File savePath = new File(path).getAbsoluteFile();
+		if (!savePath.exists() && !savePath.mkdirs()) { throw new IOException("Failed to create folder: " + path); }
+		if (!savePath.isDirectory()) { throw new IOException("Save Path not a directory"); }
+		return savePath;
+
 	}
 
 	/*
@@ -237,29 +244,18 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
-		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
 		String saveName = name;
 		if (getKey() == null)
 		{
-			saveName = System.currentTimeMillis() +"-" + saveName;
+			saveName = System.currentTimeMillis() + "-" + saveName;
 		}
 		else
 		{
 			final int extIdx = saveName.lastIndexOf(".");
 			final String ext = saveName.substring(extIdx + 1, saveName.length());
-			saveName = getKey() + "." + ext;;
+			saveName = getKey() + "." + ext;
 		}
-		log.info("Saving new file as: " + saveName);			
-
-
-		final String filePath = path + "/" + saveName;
-		
-		if (!new File(path).exists() && !new File(path).mkdirs())
-		{
-			throw new IOException("Failed to create folder: " + path); 
-		}
+		log.info("Saving new file as: " + saveName);
 
 		InputStream input;
 		MessageDigest md = null;
@@ -273,7 +269,9 @@ public abstract class MediaItem extends PlaceBookItem
 			input = is;
 		}
 
-		final OutputStream output = new FileOutputStream(new File(filePath));
+		final File savePath = getSavePath();
+		final File filePath = new File(savePath.getAbsolutePath() + File.separator + saveName);
+		final OutputStream output = new FileOutputStream(filePath);
 		int byte_;
 		while ((byte_ = input.read()) != -1)
 		{
@@ -287,8 +285,7 @@ public abstract class MediaItem extends PlaceBookItem
 			hash = String.format("%032x", new BigInteger(1, md.digest()));
 		}
 
-		log.info("Wrote " + saveName + " file " + filePath);
-		setPath(filePath);
+		log.info("Wrote " + saveName + " file " + filePath.getAbsolutePath());
+		setPath(filePath.getAbsolutePath());
 	}
-
 }

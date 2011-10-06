@@ -62,7 +62,6 @@ import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.json.PlaceBookDistanceEntry;
-import placebooks.model.json.PlaceBookEntry;
 import placebooks.model.json.PlaceBookItemDistanceEntry;
 import placebooks.model.json.PlaceBookSearchEntry;
 import placebooks.model.json.ServerInfo;
@@ -879,6 +878,7 @@ public class PlaceBooksAdminController
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
+			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));			
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
 			final PlaceBook published = PlaceBooksAdminHelper.publishPlaceBook(manager, result);
 
@@ -966,7 +966,6 @@ public class PlaceBooksAdminController
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Double> entry : PlaceBooksAdminHelper
 				.searchLocationForPlaceBooks(em, geometry_))
@@ -1014,7 +1013,6 @@ public class PlaceBooksAdminController
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> ps = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBookItem, Double> entry : PlaceBooksAdminHelper
 				.searchLocationForPlaceBookItems(em, geometry_))
@@ -1055,7 +1053,6 @@ public class PlaceBooksAdminController
 		final long timeEnd;
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(em, terms))
 		{
