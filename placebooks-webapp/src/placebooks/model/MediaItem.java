@@ -223,13 +223,10 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			final MediaItem mediaItem = (MediaItem) item;
 			if (mediaItem.getPath() == null) { return; }
-			if (mediaItem.getPath().equals(getPath())) { return; }
-			log.debug("Looking for " + mediaItem.getPath());
 			final File mediaFile = new File(mediaItem.getPath());
+			if (getPath() != null && mediaFile.equals(new File(getPath()))) { return; }
 			if (mediaFile.exists())
 			{
-				// @TODO Remove old file?
-
 				try
 				{
 					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
@@ -244,6 +241,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
+		log.info("writeDataToDisk(" + name +"," + is +")");
 		String saveName = name;
 		if (getKey() == null)
 		{

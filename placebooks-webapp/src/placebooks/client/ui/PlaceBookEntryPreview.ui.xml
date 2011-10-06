@@ -5,6 +5,7 @@
 		.image {
 			width: 160px;
 			float: left;
+			margin-right: 30px;
 		}
 		
 		.title {
@@ -19,6 +20,7 @@
 		}
 		
 		.container {
+			cursor: default;
 		}
 	</ui:style>
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
