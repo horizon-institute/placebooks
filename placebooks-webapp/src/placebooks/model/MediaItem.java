@@ -223,8 +223,8 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			final MediaItem mediaItem = (MediaItem) item;
 			if (mediaItem.getPath() == null) { return; }
-			final File mediaFile = new File(mediaItem.getPath());
-			if (getPath() != null && mediaFile.equals(new File(getPath()))) { return; }
+			final File mediaFile = new File(mediaItem.getPath()).getAbsoluteFile();
+			if (getPath() != null && mediaFile.equals(new File(getPath()).getAbsoluteFile())) { return; }
 			if (mediaFile.exists())
 			{
 				try
