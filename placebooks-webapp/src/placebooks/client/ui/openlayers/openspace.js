@@ -24,9 +24,9 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 																"<a href=\"http://openspace.ordnancesurvey.co.uk/openspace/developeragreement.html#enduserlicense\" target=\"_blank\">End User License Agreement</a>",
 												projection:		EPSG27700,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
-												resolutions:	new Array( 2500, 1000, 500, 200, 100, 50, 25, 10, 5, 2, 1 ),
+												resolutions:	new Array( 2500, 1000, 500, 200, 100, 50, 25, 10, 5, 4, 2.5 ),
 												tile200:		new OpenLayers.Size( 200, 200 ),
-												tile250:		new OpenLayers.Size( 250, 250 )
+												//tile250:		new OpenLayers.Size( 250, 250 )
 											}
 										)
 								)
@@ -39,12 +39,24 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 					{
 						var	resolution = this.getResolution();
 						var	oTileSize = this.tileSize;
-						this.setTileSize( resolution < 5 ? this.tile250 : this.tile200 );
+						this.setTileSize( this.tile200 );//resolution < 5 ? this.tile250 : this.tile200 );
 						if( this.tileSize != oTileSize )
 						{
 							this.clearGrid();							
 						}
-						this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"layers":resolution}) );
+						this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"layers":resolution}) );						
+						if(resolution == 4)
+						{
+							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":"25KR"}) );							
+						}
+						else if(resolution == 2.5)
+						{
+							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":"25K"}) );							
+						}
+						else
+						{
+							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":""}) );							
+						}
 					}
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );
 				},
