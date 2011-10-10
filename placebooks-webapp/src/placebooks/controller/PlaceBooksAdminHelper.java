@@ -634,7 +634,8 @@ public final class PlaceBooksAdminHelper
 		final Map<PlaceBook, Double> hits = new HashMap<PlaceBook, Double>();
 		for (final PlaceBook p : pbs)
 		{
-			hits.put(p, p.getGeometry().distance(geometry));
+			if (p.getGeometry() != null)
+				hits.put(p, p.getGeometry().distance(geometry));
 		}
 
 		return hits.entrySet();
@@ -654,7 +655,8 @@ public final class PlaceBooksAdminHelper
 			new HashMap<PlaceBookItem, Double>();
 		for (final PlaceBookItem p : ps)
 		{
-			hits.put(p, p.getGeometry().distance(geometry));
+			if (p.getGeometry() != null)
+				hits.put(p, p.getGeometry().distance(geometry));
 		}
 
 		return hits.entrySet();

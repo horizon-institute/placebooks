@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -622,7 +623,51 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
+	
+	@RequestMapping(value = "/randomized/{count}", method = RequestMethod.GET)	
+	public void getRandomPlaceBooksJSON(final HttpServletResponse res, @PathVariable("count") final int count)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.state= :state",
+																PlaceBook.class);
+			q.setParameter("state", State.PUBLISHED);
 
+			final List<PlaceBook> pbs = q.getResultList();
+			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();
+			final Random random = new Random();
+			for(int index = 0; index < count; index ++)
+			{
+				int rindex = random.nextInt(pbs.size());
+				PlaceBookSearchEntry entry = new PlaceBookSearchEntry(pbs.get(rindex), 0);
+				result.add(entry);
+				pbs.remove(rindex);
+			}
+			
+			log.info("Converting " + result.size() + " PlaceBooks to JSON");
+			try
+			{
+				final Shelf shelf = new Shelf();
+				shelf.setEntries(result);
+				final ObjectMapper mapper = new ObjectMapper();
+				log.info("Shelf: " + mapper.writeValueAsString(shelf));
+				final ServletOutputStream sos = res.getOutputStream();
+				res.setContentType("application/json");
+				mapper.writeValue(sos, shelf);
+				sos.flush();
+			}
+			catch (final Exception e)
+			{
+				log.error(e.toString());
+			}
+		}
+		finally
+		{
+			manager.close();
+		}
+	}
+	
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
 	public void getPlaceBookJSON(final HttpServletResponse res, @PathVariable("key") final String key)
 	{
@@ -833,6 +878,7 @@ public class PlaceBooksAdminController
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
+			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));			
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
 			final PlaceBook published = PlaceBooksAdminHelper.publishPlaceBook(manager, result);
 
@@ -920,7 +966,6 @@ public class PlaceBooksAdminController
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Double> entry : PlaceBooksAdminHelper
 				.searchLocationForPlaceBooks(em, geometry_))
@@ -968,7 +1013,6 @@ public class PlaceBooksAdminController
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> ps = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBookItem, Double> entry : PlaceBooksAdminHelper
 				.searchLocationForPlaceBookItems(em, geometry_))
@@ -1009,7 +1053,6 @@ public class PlaceBooksAdminController
 		final long timeEnd;
 
 		final EntityManager em = EMFSingleton.getEntityManager();
-		final StringBuffer out = new StringBuffer();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
 		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(em, terms))
 		{

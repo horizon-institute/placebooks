@@ -26,6 +26,8 @@ public interface PlaceBookCSS extends CssResource
 
 	String innerPanel();
 
+	String bookpreview();
+	
 	String insert();
 
 	String insertInner();

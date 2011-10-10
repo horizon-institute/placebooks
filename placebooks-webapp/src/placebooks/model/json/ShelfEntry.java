@@ -17,7 +17,7 @@ public class ShelfEntry
 
 	@JsonProperty	
 	private Date timestamp;
-
+	
 	public ShelfEntry()
 	{
 	}
@@ -36,7 +36,7 @@ public class ShelfEntry
 	{
 		return timestamp;
 	}
-
+	
 	public String getTitle()
 	{
 		return title;

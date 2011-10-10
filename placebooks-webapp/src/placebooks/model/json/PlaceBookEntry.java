@@ -2,23 +2,24 @@ package placebooks.model.json;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import java.util.Date;
-
 import placebooks.model.PlaceBook;
 
 public class PlaceBookEntry extends ShelfEntry
 {
-	@JsonProperty	
+	@JsonProperty
 	private String description;
 
 	@JsonProperty
 	private int numItems;
 
-	@JsonProperty	
+	@JsonProperty
 	private String packagePath;
-	
-	@JsonProperty	
+
+	@JsonProperty
 	private String state;
+
+	@JsonProperty
+	private String previewImage;
 
 	public PlaceBookEntry()
 	{
@@ -31,13 +32,14 @@ public class PlaceBookEntry extends ShelfEntry
 		setKey(placebook.getKey());
 		this.description = placebook.getMetadataValue("description");
 		setTitle(placebook.getMetadataValue("title"));
+		setPreviewImage(placebook.getMetadataValue("placebookImage"));
 		this.numItems = placebook.getItems().size();
 		setOwner(placebook.getOwner().getKey());
 		setTimestamp(placebook.getTimestamp());
 		this.packagePath = placebook.getPackagePath();
 		this.state = placebook.getState().toString();
 	}
-	
+
 	public String getDescription()
 	{
 		return description;
@@ -52,7 +54,12 @@ public class PlaceBookEntry extends ShelfEntry
 	{
 		return packagePath;
 	}
-	
+
+	public String getPreviewImage()
+	{
+		return previewImage;
+	}
+
 	public String getState()
 	{
 		return state;
@@ -71,6 +78,11 @@ public class PlaceBookEntry extends ShelfEntry
 	public void setPackagePath(final String packagePath)
 	{
 		this.packagePath = packagePath;
+	}
+
+	public void setPreviewImage(final String imageID)
+	{
+		this.previewImage = imageID;
 	}
 
 }
