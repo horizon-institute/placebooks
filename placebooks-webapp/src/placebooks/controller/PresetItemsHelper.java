@@ -34,6 +34,7 @@ public class PresetItemsHelper
 	protected static final ObjectMapper mapper = new ObjectMapper();
 	protected static void deserialiseAndAdd(String json, ArrayList<PlaceBookItem> items)
 	{
+		/*
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		try
 		{
@@ -45,6 +46,7 @@ public class PresetItemsHelper
 		{
 			log.error("Couldn't deserialise preset item: " + json, ex);
 		}
+		*/
 	}
 	
 }
