@@ -56,28 +56,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class EverytrailHelper
 {
-	static class HttpAuthenticator extends Authenticator
-	{
-		private String username, password;
-
-		public HttpAuthenticator(final String user, final String pass)
-		{
-			username = user;
-			password = pass;
-		}
-
-		protected PasswordAuthentication getPasswordAuthentication()
-		{
-			log.debug("Requesting Host  : " + getRequestingHost());
-			log.debug("Requesting Port  : " + getRequestingPort());
-			log.debug("Requesting Prompt : " + getRequestingPrompt());
-			log.debug("Requesting Protocol: " + getRequestingProtocol());
-			log.debug("Requesting Scheme : " + getRequestingScheme());
-			log.debug("Requesting Site  : " + getRequestingSite());
-			return new PasswordAuthentication(username, password.toCharArray());
-		}
-	}
-
 	public final static String SERVICE_NAME = "Everytrail";
 
 	private static final String apiBaseUrl = "http://www.everytrail.com/api/";
@@ -118,7 +96,7 @@ public class EverytrailHelper
 
 			// Send data by setting up the api password http authentication and UoN proxy
 
-			Authenticator.setDefault(new HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
+			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
 					.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
 					.get(EverytrailHelper.class.getClassLoader())
@@ -874,7 +852,7 @@ public class EverytrailHelper
 			data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
 			// Send data by setting up the api password http authentication and UoN proxy
-			Authenticator.setDefault(new HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
+			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
 					.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
 					.get(EverytrailHelper.class.getClassLoader())

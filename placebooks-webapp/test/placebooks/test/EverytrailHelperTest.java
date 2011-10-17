@@ -33,11 +33,11 @@ public class EverytrailHelperTest extends PlacebooksTestSuper
 	@Test
 	public void testUserLogin()
 	{	
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_username, test_password);
+		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_everytrail_username, test_everytrail_password);
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(test_user_id, loginResponse.getValue());
 
-		loginResponse =  EverytrailHelper.UserLogin(test_username, "fail-wrong-password");
+		loginResponse =  EverytrailHelper.UserLogin(test_everytrail_username, "fail-wrong-password");
 		assertEquals("error", loginResponse.getStatus());
 		if(loginResponse.getValue().equals("10"))
 		{
@@ -76,7 +76,7 @@ public class EverytrailHelperTest extends PlacebooksTestSuper
 	public void testVideosString()
 	{
 		String user_id = logInEverytrailTestUser();
-		EverytrailVideosResponse videosResponse = EverytrailHelper.Videos(user_id, test_password, test_password);
+		EverytrailVideosResponse videosResponse = EverytrailHelper.Videos(user_id, test_everytrail_password, test_everytrail_password);
 		assertEquals("success", videosResponse.getStatus());
 		// As default should return 0 videos starting at 0 and test user has about 4 pictures
 		assertEquals(0, videosResponse.getVideos().size());
@@ -120,7 +120,7 @@ public class EverytrailHelperTest extends PlacebooksTestSuper
 	@Test
 	public void testTracksStringStringString()
 	{
-		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks(test_trip_id, test_username, test_password);
+		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks(test_trip_id, test_everytrail_username, test_everytrail_password);
 		assertEquals("success",tracksResponse.getStatus());
 		assertEquals(2, tracksResponse.getTracks().size());
 	}
@@ -162,7 +162,7 @@ public class EverytrailHelperTest extends PlacebooksTestSuper
 			log.error(e.getMessage());
 			fail(e.getMessage());
 		}
-		EverytrailTripsResponse response = EverytrailHelper.Trips(test_username, test_password, test_user_id, 52.531021, -4.055394, date, null, null, null, null, false);
+		EverytrailTripsResponse response = EverytrailHelper.Trips(test_everytrail_username, test_everytrail_password, test_user_id, 52.531021, -4.055394, date, null, null, null, null, false);
 		log.debug(response.getTrips());
 		assertEquals("success",response.getStatus());
 		assertEquals(4, response.getTrips().size());

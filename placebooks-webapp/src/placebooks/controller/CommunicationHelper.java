@@ -5,7 +5,9 @@ package placebooks.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,6 +25,35 @@ public class CommunicationHelper
 {
 	private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
 
+	/**
+	 * Class to create an HTTP authenticatoion object based on a given username and password
+	 * @author pszmp
+	 *
+	 */
+	static class HttpAuthenticator extends Authenticator
+	{
+		private String username, password;
+
+		public HttpAuthenticator(final String user, final String pass)
+		{
+			username = user;
+			password = pass;
+		}
+
+		protected PasswordAuthentication getPasswordAuthentication()
+		{
+			log.debug("Requesting Host  : " + getRequestingHost());
+			log.debug("Requesting Port  : " + getRequestingPort());
+			log.debug("Requesting Prompt : " + getRequestingPrompt());
+			log.debug("Requesting Protocol: " + getRequestingProtocol());
+			log.debug("Requesting Scheme : " + getRequestingScheme());
+			log.debug("Requesting Site  : " + getRequestingSite());
+			return new PasswordAuthentication(username, password.toCharArray());
+		}
+	}
+
+	
+	
 	/**
 	 * Gets an http connection paying attention to the Placebooks proxy configuration values
 	 * requires a try/catch block as per url.openconnection()
