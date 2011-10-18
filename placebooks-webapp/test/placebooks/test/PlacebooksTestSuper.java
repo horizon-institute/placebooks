@@ -22,11 +22,15 @@ import placebooks.model.User;
 public class PlacebooksTestSuper
 {
 	protected static String test_user_email = "everytrail_test@live.co.uk";
-	protected static String test_username = "placebooks_everytrail_test";
-	protected static String test_password = "testPass1!";		
+	protected static String test_everytrail_username = "placebooks_everytrail_test";
+	protected static String test_everytrail_password = "testPass1!";		
 	protected static String test_user_id = "275539";
 	protected static String test_trip_id = "1017230";
 
+	protected static String test_peoplescollection_username = "placebooksTest";
+	protected static String test_peoplescollection_password = "testPass1!";		
+	
+	
 	protected static final Logger log = 
 		Logger.getLogger(EverytrailHelperTest.class.getName());
 	
@@ -48,11 +52,12 @@ public class PlacebooksTestSuper
 	 */
 	protected String logInEverytrailTestUser()
 	{
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_username, test_password);
+		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_everytrail_username, test_everytrail_password);
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(test_user_id, loginResponse.getValue());
 		return loginResponse.getValue();
 	}
+	
 	
 	protected User getTestUser()
 	{

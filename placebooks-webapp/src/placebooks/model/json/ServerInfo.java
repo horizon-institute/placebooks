@@ -14,6 +14,9 @@ public class ServerInfo
 	private String openSpaceHost;
 
 	@JsonProperty
+	private String openSpaceBaseURL;
+
+	@JsonProperty
 	private String serverName;
 
 	public ServerInfo()
@@ -30,6 +33,11 @@ public class ServerInfo
 			PropertiesSingleton
 				.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_SERVER_NAME, "");
+		this.openSpaceBaseURL = 
+			PropertiesSingleton
+				.get(PlaceBooksAdminHelper.class.getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_BASEURL, "");
+
 	}
 
 	public final String getOpenSpaceKey()
@@ -40,6 +48,11 @@ public class ServerInfo
 	public final String getOpenSpaceHost()
 	{
 		return openSpaceHost;
+	}
+
+	public final String getOpenSpaceBaseURL()
+	{
+		return openSpaceBaseURL;
 	}
 
 	public final String getServerName()

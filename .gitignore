@@ -10,5 +10,5 @@ datanucleus.log
 build.properties
 .project
 .gwt
-placebooks.properties
-placebooks-webapp/build/placebooks.war
+placebooks-webapp/src/personal-placebooks.properties
+placebooks-webapp/build
