@@ -271,21 +271,24 @@ public class EverytrailHelper
 			if (doc.getDocumentElement().getNodeName() == targetElementId)
 			{
 				status = doc.getDocumentElement().getAttribute("status");
-				if (status.equals("success"))
+				if(doc.getDocumentElement().hasChildNodes())
 				{
-					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
-				}
-				else
-				{
-					log.debug("Everytrail call returned status: " + status);
-					value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
+					if (status.equals("success"))
+					{
+						value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
+					}
+					else
+					{
+						log.debug("Everytrail call returned status: " + status);
+						value = doc.getDocumentElement().getChildNodes().item(0).getTextContent();
+					}
 				}
 			}
 		}
 		catch (final Exception e)
 		{
 			log.error("Problem checking Everytrail response: " + e.toString());
-			log.debug(e.toString());
+			log.debug(e.toString(), e);
 		}
 		return new EverytrailResponseStatusData(status, value);
 	}
@@ -714,6 +717,7 @@ public class EverytrailHelper
 		}
 
 		final String postResponse = getPostResponseWithParams("user/trips", params);
+		log.info(postResponse);
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etUserTripsResponse", doc);
 		log.info("Trips called parseResponseStatus, result="

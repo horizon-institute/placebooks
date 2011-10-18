@@ -27,6 +27,8 @@ public class LoginDetails
 	@Temporal(TIMESTAMP)
 	private Date lastSync;
 
+	private boolean syncInProgress = false;
+	
 	@JsonIgnore
 	private String password;
 
@@ -36,6 +38,7 @@ public class LoginDetails
 	@JsonIgnore
 	private User user;
 
+	@JsonIgnore
 	private String userid;
 
 	private String username;
@@ -68,6 +71,11 @@ public class LoginDetails
 	{
 		return password;
 	}
+	
+	public boolean isSyncInProgress()
+	{
+		return syncInProgress;
+	}
 
 	public String getService()
 	{
@@ -89,6 +97,11 @@ public class LoginDetails
 		return username;
 	}
 
+	public void setSyncInProgress(final boolean inProgress)
+	{
+		this.syncInProgress = inProgress;
+	}
+	
 	public void setLastSync()
 	{
 		lastSync = new Date();
