@@ -15,4 +15,8 @@ public class LoginDetails extends JavaScriptObject
 	public final native String getUserID() /*-{ return this.userid; }-*/;
 
 	public final native String getUsername() /*-{ return this.username; }-*/;
+	
+	public final native double getLastSync() /*-{ return this.lastSync; }-*/;
+	
+	public final native boolean isSyncInProgress() /*-{ return this.syncInProgress; }-*/;	
 }

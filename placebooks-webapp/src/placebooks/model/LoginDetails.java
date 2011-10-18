@@ -23,7 +23,6 @@ public class LoginDetails
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
-	@JsonIgnore
 	@Temporal(TIMESTAMP)
 	private Date lastSync;
 

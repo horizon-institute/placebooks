@@ -136,7 +136,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
 		PlaceBooksAdminController pacd = new PlaceBooksAdminController();
-		pacd.getEverytrailDataForUser(user);
+		pacd.getEverytrailDataForUser(user, true);
 	}
 /*
 	@Test

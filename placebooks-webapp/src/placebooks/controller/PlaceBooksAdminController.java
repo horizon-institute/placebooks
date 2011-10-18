@@ -163,15 +163,18 @@ public class PlaceBooksAdminController
 
 	private static final int MEGABYTE = 1048576;
 
-	@RequestMapping(value = "/admin/import_everytrail")
-	public void getEverytrailData()
+	@RequestMapping(value = "/sync/{service}")
+	public void syncService(@PathVariable("service") final String service)
 	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
+		if(service.equals(EverytrailHelper.SERVICE_NAME))
+		{
+			final EntityManager manager = EMFSingleton.getEntityManager();
+			final User user = UserManager.getCurrentUser(manager);
 
-		getEverytrailDataForUser(user, false);
+			getEverytrailDataForUser(user, true);			
+		}
 	}
-
+	
 	public void getEverytrailDataForUser(User user, boolean force)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
@@ -189,18 +192,23 @@ public class PlaceBooksAdminController
 			return;			
 		}
 		
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND,0);
-		if(!force && !details.getLastSync().before(calendar.getTime()))
+		if(!force && details.getLastSync() != null)
 		{
-			return;
+			log.info("Last sync: " + details.getLastSync());
+			final Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND,0);
+			if(calendar.getTime().before(details.getLastSync()))
+			{
+				return;
+			}		
 		}
 		
 		manager.getTransaction().begin();
 		details.setSyncInProgress(true);
+		manager.merge(details);
 		manager.getTransaction().commit();
 		try
 		{
@@ -215,6 +223,7 @@ public class PlaceBooksAdminController
 			manager.getTransaction().begin();
 			// Save user id
 			details.setUserID(loginResponse.getValue());
+			manager.merge(details);
 			manager.getTransaction().commit();
 				
 			ArrayList<String> imported_ids = new ArrayList<String>(); 
@@ -342,9 +351,11 @@ public class PlaceBooksAdminController
 				manager.getTransaction().rollback();
 			}			
 			manager.getTransaction().begin();
-			details.setSyncInProgress(false);
 			details.setLastSync();
+			details.setSyncInProgress(false);
+			manager.merge(details);
 			manager.getTransaction().commit();
+			log.info("Synced: " + details.getLastSync());			
 			manager.close();
 		}		
 	}
@@ -725,6 +736,7 @@ public class PlaceBooksAdminController
 		try
 		{
 			final User user = UserManager.getCurrentUser(manager);
+			getEverytrailDataForUser(user, false);			
 			if (user != null)
 			{
 				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",

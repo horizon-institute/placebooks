@@ -15,9 +15,9 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
 	}
 
-	public static void everytrail(final RequestCallback callback)
+	public static void sync(final String service, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/import_everytrail", callback);
+		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
 	}
 
 	public static String getHostURL()
