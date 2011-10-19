@@ -69,6 +69,8 @@ import placebooks.model.json.ServerInfo;
 import placebooks.model.json.Shelf;
 import placebooks.model.json.ShelfEntry;
 import placebooks.model.json.UserShelf;
+import placebooks.services.Service;
+import placebooks.services.ServiceRegistry;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -164,202 +166,18 @@ public class PlaceBooksAdminController
 	private static final int MEGABYTE = 1048576;
 
 	@RequestMapping(value = "/sync/{service}")
-	public void syncService(@PathVariable("service") final String service)
+	public void syncService(@PathVariable("service") final String serviceName)
 	{
-		if(service.equals(EverytrailHelper.SERVICE_NAME))
+		Service service = ServiceRegistry.getService(serviceName);
+		if(service != null)
 		{
 			final EntityManager manager = EMFSingleton.getEntityManager();
 			final User user = UserManager.getCurrentUser(manager);
-
-			getEverytrailDataForUser(user, true);			
-		}
-	}
-	
-	public void getEverytrailDataForUser(User user, boolean force)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-
-		final LoginDetails details = user.getLoginDetails(EverytrailHelper.SERVICE_NAME);
-
-		if (details == null)
-		{
-			log.error("Everytrail import failed, login details null");
-			return;
-		}
-		if(details.isSyncInProgress())
-		{
-			log.info("Everytrail sync already in progress");
-			return;			
-		}
-		
-		if(!force && details.getLastSync() != null)
-		{
-			log.info("Last sync: " + details.getLastSync());
-			final Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND,0);
-			if(calendar.getTime().before(details.getLastSync()))
-			{
-				return;
-			}		
-		}
-		
-		manager.getTransaction().begin();
-		details.setSyncInProgress(true);
-		manager.merge(details);
-		manager.getTransaction().commit();
-		try
-		{
-			final EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
-	
-			if (loginResponse.getStatus().equals("error"))
-			{
-				log.error("Everytrail login failed");
-				return;
-			}
-	
-			manager.getTransaction().begin();
-			// Save user id
-			details.setUserID(loginResponse.getValue());
-			manager.merge(details);
-			manager.getTransaction().commit();
-				
-			ArrayList<String> imported_ids = new ArrayList<String>(); 
-			ArrayList<String> available_ids = new ArrayList<String>(); 
-	
-			final EverytrailTripsResponse trips = EverytrailHelper.Trips(loginResponse.getValue());
-	
-			for (Node trip : trips.getTrips())
-			{
-				// Get trip ID
-				final NamedNodeMap tripAttr = trip.getAttributes();
-				final String tripId = tripAttr.getNamedItem("id").getNodeValue();
-				log.debug("IMPORT: Trip ID is " + tripId + " **************");
-				
-				String tripName = "Unknown trip";
-				String tripDescription = ""; 
-				//Then look at the properties in the child nodes to get url, title, description, etc.
-				final NodeList tripProperties = trip.getChildNodes();
-				for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
-				{
-					final Node item = tripProperties.item(propertyIndex);
-					final String itemName = item.getNodeName();
-					//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-					if (itemName.equals("name"))
-					{
-						log.debug("Trip name is: " + item.getTextContent());
-						tripName = item.getTextContent();
-					}
-					if (itemName.equals("description"))
-					{
-						log.debug("Trip description is: " + item.getTextContent());
-						tripDescription = item.getTextContent();
-					}
-				}
-				available_ids.add("everytrail-" + tripId);
-				
-				if(tripDescription.length()>0)
-				{
-					TextItem descriptionItem = new TextItem();
-					descriptionItem.setOwner(user);
-					final String externalId = "everytrail-" + tripId + "-textItem";
-					descriptionItem.setExternalID(externalId);
-					descriptionItem.setText(tripDescription);
-					descriptionItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
-					descriptionItem.addMetadataEntryIndexed("trip_name", tripName);	
-					descriptionItem.addMetadataEntryIndexed("title", tripName);
-					descriptionItem.addMetadataEntry("trip", tripId);	
-					descriptionItem.saveUpdatedItem();
-					available_ids.add(externalId);
-					imported_ids.add(externalId);
-				}
-	
-				
-				GPSTraceItem gpsItem = new GPSTraceItem(user);
-				try
-				{
-					ItemFactory.toGPSTraceItem(user, trip, gpsItem, tripId, tripName);
-					gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
-					imported_ids.add(gpsItem.getExternalID());
-				}
-				catch(Exception e)
-				{
-					log.error("Problem importing Trip " + tripId, e);
-				}
-	
-	
-				final EverytrailPicturesResponse picturesResponse = EverytrailHelper.TripPictures(	tripId,
-						details.getUsername(),
-						details.getPassword(),
-						tripName);
-	
-				final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
-				int i = 0;
-				for (final Node picture : pictures.values())
-				{
-					log.info("Processing picture " + i++);
-					ImageItem imageItem = new ImageItem(user, null, null, null);
-					ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
-					imageItem = (ImageItem) imageItem.saveUpdatedItem();
-					imported_ids.add(imageItem.getExternalID());
-					available_ids.add(imageItem.getExternalID());
-				}			 
-			}
-	
-			log.debug("Checking for deleted items...");
-			int deletedItems = 0;
-			try
-			{
-				manager.getTransaction().begin();
-				TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT placebookitem FROM PlaceBookItem AS placebookitem WHERE (placebookitem.owner = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
-				q.setParameter(1, user);
-				Collection<PlaceBookItem> items = q.getResultList();
-				for(PlaceBookItem placebookitem: items)
-				{
-					if(!available_ids.contains(placebookitem.getExternalID()))
-					{
-						log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
-						manager.remove(placebookitem);
-						deletedItems++;
-					}
-					else
-					{
-						log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
-					}
-				}
-	
-				manager.getTransaction().commit();
-			}
-			finally
-			{
-				if (manager.getTransaction().isActive())
-				{
-					manager.getTransaction().rollback();
-					log.error("Rolling Everytrail cleanup back");
-					return;
-				}
-			}
 			
-			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");			
+			service.sync(manager, user, true);
 		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-			}			
-			manager.getTransaction().begin();
-			details.setLastSync();
-			details.setSyncInProgress(false);
-			manager.merge(details);
-			manager.getTransaction().commit();
-			log.info("Synced: " + details.getLastSync());			
-			manager.close();
-		}		
 	}
-
+	
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
 	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
 	{
@@ -438,17 +256,16 @@ public class PlaceBooksAdminController
 	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
 			@RequestParam final String service, final HttpServletResponse res)
 	{
-		if (service.equals(EverytrailHelper.SERVICE_NAME))
+		Service serviceImpl = ServiceRegistry.getService(service);
+		if(service != null)
 		{
-			EverytrailLoginResponse response = EverytrailHelper.UserLogin(username, password);
-			log.info(response.getStatus() + ":" + response.getValue());
-			if (response.getStatus().equals("error"))
+			if(!serviceImpl.checkLogin(username, password))
 			{
 				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-				return;
+				return;			
 			}
-		}
+		}		
 
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = UserManager.getCurrentUser(manager);
@@ -736,7 +553,16 @@ public class PlaceBooksAdminController
 		try
 		{
 			final User user = UserManager.getCurrentUser(manager);
-			getEverytrailDataForUser(user, false);			
+			new Thread(new Runnable()
+			{
+				
+				@Override
+				public void run()
+				{
+					ServiceRegistry.updateServices(manager, user);
+					
+				}
+			}).start();
 			if (user != null)
 			{
 				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",

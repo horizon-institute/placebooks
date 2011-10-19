@@ -17,7 +17,8 @@
 	<g:FlowPanel>
 		<g:Label styleName="{style.title}">Linked Accounts</g:Label>
 		<g:FlowPanel styleName="{style.content}">
-			<g:FlowPanel ui:field="tablePanel"></g:FlowPanel>		
+			<g:FlowPanel ui:field="tablePanel"></g:FlowPanel>
+			<g:FlowPanel ui:field="buttonPanel"></g:FlowPanel>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

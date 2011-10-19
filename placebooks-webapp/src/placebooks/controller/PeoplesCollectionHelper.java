@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
@@ -29,7 +27,7 @@ public class PeoplesCollectionHelper
 
 
 	protected static final ObjectMapper mapper = new ObjectMapper();
-	private static final Logger log = Logger.getLogger(EverytrailHelper.class.getName());
+	private static final Logger log = Logger.getLogger(PeoplesCollectionHelper.class);
 	
 	/**
 	 * Perform a post to the given People's Collection api destination with the parameters specified

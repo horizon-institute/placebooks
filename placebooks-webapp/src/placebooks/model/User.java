@@ -81,6 +81,11 @@ public class User
 		return friends;
 	}
 
+	public Iterable<LoginDetails> getLoginDetails()
+	{
+		return loginDetails;
+	}
+	
 	public String getKey()
 	{
 		return id;

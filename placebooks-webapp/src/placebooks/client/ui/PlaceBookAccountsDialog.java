@@ -7,6 +7,7 @@ import java.util.List;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.LoginDetails;
+import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
 
@@ -21,9 +22,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -50,10 +52,13 @@ public class PlaceBookAccountsDialog extends Composite
 	};
 
 	@UiField
-	FlowPanel tablePanel;
+	Panel tablePanel;
 
+	@UiField
+	Panel buttonPanel;
+	
 	private CellTable<LoginDetails> cellTable;
-	private final User user;
+	private User user;
 
 	public PlaceBookAccountsDialog(final User user)
 	{
@@ -144,33 +149,58 @@ public class PlaceBookAccountsDialog extends Composite
 		cellTable = new CellTable<LoginDetails>(keyProvider);
 		cellTable.setWidth("100%", true);
 
-		// Add the data to the data provider, which automatically pushes it to the
-		// widget.
-		final List<String> serviceList = new ArrayList<String>();
-		for (final String service : SERVICES)
-		{
-			serviceList.add(service);
-		}
-
-		final List<LoginDetails> list = new ArrayList<LoginDetails>();
-		for (final LoginDetails details : user.getLoginDetails())
-		{
-			serviceList.remove(details.getService());
-			list.add(details);
-		}
-
 		final SelectionModel<LoginDetails> selectionModel = new NoSelectionModel<LoginDetails>(keyProvider);
 		cellTable.setSelectionModel(selectionModel);
 
 		initTableColumns(selectionModel);
 
-		cellTable.setRowData(list);
-
 		tablePanel.add(cellTable);
+		
+		setUser(user);
+	}
+	
+	private void setUser(final User user)
+	{
+		this.user = user;
+		
+		final List<String> serviceList = new ArrayList<String>();
+		for (final String service : SERVICES)
+		{
+			serviceList.add(service);
+		}
+		
+		
+		boolean syncing = false;
+		final List<LoginDetails> list = new ArrayList<LoginDetails>();
+		for (final LoginDetails details : user.getLoginDetails())
+		{
+			if(details.isSyncInProgress())
+			{
+				syncing = true;
+			}
+			serviceList.remove(details.getService());
+			list.add(details);
+		}
+		
+		if(syncing)
+		{
+			new Timer()
+			{
+				
+				@Override
+				public void run()
+				{
+					updateUser();					
+				}
+			}.schedule(1000);
+		}
 
+		buttonPanel.clear();
+		cellTable.setRowData(list);
+	
 		for (final String service : serviceList)
 		{
-			tablePanel.add(new Button("Link " + service + " Account", new ClickHandler()
+			buttonPanel.add(new Button("Link " + service + " Account", new ClickHandler()
 			{
 
 				@Override
@@ -217,6 +247,7 @@ public class PlaceBookAccountsDialog extends Composite
 
 																								}
 																							});
+																	updateUser();
 																}
 															});
 						}
@@ -230,6 +261,22 @@ public class PlaceBookAccountsDialog extends Composite
 					dialogBox.show();
 				}
 			}));
-		}
+		}	
+	}
+	
+	private void updateUser()
+	{
+		PlaceBookService.getShelf(new AbstractCallback()
+		{
+			@Override
+			public void success(Request request, Response response)
+			{
+				Shelf shelf = Shelf.parse(response.getText());
+				if(shelf != null)
+				{
+					setUser(shelf.getUser());
+				}
+			}
+		});
 	}
 }

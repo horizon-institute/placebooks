@@ -10,10 +10,10 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 
 import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
 import placebooks.controller.UserManager;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.User;
+import placebooks.services.EverytrailService;
 
 /**
  * @author pszmp
@@ -50,9 +50,9 @@ public class PlacebooksTestSuper
 	 * Log in using the hard coded test user details and return the user ID on success.
 	 * @return String test_user_id
 	 */
-	protected String logInEverytrailTestUser()
+	protected String logInEverytrailTestUser(EverytrailService service)
 	{
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_everytrail_username, test_everytrail_password);
+		EverytrailLoginResponse loginResponse =  service.userLogin(test_everytrail_username, test_everytrail_password);
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(test_user_id, loginResponse.getValue());
 		return loginResponse.getValue();

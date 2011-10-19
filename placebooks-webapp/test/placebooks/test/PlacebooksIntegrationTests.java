@@ -3,31 +3,13 @@
  */
 package placebooks.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Node;
 
-import placebooks.model.PlaceBook;
-import placebooks.controller.EverytrailHelper;
-import placebooks.controller.ItemFactory;
-import placebooks.controller.PlaceBooksAdminController;
 import placebooks.controller.UserManager;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTracksResponse;
-import placebooks.model.GPSTraceItem;
-import placebooks.model.IUpdateableExternal;
-import placebooks.model.ImageItem;
-import placebooks.model.LoginDetails;
-import placebooks.model.TextItem;
 import placebooks.model.User;
-
-import placebooks.test.PlacebooksTestSuper;
+import placebooks.services.EverytrailService;
 
 /**
  * @author pszmp
@@ -135,8 +117,8 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	public void testGetEverytrailDataForAUser() throws Exception
 	{
 		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
-		PlaceBooksAdminController pacd = new PlaceBooksAdminController();
-		pacd.getEverytrailDataForUser(user, true);
+		EverytrailService service = new EverytrailService();
+		service.sync(em, user, true);
 	}
 /*
 	@Test

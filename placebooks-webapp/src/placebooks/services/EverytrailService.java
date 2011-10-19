@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks.controller;
+package placebooks.services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +16,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -34,14 +37,20 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import placebooks.controller.CommunicationHelper;
+import placebooks.controller.ItemFactory;
+import placebooks.controller.PropertiesSingleton;
 import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.EverytrailPicturesResponse;
 import placebooks.model.EverytrailResponseStatusData;
 import placebooks.model.EverytrailTracksResponse;
 import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.EverytrailVideosResponse;
+import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
 import placebooks.model.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -53,13 +62,13 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @author pszmp
  * 
  */
-public class EverytrailHelper
+public class EverytrailService extends Service
 {
 	public final static String SERVICE_NAME = "Everytrail";
 
-	private static final String apiBaseUrl = "http://www.everytrail.com/api/";
+	private final String apiBaseUrl = "http://www.everytrail.com/api/";
 
-	private static final Logger log = Logger.getLogger(EverytrailHelper.class.getName());
+	private static final Logger log = Logger.getLogger(EverytrailService.class.getName());
 
 	/**
 	 * Perform a post to the given Everytrail api destination with the parameters specified
@@ -71,7 +80,7 @@ public class EverytrailHelper
 	 *            / values as strings
 	 * @return String A string containing the post response from Everytrail
 	 */
-	private static String getPostResponseWithParams(final String postDestination, final Hashtable<String, String> params)
+	private String getPostResponseWithParams(final String postDestination, final Hashtable<String, String> params)
 	{
 		final StringBuilder postResponse = new StringBuilder();
 
@@ -95,10 +104,10 @@ public class EverytrailHelper
 
 			// Send data by setting up the api password http authentication and UoN proxy
 
-			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
+			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailService.class
 					.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
-					.get(EverytrailHelper.class.getClassLoader())
+					.get(EverytrailService.class.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")));
 
 			final URL url = new URL(apiBaseUrl + postDestination);
@@ -127,7 +136,7 @@ public class EverytrailHelper
 		return postResponse.toString();
 	}
 
-	public static ImageItem imageItemFromEverytrailImage(final User owner, final Node everytrailPicture)
+	private ImageItem imageItemFromEverytrailImage(final User owner, final Node everytrailPicture)
 	{
 		final ImageItem imageItem = new ImageItem(owner, null, null, null);
 
@@ -239,7 +248,7 @@ public class EverytrailHelper
 	 * @param targetElementId
 	 * @return
 	 */
-	private static EverytrailResponseStatusData parseResponseStatus(final String targetElementId, final Document doc)
+	private EverytrailResponseStatusData parseResponseStatus(final String targetElementId, final Document doc)
 	{
 		String status = "";
 		String value = "";
@@ -277,7 +286,7 @@ public class EverytrailHelper
 	 *            Post response from everytrail http post
 	 * @return Document XML structured document
 	 */
-	private static Document parseResponseToXml(final String postString)
+	private Document parseResponseToXml(final String postString)
 	{
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db;
@@ -305,7 +314,7 @@ public class EverytrailHelper
 	 *            Post response from everytrail http post
 	 * @return Document XML structured document
 	 */
-	private static Document parseResponseToXml(final StringBuilder postResponse)
+	private Document parseResponseToXml(final StringBuilder postResponse)
 	{
 		return parseResponseToXml(postResponse.toString());
 	}
@@ -316,7 +325,7 @@ public class EverytrailHelper
 	 * @param userId
 	 * @return EverytrailPicturesResponse
 	 */
-	public static EverytrailPicturesResponse Pictures(final String userId)
+	public EverytrailPicturesResponse pictures(final String userId)
 	{
 		return Pictures(userId, null, null);
 	}
@@ -333,10 +342,10 @@ public class EverytrailHelper
 	 *            A user's password
 	 * @return EverytrailPicturesResponse
 	 */
-	public static EverytrailPicturesResponse Pictures(final String userId, final String username, final String password)
+	private EverytrailPicturesResponse Pictures(final String userId, final String username, final String password)
 	{
 		// The pictures API doesn't work well, so get pictures via trips...
-		final EverytrailTripsResponse tripsData = EverytrailHelper.Trips(username, password, userId);
+		final EverytrailTripsResponse tripsData = Trips(username, password, userId);
 
 		HashMap<String, Node> picturesToReturn = new HashMap<String, Node>();
 		HashMap<String, String> pictureTrips = new HashMap<String, String>();
@@ -376,7 +385,7 @@ public class EverytrailHelper
 				log.debug("Getting pictures for trip: " + tripId + " " +  tripName);
 				tripNames.put(tripId, tripName);
 				
-				final EverytrailPicturesResponse tripPics = EverytrailHelper.TripPictures(tripId, username, password, tripName);
+				final EverytrailPicturesResponse tripPics = TripPictures(tripId, username, password, tripName);
 
 				log.debug("Pictures in trip: " + tripPics.getPicturesMap().values().size());
 				final HashMap<String, Node> tripPicList = tripPics.getPicturesMap();
@@ -405,7 +414,7 @@ public class EverytrailHelper
 	 *            trip, accessing the track may require logging in first at least get the user id
 	 * @return EverytrailPicturesResponse
 	 */
-	public static EverytrailTracksResponse Tracks(final String trackId)
+	private EverytrailTracksResponse Tracks(final String trackId)
 	{
 		return Tracks(trackId, null, null);
 	}
@@ -422,7 +431,7 @@ public class EverytrailHelper
 	 *            String Everytrail password for private tracks
 	 * @return EverytrailPicturesResponse
 	 */
-	public static EverytrailTracksResponse Tracks(final String tripId, final String username, final String password)
+	private EverytrailTracksResponse Tracks(final String tripId, final String username, final String password)
 	{
 		final Hashtable<String, String> params = new Hashtable<String, String>();
 		params.put("trip_id", tripId);
@@ -482,7 +491,7 @@ public class EverytrailHelper
 	 * @param tripId
 	 * @return Vector<Node>
 	 */
-	public static EverytrailPicturesResponse TripPictures(final String tripId)
+	private EverytrailPicturesResponse TripPictures(final String tripId)
 	{
 		return TripPictures(tripId, null, null, null);
 	}
@@ -495,7 +504,7 @@ public class EverytrailHelper
 	 * @param password
 	 * @return Vector<Node>
 	 */
-	public static EverytrailPicturesResponse TripPictures(final String tripId, final String username,
+	private EverytrailPicturesResponse TripPictures(final String tripId, final String username,
 			final String password, final String tripNameParam)
 	{
 		
@@ -604,7 +613,7 @@ public class EverytrailHelper
 	 *            and this will at least get the user id
 	 * @return EverytrailTripsResponse
 	 */
-	public static EverytrailTripsResponse Trips(final String userId)
+	public EverytrailTripsResponse trips(final String userId)
 	{
 		final EverytrailTripsResponse result = Trips(null, null, userId, null, null, null, null, null, null, null, null);
 		return result;
@@ -622,7 +631,7 @@ public class EverytrailHelper
 	 * @return
 	 * @return EverytrailTripsResponse
 	 */
-	public static EverytrailTripsResponse Trips(final String username, final String password, final String userId)
+	private EverytrailTripsResponse Trips(final String username, final String password, final String userId)
 	{
 		final EverytrailTripsResponse result = Trips(	username, password, userId, null, null, null, null, null, null,
 				null, null);
@@ -641,7 +650,7 @@ public class EverytrailHelper
 	 *            Starting point for photos, default 0 set by everytrail api
 	 * @return EverytrailTripsResponse
 	 */
-	public static EverytrailTripsResponse Trips(final String username, final String password, final String userId,
+	private EverytrailTripsResponse Trips(final String username, final String password, final String userId,
 			final Double lat, final Double lon, final Date modifiedAfter, final String sort, final String order,
 			final String limit, final String start, final Boolean minimal)
 	{
@@ -747,7 +756,7 @@ public class EverytrailHelper
 	 * @param password
 	 * @return Vector<Node>
 	 */
-	public static EverytrailVideosResponse TripVideos(final String tripId, final String username, final String password)
+	private EverytrailVideosResponse TripVideos(final String tripId, final String username, final String password)
 	{
 		final Hashtable<String, String> params = new Hashtable<String, String>();
 		params.put("trip_id", tripId);
@@ -818,10 +827,10 @@ public class EverytrailHelper
 	 * @param pm EntityManager for database
 	 * @param user 
 	 */
-	public static void UpdateEverytrailContent(final EntityManager pm, final User user)
+	private void UpdateEverytrailContent(final EntityManager pm, final User user)
 	{
 		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
-		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(login.getUserID(), login.getUsername(), login.getPassword());
+		EverytrailPicturesResponse picturesResponse = Pictures(login.getUserID(), login.getUsername(), login.getPassword());
 		Map<String, Node> pics = picturesResponse.getPicturesMap();
 
 		for(String key : pics.keySet() )
@@ -842,7 +851,7 @@ public class EverytrailHelper
 	 *            An everytrail password
 	 * @return EverytrailLoginResponse with status success/error and value userid/error code
 	 */
-	public static EverytrailLoginResponse UserLogin(final String username, final String password)
+	public EverytrailLoginResponse userLogin(final String username, final String password)
 	{
 		final StringBuilder postResponse = new StringBuilder();
 		String loginStatus = "";
@@ -855,10 +864,10 @@ public class EverytrailHelper
 			data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
 			// Send data by setting up the api password http authentication and UoN proxy
-			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailHelper.class
+			Authenticator.setDefault(new CommunicationHelper.HttpAuthenticator(PropertiesSingleton.get(	EverytrailService.class
 					.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_USER, ""), PropertiesSingleton
-					.get(EverytrailHelper.class.getClassLoader())
+					.get(EverytrailService.class.getClassLoader())
 					.getProperty(PropertiesSingleton.EVERYTRAIL_API_PASSWORD, "")));
 			final URL url = new URL(apiBaseUrl + "user/login");
 
@@ -888,7 +897,7 @@ public class EverytrailHelper
 		// Parse the XML response and construct the response data to return
 		log.debug(postResponse);
 		final EverytrailResponseStatusData responseStatus = 
-			EverytrailHelper.parseResponseStatus("etUserLoginResponse", doc);
+			parseResponseStatus("etUserLoginResponse", doc);
 		log.info("UserLogin called parseResponseStatus, result="
 				 + responseStatus.getStatus() + ","
 				 + responseStatus.getValue());
@@ -929,10 +938,10 @@ public class EverytrailHelper
 	 *            A user's password
 	 * @return EverytrailVideosResponse
 	 */
-	public static EverytrailVideosResponse Videos(final String userId, final String username, final String password)
+	private EverytrailVideosResponse videos(final String userId, final String username, final String password)
 	{
 		// The pictures API doesn't work well, so get pictures via trips...
-		final EverytrailTripsResponse tripsData = EverytrailHelper.Trips(username, password, userId);
+		final EverytrailTripsResponse tripsData = Trips(username, password, userId);
 
 		Vector<Node> picturesToReturn = new Vector<Node>();
 		String status_to_return = "error";
@@ -953,7 +962,7 @@ public class EverytrailHelper
 				final NamedNodeMap attributes = tripNode.getAttributes();
 				final String tripId = attributes.getNamedItem("id").getNodeValue();
 				log.debug("Getting pictures for trip: " + tripId);
-				final EverytrailVideosResponse tripPics = EverytrailHelper.TripVideos(tripId, username, password);
+				final EverytrailVideosResponse tripPics = TripVideos(tripId, username, password);
 
 				log.debug("Videos in trip: " + tripPics.getVideos().size());
 				final Vector<Node> tripPicList = tripPics.getVideos();
@@ -974,4 +983,180 @@ public class EverytrailHelper
 		return returnValue;
 	}
 
+	@Override
+	protected void sync(EntityManager manager, User user, LoginDetails details)
+	{
+		manager.getTransaction().begin();
+		details.setSyncInProgress(true);
+		manager.merge(details);
+		manager.getTransaction().commit();
+		try
+		{
+			final EverytrailLoginResponse loginResponse =  userLogin(details.getUsername(), details.getPassword());
+	
+			if (loginResponse.getStatus().equals("error"))
+			{
+				log.error("Everytrail login failed");
+				return;
+			}
+	
+			manager.getTransaction().begin();
+			// Save user id
+			details.setUserID(loginResponse.getValue());
+			manager.merge(details);
+			manager.getTransaction().commit();
+				
+			ArrayList<String> imported_ids = new ArrayList<String>(); 
+			ArrayList<String> available_ids = new ArrayList<String>(); 
+	
+			final EverytrailTripsResponse trips = trips(loginResponse.getValue());
+	
+			for (Node trip : trips.getTrips())
+			{
+				// Get trip ID
+				final NamedNodeMap tripAttr = trip.getAttributes();
+				final String tripId = tripAttr.getNamedItem("id").getNodeValue();
+				log.debug("IMPORT: Trip ID is " + tripId + " **************");
+				
+				String tripName = "Unknown trip";
+				String tripDescription = ""; 
+				//Then look at the properties in the child nodes to get url, title, description, etc.
+				final NodeList tripProperties = trip.getChildNodes();
+				for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
+				{
+					final Node item = tripProperties.item(propertyIndex);
+					final String itemName = item.getNodeName();
+					//log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
+					if (itemName.equals("name"))
+					{
+						log.debug("Trip name is: " + item.getTextContent());
+						tripName = item.getTextContent();
+					}
+					if (itemName.equals("description"))
+					{
+						log.debug("Trip description is: " + item.getTextContent());
+						tripDescription = item.getTextContent();
+					}
+				}
+				available_ids.add("everytrail-" + tripId);
+				
+				if(tripDescription.length()>0)
+				{
+					TextItem descriptionItem = new TextItem();
+					descriptionItem.setOwner(user);
+					final String externalId = "everytrail-" + tripId + "-textItem";
+					descriptionItem.setExternalID(externalId);
+					descriptionItem.setText(tripDescription);
+					descriptionItem.addMetadataEntry("source", SERVICE_NAME);
+					descriptionItem.addMetadataEntryIndexed("trip_name", tripName);	
+					descriptionItem.addMetadataEntryIndexed("title", tripName);
+					descriptionItem.addMetadataEntry("trip", tripId);	
+					descriptionItem.saveUpdatedItem();
+					available_ids.add(externalId);
+					imported_ids.add(externalId);
+				}
+	
+				
+				GPSTraceItem gpsItem = new GPSTraceItem(user);
+				try
+				{
+					ItemFactory.toGPSTraceItem(user, trip, gpsItem, tripId, tripName);
+					gpsItem = (GPSTraceItem) gpsItem.saveUpdatedItem();
+					imported_ids.add(gpsItem.getExternalID());
+				}
+				catch(Exception e)
+				{
+					log.error("Problem importing Trip " + tripId, e);
+				}
+	
+	
+				final EverytrailPicturesResponse picturesResponse = TripPictures(	tripId,
+						details.getUsername(),
+						details.getPassword(),
+						tripName);
+	
+				final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+				int i = 0;
+				for (final Node picture : pictures.values())
+				{
+					log.info("Processing picture " + i++);
+					ImageItem imageItem = new ImageItem(user, null, null, null);
+					ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
+					imageItem = (ImageItem) imageItem.saveUpdatedItem();
+					imported_ids.add(imageItem.getExternalID());
+					available_ids.add(imageItem.getExternalID());
+				}			 
+			}
+	
+			log.debug("Checking for deleted items...");
+			int deletedItems = 0;
+			try
+			{
+				manager.getTransaction().begin();
+				TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT placebookitem FROM PlaceBookItem AS placebookitem WHERE (placebookitem.owner = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
+				q.setParameter(1, user);
+				Collection<PlaceBookItem> items = q.getResultList();
+				for(PlaceBookItem placebookitem: items)
+				{
+					if(!available_ids.contains(placebookitem.getExternalID()))
+					{
+						log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+						manager.remove(placebookitem);
+						deletedItems++;
+					}
+					else
+					{
+						log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+					}
+				}
+	
+				manager.getTransaction().commit();
+			}
+			finally
+			{
+				if (manager.getTransaction().isActive())
+				{
+					manager.getTransaction().rollback();
+					log.error("Rolling Everytrail cleanup back");
+					return;
+				}
+			}
+			
+			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");			
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}			
+			manager.getTransaction().begin();
+			details.setLastSync();
+			details.setSyncInProgress(false);
+			manager.merge(details);
+			manager.getTransaction().commit();
+			log.info("Synced: " + details.getLastSync());			
+			manager.close();
+		}		
+
+		
+	}
+
+	@Override
+	public String getName()
+	{
+		return SERVICE_NAME;
+	}
+
+	@Override
+	public boolean checkLogin(String username, String password)
+	{
+		EverytrailLoginResponse response = userLogin(username, password);
+		log.info(response.getStatus() + ":" + response.getValue());
+		if (response.getStatus().equals("error"))
+		{
+			return false;
+		}
+		return true;
+	}
 }

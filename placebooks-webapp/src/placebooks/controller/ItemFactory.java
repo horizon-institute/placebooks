@@ -33,6 +33,7 @@ import placebooks.model.ImageItem;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
+import placebooks.services.EverytrailService;
 
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.geo.impl.GeoRssWhere;
@@ -109,7 +110,7 @@ public class ItemFactory
 		//log.debug(tripItem.getTextContent());
 
 		gpsItem.setGeometry(null);
-		gpsItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
+		gpsItem.addMetadataEntry("source", EverytrailService.SERVICE_NAME);
 
 		if(tripId!=null)
 		{
@@ -332,7 +333,7 @@ public class ItemFactory
 		imageItem.setExternalID("everytrail-" + picture_id);
 		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
-		imageItem.addMetadataEntry("source", EverytrailHelper.SERVICE_NAME);
+		imageItem.addMetadataEntry("source", EverytrailService.SERVICE_NAME);
 	}
 
 
