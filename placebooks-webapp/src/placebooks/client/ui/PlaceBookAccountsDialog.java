@@ -14,6 +14,7 @@ import placebooks.client.resources.Resources;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -65,6 +66,7 @@ public class PlaceBookAccountsDialog extends Composite
 		this.user = user;
 		initWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
+		updateUser();		
 	}
 
 	/**
@@ -103,6 +105,10 @@ public class PlaceBookAccountsDialog extends Composite
 				if (object.isSyncInProgress())
 				{
 					return "Sync In Progress";
+				}
+				else if(object.getLastSync() == 0)
+				{
+					return "Never Synced";
 				}
 				else
 				{
@@ -215,6 +221,8 @@ public class PlaceBookAccountsDialog extends Composite
 						@Override
 						public void onClick(final ClickEvent event)
 						{
+							dialogBox.getElement().getStyle().setCursor(Cursor.WAIT);
+							account.setDisabled();
 							PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), service,
 															new AbstractCallback()
 															{
@@ -223,6 +231,8 @@ public class PlaceBookAccountsDialog extends Composite
 																		final Response response)
 																{
 																	account.setErrorText(service + " Login Failed");
+																	dialogBox.getElement().getStyle().clearCursor();																	
+																	account.setEnabled();																	
 																}
 
 																@Override
@@ -230,22 +240,11 @@ public class PlaceBookAccountsDialog extends Composite
 																		final Response response)
 																{
 																	dialogBox.hide();
-																	PlaceBookService.sync(	service,
-																							new AbstractCallback()
-																							{
-																								@Override
-																								public void success(
-																										final Request request,
-																										final Response response)
-																								{
-																									// TODO
-																									// Auto-generated
-																									// method
-																									// stub
-
-																								}
-																							});
-																	updateUser();
+																	Shelf shelf = Shelf.parse(response.getText());
+																	if(shelf != null)
+																	{
+																		setUser(shelf.getUser());
+																	}
 																}
 															});
 						}

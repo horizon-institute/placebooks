@@ -765,6 +765,7 @@ public class EverytrailService extends Service
 				}
 			}
 			
+			details.setLastSync();			
 			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");			
 		}
 		finally
@@ -774,7 +775,6 @@ public class EverytrailService extends Service
 				manager.getTransaction().rollback();
 			}			
 			manager.getTransaction().begin();
-			details.setLastSync();
 			details.setSyncInProgress(false);
 			manager.merge(details);
 			manager.getTransaction().commit();
