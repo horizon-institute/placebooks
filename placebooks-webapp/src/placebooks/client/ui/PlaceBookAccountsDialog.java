@@ -40,7 +40,7 @@ public class PlaceBookAccountsDialog extends Composite
 
 	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
 
-	private static final String[] SERVICES = { "Everytrail", "Test" };
+	private static final String[] SERVICES = { "Everytrail" };
 
 	private static final ProvidesKey<LoginDetails> keyProvider = new ProvidesKey<LoginDetails>()
 	{
@@ -117,28 +117,26 @@ public class PlaceBookAccountsDialog extends Composite
 				new ActionCell.Delegate<LoginDetails>()
 				{
 					@Override
-					public void execute(final LoginDetails arg0)
+					public void execute(final LoginDetails details)
 					{
-						PlaceBookService.sync(arg0.getService(), new AbstractCallback()
+						PlaceBookService.sync(details.getService(), new AbstractCallback()
 						{
-
 							@Override
 							public void success(final Request request, final Response response)
 							{
-								// TODO Auto-generated method stub
-
 							}
 						});
+						details.setSyncInProgress(true);
+						setUser(user);
 					}
 				});
 
 		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(updateCell)
 		{
-
 			@Override
-			public LoginDetails getValue(final LoginDetails arg0)
+			public LoginDetails getValue(final LoginDetails details)
 			{
-				return arg0;
+				return details;
 			}
 		};
 		cellTable.addColumn(updateColumn);

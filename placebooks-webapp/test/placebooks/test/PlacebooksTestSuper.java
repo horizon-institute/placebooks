@@ -11,9 +11,9 @@ import org.apache.log4j.Logger;
 
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.UserManager;
-import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.User;
 import placebooks.services.EverytrailService;
+import placebooks.services.model.EverytrailLoginResponse;
 
 /**
  * @author pszmp

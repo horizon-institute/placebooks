@@ -138,6 +138,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
 				dialogBox.setAutoHideEnabled(true);
 
+				dialogBox.setWidth("500px");
+				
 				dialogBox.center();
 				dialogBox.show();				
 			}

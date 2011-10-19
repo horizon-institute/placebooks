@@ -12,6 +12,12 @@ public class ServiceRegistry
 {
 	private static final Map<String, Service> services = new HashMap<String, Service>();
 	
+	static
+	{
+		addService(new EverytrailService());
+		addService(new PeoplesCollectionService());
+	}
+	
 	public static Service getService(final String serviceName)
 	{
 		return services.get(serviceName);

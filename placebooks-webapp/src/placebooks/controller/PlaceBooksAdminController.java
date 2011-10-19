@@ -49,9 +49,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import placebooks.model.AudioItem;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTripsResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
@@ -71,6 +68,9 @@ import placebooks.model.json.ShelfEntry;
 import placebooks.model.json.UserShelf;
 import placebooks.services.Service;
 import placebooks.services.ServiceRegistry;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailTripsResponse;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -165,9 +165,10 @@ public class PlaceBooksAdminController
 
 	private static final int MEGABYTE = 1048576;
 
-	@RequestMapping(value = "/sync/{service}")
-	public void syncService(@PathVariable("service") final String serviceName)
+	@RequestMapping(value = "/sync/{serviceName}", method = RequestMethod.GET)
+	public void syncService(final HttpServletResponse res, @PathVariable("serviceName") final String serviceName)
 	{
+		log.info("Sync " + serviceName);
 		Service service = ServiceRegistry.getService(serviceName);
 		if(service != null)
 		{
@@ -176,6 +177,8 @@ public class PlaceBooksAdminController
 			
 			service.sync(manager, user, true);
 		}
+		
+		res.setStatus(200);
 	}
 	
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)

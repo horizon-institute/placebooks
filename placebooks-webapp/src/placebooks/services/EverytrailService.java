@@ -4,14 +4,10 @@
 package placebooks.services;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -22,7 +18,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -40,23 +35,16 @@ import org.xml.sax.InputSource;
 import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.PropertiesSingleton;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailResponseStatusData;
-import placebooks.model.EverytrailTracksResponse;
-import placebooks.model.EverytrailTripsResponse;
-import placebooks.model.EverytrailVideosResponse;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
 import placebooks.model.User;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailResponseStatusData;
+import placebooks.services.model.EverytrailTripsResponse;
 
 /**
  * @author pszmp
@@ -134,112 +122,6 @@ public class EverytrailService extends Service
 		}
 
 		return postResponse.toString();
-	}
-
-	private ImageItem imageItemFromEverytrailImage(final User owner, final Node everytrailPicture)
-	{
-		final ImageItem imageItem = new ImageItem(owner, null, null, null);
-
-		final NamedNodeMap pictureAttributes = everytrailPicture.getAttributes();
-		for (int attributeIndex = 0; attributeIndex < pictureAttributes.getLength(); attributeIndex++)
-		{
-			if (pictureAttributes.item(attributeIndex).getNodeName().equals("id"))
-			{
-				imageItem.addParameterEntry("picture_id",
-						Integer.getInteger(pictureAttributes.item(attributeIndex).getNodeValue()));
-			}
-		}
-		final NodeList pictureProperties = everytrailPicture.getChildNodes();
-		for (int propertyIndex = 0; propertyIndex < pictureProperties.getLength(); propertyIndex++)
-		{
-			final Node item = pictureProperties.item(propertyIndex);
-			final String itemName = item.getNodeName();
-			log.debug("Inspecting property: " + itemName + " which is " + item.getTextContent());
-			if (itemName.equals("fullsize"))
-			{
-				try
-				{
-					imageItem.setSourceURL(new URL(item.getTextContent()));
-					final URL url = imageItem.getSourceURL();
-					URLConnection conn;
-					if (PropertiesSingleton.get(ImageItem.class.getClassLoader())
-							.getProperty(PropertiesSingleton.PROXY_ACTIVE, "false").equalsIgnoreCase("true"))
-					{
-						log.debug("Using proxy: "
-								+ PropertiesSingleton.get(ImageItem.class.getClassLoader())
-								.getProperty(PropertiesSingleton.PROXY_HOST, "")
-								+ ":"
-								+ PropertiesSingleton.get(ImageItem.class.getClassLoader())
-								.getProperty(PropertiesSingleton.PROXY_PORT, ""));
-						final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PropertiesSingleton
-								.get(ImageItem.class.getClassLoader()).getProperty(PropertiesSingleton.PROXY_HOST, ""),
-								Integer.parseInt(PropertiesSingleton.get(ImageItem.class.getClassLoader())
-										.getProperty(PropertiesSingleton.PROXY_PORT, ""))));
-						conn = url.openConnection(proxy);
-					}
-					else
-					{
-						conn = url.openConnection();
-					}
-
-					// Get the response
-					//					final BufferedImage bi = ImageIO.read(conn.getInputStream());
-					//					imageItem.setImage(bi);
-					//					log.debug("image width: " + bi.getWidth() + "px Height: " + bi.getHeight() + "px");
-
-					try
-					{
-						imageItem.writeDataToDisk("blah.jpg", conn.getInputStream());
-					}
-					catch (final Throwable e)
-					{
-						log.error(e.getMessage(), e);
-					}
-				}
-				catch (final MalformedURLException ex)
-				{
-					log.error("Can't convert Everytrail Picture URL to a valid URL.");
-					log.debug(ex.getMessage());
-				}
-				catch (final IOException ex)
-				{
-					log.error("Can't download Everytrail Picture and convert to BufferedImage.");
-					log.debug(ex.getMessage());
-				}
-			}
-			if (itemName.equals("location"))
-			{
-				final NamedNodeMap locationAttributes = item.getAttributes();
-				String lat = null;
-				String lon = null;
-				for (int locAttributeIndex = 0; locAttributeIndex < locationAttributes.getLength(); locAttributeIndex++)
-				{
-					if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lat"))
-					{
-						lat = locationAttributes.item(locAttributeIndex).getNodeValue();
-					}
-					if (locationAttributes.item(locAttributeIndex).getNodeName().equals("lon"))
-					{
-						lon = locationAttributes.item(locAttributeIndex).getNodeValue();
-					}
-				}
-				try
-				{
-					final GeometryFactory gf = new GeometryFactory();
-					final Geometry newGeom = gf.toGeometry(new Envelope(new Coordinate(Double.parseDouble(lat), Double
-							.parseDouble(lon))));
-					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
-					imageItem.setGeometry(newGeom);
-				}
-				catch (final Exception ex)
-				{
-					log.error("Couldn't get lat/lon data from Everytrail picture.");
-					log.debug(ex.getMessage());
-				}
-			}
-		}
-
-		return imageItem;
 	}
 
 	/**
@@ -406,95 +288,6 @@ public class EverytrailService extends Service
 		return returnValue;
 	}
 
-	/**
-	 * Get a list of tracks for a given trip
-	 * 
-	 * @param String
-	 *            trackId an everytrail track id obtained from a user's trip - is it is a private
-	 *            trip, accessing the track may require logging in first at least get the user id
-	 * @return EverytrailPicturesResponse
-	 */
-	private EverytrailTracksResponse Tracks(final String trackId)
-	{
-		return Tracks(trackId, null, null);
-	}
-
-	/**
-	 * Get a list of tracks for a given trip
-	 * 
-	 * @param String
-	 *            trackId an everytrail track id obtained from a user's trip - is it is a private
-	 *            trip, accessing the track may require logging in first at least get the user id
-	 * @param username
-	 *            String Everytrail username for private tracks
-	 * @param password
-	 *            String Everytrail password for private tracks
-	 * @return EverytrailPicturesResponse
-	 */
-	private EverytrailTracksResponse Tracks(final String tripId, final String username, final String password)
-	{
-		final Hashtable<String, String> params = new Hashtable<String, String>();
-		params.put("trip_id", tripId);
-		if (username != null)
-		{
-			params.put("username", username);
-		}
-		if (password != null)
-		{
-			params.put("password", password);
-		}
-		final String postResponse = getPostResponseWithParams("trip/tracks", params);
-		final Document doc = parseResponseToXml(postResponse);
-		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etTripTracksResponse", doc);
-		final Vector<Node> tracksList = new Vector<Node>();
-		if (responseStatus.getStatus().equals("success"))
-		{
-			final NodeList response_list_data = doc.getElementsByTagName("track");
-			for (int i = 0; i < response_list_data.getLength(); i++)
-			{
-				final Node element = response_list_data.item(i);
-				tracksList.add(element);
-			}
-		}
-		else
-		{
-			final NodeList response_list_data = doc.getElementsByTagName("error");
-			{
-				for (int i = 0; i < response_list_data.getLength(); i++)
-				{
-					final Node element = response_list_data.item(i);
-					final NodeList error_children = element.getChildNodes();
-					for (int child_counter = 0; child_counter < error_children.getLength(); child_counter++)
-					{
-						try
-						{
-							final Node error_element = error_children.item(child_counter);
-							tracksList.add(error_element);
-						}
-						catch (final NullPointerException npx)
-						{
-							log.error("Can't interpret error data for item " + child_counter + " from response: "
-									+ responseStatus.getValue());
-						}
-					}
-				}
-			}
-		}
-		final EverytrailTracksResponse returnValue = new EverytrailTracksResponse(responseStatus.getStatus(),
-				tracksList);
-		return returnValue;
-	}
-
-	/**
-	 * Get a list of public pictures for a particular trip
-	 * 
-	 * @param tripId
-	 * @return Vector<Node>
-	 */
-	private EverytrailPicturesResponse TripPictures(final String tripId)
-	{
-		return TripPictures(tripId, null, null, null);
-	}
 
 	/**
 	 * Get a list of pictures for a particular trip including private pictures
@@ -749,99 +542,6 @@ public class EverytrailService extends Service
 	}
 
 	/**
-	 * Get a list of pictures for a particular trip including private pictures
-	 * 
-	 * @param tripId
-	 * @param username
-	 * @param password
-	 * @return Vector<Node>
-	 */
-	private EverytrailVideosResponse TripVideos(final String tripId, final String username, final String password)
-	{
-		final Hashtable<String, String> params = new Hashtable<String, String>();
-		params.put("trip_id", tripId);
-		if (username != null)
-		{
-			params.put("username", username);
-		}
-		if (password != null)
-		{
-			params.put("password", password);
-		}
-
-		final String postResponse = getPostResponseWithParams("trip/data", params);
-		final Vector<Node> picturesList = new Vector<Node>();
-
-		final Document doc = parseResponseToXml(postResponse);
-		final EverytrailResponseStatusData resultStatus = parseResponseStatus("etTripDataResponse", doc);
-		if (resultStatus.getStatus().equals("success"))
-		{
-			//log.info("Videos success");
-			final NodeList pictureNodes = doc.getElementsByTagName("video");;
-			// log.debug("Child nodes: " + pictureNodes.getLength());
-			for (int pictureNodesIndex = 0; pictureNodesIndex < pictureNodes.getLength(); pictureNodesIndex++)
-			{
-				final Node pictureNode = pictureNodes.item(pictureNodesIndex);
-				picturesList.add(pictureNode);
-			}
-		}
-		else
-		{
-			if (resultStatus.getStatus().equals("error"))
-			{
-				log.warn("Get videos failed with error code: " + resultStatus.getValue());
-				log.debug(postResponse);
-			}
-			else
-			{
-				log.error("Get videos error status gave unexpected value: " + resultStatus.getStatus());
-			}
-			final NodeList response_list_data = doc.getElementsByTagName("error");
-			{
-				for (int i = 0; i < response_list_data.getLength(); i++)
-				{
-					final Node element = response_list_data.item(i);
-					final NodeList error_children = element.getChildNodes();
-					for (int child_counter = 0; child_counter < error_children.getLength(); child_counter++)
-					{
-						try
-						{
-							final Node error_element = error_children.item(child_counter);
-							picturesList.add(error_element);
-						}
-						catch (final NullPointerException npx)
-						{
-							log.error("Can't interpret error data for item " + child_counter + " from response: "
-									+ resultStatus.getValue());
-						}
-					}
-				}
-			}
-		}
-		return new EverytrailVideosResponse(resultStatus.getStatus(), picturesList);
-	}
-
-	/**
-	 * Copy all of a users content from Everytrail to Placebooks database, replacing items where
-	 *  necessary based on everytrail ids
-	 * @param pm EntityManager for database
-	 * @param user 
-	 */
-	private void UpdateEverytrailContent(final EntityManager pm, final User user)
-	{
-		LoginDetails login = user.getLoginDetails(SERVICE_NAME);
-		EverytrailPicturesResponse picturesResponse = Pictures(login.getUserID(), login.getUsername(), login.getPassword());
-		Map<String, Node> pics = picturesResponse.getPicturesMap();
-
-		for(String key : pics.keySet() )
-		{
-			ImageItem item = new ImageItem(user, null, null, null);
-			String tripId = picturesResponse.getPictureTrips().get(key);
-			ItemFactory.toImageItem(user, pics.get(key), item, tripId, picturesResponse.getTripNames().get(tripId));
-		}
-	}
-
-	/**
 	 * Log in to the Everytrail API with a given username and password n.b. this appears to be
 	 * submitted as HTTP not HTTPS so password is potentially insecure.
 	 * 
@@ -924,63 +624,6 @@ public class EverytrailService extends Service
 
 		final EverytrailLoginResponse output = new EverytrailLoginResponse(loginStatus, loginStatusValue);
 		return output;
-	}
-
-	/**
-	 * Get a list of pictures for a given userid
-	 * 
-	 * @param userId
-	 *            an everytrail userid - supply their username and password if private pictures are
-	 *            needed
-	 * @param String
-	 *            A user's username
-	 * @param String
-	 *            A user's password
-	 * @return EverytrailVideosResponse
-	 */
-	private EverytrailVideosResponse videos(final String userId, final String username, final String password)
-	{
-		// The pictures API doesn't work well, so get pictures via trips...
-		final EverytrailTripsResponse tripsData = Trips(username, password, userId);
-
-		Vector<Node> picturesToReturn = new Vector<Node>();
-		String status_to_return = "error";
-
-		if (tripsData.getStatus().equals("error"))
-		{
-			log.warn("Get pictures failed when getting trips with error code: " + tripsData.getStatus());
-			picturesToReturn = tripsData.getTrips();
-		}
-		else
-		{
-			status_to_return = "success";
-			final Vector<Node> trips = tripsData.getTrips();
-			// log.debug("Got " + trips.size() + " trips, geting pictures...");
-			for (int tripListIndex = 0; tripListIndex < trips.size(); tripListIndex++)
-			{
-				final Node tripNode = trips.elementAt(tripListIndex);
-				final NamedNodeMap attributes = tripNode.getAttributes();
-				final String tripId = attributes.getNamedItem("id").getNodeValue();
-				log.debug("Getting pictures for trip: " + tripId);
-				final EverytrailVideosResponse tripPics = TripVideos(tripId, username, password);
-
-				log.debug("Videos in trip: " + tripPics.getVideos().size());
-				final Vector<Node> tripPicList = tripPics.getVideos();
-				for (int picturesDataIndex = 0; picturesDataIndex < tripPicList.size(); picturesDataIndex++)
-				{
-					final Node picture_node = tripPicList.get(picturesDataIndex);
-					if (picture_node.getNodeName().equals("picture"))
-					{
-						picturesToReturn.add(picture_node);
-					}
-					// log.debug("Video: " + picturesDataIndex + " " +
-					// picture_node.getTextContent());
-				}
-			}
-		}
-
-		final EverytrailVideosResponse returnValue = new EverytrailVideosResponse(status_to_return, picturesToReturn);
-		return returnValue;
 	}
 
 	@Override

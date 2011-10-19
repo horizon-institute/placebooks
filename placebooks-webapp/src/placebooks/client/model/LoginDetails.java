@@ -18,5 +18,7 @@ public class LoginDetails extends JavaScriptObject
 	
 	public final native double getLastSync() /*-{ return this.lastSync; }-*/;
 	
-	public final native boolean isSyncInProgress() /*-{ return this.syncInProgress; }-*/;	
+	public final native boolean isSyncInProgress() /*-{ return this.syncInProgress; }-*/;
+
+	public final native void setSyncInProgress(boolean b) /*-{ this.syncInProgress = b; }-*/;
 }

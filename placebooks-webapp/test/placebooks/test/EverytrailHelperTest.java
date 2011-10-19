@@ -13,12 +13,12 @@ import java.util.Date;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTracksResponse;
-import placebooks.model.EverytrailTripsResponse;
-import placebooks.model.EverytrailVideosResponse;
 import placebooks.services.EverytrailService;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailTracksResponse;
+import placebooks.services.model.EverytrailTripsResponse;
+import placebooks.services.model.EverytrailVideosResponse;
 
 /**
  * @author pszmp

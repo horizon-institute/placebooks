@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks.model;
+package placebooks.services.model;
 
 import java.util.Collection;
 import java.util.HashMap;
