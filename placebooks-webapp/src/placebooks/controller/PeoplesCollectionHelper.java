@@ -13,10 +13,20 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+
 import placebooks.model.PeoplesCollectionLoginResponse;
+import placebooks.model.PeoplesCollectionTrailsResponse;
 
 /**
  * @author pszmp
@@ -45,21 +55,10 @@ public class PeoplesCollectionHelper
 	{
 		final StringBuilder postResponse = new StringBuilder();
 
-		// Construct data to post by iterating through parameter Hashtable keys Enumeration
+		// Construct data to post by converting data to json
 		final StringBuilder data = new StringBuilder();
-		//final Enumeration<String> paramNames = params.keys();
 		try
 		{
-			/*while (paramNames.hasMoreElements())
-			{
-				final String paramName = paramNames.nextElement();
-				data.append(URLEncoder.encode(paramName, "UTF-8") + "="
-						+ URLEncoder.encode(params.get(paramName), "UTF-8"));
-				if (paramNames.hasMoreElements())
-				{
-					data.append("&");
-				}
-			}*/
 			data.append(mapper.writeValueAsString(params));
 			log.debug("JSON post: " + data.toString());
 			
@@ -115,6 +114,31 @@ public class PeoplesCollectionHelper
 		{
 			log.error("Couldn't decode response from json : " + response.toString(), ex);
 			returnResult = new PeoplesCollectionLoginResponse(false, "Unable to decode response:\n" +  ex.getMessage());			
+		}
+		
+		return returnResult;
+	}
+	
+	public static PeoplesCollectionTrailsResponse TrailsByUser(String username, String password)
+	{
+		Hashtable<String, String> params = new Hashtable<String, String>();
+		params.put("username", username);
+		params.put("password", password);
+		String response = getPostResponseWithParams("/GetTrailsByUser", params);
+		PeoplesCollectionTrailsResponse returnResult = null;
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		mapper.enableDefaultTyping();
+		mapper.registerSubtypes(Point.class, MultiPoint.class, LineString.class, MultiLineString.class, Polygon.class, MultiPolygon.class, GeometryCollection.class);
+		
+		try
+		{
+			returnResult = mapper.readValue(response.toString(), PeoplesCollectionTrailsResponse.class);
+			log.debug("PeoplecCollection response decoded: " + (returnResult.GetAuthenticationResponse().GetIsValid() ? "valid " : "not valid ")  + returnResult.GetAuthenticationResponse().GetReason());
+		}
+		catch(Exception ex)
+		{
+			log.error("Couldn't decode response from json : " + response.toString(), ex);
+			returnResult = new PeoplesCollectionTrailsResponse();
 		}
 		
 		return returnResult;

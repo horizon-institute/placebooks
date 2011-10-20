@@ -3,6 +3,10 @@ package placebooks.model;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
+/**
+ * Class to encapsulate response from Peoples Collection API for a log in response
+ * @author pszmp
+ */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionLoginResponse 
 {

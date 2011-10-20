@@ -46,8 +46,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		Logger.getLogger(PlaceBookItem.class.getName());
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
-	@JsonDeserialize(using = 
-						placebooks.model.json.GeometryJSONDeserializer.class)
+	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom;
 
 	@Id

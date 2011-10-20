@@ -8,10 +8,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import placebooks.controller.PeoplesCollectionHelper;
 import placebooks.model.PeoplesCollectionLoginResponse;
+import placebooks.model.PeoplesCollectionTrail;
+import placebooks.model.PeoplesCollectionTrailsResponse;
 
 /**
  * @author pszmp
@@ -40,4 +47,20 @@ public class PeoplesCollectionHelperTest extends PlacebooksTestSuper {
 
 	}
 
+	/**
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#TrailsByUser(java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testUserTrailsResponse()
+	{
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionHelper.TrailsByUser(test_peoplescollection_username, test_peoplescollection_password);
+		assertTrue("Login with correct username and password failed", trailsResponse.GetAuthenticationResponse().GetIsValid());
+		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
+		PeoplesCollectionTrail trail = trailsResponse.GetMyTrails().iterator().next();
+		log.debug(trail.GetProperties().GetTitle());
+		log.debug("Number of favourite trails:" + trailsResponse.GetMyFavouriteTrails().size());
+		PeoplesCollectionTrail favtrail = trailsResponse.GetMyFavouriteTrails().iterator().next();
+		log.debug(favtrail.GetProperties().GetTitle());
+	}
+	
 }
