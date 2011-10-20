@@ -18,33 +18,12 @@ public class PlaceBookActivityMapper implements ActivityMapper
 	@Override
 	public Activity getActivity(final Place place)
 	{
-		if (place instanceof PlaceBookEditorPlace)
+		if(place instanceof PlaceBookPlace)
 		{
-			return new PlaceBookEditorActivity(controller, (PlaceBookEditorPlace) place);
+			PlaceBookPlace placebookPlace = (PlaceBookPlace)place;
+			placebookPlace.setPlaceController(controller);
+			return (PlaceBookPlace)place;
 		}
-		else if (place instanceof PlaceBookHomePlace)
-		{
-			return new PlaceBookHomeActivity(controller, ((PlaceBookHomePlace) place).getShelf());
-		}
-		else if (place instanceof PlaceBookLibraryPlace)
-		{
-			return new PlaceBookLibraryActivity(controller, ((PlaceBookLibraryPlace) place).getShelf());
-		}
-		else if (place instanceof PlaceBookSearchPlace)
-		{
-			return new PlaceBookSearchActivity(controller, (PlaceBookSearchPlace) place);
-		}
-		else if (place instanceof PlaceBookAppInstallPlace)
-		{
-			return new PlaceBookAppInstallActivity(controller, (PlaceBookAppInstallPlace) place);
-		}
-		else if (place instanceof PlaceBookEditorNewPlace)
-		{
-			return new PlaceBookEditorNewActivity(controller, ((PlaceBookEditorNewPlace) place).getPlaceBook(),
-					((PlaceBookEditorNewPlace) place).getShelf());
-		}
-		else if (place instanceof PlaceBookPreviewPlace) { return new PlaceBookPreviewActivity(controller,
-				(PlaceBookPreviewPlace) place); }
 		return null;
 	}
 

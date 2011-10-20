@@ -1,9 +1,12 @@
 package placebooks.client.ui.places;
 
 import placebooks.client.model.Shelf;
+import placebooks.client.ui.PlaceBookSearch;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class PlaceBookSearchPlace extends PlaceBookPlace
 {
@@ -41,4 +44,11 @@ public class PlaceBookSearchPlace extends PlaceBookPlace
 	{
 		return search;
 	}
+	
+	@Override
+	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
+	{
+		final PlaceBookSearch browse = new PlaceBookSearch(search, getPlaceController(), getShelf());
+		panel.setWidget(browse);
+	}	
 }
