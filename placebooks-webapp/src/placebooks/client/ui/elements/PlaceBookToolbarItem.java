@@ -1,60 +1,47 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import placebooks.client.resources.Resources;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-public class PlaceBookToolbarItem extends FlowPanel
+public class PlaceBookToolbarItem extends FlowPanel implements HasClickHandlers, HasText
 {
-	private ClickHandler clickHandler;
 	private boolean enabled;
 	private final Image image = new Image();
 	private final InlineLabel label = new InlineLabel();
 
 	PlaceBookToolbarItem()
 	{
-		addDomHandler(new ClickHandler()
-		{
-
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				if (enabled && clickHandler != null)
-				{
-					clickHandler.onClick(event);
-				}
-			}
-		}, ClickEvent.getType());
-
+		image.setVisible(false);		
 		add(image);
 		add(label);
 		setEnabled(true);
 	}
 
-	public PlaceBookToolbarItem(final String text, final ImageResource imageRes, final ClickHandler clickHandler)
+	public HandlerRegistration addClickHandler(ClickHandler handler)
 	{
-		this();
-		setResource(imageRes);
-		label.setText(text);
-		setClickHandler(clickHandler);
-	}
-
+		return addDomHandler(handler, ClickEvent.getType());
+	}	
+	
 	public void hideImage()
 	{
 		image.setVisible(false);
 	}
 
-	public void setClickHandler(final ClickHandler clickHandler)
+	public boolean isEnabled()
 	{
-		this.clickHandler = clickHandler;
+		return enabled;
 	}
-
+	
 	public void setEnabled(final boolean enabled)
 	{
 		this.enabled = enabled;
@@ -68,7 +55,7 @@ public class PlaceBookToolbarItem extends FlowPanel
 		}
 	}
 
-	public void setResource(final ImageResource imageResource)
+	public void setImage(final ImageResource imageResource)
 	{
 		if (imageResource != null)
 		{
@@ -83,9 +70,16 @@ public class PlaceBookToolbarItem extends FlowPanel
 		}
 	}
 
+	@Override
 	public void setText(final String text)
 	{
 		label.setText(text);
+	}
+
+	@Override
+	public String getText()
+	{
+		return label.getText();
 	}
 
 }

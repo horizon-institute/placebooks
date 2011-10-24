@@ -44,7 +44,7 @@ a:hover {
 
 .toolbarMenuItem {
 	padding: 1px 8px;
-	cursor: default;
+	cursor: pointer;
 }
 
 .toolbarMenuItem:HOVER {
@@ -151,7 +151,7 @@ a:hover {
 	float: left;
 	margin-left: 50px;
 	padding: 0 10px;
-	cursor: default;
+	cursor: pointer;
 }
 
 .toolbarItemDisabled {

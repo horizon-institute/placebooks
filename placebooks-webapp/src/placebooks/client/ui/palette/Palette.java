@@ -5,7 +5,7 @@ import java.util.List;
 
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;

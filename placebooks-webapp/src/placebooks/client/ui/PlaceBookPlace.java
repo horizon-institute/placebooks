@@ -1,4 +1,4 @@
-package placebooks.client.ui.places;
+package placebooks.client.ui;
 
 import placebooks.client.model.Shelf;
 
@@ -8,22 +8,12 @@ import com.google.gwt.place.shared.PlaceController;
 
 public abstract class PlaceBookPlace extends Place implements Activity
 {
-	private final Shelf shelf;
-	private PlaceController placeController;
+	protected Shelf shelf;
+	protected PlaceController placeController;
 
 	protected PlaceBookPlace(final Shelf shelf)
 	{
 		this.shelf = shelf;
-	}
-
-	public Shelf getShelf()
-	{
-		return shelf;
-	}
-	
-	public PlaceController getPlaceController()
-	{
-		return placeController;
 	}
 
 	@Override
@@ -42,6 +32,21 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	{
 	}
 
+	public Shelf getShelf()
+	{
+		return shelf;
+	}
+	
+	public PlaceController getPlaceController()
+	{
+		return placeController;
+	}
+	
+	public void setShelf(final Shelf shelf)
+	{
+		this.shelf = shelf;
+	}
+	
 	public void setPlaceController(PlaceController controller)
 	{
 		this.placeController = controller;		

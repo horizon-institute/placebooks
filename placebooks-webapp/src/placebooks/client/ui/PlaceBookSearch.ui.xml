@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:pw="urn:import:placebooks.client.ui.widget" xmlns:p="urn:import:placebooks.client.ui" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.title 
 		{
@@ -62,7 +62,7 @@
 		
 		<g:FlowPanel styleName="{style.searchBlock}">
 		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel><pw:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></pw:MousePanel><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
+			<g:FlowPanel><p:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></p:MousePanel><g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
 		</g:FlowPanel>
 		</g:FlowPanel>
 		

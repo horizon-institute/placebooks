@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;

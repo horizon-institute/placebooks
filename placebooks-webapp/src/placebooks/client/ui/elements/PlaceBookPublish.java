@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,9 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.PlaceBookPreview;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.places.PlaceBookPreviewPlace;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,9 +65,9 @@ public class PlaceBookPublish extends Composite
 
 	private final PlaceBook placebook;
 
-	private final PlaceBookToolbar toolbar;
+	private final PlaceBookPlace place;
 
-	public PlaceBookPublish(final PlaceBookToolbar toolbar, final PlaceBookCanvas canvas)
+	public PlaceBookPublish(final PlaceBookPlace place, final PlaceBookCanvas canvas)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		title.setMaxLength(64);
@@ -76,7 +77,7 @@ public class PlaceBookPublish extends Composite
 		location.setText(canvas.getPlaceBook().getMetadata("location", ""));
 
 		this.placebook = canvas.getPlaceBook();
-		this.toolbar = toolbar;
+		this.place = place;
 
 		for (final PlaceBookItemFrame frame : canvas.getItems())
 		{
@@ -130,7 +131,7 @@ public class PlaceBookPublish extends Composite
 			public void success(final Request request, final Response response)
 			{
 				final PlaceBook placebook = PlaceBook.parse(response.getText());
-				toolbar.getPlaceController().goTo(new PlaceBookPreviewPlace(toolbar.getShelf(), placebook));
+				place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), placebook));
 			}
 		});
 	}

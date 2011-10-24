@@ -2,7 +2,7 @@ package placebooks.client.ui.palette;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 

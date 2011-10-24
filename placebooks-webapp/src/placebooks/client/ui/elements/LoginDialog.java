@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;

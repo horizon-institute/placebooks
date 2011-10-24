@@ -1,4 +1,4 @@
-package placebooks.client.ui.places;
+package placebooks.client.ui;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;

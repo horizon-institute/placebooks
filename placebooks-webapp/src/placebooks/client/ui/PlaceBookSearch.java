@@ -9,27 +9,46 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
-import placebooks.client.ui.places.PlaceBookSearchPlace;
+import placebooks.client.ui.elements.PlaceBookEntryWidget;
+import placebooks.client.ui.elements.PlaceBookToolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.place.shared.PlaceTokenizer;
+import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookSearch extends Composite
+public class PlaceBookSearch extends PlaceBookPlace
 {
+	@Prefix("search")
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookSearch>
+	{
+		@Override
+		public PlaceBookSearch getPlace(final String token)
+		{
+			return new PlaceBookSearch(token);
+		}
+
+		@Override
+		public String getToken(final PlaceBookSearch place)
+		{
+			return place.getSearch();
+		}
+	}
+
 	interface PlaceBookSearchUiBinder extends UiBinder<Widget, PlaceBookSearch>
 	{
 	}
@@ -46,20 +65,37 @@ public class PlaceBookSearch extends Composite
 	Panel indicator;
 	
 	@UiField
-	TextBox search;
+	TextBox searchBox;
+	
+	private final String searchString;
 
-	private Shelf shelf;
-
-	public PlaceBookSearch(final String searchString, final PlaceController placeController, final Shelf shelf)
+	public PlaceBookSearch(final String search)
 	{
-		initWidget(uiBinder.createAndBindUi(this));
+		super(null);
+		this.searchString = search;
+	}
+
+	public PlaceBookSearch(final String search, final Shelf shelf)
+	{
+		super(shelf);
+		this.searchString = search;
+	}
+
+	public String getSearch()
+	{
+		return searchString;
+	}
+	
+	@Override
+	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
+	{
+		Widget widget = uiBinder.createAndBindUi(this);
 
 		Window.setTitle("PlaceBooks Search - " + searchString);
 
-		search.setText(searchString);
-
-		toolbar.setPlaceController(placeController);
-		toolbar.setShelf(shelf);
+		searchBox.setText(searchString);
+	
+		toolbar.setPlace(this);
 		GWT.log("Search: " + searchString);
 		// setShelf(shelf);
 
@@ -73,15 +109,16 @@ public class PlaceBookSearch extends Composite
 		});
 
 		RootPanel.get().getElement().getStyle().clearOverflow();
-	}
-
+		panel.setWidget(widget);
+	}	
+	
 	@UiHandler("searchButton")
 	void handleSearch(final ClickEvent event)
 	{
 		search();
 	}
 
-	@UiHandler("search")
+	@UiHandler("searchBox")
 	void handleSearchEnter(final KeyPressEvent event)
 	{
 		if (KeyCodes.KEY_ENTER == event.getNativeEvent().getKeyCode())
@@ -92,10 +129,11 @@ public class PlaceBookSearch extends Composite
 
 	private void search()
 	{		
-		toolbar.getPlaceController().goTo(new PlaceBookSearchPlace(search.getText(), toolbar.getShelf()));
+		placeController.goTo(new PlaceBookSearch(searchBox.getText(), shelf));
 	}
 
-	private void setShelf(final Shelf shelf)
+	@Override
+	public void setShelf(final Shelf shelf)
 	{
 		if (this.shelf != shelf)
 		{
@@ -107,7 +145,7 @@ public class PlaceBookSearch extends Composite
 				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
 				for (final PlaceBookEntry entry : shelf.getEntries())
 				{
-					if (entry.getScore() > 0 || search.getText().equals(""))
+					if (entry.getScore() > 0 || searchString.equals(""))
 					{
 						entries.add(entry);
 					}
@@ -132,7 +170,7 @@ public class PlaceBookSearch extends Composite
 				int index = 0;
 				for (final PlaceBookEntry entry : entries)
 				{
-					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(toolbar, entry);
+					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(this, entry);
 					if(index % 5 == 0)
 					{
 						widget.getElement().getStyle().setProperty("clear", "left");
@@ -142,5 +180,5 @@ public class PlaceBookSearch extends Composite
 				}
 			}
 		}
-	}
+	}	
 }

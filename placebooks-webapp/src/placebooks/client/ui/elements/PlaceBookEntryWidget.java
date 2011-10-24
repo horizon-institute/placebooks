@@ -1,9 +1,10 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.places.PlaceBookEditorPlace;
-import placebooks.client.ui.places.PlaceBookPreviewPlace;
+import placebooks.client.ui.PlaceBookEditor;
+import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.PlaceBookPreview;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,7 +18,7 @@ public class PlaceBookEntryWidget extends FlowPanel
 	private final Label title = new Label();
 	private final Label author = new Label();
 
-	public PlaceBookEntryWidget(final PlaceBookToolbar toolbar, final PlaceBookEntry entry)
+	public PlaceBookEntryWidget(final PlaceBookPlace place, final PlaceBookEntry entry)
 	{
 		super();
 		title.setText(entry.getTitle());
@@ -51,11 +52,11 @@ public class PlaceBookEntryWidget extends FlowPanel
 			{
 				if (entry.getState().equals("PUBLISHED"))
 				{
-					toolbar.getPlaceController().goTo(new PlaceBookPreviewPlace(toolbar.getShelf(), entry.getKey()));
+					place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), entry.getKey()));
 				}
 				else
 				{
-					toolbar.getPlaceController().goTo(new PlaceBookEditorPlace(entry.getKey(), toolbar.getShelf()));
+					place.getPlaceController().goTo(new PlaceBookEditor(entry.getKey(), place.getShelf()));
 				}
 			}
 		}, ClickEvent.getType());

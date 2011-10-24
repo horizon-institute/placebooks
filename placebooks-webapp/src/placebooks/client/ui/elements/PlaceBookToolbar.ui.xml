@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.divider {
+			float: left;
+		}
+		
+		.signup {
+			margin-left: 0px;
+		}
+	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<g:FlowPanel styleName="{res.style.toolbar}">
+		<p:PlaceBookToolbarItem ui:field="homeItem" text="PLACEBOOKS"/>
+		<p:PlaceBookToolbarItem ui:field="createItem" text="CREATE" image="{res.add}" />
+		<p:PlaceBookToolbarItem ui:field="libraryItem" text="MY LIBRARY" image="{res.book}" />
+		<g:FlowPanel styleName="{res.style.toolbarLogin}">
+			<g:HTML ui:field="loginLabel" styleName="{res.style.toolbarItem}">LOGIN</g:HTML>
+			<g:InlineLabel ui:field="divider" styleName="{style.divider}"> | </g:InlineLabel>
+			<g:InlineLabel ui:field="signupLabel" addStyleNames="{res.style.toolbarItem} {style.signup}">SIGNUP</g:InlineLabel>
+			<p:MousePanel ui:field="dropMenu" styleName="{res.style.toolbarMenu}">
+				<g:Label ui:field="linkedAccounts" styleName="{res.style.toolbarMenuItem}">Linked Accounts</g:Label>
+				<g:Label ui:field="logout" styleName="{res.style.toolbarMenuItem}">Logout</g:Label>				
+			</p:MousePanel>
+		</g:FlowPanel>
+	</g:FlowPanel>
+</ui:UiBinder> 

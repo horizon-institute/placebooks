@@ -1,4 +1,4 @@
-package placebooks.client.ui;
+package placebooks.client.ui.elements;
 
 import java.util.ArrayList;
 import java.util.Collections;
