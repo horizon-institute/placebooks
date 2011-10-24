@@ -29,7 +29,6 @@ import org.springframework.web.servlet.ModelAndView;
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
-import placebooks.model.LoginDetails;
 import placebooks.model.MapImageItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
@@ -37,11 +36,11 @@ import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
+import placebooks.services.EverytrailService;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailTripsResponse;
 import placebooks.utils.InitializeDatabase;
-
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTripsResponse;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -559,7 +558,8 @@ public class PlaceBooksAdminControllerDebug
 	public ModelAndView testEverytrailLogin(final HttpServletRequest req)
 	{
 		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: "
 				+ response.getValue() + "<br/>");
@@ -570,12 +570,13 @@ public class PlaceBooksAdminControllerDebug
 	{
 		ModelAndView returnView;
 
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
-			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(response.getValue());
+			final EverytrailPicturesResponse picturesResponse = service.pictures(response.getValue());
 			log.debug(picturesResponse.getStatus());
 			returnView = new ModelAndView("message", "text", "Logged in and got picutre list: <br /><pre>"
 					+ picturesResponse.getStatus() + "</pre><br/>");
@@ -593,12 +594,13 @@ public class PlaceBooksAdminControllerDebug
 	{
 		ModelAndView returnView;
 
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
-			final EverytrailTripsResponse tripsResponse = EverytrailHelper.Trips(response.getValue());
+			final EverytrailTripsResponse tripsResponse = service.trips(response.getValue());
 			log.debug(tripsResponse.getStatus());
 			returnView = new ModelAndView("message", "text", "Logged in and got trip list: <br /><pre>"
 					+ tripsResponse.getStatus() + "</pre><br/>");

@@ -4,18 +4,14 @@
 package placebooks.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
-
-import placebooks.model.GPSTraceItem;
 
 /**
  * @author pszmp
@@ -30,7 +26,7 @@ public class CommunicationHelper
 	 * @author pszmp
 	 *
 	 */
-	static class HttpAuthenticator extends Authenticator
+	public static class HttpAuthenticator extends Authenticator
 	{
 		private String username, password;
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks.model;
+package placebooks.services.model;
 
 /**
  * @author pszmp Used within EverytrailHelper to pass the response data back to calling methods when

@@ -1,16 +1,16 @@
 /**
  * 
  */
-package placebooks.controller;
+package placebooks.services;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.Hashtable;
+
+import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
@@ -32,14 +32,14 @@ import placebooks.model.PeoplesCollectionTrailsResponse;
  * @author pszmp
  *
  */
-public class PeoplesCollectionHelper
+public class PeoplesCollectionService extends Service
 {
 	public final static String SERVICE_NAME = "PeoplesCollection";
 	private static final String apiBaseUrl = "http://www.peoplescollectionwales.com/mobile";
 
 
 	protected static final ObjectMapper mapper = new ObjectMapper();
-	private static final Logger log = Logger.getLogger(EverytrailHelper.class.getName());
+	private static final Logger log = Logger.getLogger(PeoplesCollectionService.class);
 	
 	/**
 	 * Perform a post to the given People's Collection api destination with the parameters specified
@@ -144,4 +144,23 @@ public class PeoplesCollectionHelper
 		return returnResult;
 	}
 
+	@Override
+	protected void sync(EntityManager manager, User user, LoginDetails details)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean checkLogin(String username, String password)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getName()
+	{
+		return SERVICE_NAME;
+	}
 }

@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
@@ -38,10 +37,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 		void shelfChanged(Shelf shelf);
 	}
 
-	private static boolean everytrailsUpdate = false;
 	private final Label divider = new Label(" | ");
 	private final FlowPanel dropMenu = new FlowPanel();
-	private LoginDetails everytrailDetails = null;
 
 	private final MouseOutHandler hideMenuHandler = new MouseOutHandler()
 	{
@@ -125,14 +122,8 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			}
 		}, MouseOverEvent.getType());
 
-		add(new MenuItem("Link Everytrail Account")
+		add(new MenuItem("Linked Accounts")
 		{
-			@Override
-			public boolean isEnabled()
-			{
-				return everytrailDetails == null;
-			}
-
 			@Override
 			public void run()
 			{
@@ -140,52 +131,17 @@ public class PlaceBookToolbarLogin extends FlowPanel
 				final PopupPanel dialogBox = new PopupPanel();
 				dialogBox.setGlassEnabled(true);
 				dialogBox.setAnimationEnabled(true);
-				final LoginDialog account = new LoginDialog("Link Everytrail Account", "Link Account",
-						"Everytrail Username:");
-				account.addClickHandler(new ClickHandler()
-				{
-
-					@Override
-					public void onClick(final ClickEvent event)
-					{
-						PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), "Everytrail",
-														new AbstractCallback()
-														{
-															@Override
-															public void failure(final Request request,
-																	final Response response)
-															{
-																account.setErrorText("Everytrail Login Failed");
-															}
-
-															@Override
-															public void success(final Request request,
-																	final Response response)
-															{
-																dialogBox.hide();
-																everytrailsUpdate = true;
-																PlaceBookService.everytrail(new AbstractCallback()
-																{
-																	@Override
-																	public void success(final Request request,
-																			final Response response)
-																	{
-																		// TODO Auto-generated
-																		// method stub
-
-																	}
-																});
-															}
-														});
-					}
-				});
-				dialogBox.add(account);
+				final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
+				dialogBox.setWidget(account);
+				
 				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
 				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
 				dialogBox.setAutoHideEnabled(true);
 
+				dialogBox.setWidth("500px");
+				
 				dialogBox.center();
-				dialogBox.show();
+				dialogBox.show();				
 			}
 		});
 
@@ -357,29 +313,10 @@ public class PlaceBookToolbarLogin extends FlowPanel
 			loginLabel.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.INSTANCE.style().dropIcon()
 					+ "\">&#9660;</span>");
 
-			for (final LoginDetails details : user.getLoginDetails())
-			{
-				if (details.getService().equals("Everytrail"))
-				{
-					everytrailDetails = details;
-					if (!everytrailsUpdate)
-					{
-						everytrailsUpdate = true;
-						PlaceBookService.everytrail(new AbstractCallback()
-						{
-							@Override
-							public void success(final Request request, final Response response)
-							{
-							}
-						});
-					}
-				}
-			}
 		}
 		else
 		{
 			getElement().getStyle().setDisplay(Display.BLOCK);
-			everytrailDetails = null;
 
 			divider.setVisible(true);
 			signupLabel.setVisible(true);

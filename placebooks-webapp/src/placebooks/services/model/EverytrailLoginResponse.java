@@ -1,7 +1,7 @@
 /**
  * 
  */
-package placebooks.model;
+package placebooks.services.model;
 
 /**
  * @author pszmp Response for a login attempt using EverytrailHelper

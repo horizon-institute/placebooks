@@ -2,7 +2,6 @@ package placebooks.model.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -27,11 +26,11 @@ public class Shelf
 		
 		for (final PlaceBook pb : placebooks)
 		{
-			for (final Map.Entry<String, String> e : 
-				 pb.getMetadata().entrySet())
-			{
-				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
-			}
+//			for (final Map.Entry<String, String> e : 
+//				 pb.getMetadata().entrySet())
+//			{
+//				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+//			}
 
 			final ShelfEntry entry = new PlaceBookEntry(pb);
 			entries.add(entry);
@@ -44,12 +43,12 @@ public class Shelf
 
 		for (final PlaceBook pb : pbs)
 		{
-			StringBuilder logString = new StringBuilder();
-			for (final Map.Entry<String, String> e : pb.getMetadata().entrySet())
-			{
-				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
-			}
-			log.debug("Shelf entries: " + logString.toString());
+//			StringBuilder logString = new StringBuilder();
+//			for (final Map.Entry<String, String> e : pb.getMetadata().entrySet())
+//			{
+//				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
+//			}
+//			log.debug("Shelf entries: " + logString.toString());
 			final ShelfEntry entry = new PlaceBookEntry(pb);
 			entries.add(entry);
 		}
@@ -61,12 +60,12 @@ public class Shelf
 
 		for (final PlaceBookItem p : ps)
 		{
-			StringBuilder logString = new StringBuilder();
-			for (final Map.Entry<String, String> e : p.getMetadata().entrySet())
-			{
-				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
-			}
-			log.debug("Shelf entries: " + logString.toString());
+//			StringBuilder logString = new StringBuilder();
+//			for (final Map.Entry<String, String> e : p.getMetadata().entrySet())
+//			{
+//				logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
+//			}
+//			log.debug("Shelf entries: " + logString.toString());
 			final ShelfEntry entry = new PlaceBookItemEntry(p);
 			entries.add(entry);
 		}

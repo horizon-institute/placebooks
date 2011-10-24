@@ -1,4 +1,4 @@
-package placebooks.model;
+package placebooks.services.model;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;

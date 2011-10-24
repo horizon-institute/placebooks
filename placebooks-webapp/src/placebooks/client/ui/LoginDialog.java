@@ -74,7 +74,21 @@ public class LoginDialog extends Composite
 
 		submit.setEnabled(true);
 	}
-
+	
+	public void setDisabled()
+	{
+		username.setEnabled(false);
+		password.setEnabled(false);
+		submit.setEnabled(false);
+	}
+	
+	public void setEnabled()
+	{
+		username.setEnabled(false);
+		password.setEnabled(false);		
+		checkValid(null);
+	}
+	
 	public void focus()
 	{
 		username.setFocus(true);
