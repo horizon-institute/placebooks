@@ -13,9 +13,14 @@ import java.util.Hashtable;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import placebooks.controller.CommunicationHelper;
+import placebooks.model.LoginDetails;
+import placebooks.model.User;
+import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionTrailsResponse;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
@@ -24,9 +29,6 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-
-import placebooks.model.PeoplesCollectionLoginResponse;
-import placebooks.model.PeoplesCollectionTrailsResponse;
 
 /**
  * @author pszmp
@@ -145,13 +147,6 @@ public class PeoplesCollectionService extends Service
 	}
 
 	@Override
-	protected void sync(EntityManager manager, User user, LoginDetails details)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public boolean checkLogin(String username, String password)
 	{
 		// TODO Auto-generated method stub
@@ -162,5 +157,11 @@ public class PeoplesCollectionService extends Service
 	public String getName()
 	{
 		return SERVICE_NAME;
+	}
+
+	@Override
+	protected void sync(EntityManager manager, User user, LoginDetails details) {
+		// TODO Auto-generated method stub
+		
 	}
 }

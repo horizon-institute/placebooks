@@ -1,9 +1,10 @@
-package placebooks.model;
+package placebooks.services.model;
 
 import java.util.ArrayList;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+
 
 /**
  * Class to encapsulate response from Peoples Collection API for a list of Trails for a user 

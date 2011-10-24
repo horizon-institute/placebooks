@@ -24,7 +24,7 @@ import placebooks.services.model.EverytrailVideosResponse;
  * @author pszmp
  *
  */
-public class EverytrailHelperTest extends PlacebooksTestSuper
+public class EverytrailServiceTest extends PlacebooksTestSuper
 {
 	/**
 	 * Test method for {@link placebooks.controller.EverytrailHelper#UserLogin(java.lang.String, java.lang.String)}.
