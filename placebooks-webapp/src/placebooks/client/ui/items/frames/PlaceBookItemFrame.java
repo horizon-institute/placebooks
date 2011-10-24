@@ -1,7 +1,7 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
 import com.google.gwt.user.client.ui.Panel;

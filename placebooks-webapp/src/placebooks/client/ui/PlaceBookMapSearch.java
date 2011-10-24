@@ -31,29 +31,29 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookSearch extends PlaceBookPlace
+public class PlaceBookMapSearch extends PlaceBookPlace
 {
-	@Prefix("search")
-	public static class Tokenizer implements PlaceTokenizer<PlaceBookSearch>
+	@Prefix("mapsearch")
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookMapSearch>
 	{
 		@Override
-		public PlaceBookSearch getPlace(final String token)
+		public PlaceBookMapSearch getPlace(final String token)
 		{
-			return new PlaceBookSearch(token);
+			return new PlaceBookMapSearch(token);
 		}
 
 		@Override
-		public String getToken(final PlaceBookSearch place)
+		public String getToken(final PlaceBookMapSearch place)
 		{
 			return place.getSearch();
 		}
 	}
 
-	interface PlaceBookSearchUiBinder extends UiBinder<Widget, PlaceBookSearch>
+	interface PlaceBookMapSearchUiBinder extends UiBinder<Widget, PlaceBookMapSearch>
 	{
 	}
 
-	private static PlaceBookSearchUiBinder uiBinder = GWT.create(PlaceBookSearchUiBinder.class);
+	private static PlaceBookMapSearchUiBinder uiBinder = GWT.create(PlaceBookMapSearchUiBinder.class);
 
 	@UiField
 	Panel placebooks;
@@ -69,13 +69,13 @@ public class PlaceBookSearch extends PlaceBookPlace
 	
 	private final String searchString;
 
-	public PlaceBookSearch(final String search)
+	public PlaceBookMapSearch(final String search)
 	{
 		super(null);
 		this.searchString = search;
 	}
 
-	public PlaceBookSearch(final String search, final Shelf shelf)
+	public PlaceBookMapSearch(final String search, final Shelf shelf)
 	{
 		super(shelf);
 		this.searchString = search;
@@ -129,7 +129,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	private void search()
 	{		
-		placeController.goTo(new PlaceBookSearch(searchBox.getText(), shelf));
+		placeController.goTo(new PlaceBookMapSearch(searchBox.getText(), shelf));
 	}
 
 	@Override

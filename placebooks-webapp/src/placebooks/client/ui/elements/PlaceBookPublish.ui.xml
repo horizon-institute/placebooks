@@ -1,0 +1,80 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.dialog {
+			margin: 10px;
+		}
+		
+		.leftButton {
+			position:relative;
+			left: 0px;
+			top: 0px;
+			cursor: default;
+			border: 1px outset #CCE;
+		}
+		
+		.rightButton {
+			position:absolute;
+			right: 0px;
+			top: 0px;
+			cursor: default;
+			border: 1px outset #CCE;
+		}
+		
+		.innerImagePanel
+		{
+			position: relative;
+			left: 30px;
+			right: 30px;
+			top: 0px;
+			bottom: 0px;
+		}			
+		
+		.image {
+			width:100%;			
+		}
+		
+		.imagePanel
+		{
+			position: relative;
+			width: 300px;
+			min-height: 100px;
+		}
+		
+		.buttonPanel 
+		{
+			position: relative;
+			width: 300px;
+		}
+		
+		.publishButton 
+		{
+			float: right;
+		}
+		
+		.desc 
+		{
+			width: 300px;
+		}
+	</ui:style>	
+	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<g:FlowPanel styleName="{style.dialog}">
+		<g:FlowPanel styleName="{style.imagePanel}">
+			<g:Image styleName="{style.image}" ui:field="placebookImage" />		
+		</g:FlowPanel>
+		<g:FlowPanel styleName="{style.buttonPanel}">
+			<g:Image ui:field="leftButton" styleName="{style.leftButton}" resource="{res.arrow_left}"/>
+			<g:Image ui:field="rightButton" styleName="{style.rightButton}" resource="{res.arrow_right}"/>
+		</g:FlowPanel>
+		
+		<g:Label>Title:</g:Label>
+		<g:TextBox ui:field="title"></g:TextBox>
+		<g:Label>Location:</g:Label>
+		<g:TextBox ui:field="location"></g:TextBox>
+		<g:Label>Activity:</g:Label>
+		<g:TextBox ui:field="activity"></g:TextBox>
+		<g:Label styleName="{style.desc}">Description:</g:Label>
+		<g:FlowPanel><g:TextArea ui:field="description"></g:TextArea></g:FlowPanel>
+		<g:Button styleName="{style.publishButton}" ui:field="publish">Publish</g:Button>
+	</g:FlowPanel>
+</ui:UiBinder>

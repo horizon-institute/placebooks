@@ -15,18 +15,10 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
 	}
 
-	public static void sync(final String service, final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
-	}
-
 	public static String getHostURL()
 	{
 		if (GWT.getModuleBaseURL().endsWith(GWT.getModuleName() + "/")) { return GWT.getModuleBaseURL()
 				.substring(0, (GWT.getModuleBaseURL().length() - GWT.getModuleName().length() - 1)); }
-		// if (url.endsWith("taxishare-ui/")) { return url.substring(0, url.length() -
-		// "taxishare-ui/".length())
-		// + "taxishare-service/"; }
 
 		return GWT.getModuleBaseURL();
 	}
@@ -35,12 +27,6 @@ public class PlaceBookService
 	{
 		serverRequest(getHostURL() + "placebooks/a/palette", callback);
 	}
-	
-
-	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
-	}	
 
 	public static void getPlaceBook(final String key, final RequestCallback callback)
 	{
@@ -50,6 +36,11 @@ public class PlaceBookService
 	public static void getPlaceBookItem(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/placebookitem/" + key, callback);
+	}
+
+	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
 	}
 
 	public static void getShelf(final RequestCallback callback)
@@ -127,5 +118,10 @@ public class PlaceBookService
 	private static void serverRequest(final String url, final String data, final RequestCallback callback)
 	{
 		serverRequest(url, RequestBuilder.POST, data, callback);
+	}
+
+	public static void sync(final String service, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
 	}
 }

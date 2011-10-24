@@ -2,7 +2,7 @@ package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.widget.RichTextArea;
+import placebooks.client.ui.elements.RichTextArea;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;

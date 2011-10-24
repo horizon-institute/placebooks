@@ -1,6 +1,6 @@
 package placebooks.client.ui.palette;
 
-import placebooks.client.ui.widget.MousePanel;
+import placebooks.client.ui.elements.MousePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

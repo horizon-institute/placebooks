@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookInteractionHandler;
-import placebooks.client.ui.PlaceBookInteractionHandler.DragState;
-import placebooks.client.ui.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler.DragState;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;

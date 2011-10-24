@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class AddMapMenuItem extends MenuItem

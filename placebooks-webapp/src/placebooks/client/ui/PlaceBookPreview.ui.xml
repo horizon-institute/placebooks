@@ -1,19 +1,59 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pb="urn:import:placebooks.client.ui"
-	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.widget" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.likePanel {
 			padding: 10px 30px;
 			background: #EEE;
 			border-bottom: 1px solid #CCC;
-			display: none;
+		}
+		
+		.fblike {
+			float: right;
+		}
+
+		.gplus {
+			float: right;
+		}
+		
+		.title {
+			font-size: 18px;
+			margin-right: 5px;
+		}
+		
+		.author	{
+			margin-right: 5px;
+		}
+		
+		.dropArrow {
+			vertical-align: 20%;
+		} 
+		
+		.menu {
+			cursor: pointer;
+		}
+	
+		.menu:HOVER {
+			background-color: rgba(255, 255, 255, 0.4);
 		}
 	</ui:style>	
 	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
 	<g:FlowPanel>
 		<g:FlowPanel styleName="printHidden">
-			<pb:PlaceBookToolbar ui:field="toolbar" />
-			<g:FlowPanel styleName="{style.likePanel}" ui:field="likePanel" />
+			<p:PlaceBookToolbar ui:field="toolbar" />
+			<g:FlowPanel styleName="{style.likePanel}">
+				<p:GooglePlusOne ui:field="googlePlus" styleName="{style.gplus}"/>			
+				<p:FacebookLikeButton ui:field="facebookLike" styleName="{style.fblike}"/>		
+				<g:FlowPanel>
+					<g:FlowPanel styleName="{style.menu}"><g:InlineLabel ui:field="titleLabel" styleName="{style.title}" /><g:InlineLabel styleName="{style.dropArrow}">▼</g:InlineLabel></g:FlowPanel>
+					<p:MousePanel ui:field="dropMenu" styleName="{res.style.toolbarMenu}">
+						<g:Label ui:field="delete" styleName="{res.style.toolbarMenuItem}">Delete PlaceBook</g:Label>
+						<g:Label ui:field="report" styleName="{res.style.toolbarMenuItem}">Report PlaceBook</g:Label>				
+					</p:MousePanel>					
+					<g:InlineLabel>by&nbsp;</g:InlineLabel>
+					<g:Anchor ui:field="authorLabel" styleName="{style.author}"/>
+				</g:FlowPanel>							
+			</g:FlowPanel>
 		</g:FlowPanel>		
 		<g:FlowPanel ui:field="canvasPanel" />
 	</g:FlowPanel>

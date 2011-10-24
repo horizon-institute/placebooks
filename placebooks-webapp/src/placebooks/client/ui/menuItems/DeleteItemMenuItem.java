@@ -1,8 +1,8 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.PlaceBookCanvas;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
-import placebooks.client.ui.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class DeleteItemMenuItem extends MenuItem
