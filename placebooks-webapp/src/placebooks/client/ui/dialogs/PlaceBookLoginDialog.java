@@ -1,4 +1,4 @@
-package placebooks.client.ui.elements;
+package placebooks.client.ui.dialogs;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
@@ -16,10 +16,10 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class LoginDialog extends Composite
+public class PlaceBookLoginDialog extends Composite
 {
 
-	interface LoginDialogUiBinder extends UiBinder<Widget, LoginDialog>
+	interface LoginDialogUiBinder extends UiBinder<Widget, PlaceBookLoginDialog>
 	{
 	}
 
@@ -43,7 +43,7 @@ public class LoginDialog extends Composite
 	@UiField
 	Label usernameLabel;
 
-	public LoginDialog(final String title, final String submitText, final String usernameText)
+	public PlaceBookLoginDialog(final String title, final String submitText, final String usernameText)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		submit.setEnabled(false);

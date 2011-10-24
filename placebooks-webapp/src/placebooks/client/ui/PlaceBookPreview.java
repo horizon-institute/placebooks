@@ -1,30 +1,26 @@
 package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
-import placebooks.client.JavaScriptInjector;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.Shelf;
+import placebooks.client.ui.elements.FacebookLikeButton;
+import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookToolbar;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Display;
-import com.google.gwt.dom.client.Style.Float;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -61,7 +57,16 @@ public class PlaceBookPreview extends PlaceBookPlace
 	Panel canvasPanel;
 
 	@UiField
-	Panel likePanel;
+	GooglePlusOne googlePlus;
+	
+	@UiField
+	FacebookLikeButton facebookLike;
+	
+	@UiField
+	Label titleLabel;
+	
+	@UiField
+	Anchor authorLabel;
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
@@ -127,31 +132,15 @@ public class PlaceBookPreview extends PlaceBookPlace
 	{
 		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY, false);
 
-		likePanel.clear();
-		
-		final Label label = new Label(placebook.getMetadata("title"));
-		likePanel.add(label);
-		label.getElement().getStyle().setFloat(Float.LEFT);
-		label.getElement().getStyle().setFontSize(18, Unit.PX);
-		label.getElement().getStyle().setMarginRight(50, Unit.PX);
+		titleLabel.setText(placebook.getMetadata("title"));
+		authorLabel.setText(placebook.getOwner().getName());		
+		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 		
 		if (placebook.getState() != null && placebook.getState().equals("PUBLISHED"))
 		{
 			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getKey();
-			likePanel.getElement().getStyle().setDisplay(Display.BLOCK);
-			final HTML html = new HTML("<g:plusone size=\"medium\" annotation=\"bubble\" href=\"" + url
-					+ "\"></g:plusone>");
-			
-			final Frame frame = new Frame(
-					"http://www.facebook.com/plugins/like.php?href="
-							+ URL.encodeQueryString(url));
-			frame.getElement().getStyle().setBorderWidth(0, Unit.PX);
-			frame.setHeight("35px");
-			frame.getElement().getStyle().setFloat(Float.LEFT);
-			likePanel.add(frame);
-			likePanel.add(html);
-
-			JavaScriptInjector.add("https://apis.google.com/js/plusone.js");
+			facebookLike.setURL(url);
+			googlePlus.setURL(url);
 		}
 		
 		if(placebook.hasMetadata("title"))

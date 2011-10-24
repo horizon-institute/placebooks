@@ -1,4 +1,4 @@
-package placebooks.client.ui.elements;
+package placebooks.client.ui.dialogs;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
@@ -15,10 +15,10 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CreateAccount extends Composite
+public class PlaceBookCreateAccountDialog extends Composite
 {
 
-	interface CreateAccountUiBinder extends UiBinder<Widget, CreateAccount>
+	interface CreateAccountUiBinder extends UiBinder<Widget, PlaceBookCreateAccountDialog>
 	{
 	}
 
@@ -41,7 +41,7 @@ public class CreateAccount extends Composite
 
 	private AbstractCallback callback;
 
-	public CreateAccount()
+	public PlaceBookCreateAccountDialog()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		createAccount.setEnabled(false);

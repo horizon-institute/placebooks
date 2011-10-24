@@ -1,8 +1,6 @@
 package placebooks.client;
 
 import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookActivityMapper;
-import placebooks.client.ui.PlaceBookHistoryMapper;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookPreview;
 

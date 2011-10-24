@@ -9,6 +9,9 @@ import placebooks.client.ui.PlaceBookEditor;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookLibrary;
 import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.dialogs.PlaceBookAccountsDialog;
+import placebooks.client.ui.dialogs.PlaceBookCreateAccountDialog;
+import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
@@ -158,7 +161,7 @@ public class PlaceBookToolbar extends Composite
 			final PopupPanel dialogBox = new PopupPanel();
 			dialogBox.setGlassEnabled(true);
 			dialogBox.setAnimationEnabled(true);
-			final LoginDialog account = new LoginDialog("Login", "Login", "Email:");
+			final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Login", "Login", "Email:");
 			account.addClickHandler(new ClickHandler()
 			{
 				@Override
@@ -283,7 +286,7 @@ public class PlaceBookToolbar extends Composite
 		final PopupPanel dialogBox = new PopupPanel();
 		dialogBox.setGlassEnabled(true);
 		dialogBox.setAnimationEnabled(true);
-		final CreateAccount account = new CreateAccount();
+		final PlaceBookCreateAccountDialog account = new PlaceBookCreateAccountDialog();
 		account.setCallback(new AbstractCallback()
 		{
 			@Override

@@ -36,4 +36,9 @@ public class User extends JavaScriptObject
 	/*-{
 		return this.name;
 	}-*/;
+
+	public final native String getEmail()
+	/*-{
+		return this.email;
+	}-*/;
 }

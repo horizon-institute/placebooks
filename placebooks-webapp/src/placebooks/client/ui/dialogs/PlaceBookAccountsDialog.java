@@ -1,4 +1,4 @@
-package placebooks.client.ui.elements;
+package placebooks.client.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +10,7 @@ import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.resources.Resources;
+import placebooks.client.ui.elements.DatePrinter;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.TextCell;
@@ -213,7 +214,7 @@ public class PlaceBookAccountsDialog extends Composite
 					final PopupPanel dialogBox = new PopupPanel();
 					dialogBox.setGlassEnabled(true);
 					dialogBox.setAnimationEnabled(true);
-					final LoginDialog account = new LoginDialog("Link " + service + " Account", "Link Account", service
+					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service
 							+ " Username:");
 					account.addClickHandler(new ClickHandler()
 					{
