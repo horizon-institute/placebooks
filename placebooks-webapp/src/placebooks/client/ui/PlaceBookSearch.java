@@ -10,7 +10,6 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookEntryWidget;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,9 +56,6 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	@UiField
 	Panel placebooks;
-
-	@UiField
-	PlaceBookToolbar toolbar;
 
 	@UiField
 	Panel indicator;

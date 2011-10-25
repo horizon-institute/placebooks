@@ -15,7 +15,7 @@
 		<p:PlaceBookToolbarItem ui:field="homeItem" text="PLACEBOOKS"/>
 		<p:PlaceBookToolbarItem ui:field="createItem" text="CREATE" image="{res.add}" />
 		<p:PlaceBookToolbarItem ui:field="libraryItem" text="MY LIBRARY" image="{res.book}" />
-		<g:FlowPanel styleName="{res.style.toolbarLogin}">
+		<g:FlowPanel styleName="{res.style.toolbarLogin}" ui:field="loginPanel">
 			<g:HTML ui:field="loginLabel" styleName="{res.style.toolbarItem}">LOGIN</g:HTML>
 			<g:InlineLabel ui:field="divider" styleName="{style.divider}"> | </g:InlineLabel>
 			<g:InlineLabel ui:field="signupLabel" addStyleNames="{res.style.toolbarItem} {style.signup}">SIGNUP</g:InlineLabel>

@@ -13,7 +13,6 @@ import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.elements.PlaceBookPublish;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -175,9 +174,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 	}
 
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
-
-	@UiField
-	PlaceBookToolbar toolbar;
 
 	@UiField
 	Panel backPanel;
