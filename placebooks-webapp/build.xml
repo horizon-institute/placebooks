@@ -88,7 +88,7 @@
 	        <arg value="--long" />        
 	    </exec>
 	    
-		<echo>Version: ${git.branch} - ${git.revision}</echo>
+		<echo>Version: ${git.describe} - ${git.revision}</echo>
 
 		<tstamp/>	
 		<echo file="${war.dir}/version.html" append="false"><![CDATA[<html><body>
