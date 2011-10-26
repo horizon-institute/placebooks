@@ -82,15 +82,17 @@
 	        <arg value="HEAD"/>	        
 	    </exec>
 	    
-	    <exec executable="${git.file}" outputproperty="git.branch" failifexecutionfails="false" errorproperty="">
-	        <arg value="branch"/>	        
+	    <exec executable="${git.file}" outputproperty="git.describe" failifexecutionfails="false" errorproperty="">
+	        <arg value="describe"/>
+	        <arg value="--all" />
+	        <arg value="--long" />        
 	    </exec>
 	    
 		<echo>Version: ${git.branch} - ${git.revision}</echo>
 
 		<tstamp/>	
 		<echo file="${war.dir}/version.html" append="false"><![CDATA[<html><body>
-<p>Branch: ${git.branch}</p>
+<p>Description: ${git.describe}</p>
 <p>Version: <a href="${git.url}${repository.version}">${repository.version}</a></p>
 <p>Built: ${TODAY}</p>
 </body></html>]]></echo>
@@ -197,7 +199,7 @@
 		</javac>
 	</target>
 	
-	<target name="war" depends="compile,staging"
+	<target name="war" depends="compile,staging,git.revision"
 			description="Create the web archive file">
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">
