@@ -12,12 +12,14 @@ import org.junit.Test;
 
 import placebooks.services.PeoplesCollectionService;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionTrail;
+import placebooks.services.model.PeoplesCollectionTrailsResponse;
 
 /**
  * @author pszmp
  *
  */
-public class PeoplesCollectionHelperTest extends PlacebooksTestSuper {
+public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 
 	/**
 	 * Test method for {@link placebooks.services.PeoplesCollectionService#Login(java.lang.String, java.lang.String)}.
@@ -40,4 +42,20 @@ public class PeoplesCollectionHelperTest extends PlacebooksTestSuper {
 
 	}
 
+	/**
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#TrailsByUser(java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testUserTrailsResponse()
+	{
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(test_peoplescollection_username, test_peoplescollection_password);
+		assertTrue("Login with correct username and password failed", trailsResponse.GetAuthenticationResponse().GetIsValid());
+		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
+		PeoplesCollectionTrail trail = trailsResponse.GetMyTrails().iterator().next();
+		log.debug(trail.GetProperties().GetTitle());
+		log.debug("Number of favourite trails:" + trailsResponse.GetMyFavouriteTrails().size());
+		PeoplesCollectionTrail favtrail = trailsResponse.GetMyFavouriteTrails().iterator().next();
+		log.debug(favtrail.GetProperties().GetTitle());
+	}
+	
 }

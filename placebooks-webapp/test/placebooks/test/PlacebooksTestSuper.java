@@ -32,7 +32,7 @@ public class PlacebooksTestSuper
 	
 	
 	protected static final Logger log = 
-		Logger.getLogger(EverytrailHelperTest.class.getName());
+		Logger.getLogger(EverytrailServiceTest.class.getName());
 	
 	final EntityManager em = EMFSingleton.getEntityManager();
 

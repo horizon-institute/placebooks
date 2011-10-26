@@ -20,6 +20,15 @@ import placebooks.controller.CommunicationHelper;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionTrailsResponse;
+
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * @author pszmp
@@ -48,21 +57,10 @@ public class PeoplesCollectionService extends Service
 	{
 		final StringBuilder postResponse = new StringBuilder();
 
-		// Construct data to post by iterating through parameter Hashtable keys Enumeration
+		// Construct data to post by converting data to json
 		final StringBuilder data = new StringBuilder();
-		//final Enumeration<String> paramNames = params.keys();
 		try
 		{
-			/*while (paramNames.hasMoreElements())
-			{
-				final String paramName = paramNames.nextElement();
-				data.append(URLEncoder.encode(paramName, "UTF-8") + "="
-						+ URLEncoder.encode(params.get(paramName), "UTF-8"));
-				if (paramNames.hasMoreElements())
-				{
-					data.append("&");
-				}
-			}*/
 			data.append(mapper.writeValueAsString(params));
 			log.debug("JSON post: " + data.toString());
 			
@@ -122,12 +120,30 @@ public class PeoplesCollectionService extends Service
 		
 		return returnResult;
 	}
-
-	@Override
-	protected void sync(EntityManager manager, User user, LoginDetails details)
+	
+	public static PeoplesCollectionTrailsResponse TrailsByUser(String username, String password)
 	{
-		// TODO Auto-generated method stub
+		Hashtable<String, String> params = new Hashtable<String, String>();
+		params.put("username", username);
+		params.put("password", password);
+		String response = getPostResponseWithParams("/GetTrailsByUser", params);
+		PeoplesCollectionTrailsResponse returnResult = null;
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		mapper.enableDefaultTyping();
+		mapper.registerSubtypes(Point.class, MultiPoint.class, LineString.class, MultiLineString.class, Polygon.class, MultiPolygon.class, GeometryCollection.class);
 		
+		try
+		{
+			returnResult = mapper.readValue(response.toString(), PeoplesCollectionTrailsResponse.class);
+			log.debug("PeoplecCollection response decoded: " + (returnResult.GetAuthenticationResponse().GetIsValid() ? "valid " : "not valid ")  + returnResult.GetAuthenticationResponse().GetReason());
+		}
+		catch(Exception ex)
+		{
+			log.error("Couldn't decode response from json : " + response.toString(), ex);
+			returnResult = new PeoplesCollectionTrailsResponse();
+		}
+		
+		return returnResult;
 	}
 
 	@Override
@@ -141,5 +157,11 @@ public class PeoplesCollectionService extends Service
 	public String getName()
 	{
 		return SERVICE_NAME;
+	}
+
+	@Override
+	protected void sync(EntityManager manager, User user, LoginDetails details) {
+		// TODO Auto-generated method stub
+		
 	}
 }
