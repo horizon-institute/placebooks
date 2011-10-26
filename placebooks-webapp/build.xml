@@ -93,7 +93,7 @@
 		<tstamp/>	
 		<echo file="${war.dir}/version.html" append="false"><![CDATA[<html><body>
 <p>Description: ${git.describe}</p>
-<p>Version: <a href="${git.url}${repository.version}">${repository.version}</a></p>
+<p>Version: <a href="${git.url}${git.revision}">${git.revision}</a></p>
 <p>Built: ${TODAY}</p>
 </body></html>]]></echo>
 	</target>
