@@ -27,11 +27,11 @@ public class PlaceBookEditor implements EntryPoint
 		Resources.INSTANCE.style().ensureInjected();
 
 		final EventBus eventBus = new SimpleEventBus();
-		final PlaceController placeController = new PlaceController(eventBus);
+		final PlaceController placeController = new PlaceController((com.google.gwt.event.shared.EventBus) eventBus);
 
 		// Start ActivityManager for the main widget with our ActivityMapper
 		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
-		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
+		final ActivityManager activityManager = new ActivityManager(activityMapper, (com.google.gwt.event.shared.EventBus) eventBus);
 		activityManager.setDisplay(appWidget);
 
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
@@ -46,7 +46,7 @@ public class PlaceBookEditor implements EntryPoint
 					.substring(Window.Location.getPath().lastIndexOf('/') + 1));
 		}
 
-		historyHandler.register(placeController, eventBus, defaultPlace);
+		historyHandler.register(placeController, (com.google.gwt.event.shared.EventBus) eventBus, defaultPlace);
 
 		RootPanel.get().add(appWidget);
 		// Goes to the place represented on URL else default place

@@ -10,5 +10,4 @@ datanucleus.log
 build.properties
 .project
 .gwt
-placebooks-webapp/src/personal-placebooks.properties
 placebooks-webapp/build
