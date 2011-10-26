@@ -116,6 +116,9 @@ public class PlaceBookToolbar extends Composite
 	
 	public void refresh()
 	{
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getShelf() != null);
+		createItem.setEnabled(place.getShelf() != null);
+		
 		if (place != null && place.getShelf() != null)
 		{
 			setUser(place.getShelf().getUser());

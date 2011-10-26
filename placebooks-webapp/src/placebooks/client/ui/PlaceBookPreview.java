@@ -35,10 +35,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPreview extends PlaceBookPlace
 {
-	interface PlaceBookPreviewUiBinder extends UiBinder<Widget, PlaceBookPreview>
-	{
-	}
-
 	@Prefix("preview")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookPreview>
 	{
@@ -55,6 +51,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 	}
 
+	interface PlaceBookPreviewUiBinder extends UiBinder<Widget, PlaceBookPreview>
+	{
+	}
+
 	private static final PlaceBookPreviewUiBinder uiBinder = GWT.create(PlaceBookPreviewUiBinder.class);
 
 	private boolean dropMenuEnabled = false;
@@ -67,7 +67,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	@UiField
 	Panel menuButton;
-	
+
 	@UiField
 	Panel infoPanel;
 
@@ -82,10 +82,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	@UiField
 	Label dropArrow;
-	
+
 	@UiField
 	Label delete;
-	
+
 	@UiField
 	Anchor authorLabel;
 
@@ -122,11 +122,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return canvas;
 	}
 
-	String getKey()
-	{
-		return placebookKey;
-	}
-
 	public void hideMenu()
 	{
 		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
@@ -136,7 +131,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	public void setPlaceBook(final PlaceBook placebook)
 	{
-		this.placebook = placebook; 
+		this.placebook = placebook;
 		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY, false);
 
 		titleLabel.setText(placebook.getMetadata("title"));
@@ -144,7 +139,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 
 		infoPanel.setVisible(true);
-		
+
 		if (placebook.getState() != null && placebook.getState().equals("PUBLISHED"))
 		{
 			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getKey();
@@ -160,41 +155,13 @@ public class PlaceBookPreview extends PlaceBookPlace
 		{
 			Window.setTitle("PlaceBooks");
 		}
-		
+
 		refresh();
 	}
 
-	private void refresh()
-	{
-		if(getCurrentUser() != null)
-		{
-			delete.setVisible(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));
-			setEnabledDropMenu(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));			
-		}
-		else
-		{
-			delete.setVisible(false);
-			setEnabledDropMenu(false);
-		}
-	}
-	
-	private void setEnabledDropMenu(final boolean enabled)
-	{
-		dropMenuEnabled = enabled;
-		dropArrow.setVisible(enabled);
-		if(enabled)
-		{
-			menuButton.addStyleName(Resources.INSTANCE.style().button());
-		}
-		else
-		{
-			menuButton.removeStyleName(Resources.INSTANCE.style().button());
-		}
-	}
-		
 	public void showMenu(final int x, final int y)
 	{
-		if(dropMenuEnabled)
+		if (dropMenuEnabled)
 		{
 			dropMenu.getElement().getStyle().setTop(y, Unit.PX);
 			dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
@@ -204,55 +171,13 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 	}
 
-	@UiHandler("delete")
-	void delete(final ClickEvent event)
-	{
-		if(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()))
-		{
-			PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
-			{	
-				@Override
-				public void success(Request request, Response response)
-				{
-					// TODO Auto-generated method stub
-					
-				}
-			});
-		}
-	}
-	
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-	
-	@UiHandler(value={"dropMenu", "menuButton"})
-	void hideMenu(final MouseOutEvent event)
-	{
-		hideMenuTimer.schedule(500);
-	}
-	
-	@UiHandler("menuButton")
-	void showMenuButton(final MouseOverEvent event)
-	{
-		showMenu(menuButton.getAbsoluteLeft(), menuButton.getAbsoluteTop() + menuButton.getOffsetHeight());
-	}
-
-	@Override
-	public void setShelf(Shelf shelf)
-	{
-		super.setShelf(shelf);
-		refresh();
-	}
-
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		final Widget preview = uiBinder.createAndBindUi(this);
 
 		infoPanel.setVisible(false);
-		
+
 		canvasPanel.add(canvas);
 
 		toolbar.setPlace(this);
@@ -276,6 +201,80 @@ public class PlaceBookPreview extends PlaceBookPlace
 					setPlaceBook(placebook);
 				}
 			});
+		}
+	}
+
+	@UiHandler("delete")
+	void delete(final ClickEvent event)
+	{
+		if (getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()))
+		{
+			PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+			{
+				@Override
+				public void success(final Request request, final Response response)
+				{
+					// TODO Auto-generated method stub
+
+				}
+			});
+		}
+	}
+
+	String getKey()
+	{
+		return placebookKey;
+	}
+
+	@UiHandler(value = { "dropMenu", "menuButton" })
+	void hideMenu(final MouseOutEvent event)
+	{
+		hideMenuTimer.schedule(500);
+	}
+
+	@UiHandler("dropMenu")
+	void showMenu(final MouseOverEvent event)
+	{
+		showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+	}
+
+	@UiHandler("menuButton")
+	void showMenuButton(final MouseOverEvent event)
+	{
+		showMenu(menuButton.getAbsoluteLeft(), menuButton.getAbsoluteTop() + menuButton.getOffsetHeight());
+	}
+
+	@Override
+	protected void shelfUpdated()
+	{
+		refresh();
+	}
+
+	private void refresh()
+	{
+		if (getCurrentUser() != null)
+		{
+			delete.setVisible(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));
+			setEnabledDropMenu(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));
+		}
+		else
+		{
+			delete.setVisible(false);
+			setEnabledDropMenu(false);
+		}
+	}
+
+	private void setEnabledDropMenu(final boolean enabled)
+	{
+		dropMenuEnabled = enabled;
+		dropArrow.setVisible(enabled);
+		if (enabled)
+		{
+			menuButton.addStyleName(Resources.INSTANCE.style().button());
+		}
+		else
+		{
+			menuButton.removeStyleName(Resources.INSTANCE.style().button());
 		}
 	}
 }

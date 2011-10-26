@@ -13,13 +13,29 @@ public abstract class PlaceBookPlace extends Place implements Activity
 {
 	@UiField
 	PlaceBookToolbar toolbar;
-	
-	protected Shelf shelf;
-	protected PlaceController placeController;
+
+	private Shelf shelf;
+	private PlaceController placeController;
 
 	protected PlaceBookPlace(final Shelf shelf)
 	{
 		this.shelf = shelf;
+	}
+
+	public User getCurrentUser()
+	{
+		if (shelf != null) { return shelf.getUser(); }
+		return null;
+	}
+
+	public PlaceController getPlaceController()
+	{
+		return placeController;
+	}
+
+	public Shelf getShelf()
+	{
+		return shelf;
 	}
 
 	@Override
@@ -32,42 +48,31 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	public void onCancel()
 	{
 	}
-	
-	public User getCurrentUser()
-	{
-		if(shelf != null)
-		{
-			return shelf.getUser();
-		}
-		return null;
-	}
 
-	@Override	
+	@Override
 	public void onStop()
 	{
 	}
 
-	public Shelf getShelf()
+	public void setPlaceController(final PlaceController controller)
 	{
-		return shelf;
+		this.placeController = controller;
 	}
-	
-	public PlaceController getPlaceController()
+
+	public final void setShelf(final Shelf shelf)
 	{
-		return placeController;
-	}
-	
-	public void setShelf(final Shelf shelf)
-	{
-		this.shelf = shelf;
-		if(toolbar != null)
+		if (this.shelf != shelf)
 		{
-			toolbar.refresh();
+			this.shelf = shelf;
+			shelfUpdated();
+			if (toolbar != null)
+			{
+				toolbar.refresh();
+			}
 		}
 	}
-	
-	public void setPlaceController(PlaceController controller)
+
+	protected void shelfUpdated()
 	{
-		this.placeController = controller;		
 	}
 }

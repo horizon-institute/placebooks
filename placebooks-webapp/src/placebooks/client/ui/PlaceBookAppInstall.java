@@ -29,7 +29,7 @@ public class PlaceBookAppInstall extends PlaceBookPlace
 			return "";
 		}
 	}
-	
+
 	interface PlaceBookAppInstallUiBinder extends UiBinder<Widget, PlaceBookAppInstall>
 	{
 	}
@@ -40,16 +40,16 @@ public class PlaceBookAppInstall extends PlaceBookPlace
 	{
 		super(shelf);
 	}
-	
+
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget widget = uiBinder.createAndBindUi(this);
+		final Widget widget = uiBinder.createAndBindUi(this);
 
 		toolbar.setPlace(this);
 
 		Window.setTitle("PlaceBooks App Install Instructions");
 		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(widget);
-	}	
+	}
 }

@@ -59,10 +59,10 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	@UiField
 	Panel indicator;
-	
+
 	@UiField
 	TextBox searchBox;
-	
+
 	private final String searchString;
 
 	public PlaceBookSearch(final String search)
@@ -81,16 +81,61 @@ public class PlaceBookSearch extends PlaceBookPlace
 	{
 		return searchString;
 	}
-	
+
+	public void setSearchShelf(final Shelf shelf)
+	{
+		indicator.setVisible(false);
+		placebooks.clear();
+		if (shelf != null)
+		{
+			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+			for (final PlaceBookEntry entry : shelf.getEntries())
+			{
+				if (entry.getScore() > 0 || searchString.equals(""))
+				{
+					entries.add(entry);
+				}
+			}
+
+			Collections.sort(entries, new Comparator<PlaceBookEntry>()
+			{
+				@Override
+				public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
+				{
+					if (o2.getScore() != o1.getScore())
+					{
+						return o2.getScore() - o1.getScore();
+					}
+					else
+					{
+						return o1.getTitle().compareTo(o2.getTitle());
+					}
+				}
+			});
+
+			int index = 0;
+			for (final PlaceBookEntry entry : entries)
+			{
+				final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(this, entry);
+				if (index % 5 == 0)
+				{
+					widget.getElement().getStyle().setProperty("clear", "left");
+				}
+				index++;
+				placebooks.add(widget);
+			}
+		}
+	}
+
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget widget = uiBinder.createAndBindUi(this);
+		final Widget widget = uiBinder.createAndBindUi(this);
 
 		Window.setTitle("PlaceBooks Search - " + searchString);
 
 		searchBox.setText(searchString);
-	
+
 		toolbar.setPlace(this);
 		GWT.log("Search: " + searchString);
 		// setShelf(shelf);
@@ -100,14 +145,14 @@ public class PlaceBookSearch extends PlaceBookPlace
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				setShelf(Shelf.parse(response.getText()));
+				setSearchShelf(Shelf.parse(response.getText()));
 			}
 		});
 
 		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(widget);
-	}	
-	
+	}
+
 	@UiHandler("searchButton")
 	void handleSearch(final ClickEvent event)
 	{
@@ -124,57 +169,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 	}
 
 	private void search()
-	{		
-		placeController.goTo(new PlaceBookSearch(searchBox.getText(), shelf));
-	}
-
-	@Override
-	public void setShelf(final Shelf shelf)
 	{
-		if (this.shelf != shelf)
-		{
-			this.shelf = shelf;
-			indicator.setVisible(false);
-			placebooks.clear();
-			if (shelf != null)
-			{
-				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-				for (final PlaceBookEntry entry : shelf.getEntries())
-				{
-					if (entry.getScore() > 0 || searchString.equals(""))
-					{
-						entries.add(entry);
-					}
-				}
-
-				Collections.sort(entries, new Comparator<PlaceBookEntry>()
-				{
-					@Override
-					public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
-					{
-						if (o2.getScore() != o1.getScore())
-						{
-							return o2.getScore() - o1.getScore();
-						}
-						else
-						{
-							return o1.getTitle().compareTo(o2.getTitle());
-						}
-					}
-				});
-
-				int index = 0;
-				for (final PlaceBookEntry entry : entries)
-				{
-					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(this, entry);
-					if(index % 5 == 0)
-					{
-						widget.getElement().getStyle().setProperty("clear", "left");
-					}
-					index++;
-					placebooks.add(widget);
-				}
-			}
-		}
-	}	
+		getPlaceController().goTo(new PlaceBookSearch(searchBox.getText(), getShelf()));
+	}
 }
