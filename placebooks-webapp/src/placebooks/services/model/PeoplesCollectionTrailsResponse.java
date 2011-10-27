@@ -13,8 +13,8 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionTrailsResponse {
 
-	ArrayList<PeoplesCollectionTrail> mytrails;
-	ArrayList<PeoplesCollectionTrail> myfavouritetrails;
+	ArrayList<PeoplesCollectionTrailListItem> mytrails;
+	ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails;
 	int total_objects;
 	int per_page;
 	PeoplesCollectionLoginResponse authenticationresponse;
@@ -25,7 +25,7 @@ public class PeoplesCollectionTrailsResponse {
 	}
 
 
-	public PeoplesCollectionTrailsResponse(ArrayList<PeoplesCollectionTrail> mytrails,	ArrayList<PeoplesCollectionTrail> myfavouritetrails,		int total_objects, int per_page,	PeoplesCollectionLoginResponse authenticationresponse)
+	public PeoplesCollectionTrailsResponse(ArrayList<PeoplesCollectionTrailListItem> mytrails,	ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails,		int total_objects, int per_page,	PeoplesCollectionLoginResponse authenticationresponse)
 	{
 		this.mytrails = mytrails;
 		this.myfavouritetrails = myfavouritetrails;
@@ -34,12 +34,12 @@ public class PeoplesCollectionTrailsResponse {
 		this.authenticationresponse = authenticationresponse;
 	}
 
-	public ArrayList<PeoplesCollectionTrail> GetMyTrails()
+	public ArrayList<PeoplesCollectionTrailListItem> GetMyTrails()
 	{
 		return mytrails;
 	}
 
-	public ArrayList<PeoplesCollectionTrail> GetMyFavouriteTrails()
+	public ArrayList<PeoplesCollectionTrailListItem> GetMyFavouriteTrails()
 	{
 		return myfavouritetrails;
 	}

@@ -3,6 +3,7 @@
  */
 package placebooks.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,8 +12,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import placebooks.services.PeoplesCollectionService;
+import placebooks.services.model.PeoplesCollectionItemFeature;
+import placebooks.services.model.PeoplesCollectionItemResponse;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
-import placebooks.services.model.PeoplesCollectionTrail;
+import placebooks.services.model.PeoplesCollectionTrailListItem;
+import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
 
 /**
@@ -51,11 +55,61 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(test_peoplescollection_username, test_peoplescollection_password);
 		assertTrue("Login with correct username and password failed", trailsResponse.GetAuthenticationResponse().GetIsValid());
 		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
-		PeoplesCollectionTrail trail = trailsResponse.GetMyTrails().iterator().next();
-		log.debug(trail.GetProperties().GetTitle());
+		for(PeoplesCollectionTrailListItem trail : trailsResponse.GetMyTrails())
+		{
+			log.debug("My trail #:" + trail.GetId() + " " + trail.GetProperties());
+		}
 		log.debug("Number of favourite trails:" + trailsResponse.GetMyFavouriteTrails().size());
-		PeoplesCollectionTrail favtrail = trailsResponse.GetMyFavouriteTrails().iterator().next();
-		log.debug(favtrail.GetProperties().GetTitle());
+		for(PeoplesCollectionTrailListItem trail : trailsResponse.GetMyFavouriteTrails())
+		{
+			log.debug("Favourite trail #:" + trail.GetId() + " " + trail.GetProperties().GetTitle());
+		}
 	}
 	
+	
+	/**
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#Trail(int)}.
+	 */
+	@Test
+	public void testTrailResponse()
+	{
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(test_peoplescollection_username, test_peoplescollection_password);
+		assertTrue("Login with correct username and password failed", trailsResponse.GetAuthenticationResponse().GetIsValid());
+		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
+		PeoplesCollectionTrailListItem trail = trailsResponse.GetMyTrails().iterator().next();
+
+		log.debug("Getting coordinates for trail #" + trail.GetProperties().GetId() + " " + trail.GetProperties().GetTitle());
+		PeoplesCollectionTrailResponse response = PeoplesCollectionService.Trail(trail.GetProperties().GetId());
+		log.debug("Got title: "+ response.GetProperties().GetTitle());
+		assertEquals("Title of trail details doesn't match listed details.", response.GetProperties().GetTitle(), trail.GetProperties().GetTitle());
+	}
+	
+	/**
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#TrailsItems(int)}.
+	 */
+	@Test
+	public void testTrailItemsResponse()
+	{
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(test_peoplescollection_username, test_peoplescollection_password);
+		assertTrue("Login with correct username and password failed", trailsResponse.GetAuthenticationResponse().GetIsValid());
+		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
+		PeoplesCollectionTrailListItem trail = trailsResponse.GetMyTrails().iterator().next();
+		log.debug("Getting items for trail #" + trail.GetId());
+		
+		PeoplesCollectionTrailResponse trailDetails = PeoplesCollectionService.Trail(trail.GetProperties().GetId());
+		log.debug("Items for trail #" + trail.GetProperties().GetId() + " = " + trailDetails.GetProperties().GetItems().length);
+		assertFalse("No trail items returned", (trailDetails.GetProperties().GetItems().length==0));
+		
+		for(int itemId : trailDetails.GetProperties().GetItems())
+		{
+			PeoplesCollectionItemResponse response = PeoplesCollectionService.Item(itemId);
+			log.debug("Number of objects:" + response.GetTotalObjects());
+			assertFalse("No features returned for get trail items", (response.GetTotalObjects()==0));
+			for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
+			{
+				log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
+			}
+		}
+	}
+
 }

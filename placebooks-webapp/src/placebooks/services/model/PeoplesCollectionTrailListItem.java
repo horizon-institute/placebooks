@@ -6,7 +6,6 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Class to encapsulate response from Peoples Collection API for a Trail 
@@ -14,23 +13,24 @@ import com.vividsolutions.jts.io.WKTReader;
  *
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PeoplesCollectionTrail
+public class PeoplesCollectionTrailListItem
 {
 	String id;
 	String type;
 
-	PeoplesCollectionGeometry geometry;
+	PeoplesCollectionGeometryPoint geometry;
 
-	PeoplesCollectionTrailProperties properties;
+	PeoplesCollectionProperties properties;
 
-	public PeoplesCollectionTrail()
+	public PeoplesCollectionTrailListItem()
 	{
 
 	}
 
-	public PeoplesCollectionTrail(String id, String type, PeoplesCollectionGeometry geometry, PeoplesCollectionTrailProperties properties)
+	public PeoplesCollectionTrailListItem(String id, String type, PeoplesCollectionGeometryPoint geometry, PeoplesCollectionProperties properties)
 	{
 		this.id = id;
+		this.type = type;
 		this.geometry = geometry;
 		this.properties = properties;
 	}
@@ -45,7 +45,7 @@ public class PeoplesCollectionTrail
 		return type;
 	}
 
-	public PeoplesCollectionGeometry GetPeoplesCollectionGeometry()
+	public PeoplesCollectionGeometryPoint GetPeoplesCollectionGeometry()
 	{
 		return geometry;
 	}
@@ -56,7 +56,7 @@ public class PeoplesCollectionTrail
 	}
 
 	
-	public PeoplesCollectionTrailProperties GetProperties()
+	public PeoplesCollectionProperties GetProperties()
 	{
 		return properties;
 	}

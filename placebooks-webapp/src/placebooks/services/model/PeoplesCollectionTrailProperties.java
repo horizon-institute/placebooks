@@ -1,10 +1,7 @@
 package placebooks.services.model;
 
-import java.util.Date;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 
 /**
@@ -13,78 +10,110 @@ import org.codehaus.jackson.annotate.JsonProperty;
  *
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PeoplesCollectionTrailProperties {
-    int id;
-    String markup;
-    String title;
-    String titlecym;
-    
-    @JsonProperty("ex-small-thumbpath")
-    String ex_small_thumbpath;
-    String icontype;
-    String objecttype;
-    String mediaurl;
-    String dateupdated;
-    
-    public PeoplesCollectionTrailProperties()
-    {
-    	
-    }
-    
-    public PeoplesCollectionTrailProperties(int id, String markup, String title, String titlecym, String ex_small_thumbpath, String icontype, String mediaurl, String objecttype, String dateupdated)
-    {
-    	this.id = id;
-    	this.markup = markup;
-    	this.title = title;
-    	this.titlecym = titlecym;
-    	this.ex_small_thumbpath = ex_small_thumbpath;
-    	this.icontype = icontype;
-    	this.objecttype = objecttype;
-    	this.mediaurl = mediaurl;
-    	this.dateupdated = dateupdated;
-    }
-    
-    public int GetId()
-    {
-    	return id;
-    }
-    
-    public String GetMarkup()
-    {
-    	return markup;
-    }
-    
-    public String GetTitle()
-    {
-    	return title;
-    }
-    
-    public String GetExSmallThumbPath()
-    {
-    	return ex_small_thumbpath;
-    }
-    
-    public String GetIcontype()
-    {
-    	return icontype;
-    }
-    
-    public String GetTytleCym()
-    {
-    	return titlecym;
-    }
-    
-    public String GetObjectType()
-    {
-    	return objecttype;
-    }
-    public String GetMediaURL()
-    {
-    	return mediaurl;
-    }
-    
-    public String GetDateUpdated()
-    {
-    	return dateupdated;
-    }
+public class PeoplesCollectionTrailProperties
+{
+
+	PeoplesCollectionTrailCentroid centroid;
+	int[] items;
+	String title;
+	String titlecym;
+
+	String description;
+	String descriptioncym;
+
+	String difficulty;
+	String trailtype;
+
+	double distance;
+	int userid;
+
+	String tags;
+	String tagscym;
+
+	int trailid;
+
+	public PeoplesCollectionTrailProperties()
+	{
+
+	}
+
+	public PeoplesCollectionTrailProperties(PeoplesCollectionTrailCentroid centroid, int[] items, String title, String titlecym, String description, String descriptioncym, String difficulty, String trailtype, double distance, int userid, String tags, String tagscym, int trailid)
+	{
+		this.centroid = centroid;
+		this.items = items;
+		this.title = title;
+		this.titlecym = titlecym;
+
+		this.description = description;
+		this.descriptioncym = descriptioncym;
+
+		this.difficulty = difficulty;
+		this.trailtype = trailtype;
+
+		this.distance = distance;
+		this.userid = userid;
+
+		this.tags = tags;
+		this.tagscym = tagscym;
+
+		this.trailid = trailid;
+	}
+	public PeoplesCollectionTrailCentroid GetCentroid()
+	{
+		return centroid;
+	}
+
+	public int[] GetItems()
+	{
+		return items;
+	}
+
+	public String GetTitle()
+	{
+		return title;
+	}
+
+	public String GetTitleCym()
+	{
+		return titlecym;
+	}
+
+	public String GetDescription()
+	{
+		return description; 
+	}
+
+	public String GetDecriptionCym()
+	{
+		return descriptioncym;        
+	}
+
+	public String GetDifficulty()
+	{
+		return difficulty;
+	}
+	public String GetTrailType()
+	{
+		return trailtype;
+	}
+
+	public double GetDistance()
+	{
+		return distance;
+	}
+
+	public int GetUserId()
+	{
+		return userid;
+	}
+
+	public String GetTags()
+	{
+		return tags;
+	}
+
+	public String Gettagscym()
+	{
+		return tagscym;
+	}
 }

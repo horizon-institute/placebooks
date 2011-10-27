@@ -20,6 +20,8 @@ import placebooks.controller.CommunicationHelper;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionItemResponse;
+import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -42,6 +44,13 @@ public class PeoplesCollectionService extends Service
 
 	protected static final ObjectMapper mapper = new ObjectMapper();
 	private static final Logger log = Logger.getLogger(PeoplesCollectionService.class);
+	
+
+	@Override
+	public String getName()
+	{
+		return SERVICE_NAME;
+	}
 	
 	/**
 	 * Perform a post to the given People's Collection api destination with the parameters specified
@@ -66,6 +75,7 @@ public class PeoplesCollectionService extends Service
 			
 
 			final URL url = new URL(apiBaseUrl + postDestination);
+			log.debug("URL: " + apiBaseUrl +  postDestination);
 			final URLConnection conn = CommunicationHelper.getConnection(url);
 
 			conn.setDoOutput(true);
@@ -92,6 +102,15 @@ public class PeoplesCollectionService extends Service
 		return postResponse.toString();
 	}
 
+
+	
+	@Override
+	public boolean checkLogin(String username, String password)
+	{
+		PeoplesCollectionLoginResponse loginResponse = Login(username, password);
+		return loginResponse.GetIsValid();
+	}
+	
 	/**
 	 * Log in to the People's Collection api
 	 * @param username
@@ -121,6 +140,12 @@ public class PeoplesCollectionService extends Service
 		return returnResult;
 	}
 	
+	/**
+	 * Get the list of trails created by or favourites of a given user
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public static PeoplesCollectionTrailsResponse TrailsByUser(String username, String password)
 	{
 		Hashtable<String, String> params = new Hashtable<String, String>();
@@ -135,7 +160,7 @@ public class PeoplesCollectionService extends Service
 		try
 		{
 			returnResult = mapper.readValue(response.toString(), PeoplesCollectionTrailsResponse.class);
-			log.debug("PeoplecCollection response decoded: " + (returnResult.GetAuthenticationResponse().GetIsValid() ? "valid " : "not valid ")  + returnResult.GetAuthenticationResponse().GetReason());
+			log.debug("PeoplesCollection response decoded: " + (returnResult.GetAuthenticationResponse().GetIsValid() ? "valid " : "not valid ")  + returnResult.GetAuthenticationResponse().GetReason());
 		}
 		catch(Exception ex)
 		{
@@ -146,17 +171,57 @@ public class PeoplesCollectionService extends Service
 		return returnResult;
 	}
 
-	@Override
-	public boolean checkLogin(String username, String password)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
 
-	@Override
-	public String getName()
+	/**
+	 * Get the details of a particular trail
+	 * @param trailId
+	 * @return
+	 */
+	public static PeoplesCollectionTrailResponse Trail(int trailId)
 	{
-		return SERVICE_NAME;
+		PeoplesCollectionTrailResponse result = null;
+		
+		Hashtable<String, String> params = new Hashtable<String, String>();
+		String response = getPostResponseWithParams("/Get/full/trail/" + trailId, params);
+
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		try
+		{
+			result = mapper.readValue(response.toString(), PeoplesCollectionTrailResponse.class);
+			log.debug("PeoplesCollection response decoded: " + result.GetProperties().GetTitle());
+		}
+		catch(Exception ex)
+		{
+			log.error("Couldn't decode response from json : " + response.toString(), ex);
+			result = new PeoplesCollectionTrailResponse();
+		}
+		return result;
+	}
+	
+	/**
+	 * Get a given items 
+	 * @param trailId
+	 * @return
+	 */
+	public static PeoplesCollectionItemResponse Item(int trailId)
+	{
+		PeoplesCollectionItemResponse result = null;
+		
+		Hashtable<String, String> params = new Hashtable<String, String>();
+		String response = getPostResponseWithParams("/Get/Thumb/Item/" + trailId, params);
+
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		try
+		{
+			result = mapper.readValue(response.toString(), PeoplesCollectionItemResponse.class);
+			log.debug("PeoplesCollection response decoded: Total objects" + result.GetTotalObjects());
+		}
+		catch(Exception ex)
+		{
+			log.error("Couldn't decode response from json : " + response.toString(), ex);
+			result = new PeoplesCollectionItemResponse();
+		}
+		return result;
 	}
 
 	@Override
