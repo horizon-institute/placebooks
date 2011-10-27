@@ -7,7 +7,6 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookEntryPreview;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -58,14 +57,11 @@ public class PlaceBookHome extends PlaceBookPlace
 	TextBox search;
 
 	@UiField
-	PlaceBookToolbar toolbar;
-
-	@UiField
 	SimplePanel preview1;
 
 	@UiField
 	SimplePanel preview2;
-	
+
 	public PlaceBookHome()
 	{
 		super(null);
@@ -79,9 +75,9 @@ public class PlaceBookHome extends PlaceBookPlace
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget widget = uiBinder.createAndBindUi(this);
+		final Widget widget = uiBinder.createAndBindUi(this);
 		toolbar.setPlace(this);
-		
+
 		Window.setTitle("PlaceBooks");
 
 		RootPanel.get().getElement().getStyle().clearOverflow();
@@ -94,12 +90,12 @@ public class PlaceBookHome extends PlaceBookPlace
 				final Shelf shelf = Shelf.parse(response.getText());
 				final Iterator<PlaceBookEntry> entries = shelf.getEntries().iterator();
 				preview1.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));
-				preview2.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));				
+				preview2.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));
 			}
 		});
 		panel.setWidget(widget);
 	}
-	
+
 	@UiHandler("search")
 	void handleBlur(final BlurEvent event)
 	{
@@ -126,13 +122,6 @@ public class PlaceBookHome extends PlaceBookPlace
 		search();
 	}
 
-	@Override
-	public void setShelf(Shelf shelf)
-	{
-		super.setShelf(shelf);
-		toolbar.setPlace(this);
-	}
-
 	@UiHandler("search")
 	void handleSearchEnter(final KeyPressEvent event)
 	{
@@ -146,11 +135,11 @@ public class PlaceBookHome extends PlaceBookPlace
 	{
 		if (search.getText().equals("Search PlaceBooks"))
 		{
-			placeController.goTo(new PlaceBookSearch("", shelf));
+			getPlaceController().goTo(new PlaceBookSearch("", getShelf()));
 		}
 		else
 		{
-			placeController.goTo(new PlaceBookSearch(search.getText(), shelf));
+			getPlaceController().goTo(new PlaceBookSearch(search.getText(), getShelf()));
 		}
-	}	
+	}
 }

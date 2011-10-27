@@ -13,7 +13,6 @@ import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.elements.PlaceBookPublish;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -53,28 +52,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends PlaceBookPlace
 {
-	@Prefix("edit")
-	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
-	{
-		@Override
-		public PlaceBookEditor getPlace(final String token)
-		{
-			return new PlaceBookEditor(token, null);
-		}
-
-		@Override
-		public String getToken(final PlaceBookEditor place)
-		{
-			return place.getKey();
-		}
-	}
-	
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
-	{
-	}
-	
-	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
-
 	public class SaveContext extends Timer
 	{
 		private SaveState state = SaveState.saved;
@@ -174,10 +151,29 @@ public class PlaceBookEditor extends PlaceBookPlace
 		not_saved, save_error, saved, saving
 	}
 
-	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
+	@Prefix("edit")
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
+	{
+		@Override
+		public PlaceBookEditor getPlace(final String token)
+		{
+			return new PlaceBookEditor(token, null);
+		}
 
-	@UiField
-	PlaceBookToolbar toolbar;
+		@Override
+		public String getToken(final PlaceBookEditor place)
+		{
+			return place.getKey();
+		}
+	}
+
+	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
+	{
+	}
+
+	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
+
+	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
 	Panel backPanel;
@@ -230,11 +226,27 @@ public class PlaceBookEditor extends PlaceBookPlace
 		this.placebook = null;
 	}
 
-	String getKey()
+	public PlaceBookCanvas getCanvas()
 	{
-		return placebookKey;
+		return canvas;
 	}
-	
+
+	public PlaceBookInteractionHandler getDragHandler()
+	{
+		return interactionHandler;
+
+	}
+
+	public SaveContext getSaveContext()
+	{
+		return saveContext;
+	}
+
+	public void markChanged()
+	{
+		saveContext.markChanged();
+	}
+
 	@Override
 	public String mayStop()
 	{
@@ -242,10 +254,31 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return super.mayStop();
 	}
 
+	public void setPlaceBook(final PlaceBook newPlacebook)
+	{
+		placebook = newPlacebook;
+
+		canvas.setPlaceBook(newPlacebook, factory, true);
+
+		if (newPlacebook.hasMetadata("title"))
+		{
+			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBooks Editor");
+			title.setText(newPlacebook.getMetadata("title"));
+		}
+		else
+		{
+			Window.setTitle("PlaceBooks Editor");
+			title.setText("No Title");
+		}
+
+		loadingPanel.setVisible(false);
+		canvas.reflow();
+	}
+
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget editor = uiBinder.createAndBindUi(this);
+		final Widget editor = uiBinder.createAndBindUi(this);
 
 		canvasPanel.add(canvas);
 
@@ -302,7 +335,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 							public void success(final Request request, final Response response)
 							{
 								dialogBox.hide();
-								placeController.goTo(new PlaceBookHome());
+								getPlaceController().goTo(new PlaceBookHome());
 							}
 						});
 					}
@@ -334,7 +367,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void run()
 			{
-				placeController.goTo(new PlaceBookPreview(shelf, getCanvas().getPlaceBook()));
+				getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));
 			}
 		});
 		menuItems.add(new MenuItem("Publish")
@@ -381,15 +414,15 @@ public class PlaceBookEditor extends PlaceBookPlace
 		};
 		timer.scheduleRepeating(120000);
 
-		RootPanel.get().getElement().getStyle().setOverflow(Overflow.HIDDEN);		
+		RootPanel.get().getElement().getStyle().setOverflow(Overflow.HIDDEN);
 
 		panel.setWidget(editor);
-		
+
 		if (placebook != null)
 		{
 			setPlaceBook(placebook);
 		}
-		else if(placebookKey.equals("new"))
+		else if (placebookKey.equals("new"))
 		{
 			setPlaceBook(PlaceBook.parse(newPlaceBook));
 		}
@@ -404,23 +437,29 @@ public class PlaceBookEditor extends PlaceBookPlace
 					setPlaceBook(placebook);
 				}
 			});
-		}		
+		}
 	}
 
-	public PlaceBookCanvas getCanvas()
+	public void updatePalette()
 	{
-		return canvas;
-	}
+		PlaceBookService.getPaletteItems(new AbstractCallback()
+		{
+			@Override
+			public void failure(final Request request, final Response response)
+			{
+				if (response.getStatusCode() == 401)
+				{
+					getPlaceController().goTo(new PlaceBookHome());
+				}
+			}
 
-	public PlaceBookInteractionHandler getDragHandler()
-	{
-		return interactionHandler;
-
-	}
-
-	public SaveContext getSaveContext()
-	{
-		return saveContext;
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
+				palette.setPalette(items, interactionHandler);
+			}
+		});
 	}
 
 	@UiHandler("menu")
@@ -450,37 +489,9 @@ public class PlaceBookEditor extends PlaceBookPlace
 		setZoom(zoom - 20);
 	}
 
-	public void markChanged()
+	private String getKey()
 	{
-		saveContext.markChanged();
-	}
-
-//	@Override
-//	protected void onAttach()
-//	{
-//		super.onAttach();
-//		canvas.reflow();
-//	}
-
-	public void setPlaceBook(final PlaceBook newPlacebook)
-	{
-		placebook = newPlacebook;
-
-		canvas.setPlaceBook(newPlacebook, factory, true);
-
-		if (newPlacebook.hasMetadata("title"))
-		{
-			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBooks Editor");
-			title.setText(newPlacebook.getMetadata("title"));
-		}
-		else
-		{
-			Window.setTitle("PlaceBooks Editor");
-			title.setText("No Title");
-		}
-
-		loadingPanel.setVisible(false);
-		canvas.reflow();
+		return placebookKey;
 	}
 
 	private void setZoom(final int zoom)
@@ -495,28 +506,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 	}
 
-	public void updatePalette()
-	{
-		PlaceBookService.getPaletteItems(new AbstractCallback()
-		{
-			@Override
-			public void failure(final Request request, final Response response)
-			{
-				if (response.getStatusCode() == 401)
-				{
-					placeController.goTo(new PlaceBookHome());
-				}
-			}
-
-			@Override
-			public void success(final Request request, final Response response)
-			{
-				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				palette.setPalette(items, interactionHandler);
-			}
-		});
-	}
-
 	private void updatePlaceBook(final PlaceBook newPlacebook)
 	{
 		if (placebook != null && (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
@@ -526,25 +515,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 			final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
-			placeController.goTo(new PlaceBookEditor(placebook, shelf));
+			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
 		}
 		else
 		{
 			placebook = newPlacebook;
 			canvas.updatePlaceBook(newPlacebook);
 
-			// if (newPlacebook.hasMetadata("title"))
-			// {
-			// Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBook Editor");
-			// title.setText(newPlacebook.getMetadata("title"));
-			// }
-			// else
-			// {
-			// Window.setTitle("PlaceBook Editor");
-			// title.setText("No Title");
-			// }
-
 			canvas.reflow();
 		}
-	}	
+	}
 }

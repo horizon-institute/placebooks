@@ -16,6 +16,7 @@
 	<property name="javadoc.dir" value="docs/api" />
 	<property name="basepackage.name" value="placebooks" />
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
+	<property name="git.url" value="https://github.com/horizon-institute/Bridging-the-Rural-Divide--Placebooks/commit/" />
 
 	<property name="placebooks.props.dev-server" 
 			  value="${src.dir}/dev-server-placebooks.properties" />
@@ -34,6 +35,12 @@
 			  value="${basepackage.name}.model.jaxb.GPX10" />
 	<property name="GPX11.package" 
 			  value="${basepackage.name}.model.jaxb.GPX11" />
+
+	<condition property="git.file" value="git.cmd">
+	   <os family="windows"/>
+	</condition>
+
+	<property name="git.file" value="git" />
 
 	<path id="classpath">
   		<fileset dir="${warlib.dir}">
@@ -68,6 +75,28 @@
   	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
 		<classpath refid="classpath" />
 	</taskdef>
+	
+	<target name="git.revision" description="Store git revision in ${repository.version}">
+	    <exec executable="${git.file}" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+	        <arg value="rev-parse"/>
+	        <arg value="HEAD"/>	        
+	    </exec>
+	    
+	    <exec executable="${git.file}" outputproperty="git.describe" failifexecutionfails="false" errorproperty="">
+	        <arg value="describe"/>
+	        <arg value="--all" />
+	        <arg value="--long" />        
+	    </exec>
+	    
+		<echo>Version: ${git.describe} - ${git.revision}</echo>
+
+		<tstamp/>	
+		<echo file="${war.dir}/version.html" append="false"><![CDATA[<html><body>
+<p>Description: ${git.describe}</p>
+<p>Version: <a href="${git.url}${git.revision}">${git.revision}</a></p>
+<p>Built: ${TODAY}</p>
+</body></html>]]></echo>
+	</target>
 	
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
@@ -170,7 +199,7 @@
 		</javac>
 	</target>
 	
-	<target name="war" depends="compile,staging"
+	<target name="war" depends="compile,staging,git.revision"
 			description="Create the web archive file">
 		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
 			 basedir="${war.dir}">

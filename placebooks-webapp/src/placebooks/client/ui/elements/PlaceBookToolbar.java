@@ -63,6 +63,9 @@ public class PlaceBookToolbar extends Composite
 
 	@UiField
 	HTML loginLabel;
+	
+	@UiField
+	Panel loginPanel;
 
 	private User user;
 
@@ -92,10 +95,6 @@ public class PlaceBookToolbar extends Composite
 			{
 				final Shelf shelf = Shelf.parse(response.getText());
 				place.setShelf(shelf);
-				if (shelf != null)
-				{
-					setUser(shelf.getUser());
-				}
 			}
 			catch (final Exception e)
 			{
@@ -109,8 +108,25 @@ public class PlaceBookToolbar extends Composite
 		super();
 		initWidget(uiBinder.createAndBindUi(this));
 
+		loginPanel.setVisible(false);
+		
 		createItem.setEnabled(false);
 		libraryItem.setEnabled(false);
+	}
+	
+	public void refresh()
+	{
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getShelf() != null);
+		createItem.setEnabled(place.getShelf() != null);
+		
+		if (place != null && place.getShelf() != null)
+		{
+			setUser(place.getShelf().getUser());
+		}
+		else
+		{
+			setUser(null);
+		}
 	}
 
 	@UiHandler("homeItem")
@@ -216,6 +232,7 @@ public class PlaceBookToolbar extends Composite
 
 	private void setUser(final User user)
 	{
+		loginPanel.setVisible(true);
 		if (this.user == user) { return; }
 		this.user = user;
 		if (user != null)

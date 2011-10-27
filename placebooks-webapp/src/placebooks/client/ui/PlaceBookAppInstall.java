@@ -1,14 +1,12 @@
 package placebooks.client.ui;
 
 import placebooks.client.model.Shelf;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -31,31 +29,27 @@ public class PlaceBookAppInstall extends PlaceBookPlace
 			return "";
 		}
 	}
-	
+
 	interface PlaceBookAppInstallUiBinder extends UiBinder<Widget, PlaceBookAppInstall>
 	{
 	}
 
 	private static PlaceBookAppInstallUiBinder uiBinder = GWT.create(PlaceBookAppInstallUiBinder.class);
 
-	@UiField
-	PlaceBookToolbar toolbar;
-
-
 	public PlaceBookAppInstall(final Shelf shelf)
 	{
 		super(shelf);
 	}
-	
+
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget widget = uiBinder.createAndBindUi(this);
+		final Widget widget = uiBinder.createAndBindUi(this);
 
 		toolbar.setPlace(this);
 
 		Window.setTitle("PlaceBooks App Install Instructions");
 		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(widget);
-	}	
+	}
 }

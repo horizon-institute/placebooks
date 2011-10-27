@@ -3,7 +3,6 @@ package placebooks.client.ui;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookEntryWidget;
-import placebooks.client.ui.elements.PlaceBookToolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
@@ -35,7 +34,6 @@ public class PlaceBookLibrary extends PlaceBookPlace
 		}
 	}
 
-	
 	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
 	{
 	}
@@ -44,9 +42,6 @@ public class PlaceBookLibrary extends PlaceBookPlace
 
 	@UiField
 	Panel placebooks;
-
-	@UiField
-	PlaceBookToolbar toolbar;
 
 	public PlaceBookLibrary()
 	{
@@ -61,39 +56,35 @@ public class PlaceBookLibrary extends PlaceBookPlace
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		Widget library = uiBinder.createAndBindUi(this);
+		final Widget library = uiBinder.createAndBindUi(this);
 
 		Window.setTitle("PlaceBooks Library");
 
 		toolbar.setPlace(this);
-		setShelf(shelf);
-
-		RootPanel.get().getElement().getStyle().clearOverflow();
+		shelfUpdated();
 		
+		RootPanel.get().getElement().getStyle().clearOverflow();
+
 		panel.setWidget(library);
 	}
-	
+
 	@Override
-	public void setShelf(final Shelf shelf)
+	protected void shelfUpdated()
 	{
-		if (this.shelf != shelf)
+		placebooks.clear();
+		if (getShelf() != null)
 		{
-			this.shelf = shelf;
-			placebooks.clear();
-			if (shelf != null)
+			int index = 0;
+			for (final PlaceBookEntry entry : getShelf().getEntries())
 			{
-				int index = 0;
-				for (final PlaceBookEntry entry : shelf.getEntries())
+				final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(PlaceBookLibrary.this, entry);
+				if (index % 5 == 0)
 				{
-					PlaceBookEntryWidget widget = new PlaceBookEntryWidget(PlaceBookLibrary.this, entry);
-					if(index % 5 == 0)
-					{
-						widget.getElement().getStyle().setProperty("clear", "left");
-					}
-					index++;
-					placebooks.add(widget);
+					widget.getElement().getStyle().setProperty("clear", "left");
 				}
+				index++;
+				placebooks.add(widget);
 			}
 		}
-	}	
+	}
 }
