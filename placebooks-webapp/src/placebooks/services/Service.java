@@ -1,12 +1,16 @@
 package placebooks.services;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import org.apache.log4j.Logger;
 
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 
 public abstract class Service
@@ -23,15 +27,18 @@ public abstract class Service
 
 		if (details == null)
 		{
-			log.error("Everytrail import failed, login details null");
+			log.error("Service for " + this.getName() + " import failed, login details null");
 			return;
 		}
 		if(details.isSyncInProgress())
 		{
-			log.info("Everytrail sync already in progress");
+			log.info(details.getService() +  " sync already in progress");
 			return;			
 		}
-		
+		else
+		{
+			log.info(details.getService() +  " sync starting");
+		}
 		if(!force && details.getLastSync() != null)
 		{
 			log.info("Last sync: " + details.getLastSync());
@@ -50,4 +57,46 @@ public abstract class Service
 	}
 	
 	public abstract String getName();
+	
+	public int cleanupItems(EntityManager manager, ArrayList<String> itemsToKeep, User user)
+	{
+		log.debug("Starting cleanup for " + getName() + " " + itemsToKeep.size() + " items to keep");
+		int deletedItems = 0;
+		try
+		{
+			manager.getTransaction().begin();
+			TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT placebookitem FROM PlaceBookItem AS placebookitem " +
+					" WHERE (placebookitem.owner = ?1) AND (placebookitem.placebook IS null)", PlaceBookItem.class);
+			q.setParameter(1, user);
+			Collection<PlaceBookItem> items = q.getResultList();
+			for(PlaceBookItem placebookitem: items)
+			{
+				if(placebookitem.getMetadataValue("source").equals(getName()))
+				{
+					if(itemsToKeep.contains(placebookitem.getExternalID()))
+					{
+						log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+					}
+					else
+					{
+						log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+						manager.remove(placebookitem);
+						deletedItems++;
+					}
+				}
+			}
+
+			manager.getTransaction().commit();
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+				log.error("Rolling " + getName() +" cleanup back");
+			}
+		}	
+		return deletedItems;
+	}
+	
 }

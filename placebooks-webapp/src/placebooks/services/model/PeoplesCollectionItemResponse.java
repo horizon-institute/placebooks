@@ -12,7 +12,6 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionItemResponse
 {
-	protected String id;
 	protected int total_objects;
 	protected PeoplesCollectionItemFeature[] features;
 	protected String type;
@@ -22,19 +21,13 @@ public class PeoplesCollectionItemResponse
 	public PeoplesCollectionItemResponse()
 	{ }
 	
-	public PeoplesCollectionItemResponse(String id, int total_objects, PeoplesCollectionItemFeature[] features, String type, String page, int per_page)
+	public PeoplesCollectionItemResponse(int id, int total_objects, PeoplesCollectionItemFeature[] features, String type, String page, int per_page)
 	{
-		this.id = id;
 		this.total_objects = total_objects;
 		this.features = features;
 		this.type = type;
 		this.page = page;
 		this.per_page = per_page;
-	}
-	
-	public String GEtId()
-	{
-		return id;
 	}
 	
 	public int GetTotalObjects()

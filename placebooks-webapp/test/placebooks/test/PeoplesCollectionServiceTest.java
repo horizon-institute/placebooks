@@ -78,14 +78,15 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		log.debug("Number of trails:" + trailsResponse.GetMyTrails().size());
 		PeoplesCollectionTrailListItem trail = trailsResponse.GetMyTrails().iterator().next();
 
-		log.debug("Getting coordinates for trail #" + trail.GetProperties().GetId() + " " + trail.GetProperties().GetTitle());
-		PeoplesCollectionTrailResponse response = PeoplesCollectionService.Trail(trail.GetProperties().GetId());
+		log.debug("Getting coordinates for trail #" + trail.GetPropertiesId() + " " + trail.GetProperties().GetTitle());
+		PeoplesCollectionTrailResponse response = PeoplesCollectionService.Trail(trail.GetPropertiesId());
 		log.debug("Got title: "+ response.GetProperties().GetTitle());
 		assertEquals("Title of trail details doesn't match listed details.", response.GetProperties().GetTitle(), trail.GetProperties().GetTitle());
 	}
 	
 	/**
-	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#TrailsItems(int)}.
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#Trails(int)}.
+	 * n.b. this test currently fails as there aren't any trails with items attached to test with
 	 */
 	@Test
 	public void testTrailItemsResponse()
@@ -96,18 +97,39 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		PeoplesCollectionTrailListItem trail = trailsResponse.GetMyTrails().iterator().next();
 		log.debug("Getting items for trail #" + trail.GetId());
 		
-		PeoplesCollectionTrailResponse trailDetails = PeoplesCollectionService.Trail(trail.GetProperties().GetId());
-		log.debug("Items for trail #" + trail.GetProperties().GetId() + " = " + trailDetails.GetProperties().GetItems().length);
+		PeoplesCollectionTrailResponse trailDetails = PeoplesCollectionService.Trail(trail.GetPropertiesId());
+		log.debug("Items for trail #" + trail.GetPropertiesId() + " = " + trailDetails.GetProperties().GetItems().length);
 		assertFalse("No trail items returned", (trailDetails.GetProperties().GetItems().length==0));
 		
 		for(int itemId : trailDetails.GetProperties().GetItems())
 		{
 			PeoplesCollectionItemResponse response = PeoplesCollectionService.Item(itemId);
-			log.debug("Number of objects:" + response.GetTotalObjects());
-			assertFalse("No features returned for get trail items", (response.GetTotalObjects()==0));
+			log.debug("Number of objects: " + response.GetTotalObjects());
+			assertEquals("Features returned for get item where 0 expected", 0, response.GetTotalObjects());
 			for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
 			{
 				log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
+			}
+		}
+	}
+	
+	/**
+	 * Test method for {@link placebooks.controller.PeoplesCollectionHelper#Trails(int)}.
+	 */
+	@Test
+	public void testItemResponse()
+	{
+		PeoplesCollectionItemResponse response = PeoplesCollectionService.Item(test_peoplescollection_item_id);
+		//
+		log.debug("Number of objects: " + response.GetTotalObjects());
+		assertFalse("No features returned for get item", (response.GetTotalObjects()==0));
+		assertEquals("More than the expected number of features returned.", 1, response.GetTotalObjects());
+		for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
+		{
+			log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
+			if(feature.GetProperties().GetId()==test_peoplescollection_item_id)
+			{
+				assertEquals("Item title doesn't match expected value", test_peoplescollection_item_title, feature.GetProperties().GetTitle());
 			}
 		}
 	}
