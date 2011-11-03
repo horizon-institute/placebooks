@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
-import placebooks.test.EverytrailServiceTest;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -15,7 +13,7 @@ import com.vividsolutions.jts.io.WKTReader;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionGeometryLineString
 {
-	protected static final Logger log = Logger.getLogger(EverytrailServiceTest.class.getName());
+	protected static final Logger log = Logger.getLogger(PeoplesCollectionGeometryLineString.class);
 		
 	private String type;
 	private float[][] coordinates;
