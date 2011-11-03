@@ -8,14 +8,14 @@ import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.event.shared.SimpleEventBus;
 
 public class PlaceBookEditor implements EntryPoint
 {
@@ -27,11 +27,11 @@ public class PlaceBookEditor implements EntryPoint
 		Resources.INSTANCE.style().ensureInjected();
 
 		final EventBus eventBus = new SimpleEventBus();
-		final PlaceController placeController = new PlaceController((com.google.gwt.event.shared.EventBus) eventBus);
+		final PlaceController placeController = new PlaceController(eventBus);
 
 		// Start ActivityManager for the main widget with our ActivityMapper
 		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
-		final ActivityManager activityManager = new ActivityManager(activityMapper, (com.google.gwt.event.shared.EventBus) eventBus);
+		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
 		activityManager.setDisplay(appWidget);
 
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
