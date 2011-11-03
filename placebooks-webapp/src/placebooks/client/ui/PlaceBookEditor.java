@@ -5,14 +5,14 @@ import java.util.Collection;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.Shelf;
-import placebooks.client.resources.Resources;
+import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPanel;
-import placebooks.client.ui.elements.PlaceBookPublish;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -118,26 +118,25 @@ public class PlaceBookEditor extends PlaceBookPlace
 				case saved:
 					saveStatusPanel.setText("Saved");
 					saveStatusPanel.hideImage();
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
+					saveStatusPanel.setEnabled(false);
 					break;
 
 				case not_saved:
 					saveStatusPanel.setText("Save");
 					saveStatusPanel.hideImage();
-					// saveStatusPanel.setResource(Resources.INSTANCE.save());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
+					saveStatusPanel.setEnabled(true);					
 					break;
 
 				case saving:
 					saveStatusPanel.setText("Saving");
-					saveStatusPanel.setImage(Resources.INSTANCE.progress2());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
+					saveStatusPanel.setImage(Resources.IMAGES.progress2());
+					saveStatusPanel.setEnabled(false);					
 					break;
 
 				case save_error:
 					saveStatusPanel.setText("Error Saving");
-					saveStatusPanel.setImage(Resources.INSTANCE.error());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
+					saveStatusPanel.setImage(Resources.IMAGES.error());
+					saveStatusPanel.setEnabled(true);					
 					break;
 
 				default:
@@ -193,8 +192,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiField
 	TextBox title;
 
-	@UiField
-	Label zoomLabel;
+	//@UiField
+	//Label zoomLabel;
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
@@ -353,8 +352,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 				panel.add(okbutton);
 				panel.add(cancelButton);
 
-				dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
-				dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
+				dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
+				dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
 				dialogBox.setGlassEnabled(true);
 				dialogBox.setAnimationEnabled(true);
 				dialogBox.setWidget(panel);
@@ -375,29 +374,20 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void run()
 			{
-				final PopupPanel dialogBox = new PopupPanel();
-				dialogBox.setGlassEnabled(true);
-				dialogBox.setAnimationEnabled(true);
-				final PlaceBookPublish publish = new PlaceBookPublish(PlaceBookEditor.this, canvas);
+				final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
 				publish.addClickHandler(new ClickHandler()
 				{
 					@Override
 					public void onClick(final ClickEvent event)
 					{
 						loadingPanel.setVisible(true);
-						dialogBox.hide();
+						publish.hide();
 					}
 				});
-				dialogBox.add(publish);
 
-				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-				dialogBox.setAutoHideEnabled(true);
-
-				dialogBox.getElement().getStyle().setZIndex(1000);
-				dialogBox.show();
-				dialogBox.center();
-				dialogBox.getElement().getStyle().setTop(50, Unit.PX);
+				publish.show();
+				publish.center();
+				publish.getElement().getStyle().setTop(50, Unit.PX);
 			}
 		});
 
@@ -462,7 +452,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("menu")
+	//@UiHandler("menu")
 	void handlePlaceBookMenu(final ClickEvent event)
 	{
 		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement()
@@ -477,13 +467,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 		saveContext.markChanged();
 	}
 
-	@UiHandler("zoomIn")
+	//@UiHandler("zoomIn")
 	void handleZoomIn(final ClickEvent event)
 	{
 		setZoom(zoom + 20);
 	}
 
-	@UiHandler("zoomOut")
+	//@UiHandler("zoomOut")
 	void handleZoomOut(final ClickEvent event)
 	{
 		setZoom(zoom - 20);
@@ -499,7 +489,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		this.zoom = zoom;
 		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
 		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
-		zoomLabel.setText(zoom + "%");
+		//zoomLabel.setText(zoom + "%");
 		for (final PlaceBookPanel panel : canvas.getPanels())
 		{
 			panel.reflow();

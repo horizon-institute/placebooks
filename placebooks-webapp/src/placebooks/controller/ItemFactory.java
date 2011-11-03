@@ -13,13 +13,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.log4j.Logger;
@@ -38,10 +34,7 @@ import placebooks.services.EverytrailService;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.geo.impl.GeoRssWhere;
 import com.google.gdata.data.youtube.VideoEntry;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -74,7 +67,7 @@ public class ItemFactory
 			}
 			else if(l.size()>1)
 			{
-				EntityTransaction t = em.getTransaction();
+				//EntityTransaction t = em.getTransaction();
 				log.warn("Removing duplicate Everytrail items for " + itemToSave.getExternalID());
 				for(PlaceBookItem o : l)
 				{
@@ -289,7 +282,7 @@ public class ItemFactory
 				}
 				try
 				{
-					final GeometryFactory gf = new GeometryFactory();
+					//final GeometryFactory gf = new GeometryFactory();
 					final Geometry newGeom = new WKTReader().read("POINT ( " + lat + " " + lon +" )"); 
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;

@@ -1,11 +1,11 @@
 package placebooks.model;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -17,28 +17,26 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import placebooks.controller.PropertiesSingleton;
 import placebooks.model.jaxb.GPX10.Gpx;
 import placebooks.model.jaxb.GPX11.GpxType;
 import placebooks.model.jaxb.GPX11.RteType;
 import placebooks.model.jaxb.GPX11.TrkType;
 import placebooks.model.jaxb.GPX11.TrksegType;
 import placebooks.model.jaxb.GPX11.WptType;
-
-import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;

@@ -74,6 +74,11 @@ public class Map extends JavaScriptObject
 		return this.events;
 	}-*/;
 
+	public final native void raiseLayer(Layer layer, int delta)
+	/*-{
+		return this.raiseLayer(layer, delta);
+	}-*/;
+	
 	public final native LonLat getLonLatFromPixel(final JavaScriptObject pixels)
 	/*-{
 		return this.getLonLatFromPixel(pixels);

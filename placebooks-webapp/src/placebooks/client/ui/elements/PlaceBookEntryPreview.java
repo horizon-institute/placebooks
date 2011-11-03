@@ -1,6 +1,7 @@
 package placebooks.client.ui.elements;
 
 import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
@@ -43,6 +44,9 @@ public class PlaceBookEntryPreview extends Composite
 	public PlaceBookEntryPreview(final PlaceBookPlace place, final PlaceBookEntry entry)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		container.getElement().getStyle().setBackgroundImage("url(" + Resources.IMAGES.placebook_open().getSafeUri().asString() + ")");
+		GWT.log(Resources.IMAGES.placebook_open().getSafeUri().asString());
 		
 		title.setText(entry.getTitle());
 		description.setText(entry.getDescription());

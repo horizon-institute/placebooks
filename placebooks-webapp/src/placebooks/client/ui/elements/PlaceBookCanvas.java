@@ -7,18 +7,35 @@ import java.util.List;
 
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 
 public class PlaceBookCanvas extends FlowPanel
 {
+	interface Style extends CssResource
+	{
+		String canvas();
+	    String page();
+	    String pageInvisible();
+	}
+
+	interface Bundle extends ClientBundle
+	{
+		@Source("PlaceBookCanvas.css")
+		Style style();
+	}
+	
+	private static final Bundle STYLES = GWT.create(Bundle.class);
+	
 	public static final int A4Length = 297;
 	public static final int A4Width = 210;
 	public static final int Margin = 20;
@@ -35,7 +52,8 @@ public class PlaceBookCanvas extends FlowPanel
 
 	public PlaceBookCanvas()
 	{
-		setStyleName(Resources.INSTANCE.style().canvas());
+		STYLES.style().ensureInjected();
+		setStyleName(STYLES.style().canvas());
 
 		Window.addResizeHandler(new ResizeHandler()
 		{
@@ -157,13 +175,13 @@ public class PlaceBookCanvas extends FlowPanel
 			final FlowPanel page = new FlowPanel();
 			if (panelsVisible)
 			{
-				page.setStyleName(Resources.INSTANCE.style().page());
+				page.setStyleName(STYLES.style().page());
 				// final double padding = 2000 / A4Length;
 				// page.getElement().getStyle().setPadding(padding, Unit.PCT);
 			}
 			else
 			{
-				page.setStyleName(Resources.INSTANCE.style().pageInvisible());
+				page.setStyleName(STYLES.style().pageInvisible());
 			}
 
 			double left = 0;

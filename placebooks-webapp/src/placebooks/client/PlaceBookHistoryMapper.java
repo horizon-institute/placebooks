@@ -4,13 +4,14 @@ import placebooks.client.ui.PlaceBookAppInstall;
 import placebooks.client.ui.PlaceBookEditor;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookLibrary;
+import placebooks.client.ui.PlaceBookMapSearch;
 import placebooks.client.ui.PlaceBookPreview;
 import placebooks.client.ui.PlaceBookSearch;
 
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
-@WithTokenizers({ PlaceBookEditor.Tokenizer.class,
+@WithTokenizers({ PlaceBookEditor.Tokenizer.class, PlaceBookMapSearch.Tokenizer.class,
 					PlaceBookHome.Tokenizer.class, PlaceBookPreview.Tokenizer.class,
 					PlaceBookLibrary.Tokenizer.class, PlaceBookLibrary.Tokenizer.class,
 					PlaceBookSearch.Tokenizer.class, PlaceBookAppInstall.Tokenizer.class })

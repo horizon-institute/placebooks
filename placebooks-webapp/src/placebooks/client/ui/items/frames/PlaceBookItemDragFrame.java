@@ -1,6 +1,6 @@
 package placebooks.client.ui.items.frames;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 public class PlaceBookItemDragFrame extends PlaceBookItemFrameWidget
 {
@@ -9,9 +9,9 @@ public class PlaceBookItemDragFrame extends PlaceBookItemFrameWidget
 		super();
 		rootPanel = createFrame();
 
-		widgetPanel.setStyleName(Resources.INSTANCE.style().frameWidgetPanel());
+		widgetPanel.setStyleName(Resources.STYLES.style().frameWidgetPanel());
 
 		frame.add(widgetPanel);
-		frame.setStyleName(Resources.INSTANCE.style().dragFrame());
+		frame.setStyleName(Resources.STYLES.style().dragFrame());
 	}
 }

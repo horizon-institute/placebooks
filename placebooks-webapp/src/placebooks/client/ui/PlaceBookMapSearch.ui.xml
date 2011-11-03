@@ -55,20 +55,36 @@
 			margin-left: 5px;
 			color: #555;
 		}
+		
+		.placebookList
+		{
+			width: 200px;
+			overflow: auto;
+			display: inline-block;
+		}
+		
+		.mapPanel
+		{
+			width: 600px;
+			height: 800px;
+			display: inline-block;
+		}
 	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
 	<g:FlowPanel>
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		
 		<g:FlowPanel styleName="{style.searchBlock}">
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel><p:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></p:MousePanel><g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
+		<g:FlowPanel styleName="{styles.style.content}">		
+			<g:FlowPanel><p:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{images.search}" /></p:MousePanel><g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
 		</g:FlowPanel>
 		</g:FlowPanel>
 		
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel styleName="{style.loading}" ui:field="indicator"><g:Image resource='{res.progress3}' /><g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>		
-			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
+		<g:FlowPanel styleName="{styles.style.content}">		
+			<g:FlowPanel styleName="{style.loading}" ui:field="indicator"><g:Image resource='{images.progress3}' /><g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>
+			<g:FlowPanel ui:field="placebooks" styleName="{style.placebookList}" />
+			<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>	
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

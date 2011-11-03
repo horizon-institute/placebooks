@@ -2,9 +2,9 @@ package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.Shelf;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookCanvas;
@@ -270,11 +270,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 		dropArrow.setVisible(enabled);
 		if (enabled)
 		{
-			menuButton.addStyleName(Resources.INSTANCE.style().button());
+			menuButton.addStyleName(Resources.STYLES.style().button());
 		}
 		else
 		{
-			menuButton.removeStyleName(Resources.INSTANCE.style().button());
+			menuButton.removeStyleName(Resources.STYLES.style().button());
 		}
 	}
 }

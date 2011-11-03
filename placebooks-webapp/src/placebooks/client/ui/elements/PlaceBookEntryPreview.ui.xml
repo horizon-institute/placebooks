@@ -22,9 +22,16 @@
 		.container {
 			cursor: default;
 		}
+		
+		.bookpreview { 
+			margin: 10px;
+			padding: 10px 15px;
+			height: 302px;
+			background-repeat: no-repeat;
+		}		
 	</ui:style>
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>		
-	<g:FlowPanel styleName="{res.style.bookpreview}" ui:field="container">
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>		
+	<g:FlowPanel styleName="{style.bookpreview}" ui:field="container">
 		<g:Label styleName="{style.title}" ui:field="title" />
 		<g:Label styleName="{style.author}" ui:field="author" />
 		<g:Image styleName="{style.image}" ui:field="image" />		

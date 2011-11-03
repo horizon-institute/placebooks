@@ -34,7 +34,7 @@
 			padding: 0 5px;
 		}
 	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
 	<g:FlowPanel>
 		<g:FlowPanel styleName="printHidden">
 			<p:PlaceBookToolbar ui:field="toolbar" />
@@ -46,8 +46,8 @@
 						<g:InlineLabel ui:field="titleLabel" styleName="{style.title}" />
 						<g:InlineLabel styleName="{style.dropArrow}" ui:field="dropArrow">▼</g:InlineLabel>
 					</p:MousePanel>
-					<p:MousePanel ui:field="dropMenu" styleName="{res.style.dropMenu}">
-						<g:Label ui:field="delete" styleName="{res.style.menuItem}">Delete PlaceBook</g:Label>			
+					<p:MousePanel ui:field="dropMenu" styleName="{styles.style.dropMenu}">
+						<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete PlaceBook</g:Label>			
 					</p:MousePanel>		
 					<g:FlowPanel>			
 						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>

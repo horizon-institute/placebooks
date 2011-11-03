@@ -2,9 +2,7 @@ package placebooks.controller;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -16,7 +14,7 @@ import placebooks.model.User;
  */
 public class PresetItemsHelper
 {
-	private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
+	//private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
 	
 	private static final String MAGIC_SEAWEED_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://magicseaweed.com/Borth-Ynyslas--Surf-Report/84/\",\"metadata\":{\"title\":\"Borth / Ynyslas Surf Report and Forecast\",\"source\":\"Live Data\"},\"parameters\":{\"height\":10000}}";
 	private static final String BBC_WEATHER_ITEM =   "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://news.bbc.co.uk/weather/forecast/20/ObservationsEmbed.xhtml?target=_parent\",\"metadata\":{\"title\":\"BBC Weather Observations, Aberystwyth\",\"source\":\"Live Data\"},\"parameters\":{\"height\":6903}}";

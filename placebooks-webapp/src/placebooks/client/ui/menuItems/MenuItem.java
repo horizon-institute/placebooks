@@ -1,6 +1,6 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -11,7 +11,7 @@ public abstract class MenuItem extends Label
 	public MenuItem(final String title)
 	{
 		super(title);
-		setStyleName(Resources.INSTANCE.style().menuItem());
+		setStyleName(Resources.STYLES.style().menuItem());
 		addClickHandler(new ClickHandler()
 		{
 			@Override

@@ -1,5 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
@@ -7,19 +9,18 @@
 			left: 0px;
 			right: 120px;
 			bottom: 0px;
-			background: #BBD;		
+			background: #DDD;
 			overflow-x: auto;
-			overflow-y: scroll;	
+			overflow-y: scroll;
 		}
 		
 		.innerCanvasPanel {
-			position: absolute;
 			top: 20px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
 			margin: 20px;
-		}		
+		}
 		
 		.palette {
 			position: absolute;
@@ -29,10 +30,10 @@
 			bottom: 0px;
 			width: 120px;
 			z-index: -10;
-			background: #556;	
+			background: #556;
 			overflow: auto;
 		}
-			
+		
 		.loadingPanel {
 			position: absolute;
 			text-align: center;
@@ -41,23 +42,23 @@
 			bottom: 0px;
 			left: 0px;
 			z-index: 20;
-			background: rgba(0,0,0,0.4);	
+			background: rgba(0, 0, 0, 0.4);
 		}
 		
 		.loading {
 			background: #555;
 			border: 1px solid #333;
 			border-radius: 5px;
-			margin-top: 100px;
+			margin-top: 200px;
 			padding: 10px 20px;
 			display: inline-block;
 		}
-
+		
 		.savingLabel {
 			line-height: 40px;
 			padding: 0 15px;
 		}
-
+		
 		.populate {
 			position: absolute;
 			text-align: center;
@@ -65,19 +66,20 @@
 			right: 0px;
 			height: 20px;
 			width: 120px;
-			z-index: -5;			
+			z-index: -5;
 		}
 		
 		.titleLabel {
 			-webkit-user-select: text;
 			-moz-user-select: text;
-			-o-user-select: text;			
-			user-select: text;	
+			-o-user-select: text;
+			user-select: text;
 			display: inline;
 			border: 0px;
 			background: transparent;
-			font: 18px/40px mako, sans-serif;
-			width: 250px;			
+			font: 18px/40px verdana, arial, sans-serif;
+			width: 300px;
+			margin-right: 20px;
 		}
 		
 		.loadingLabel {
@@ -88,33 +90,28 @@
 			vertical-align: top;
 		}
 		
-		.toolbar {
-			font: 18px/40px mako, sans-serif;
-			height: 40px;
-			color: #000;
-			padding: 0 20px;
-		}
-		
 		.account {
 			padding: 0px;
-			float:right;
+			float: right;
 			cursor: default;
 		}
 		
 		.body {
-			-webkit-user-select: none;	
+			-webkit-user-select: none;
 			-moz-user-select: none;
-			-o-user-select: none;			
+			-o-user-select: none;
 			user-select: none;
-			overflow: hidden;			
+			overflow: hidden;
 		}
-
+		
 		.floatLeft {
 			float: left;
 		}
 		
-		.floatRight {
-			float: right;	
+		.actionMenu {
+			float: right;
+			font: 16px/40px verdana, arial, sans-serif;
+			padding-top: 5px;
 		}
 		
 		.placeBookMenu {
@@ -132,34 +129,57 @@
 		}
 		
 		.placeBookMenu:HOVER {
-			background-color: rgba(255,255,255,0.2);			
-		}		
-
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+		
 		.imageButton {
 			padding: 0 5px;
 			padding-top: 2px;
 			height: 38px;
 		}
-				
-		.imageButton:HOVER {
-			background-color: rgba(255,255,255,0.2);			
+		
+		.infoPanel {
+			padding: 0px 30px;
+			background: #EEE;
+			border-bottom: 1px solid #CCC;
 		}
-	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+		
+		.imageButton:HOVER {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	</ui:style>
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
-		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
+		<g:SimplePanel styleName="{style.loadingPanel}"
+			ui:field="loadingPanel">
+			<g:FlowPanel styleName="{style.loading}">
+				<g:Image resource='{images.progress}' />
+				<g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel>
+			</g:FlowPanel>
+		</g:SimplePanel>
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
-			<g:FlowPanel styleName="{style.toolbar}">
-				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image resource="{res.zoom_in}" /></p:MousePanel>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image resource="{res.zoom_out}" /></p:MousePanel>
+			<g:FlowPanel styleName="{style.infoPanel}">
+				<p:PlaceBookToolbarItem addStyleNames="{style.actionMenu}">
+					<span>Actions</span>
+					<span class="{styles.style.dropIcon}">&#9660;</span>
+				</p:PlaceBookToolbarItem>
+				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" />
-				<p:MousePanel addStyleNames="{style.placeBookMenu} {style.floatLeft}" ui:field="menu"><!--<g:Image resource="{res.placebook16}"/>--><g:InlineLabel>PlaceBook&nbsp;</g:InlineLabel><g:InlineLabel styleName="{res.style.dropIcon}">&#9660;</g:InlineLabel></p:MousePanel>						
-				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />			
-			</g:FlowPanel>			
-			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />
-		</g:FlowPanel>	
+			</g:FlowPanel>
+			<g:SimplePanel styleName="{style.innerCanvasPanel}"
+				ui:field="canvasPanel" />
+		</g:FlowPanel>
+		<p:MousePanel ui:field="dropMenu" styleName="{styles.style.dropMenu}">
+			<g:Label ui:field="publish" styleName="{styles.style.menuItem}">Publish</g:Label>
+			<g:Label ui:field="print" styleName="{styles.style.menuItem}">Print</g:Label>
+			<g:Label>Zoom</g:Label>
+			<g:Label>-</g:Label>
+			<g:Label>100%</g:Label>
+			<g:Label>+</g:Label>
+			<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete</g:Label>
+		</p:MousePanel>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

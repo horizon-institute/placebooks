@@ -1,6 +1,6 @@
 package placebooks.client.ui.items.frames;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 {
@@ -22,6 +22,6 @@ public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 	public PlaceBookItemBlankFrame()
 	{
 		rootPanel = widgetPanel;
-		widgetPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		widgetPanel.setStyleName(Resources.STYLES.style().widgetPanel());
 	}
 }

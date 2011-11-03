@@ -32,8 +32,12 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig.Feature;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import org.codehaus.jackson.map.introspect.VisibilityChecker;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -75,6 +79,15 @@ import com.vividsolutions.jts.io.WKTReader;
 @Controller
 public class PlaceBooksAdminController
 {
+	public PlaceBooksAdminController()
+	{
+		jsonMapper.configure(Feature.AUTO_DETECT_FIELDS, true);
+		jsonMapper.configure(Feature.AUTO_DETECT_GETTERS, false);
+		jsonMapper.configure(Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
+		jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);	
+		jsonMapper.setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.ANY));
+	}
+	
 	// Helper class for passing around general PlaceBookItem data
 	public static class ItemData
 	{
@@ -154,6 +167,8 @@ public class PlaceBooksAdminController
 
 	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
 
+	private final ObjectMapper jsonMapper = new ObjectMapper();
+	
 	private static final int MEGABYTE = 1048576;
 
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
@@ -211,13 +226,9 @@ public class PlaceBooksAdminController
 			log.info("User " + user.getName());
 			try
 			{
-				final UserShelf shelf = new UserShelf(pbs, user);
-				final ObjectMapper mapper = new ObjectMapper();
-				log.info("Shelf: " + mapper.writeValueAsString(shelf));
-				final ServletOutputStream sos = res.getOutputStream();
-				res.setContentType("application/json");
-				mapper.writeValue(sos, shelf);
-				sos.flush();
+				jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
+				res.setContentType("application/json");				
+				res.flushBuffer();
 			}
 			catch (final Exception e)
 			{
@@ -286,11 +297,9 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					mapper.writeValue(sos, user);
-					log.info("User: " + mapper.writeValueAsString(user));
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), user);
+					res.setContentType("application/json");					
+					res.flushBuffer();
 				}
 				catch (final IOException e)
 				{
@@ -344,8 +353,6 @@ public class PlaceBooksAdminController
 		try
 		{
 			final Writer sos = res.getWriter();
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 
 			sos.write("[");
 			boolean comma = false;
@@ -359,16 +366,12 @@ public class PlaceBooksAdminController
 				{
 					comma = true;
 				}
-				sos.write(mapper.writeValueAsString(item));
+				sos.write(jsonMapper.writeValueAsString(item));
 			}
 			sos.write("]");
 
-			// mapper.enableDefaultTyping(DefaultTyping.JAVA_LANG_OBJECT);
-
 			res.setContentType("application/json");
-			// log.debug("Palette Items: " + mapper.writeValueAsString(pbs));
-			sos.flush();
-			sos.close();
+			res.flushBuffer();
 		}
 		catch (final Exception e)
 		{
@@ -389,13 +392,9 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					final ObjectMapper mapper = new ObjectMapper();
-					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, item);
-					log.info("PlacebookItem: " + mapper.writeValueAsString(item));
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), item);
+					res.setContentType("application/json");				
+					res.flushBuffer();
 				}
 				catch (final IOException e)
 				{
@@ -424,13 +423,9 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					final ObjectMapper mapper = new ObjectMapper();
-					mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, placebook);
-					log.info("Placebook: " + mapper.writeValueAsString(placebook));
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), placebook);
+					res.setContentType("application/json");				
+					res.flushBuffer();
 				}
 				catch (final IOException e)
 				{
@@ -477,13 +472,9 @@ public class PlaceBooksAdminController
 				log.info("User " + user.getName());
 				try
 				{
-					final UserShelf shelf = new UserShelf(pbs, user);
-					final ObjectMapper mapper = new ObjectMapper();
-					log.info("Shelf: " + mapper.writeValueAsString(shelf));
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, shelf);
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
+					res.setContentType("application/json");				
+					res.flushBuffer();
 				}
 				catch (final Exception e)
 				{
@@ -495,10 +486,8 @@ public class PlaceBooksAdminController
 				try
 				{
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					mapper.writeValue(sos, req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
+					res.flushBuffer();
 				}
 				catch (final IOException e)
 				{
@@ -534,14 +523,11 @@ public class PlaceBooksAdminController
 			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
 			if (!pbs.isEmpty())
 			{
-				final UserShelf s = new UserShelf(pbs, user);
 				try
 				{
-					final ObjectMapper mapper = new ObjectMapper();
-					final ServletOutputStream sos = res.getOutputStream();
-					res.setContentType("application/json");
-					mapper.writeValue(sos, s);
-					sos.flush();
+					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
+					res.setContentType("application/json");				
+					res.flushBuffer();
 				}
 				catch (final IOException e)
 				{
@@ -586,14 +572,9 @@ public class PlaceBooksAdminController
 			log.info("Converting " + result.size() + " PlaceBooks to JSON");
 			try
 			{
-				final Shelf shelf = new Shelf();
-				shelf.setEntries(result);
-				final ObjectMapper mapper = new ObjectMapper();
-				log.info("Shelf: " + mapper.writeValueAsString(shelf));
-				final ServletOutputStream sos = res.getOutputStream();
-				res.setContentType("application/json");
-				mapper.writeValue(sos, shelf);
-				sos.flush();
+				jsonMapper.writeValue(res.getWriter(), new Shelf(result));
+				res.setContentType("application/json");				
+				res.flushBuffer();
 			}
 			catch (final Exception e)
 			{
@@ -612,11 +593,9 @@ public class PlaceBooksAdminController
 		final ServerInfo si = new ServerInfo();
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, si);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), si);
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final IOException e)
 		{
@@ -699,13 +678,12 @@ public class PlaceBooksAdminController
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));
 			log.info("Published Placebook:" + mapper.writeValueAsString(result));
+
 			final PlaceBook published = PlaceBooksAdminHelper.publishPlaceBook(manager, result);
 
-			res.setContentType("application/json");
-			final ServletOutputStream sos = res.getOutputStream();
-			log.debug("Published Placebook:" + mapper.writeValueAsString(published));
-			mapper.writeValue(sos, published);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), published);
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final Throwable e)
 		{
@@ -748,11 +726,9 @@ public class PlaceBooksAdminController
 			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
 			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
 
-			res.setContentType("application/json");
-			final ServletOutputStream sos = res.getOutputStream();
-			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));
-			mapper.writeValue(sos, result);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), result);
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final Throwable e)
 		{
@@ -789,15 +765,11 @@ public class PlaceBooksAdminController
 		}
 		em.close();
 
-		final Shelf s = new Shelf();
-		s.setEntries(pbs);
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, s);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), new Shelf(pbs));
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final IOException e)
 		{
@@ -839,15 +811,11 @@ public class PlaceBooksAdminController
 		}
 		em.close();
 
-		final Shelf s = new Shelf();
-		s.setEntries(ps);
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, s);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), new Shelf(ps));
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final IOException e)
 		{
@@ -887,15 +855,11 @@ public class PlaceBooksAdminController
 		}
 		em.close();
 
-		final Shelf s = new Shelf();
-		s.setEntries(pbs);
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/json");
-			mapper.writeValue(sos, s);
-			sos.flush();
+			jsonMapper.writeValue(res.getWriter(), new Shelf(pbs));
+			res.setContentType("application/json");				
+			res.flushBuffer();
 		}
 		catch (final IOException e)
 		{
@@ -1372,5 +1336,4 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-
 }

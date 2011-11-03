@@ -1,6 +1,5 @@
 package placebooks.client;
 
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookPreview;
 
@@ -24,14 +23,14 @@ public class PlaceBookEditor implements EntryPoint
 	@Override
 	public void onModuleLoad()
 	{
-		Resources.INSTANCE.style().ensureInjected();
+		Resources.STYLES.style().ensureInjected();
 
 		final EventBus eventBus = new SimpleEventBus();
-		final PlaceController placeController = new PlaceController((com.google.gwt.event.shared.EventBus) eventBus);
+		final PlaceController placeController = new PlaceController(eventBus);
 
 		// Start ActivityManager for the main widget with our ActivityMapper
 		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
-		final ActivityManager activityManager = new ActivityManager(activityMapper, (com.google.gwt.event.shared.EventBus) eventBus);
+		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
 		activityManager.setDisplay(appWidget);
 
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
@@ -46,7 +45,7 @@ public class PlaceBookEditor implements EntryPoint
 					.substring(Window.Location.getPath().lastIndexOf('/') + 1));
 		}
 
-		historyHandler.register(placeController, (com.google.gwt.event.shared.EventBus) eventBus, defaultPlace);
+		historyHandler.register(placeController, eventBus, defaultPlace);
 
 		RootPanel.get().add(appWidget);
 		// Goes to the place represented on URL else default place

@@ -70,6 +70,12 @@ public class Shelf
 			entries.add(entry);
 		}
 	}
+	
+	public Shelf(final Collection<? extends ShelfEntry> entries)
+	{
+		this.entries.clear();
+		this.entries.addAll(entries);
+	}
 
 
 	public void setEntries(final Collection<ShelfEntry> entries)

@@ -10,6 +10,9 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookEntryWidget;
+import placebooks.client.ui.openlayers.Map;
+import placebooks.client.ui.openlayers.MarkerLayer;
+import placebooks.client.ui.openlayers.OSLayer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -62,8 +65,15 @@ public class PlaceBookMapSearch extends PlaceBookPlace
 
 	@UiField
 	TextBox searchBox;
+	
+	@UiField
+	Panel mapPanel;
+	
+	private Map map;
 
 	private final String searchString;
+
+	private MarkerLayer markerLayer;
 
 	public PlaceBookMapSearch(final String search)
 	{
@@ -133,6 +143,13 @@ public class PlaceBookMapSearch extends PlaceBookPlace
 	{
 		final Widget widget = uiBinder.createAndBindUi(this);
 
+		map = Map.create(mapPanel.getElement(), true);
+		map.addLayer(OSLayer.create("glayer"));
+		markerLayer = MarkerLayer.create("markerLayer");
+		map.addLayer(markerLayer);
+
+		
+		
 		Window.setTitle("PlaceBooks Search - " + searchString);
 
 		searchBox.setText(searchString);
@@ -159,7 +176,19 @@ public class PlaceBookMapSearch extends PlaceBookPlace
 	{
 		search();
 	}
+	
+	void hideMap()
+	{
+		mapPanel.setVisible(false);
+		placebooks.setWidth("800px");
+	}
 
+	void showMap()
+	{
+		mapPanel.setVisible(true);
+		placebooks.setWidth("200px");
+	}
+	
 	@UiHandler("searchBox")
 	void handleSearchEnter(final KeyPressEvent event)
 	{

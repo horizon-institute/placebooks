@@ -11,11 +11,11 @@
 			color: #384967;
 		}
 	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>	
 	<g:FlowPanel>
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		
-		<g:FlowPanel styleName="{res.style.content}">		
+		<g:FlowPanel styleName="{styles.style.content}">		
 			<g:Label ui:field="titleLabel" styleName="{style.title}">Library</g:Label>
 			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
 		</g:FlowPanel>

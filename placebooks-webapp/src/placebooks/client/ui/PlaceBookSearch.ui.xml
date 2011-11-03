@@ -2,8 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
-		.title 
-		{
+		.title {
 			font-style: mako, sans-serif;
 			font-size: 26px;
 			font-weight: bold;
@@ -11,16 +10,14 @@
 			color: #384967;
 		}
 		
-		.search
-		{
+		.search {
 			font-size: 20px;
 			width: 730px;
 			vertical-align: top;
 			margin-top: 5px;
 		}
 		
-		.searchButton
-		{
+		.searchButton {
 			margin-top: 2px;
 			background-color: #346;
 			padding: 3px 15px;
@@ -29,46 +26,53 @@
 			border-radius: 3px;
 		}
 		
-		.searchButton:HOVER
-		{
+		.searchButton:HOVER {
 			background-color: #457;
 			border: 1px outset #569;
-		}		
+		}
 		
-		.searchBlock
-		{
+		.searchBlock {
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
 			margin-bottom: 20px;
 		}
 		
-		.loading
-		{
+		.loading {
 			text-align: center;
 			margin-top: 100px;
 		}
 		
-		.loadingLabel 
-		{
+		.loadingLabel {
 			font-size: 18px;
 			margin-left: 5px;
 			color: #555;
 		}
-	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
 	<g:FlowPanel>
-		<p:PlaceBookToolbar ui:field="toolbar"/>
-		
+		<p:PlaceBookToolbar ui:field="toolbar" />
+
 		<g:FlowPanel styleName="{style.searchBlock}">
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel><p:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></p:MousePanel><g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
+			<g:FlowPanel styleName="{styles.style.content}">
+				<g:FlowPanel>
+					<p:MousePanel styleName="{style.searchButton}"
+						ui:field="searchButton">
+						<g:Image resource="{images.search}" />
+					</p:MousePanel>
+					<g:TextBox ui:field="searchBox" styleName="{style.search}">Search
+						PlaceBooks</g:TextBox>
+				</g:FlowPanel>
+			</g:FlowPanel>
 		</g:FlowPanel>
-		</g:FlowPanel>
-		
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel styleName="{style.loading}" ui:field="indicator"><g:Image resource='{res.progress3}' /><g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>		
-			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
+
+		<g:FlowPanel styleName="{styles.style.content}">
+			<g:FlowPanel styleName="{style.loading}" ui:field="indicator">
+				<g:Image resource='{images.progress3}' />
+				<g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel>
+			</g:FlowPanel>
+			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

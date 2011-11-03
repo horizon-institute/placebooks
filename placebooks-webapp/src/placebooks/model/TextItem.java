@@ -9,8 +9,6 @@ import javax.persistence.Lob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.apache.commons.lang.StringUtils;
-
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.SearchHelper;

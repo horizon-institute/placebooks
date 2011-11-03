@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type='placebooks.client.ui.elements.PlaceBookToolbarItem.Style'>
+		.enabled {
+			padding: 0 10px;
+			cursor: pointer;
+			display: inline-block;
+		}
+		
+		.disabled {
+			padding: 0 10px;
+			cursor: default;
+			opacity: 0.5;
+			display: inline-block;			
+		}
+		
+		.enabled:HOVER {
+			background-color: rgba(255, 255, 255, 0.2);
+			color: #FFF;
+		}
+		
+		.label {
+			display: inline;
+		}
+	</ui:style>	
+	<g:FlowPanel styleName="{style.enabled}">
+		<g:Image ui:field="image"/>
+		<g:HTML ui:field="label" styleName="{style.label}"/>
+	</g:FlowPanel>
+</ui:UiBinder> 

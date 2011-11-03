@@ -2,7 +2,6 @@ package placebooks.client.ui.elements;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
@@ -20,12 +19,29 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookInteractionHandler
 {
+	interface Style extends CssResource
+	{
+		String insert();
+	    String insertInner();
+	    String dropMenu();
+	}
+
+	interface Bundle extends ClientBundle
+	{
+		@Source("PlaceBookInteractionHandler.css")
+		Style style();
+	}
+	
+	private static final Bundle STYLES = GWT.create(Bundle.class);
+	
 	public interface DragStartHandler
 	{
 		public void handleDragStart();
@@ -67,16 +83,17 @@ public class PlaceBookInteractionHandler
 	public PlaceBookInteractionHandler(final PlaceBookCanvas canvas, final PlaceBookItemFrameFactory factory,
 			final SaveContext saveContext)
 	{
+		STYLES.style().ensureInjected();
 		this.canvas = canvas;
 		this.saveContext = saveContext;
 		this.factory = factory;
 
-		dropMenu.setStyleName(Resources.INSTANCE.style().dropMenu());
+		dropMenu.setStyleName(STYLES.style().dropMenu());
 
 		final SimplePanel innerPanel = new SimplePanel();
-		innerPanel.setStyleName(Resources.INSTANCE.style().insertInner());
+		innerPanel.setStyleName(STYLES.style().insertInner());
 		insert.add(innerPanel);
-		insert.setStyleName(Resources.INSTANCE.style().insert());
+		insert.setStyleName(STYLES.style().insert());
 	}
 
 	public boolean canAdd(final PlaceBookItem addItem)
