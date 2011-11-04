@@ -14,8 +14,6 @@ import placebooks.client.ui.dialogs.PlaceBookCreateAccountDialog;
 import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -26,7 +24,6 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,7 +46,7 @@ public class PlaceBookToolbar extends Composite
 	PlaceBookToolbarItem libraryItem;
 
 	@UiField
-	Panel dropMenu;
+	DropMenu dropMenu;
 
 	@UiField
 	PlaceBookToolbarItem accountItem;
@@ -58,15 +55,6 @@ public class PlaceBookToolbar extends Composite
 	Panel loginPanel;
 
 	private User user;
-
-	private final Timer hideMenuTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			hideMenu();
-		}
-	};
 
 	private PlaceBookPlace place;
 
@@ -146,17 +134,10 @@ public class PlaceBookToolbar extends Composite
 		}
 	}
 
-	public void hideMenu()
-	{
-		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		dropMenu.getElement().getStyle().setOpacity(0);
-		hideMenuTimer.cancel();
-	}
-
 	@UiHandler(value={"dropMenu", "accountItem"})
 	void hideMenuTimerStart(final MouseOutEvent event)
 	{
-		hideMenuTimer.schedule(500);
+		dropMenu.startHideMenu();
 	}
 
 	@UiHandler("loginLabel")
@@ -183,7 +164,7 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		hideMenu();
+		dropMenu.hideMenu();
 		PlaceBookService.logout(new AbstractCallback()
 		{
 			@Override
@@ -234,26 +215,17 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("linkedAccounts")
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
-		hideMenu();
+		dropMenu.hideMenu();
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
 		account.setWidth("500px");
 		account.center();
 		account.show();
 	}
 
-	public void showMenu(final int x, final int y)
-	{
-		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
-		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		dropMenu.getElement().getStyle().setOpacity(0.9);
-		hideMenuTimer.cancel();
-	}
-
 	@UiHandler("dropMenu")
 	void showMenu(final MouseOverEvent event)
 	{
-		showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
 	}
 
 	@UiHandler("accountItem")
@@ -261,7 +233,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (user != null)
 		{
-			showMenu(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
+			dropMenu.showMenu(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
 		}
 	}
 

@@ -10,6 +10,7 @@ import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
+import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPanel;
@@ -28,6 +29,8 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -192,6 +195,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiField
 	TextBox title;
 
+	@UiField
+	PlaceBookToolbarItem actionMenu;
+	
+	@UiField
+	DropMenu dropMenu;
+	
 	//@UiField
 	//Label zoomLabel;
 
@@ -484,6 +493,25 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return placebookKey;
 	}
 
+	@UiHandler(value = { "dropMenu", "actionMenu" })
+	void hideMenu(final MouseOutEvent event)
+	{
+		dropMenu.startHideMenu();
+	}
+
+	@UiHandler("dropMenu")
+	void showMenu(final MouseOverEvent event)
+	{
+		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+	}
+
+	@UiHandler("actionMenu")
+	void showMenuButton(final MouseOverEvent event)
+	{
+		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
+	}
+
+	
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;

@@ -46,9 +46,9 @@
 						<g:InlineLabel ui:field="titleLabel" styleName="{style.title}" />
 						<g:InlineLabel styleName="{style.dropArrow}" ui:field="dropArrow">▼</g:InlineLabel>
 					</p:MousePanel>
-					<p:MousePanel ui:field="dropMenu" styleName="{styles.style.dropMenu}">
+					<p:DropMenu ui:field="dropMenu" styleName="{styles.style.dropMenu}">
 						<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete PlaceBook</g:Label>			
-					</p:MousePanel>		
+					</p:DropMenu>		
 					<g:FlowPanel>			
 						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
 						<g:Anchor ui:field="authorLabel" styleName="{style.author}"/>

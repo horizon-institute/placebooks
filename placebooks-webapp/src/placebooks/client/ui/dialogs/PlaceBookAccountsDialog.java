@@ -39,7 +39,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
 
-	private static final String[] SERVICES = { "Everytrail" };
+	private static final String[] SERVICES = { "Everytrail", "PeoplesCollection" };
 
 	private static final ProvidesKey<LoginDetails> keyProvider = new ProvidesKey<LoginDetails>()
 	{

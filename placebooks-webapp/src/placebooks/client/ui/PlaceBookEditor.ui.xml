@@ -110,7 +110,7 @@
 		
 		.actionMenu {
 			float: right;
-			font: 16px/40px verdana, arial, sans-serif;
+			font: 16px verdana, arial, sans-serif;
 			padding-top: 5px;
 		}
 		
@@ -161,17 +161,14 @@
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
-				<p:PlaceBookToolbarItem addStyleNames="{style.actionMenu}">
-					<span>Actions</span>
-					<span class="{styles.style.dropIcon}">&#9660;</span>
-				</p:PlaceBookToolbarItem>
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" />
 			</g:FlowPanel>
 			<g:SimplePanel styleName="{style.innerCanvasPanel}"
 				ui:field="canvasPanel" />
 		</g:FlowPanel>
-		<p:MousePanel ui:field="dropMenu" styleName="{styles.style.dropMenu}">
+		<p:DropMenu ui:field="dropMenu" styleName="{styles.style.dropMenu}">
 			<g:Label ui:field="publish" styleName="{styles.style.menuItem}">Publish</g:Label>
 			<g:Label ui:field="print" styleName="{styles.style.menuItem}">Print</g:Label>
 			<g:Label>Zoom</g:Label>
@@ -179,7 +176,7 @@
 			<g:Label>100%</g:Label>
 			<g:Label>+</g:Label>
 			<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete</g:Label>
-		</p:MousePanel>
+		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

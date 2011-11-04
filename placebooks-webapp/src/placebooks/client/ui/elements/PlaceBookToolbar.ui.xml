@@ -59,9 +59,9 @@
 			<p:PlaceBookToolbarItem ui:field="signupLabel">SIGNUP</p:PlaceBookToolbarItem>			
 		</g:FlowPanel>
 		<p:PlaceBookToolbarItem addStyleNames="{style.toolbarLogin}" ui:field="accountItem" />		
-		<p:MousePanel ui:field="dropMenu" styleName="{style.toolbarMenu}">
+		<p:DropMenu ui:field="dropMenu" styleName="{style.toolbarMenu}">
 			<g:Label ui:field="linkedAccounts" styleName="{style.toolbarMenuItem}">Linked Accounts</g:Label>
 			<g:Label ui:field="logout" styleName="{style.toolbarMenuItem}">Logout</g:Label>				
-		</p:MousePanel>		
+		</p:DropMenu>		
 	</g:FlowPanel>
 </ui:UiBinder> 
