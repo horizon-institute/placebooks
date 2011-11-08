@@ -33,6 +33,8 @@ public class PlaceBookEditor implements EntryPoint
 		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
 		activityManager.setDisplay(appWidget);
 
+		appWidget.setHeight("100%");
+		
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
 		final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);

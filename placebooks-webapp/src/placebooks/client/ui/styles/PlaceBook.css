@@ -1,7 +1,13 @@
+html {
+	height: 100%;
+}
+
 body {
 	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
 	margin: 0px;
+	overflow: hidden;
+	height: 100%;
 }
 
 a {
@@ -57,6 +63,8 @@ a:hover {
 .content {
 	margin: auto;
 	width: 800px;
+	overflow-y: auto;
+	height: 100%;
 }
 
 .frameWidgetPanel {

@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	private final static String POINT_PREFIX = "POINT (";
+	public final static String POINT_PREFIX = "POINT (";
 
 	private final Label interactionLabel = new Label();
 
@@ -96,10 +96,10 @@ public class MapItem extends PlaceBookItemWidget
 					final String geometry = item.getGeometry();
 					if (geometry.startsWith(POINT_PREFIX))
 					{
-						final LonLat lonlat = LonLat.createFromPoint(geometry.substring(POINT_PREFIX.length(),
-																						geometry.length() - 1));
-						final Marker marker = Marker.create(Markers.IMAGES.marker().getSafeUri().asString(), lonlat
-								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection()), 25, 25);
+						final LonLat lonlat = LonLat
+								.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
+								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
+						final Marker marker = Marker.create(Markers.IMAGES.marker(), lonlat);
 						// marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
 						markerLayer.addMarker(marker);
 					}
@@ -224,19 +224,15 @@ public class MapItem extends PlaceBookItemWidget
 	private void recenter()
 	{
 		if (map == null) { return; }
+		if (!isVisible()) { return; }
 
 		try
 		{
+			map.setCenter(LonLat.create(-1.10f, 52.58f).transform(map.getDisplayProjection(), map.getProjection()), 12);
 			final Bounds bounds = getLayerBounds();
 			if (bounds != null)
 			{
 				map.zoomToExtent(bounds);
-			}
-			else
-			{
-				map.setCenter(	LonLat.create(-1.10f, 52.58f)
-										.transform(map.getDisplayProjection(), map.getProjection()),
-								12);
 			}
 		}
 		catch (final Exception e)

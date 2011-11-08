@@ -47,11 +47,19 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 	
 	public void showMenu(final int x, final int y)
 	{
+		if(this != current)
+		{
+			if(current != null)
+			{
+				current.hideMenu();
+			}
+		}
+		current = this;
 		getElement().getStyle().setTop(y, Unit.PX);
 		getElement().getStyle().setLeft(x, Unit.PX);
 		getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		getElement().getStyle().setOpacity(1);
-		hideMenuTimer.cancel();
+		hideMenuTimer.cancel();				
 	}
 	
 	public void startHideMenu()

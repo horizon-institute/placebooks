@@ -13,11 +13,27 @@
 		
 		.placebookEntry {
 			padding: 5px;
-			margin: 10px auto;
+			margin: 0;
 			width: 150px;
 			text-align: center;
 			border-radius: 16px;
-			float: left;
+			display: -webkit-inline-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
+			vertical-align: top;		
+		}
+		
+		.textPanel {
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: start;
+			max-width: 132px;
+		}
+		
+		.textInnerPanel {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
 		}
 
 		.placebookEntry:HOVER {
@@ -25,17 +41,20 @@
 		}
 		
 		.title {
-			margin-left: auto;
-			margin-right: auto;
-			padding: 0px 7px;
 			font-family: mako, sans-serif;
 			font-size: 16px;
 		}		
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<ui:with field='markers' type='placebooks.client.ui.images.markers.Markers'/>	
 	<p:MousePanel styleName="{style.placebookEntry}" ui:field="container">
-		<g:Image resource="{images.placebook128}" ui:field="image" />	
-		<g:Label styleName="{style.title}" ui:field="title" />
-		<g:Label styleName="{style.author}" ui:field="author" />	
+		<g:Image resource="{images.placebook128}" ui:field="image" />
+		<g:FlowPanel styleName="{style.textPanel}">
+			<g:Image ui:field="markerImage" resource="{markers.markera}" />
+			<g:FlowPanel styleName="{style.textInnerPanel}">			
+				<g:Label styleName="{style.title}" ui:field="title" />
+				<g:Label styleName="{style.author}" ui:field="author" />
+			</g:FlowPanel>			
+		</g:FlowPanel>
 	</p:MousePanel>
 </ui:UiBinder> 

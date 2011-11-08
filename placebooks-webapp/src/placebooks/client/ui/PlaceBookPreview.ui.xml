@@ -33,9 +33,21 @@
 			display: inline-block;
 			padding: 0 5px;
 		}
+		
+		.parent {
+			height: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+		}
+		
+		.canvas {
+			-webkit-box-flex: 1;
+			overflow: auto;
+
+		}
 	</ui:style>	
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
-	<g:FlowPanel>
+	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<p:PlaceBookToolbar ui:field="toolbar" />
 			<g:FlowPanel styleName="{style.infoPanel}" ui:field="infoPanel">
@@ -56,6 +68,6 @@
 				</g:FlowPanel>							
 			</g:FlowPanel>
 		</g:FlowPanel>		
-		<g:FlowPanel ui:field="canvasPanel" />
+		<g:FlowPanel ui:field="canvasPanel" styleName="{style.canvas}" />
 	</g:FlowPanel>
 </ui:UiBinder>

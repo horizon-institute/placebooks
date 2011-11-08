@@ -24,7 +24,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -79,8 +78,6 @@ public class PlaceBookHome extends PlaceBookPlace
 		toolbar.setPlace(this);
 
 		Window.setTitle("PlaceBooks");
-
-		RootPanel.get().getElement().getStyle().clearOverflow();
 
 		PlaceBookService.getRandomPlaceBooks(2, new AbstractCallback()
 		{

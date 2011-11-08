@@ -92,13 +92,32 @@
 			background-color: #457;
 			border: 1px outset #569;
 		}
+		
+		.height {
+			height: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: stretch;
+		}
+		
+		.content
+		{
+			overflow-y: auto;
+			-webkit-box-flex: 1;
+		}
+		
+		.innerContent {
+			margin: auto;
+			width: 800px;
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
-	<g:FlowPanel>
+	<g:FlowPanel styleName="{style.height}">
 		<p:PlaceBookToolbar ui:field="toolbar" />
 
-		<g:FlowPanel styleName="{styles.style.content}">
+		<g:FlowPanel styleName="{style.content}">
+			<g:FlowPanel styleName="{style.innerContent}">
 			<g:FlowPanel>
 				<g:Image styleName="{style.title}" resource="{images.headline}" />
 				<g:FlowPanel styleName="{style.imagePanel}">
@@ -119,7 +138,8 @@ You can also share them with your friends and other PlaceBook users.
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{images.listitem_youtube}" /><g:HTML styleName="{style.listText}"><b><a href="http://www.youtube.com">YouTube</a></b>, this allows you to download any videos you make using EveryTrail Pro. You will need to set up a <a href="http://www.youtube.com/create_account">YouTube</a> account to access the video.</g:HTML></g:FlowPanel>
 			<g:FlowPanel styleName="{style.listItem}"><g:Image styleName="{style.listImage}" resource="{images.listitem_video}" /><g:HTML styleName="{style.listText}"><b><a href="http://www.ixconverter.com">IXConverter</a></b>, this free online service allows you download your YouTube videos and add save them on your computer so that you can add them to a PlaceBook. You should save your videos in mp4 format. You can also use IXConverter to convert audio files into mp3 format. If you want to put videos or audio into a PlaceBook you must use the mp4 and mp3 formats.</g:HTML></g:FlowPanel>
 			<g:SimplePanel styleName="{style.previewPanel}" ui:field="preview1" />
-			<g:SimplePanel styleName="{style.previewPanel}" ui:field="preview2" />			
+			<g:SimplePanel styleName="{style.previewPanel}" ui:field="preview2" />	
+			</g:FlowPanel>		
 		</g:FlowPanel>		
 	</g:FlowPanel>
 </ui:UiBinder> 

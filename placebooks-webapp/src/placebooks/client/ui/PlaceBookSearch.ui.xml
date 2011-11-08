@@ -12,9 +12,11 @@
 		
 		.search {
 			font-size: 20px;
-			width: 730px;
-			vertical-align: top;
-			margin-top: 5px;
+			position: absolute;
+			left: 0px;
+			top: 2px;
+			right: 60px;
+	
 		}
 		
 		.searchButton {
@@ -35,44 +37,35 @@
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
-			margin-bottom: 20px;
 		}
 		
-		.loading {
-			text-align: center;
-			margin-top: 100px;
+		.searchBar {
+			margin: 0 auto;
+			width: 80%;
+			position: relative;
 		}
 		
-		.loadingLabel {
-			font-size: 18px;
-			margin-left: 5px;
-			color: #555;
+		.parent {
+			height: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
-	<g:FlowPanel>
+	<g:FlowPanel styleName="{style.parent}">
 		<p:PlaceBookToolbar ui:field="toolbar" />
 
 		<g:FlowPanel styleName="{style.searchBlock}">
-			<g:FlowPanel styleName="{styles.style.content}">
-				<g:FlowPanel>
-					<p:MousePanel styleName="{style.searchButton}"
-						ui:field="searchButton">
-						<g:Image resource="{images.search}" />
-					</p:MousePanel>
-					<g:TextBox ui:field="searchBox" styleName="{style.search}">Search
-						PlaceBooks</g:TextBox>
-				</g:FlowPanel>
+
+			<g:FlowPanel styleName="{style.searchBar}">
+				<g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox>
+				<p:MousePanel styleName="{style.searchButton}" ui:field="searchButton">
+					<g:Image resource="{images.search}" />
+				</p:MousePanel>
 			</g:FlowPanel>
 		</g:FlowPanel>
 
-		<g:FlowPanel styleName="{styles.style.content}">
-			<g:FlowPanel styleName="{style.loading}" ui:field="indicator">
-				<g:Image resource='{images.progress3}' />
-				<g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel>
-			</g:FlowPanel>
-			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>
-		</g:FlowPanel>
+		<p:PlaceBookShelf ui:field="shelf" />
 	</g:FlowPanel>
 </ui:UiBinder>

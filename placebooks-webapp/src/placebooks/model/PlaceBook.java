@@ -208,6 +208,7 @@ public class PlaceBook
 			if (g != null)
 			{
 				// A Geometry with no dimensions has to be handled
+				System.out.println("Inclunding item " + item.getClass().getSimpleName() + ":"+ item.getKey() + " = " + g.toText());
 				if (g.getBoundary().isEmpty()) 
 				{
 					Coordinate[] cs = g.getCoordinates();

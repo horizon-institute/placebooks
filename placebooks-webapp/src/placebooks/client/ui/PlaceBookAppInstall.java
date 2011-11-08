@@ -9,7 +9,6 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookAppInstall extends PlaceBookPlace
@@ -49,7 +48,6 @@ public class PlaceBookAppInstall extends PlaceBookPlace
 		toolbar.setPlace(this);
 
 		Window.setTitle("PlaceBooks App Install Instructions");
-		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(widget);
 	}
 }

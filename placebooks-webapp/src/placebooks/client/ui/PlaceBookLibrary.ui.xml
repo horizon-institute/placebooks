@@ -7,17 +7,24 @@
 			font-style: mako, sans-serif;
 			font-size: 26px;
 			font-weight: bold;
-			margin: 20px 0 10px 0;
+			margin: 20px auto 10px auto;
 			color: #384967;
+			width: 80%;
+			
+		}
+		
+		.parent {
+			height: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;			
+
 		}
 	</ui:style>	
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>	
-	<g:FlowPanel>
+	<g:FlowPanel styleName="{style.parent}">
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		
-		<g:FlowPanel styleName="{styles.style.content}">		
-			<g:Label ui:field="titleLabel" styleName="{style.title}">Library</g:Label>
-			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
-		</g:FlowPanel>
+		<g:Label ui:field="titleLabel" styleName="{style.title}">Library</g:Label>
+		<p:PlaceBookShelf ui:field="shelf" />	
 	</g:FlowPanel>
 </ui:UiBinder>

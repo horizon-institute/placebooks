@@ -100,6 +100,16 @@ public class Map extends JavaScriptObject
 		return this.maxExtent;
 	}-*/;
 
+	public final native Element getDiv()
+	/*-{
+		return this.div;
+	}-*/;	
+	
+	public final native void render()
+	/*-{
+		this.render(this.div);
+	}-*/;
+	
 	public final native Projection getProjection()
 	/*-{
 		return this.getProjectionObject();

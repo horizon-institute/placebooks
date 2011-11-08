@@ -29,9 +29,11 @@
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
-			z-index: -10;
 			background: #556;
 			overflow: auto;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
 		}
 		
 		.loadingPanel {
@@ -109,7 +111,6 @@
 		}
 		
 		.actionMenu {
-			float: right;
 			font: 16px verdana, arial, sans-serif;
 			padding-top: 5px;
 		}
@@ -142,10 +143,17 @@
 			padding: 0px 30px;
 			background: #EEE;
 			border-bottom: 1px solid #CCC;
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
 		}
 		
 		.imageButton:HOVER {
 			background-color: rgba(255, 255, 255, 0.2);
+		}
+		
+		.spacer {
+			-webkit-box-flex: 1;
 		}
 	</ui:style>
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
@@ -161,9 +169,10 @@
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
-				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" />
+				<g:FlowPanel styleName="{style.spacer}"/>
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<g:SimplePanel styleName="{style.innerCanvasPanel}"
 				ui:field="canvasPanel" />

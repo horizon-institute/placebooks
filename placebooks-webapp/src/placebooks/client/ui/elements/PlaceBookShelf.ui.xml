@@ -1,0 +1,83 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<ui:style>
+		.loading
+		{
+			text-align: center;
+			margin-top: 100px;
+		}
+		
+		.loadingLabel 
+		{
+			font-size: 18px;
+			margin-left: 5px;
+			color: #555;
+		}
+		
+		.placebookList
+		{
+			overflow: auto;
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			bottom: 0px;
+			padding-top: 10px;
+			padding-left: 10px;
+		}
+		
+		.mapPanel
+		{
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			right: 0px;
+			left: 200px;
+		}
+		
+		.content 
+		{
+			padding-top: 30px;
+			position: relative;
+			-webkit-box-flex: 1;
+		}
+		
+		.mapToggle
+		{
+			position:absolute;
+			top: 0px;
+			right: 0px;
+			height: 20px;
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
+			padding: 0 10px;
+			cursor: default;
+			color: #777;
+			background-color: #FFF;
+			z-index: 20;
+		}
+		
+		.mapToggleText
+		{
+			padding-right: 5px;
+		}
+		
+		.mapToggle:HOVER
+		{
+			background-color: #DDD;
+
+		}		
+	</ui:style>	
+	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<g:FlowPanel styleName="{style.content}">		
+		<g:FlowPanel styleName="{style.loading}" ui:field="indicator"><g:Image resource='{images.progress3}' /><g:InlineLabel styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>
+		<g:FlowPanel ui:field="placebooks" styleName="{style.placebookList}" />
+		<p:MousePanel ui:field="mapToggle" styleName="{style.mapToggle}">
+			<g:Label ui:field="mapToggleText" styleName="{style.mapToggleText}">Hide Map</g:Label>	
+			<g:Image ui:field="mapToggleImage" resource="{images.arrow_right}"/>			
+		</p:MousePanel>
+
+		<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>	
+	</g:FlowPanel>
+</ui:UiBinder>

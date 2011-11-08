@@ -28,7 +28,6 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPreview extends PlaceBookPlace
@@ -150,7 +149,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		toolbar.setPlace(this);
 
-		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(preview);
 		canvas.reflow();
 

@@ -2,7 +2,6 @@ package placebooks.client.ui.elements;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.Resources;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.PlaceBookEditor;
@@ -202,7 +201,7 @@ public class PlaceBookToolbar extends Composite
 		{
 			loginPanel.setVisible(false);
 			accountItem.setVisible(true);
-			accountItem.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.STYLES.style().dropIcon() + "\">&#9660;</span>");
+			accountItem.setHTML(user.getName());
 
 		}
 		else
