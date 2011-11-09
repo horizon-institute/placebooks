@@ -54,4 +54,5 @@ public class PeoplesCollectionTrailResponse {
 	{
 		return crs;
 	}
+	
 }

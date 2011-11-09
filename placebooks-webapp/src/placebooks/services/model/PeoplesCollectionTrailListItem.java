@@ -35,6 +35,11 @@ public class PeoplesCollectionTrailListItem
 		this.properties = properties;
 	}
 
+	/**
+	 * Get the ID from the list items, this is in the string format trail.{id} so to get the integer id use
+	 * GetPropertiesID. 
+	 * @return String trail.{id} of the trail
+	 */
 	public String GetId()
 	{
 		return id;
@@ -54,11 +59,23 @@ public class PeoplesCollectionTrailListItem
 	{
 		return geometry.GetGeometry();
 	}
-
 	
+	/**
+	 * Get the properties for the trail, e.g. 'markup' html representation, title and icon type, etc.  
+	 * @return
+	 */
 	public PeoplesCollectionProperties GetProperties()
 	{
 		return properties;
+	}
+	
+	/**
+	 * Get the integer ID from the trail properties rather than the trail.id type id from the list item 
+	 * @return
+	 */
+	public int GetPropertiesId()
+	{
+		return properties.GetId();
 	}
 
 }

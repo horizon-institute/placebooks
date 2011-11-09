@@ -3,11 +3,14 @@
  */
 package placebooks.services;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManager;
@@ -17,10 +20,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import placebooks.controller.CommunicationHelper;
+import placebooks.controller.ItemFactory;
+import placebooks.model.GPSTraceItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
+import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
 
@@ -226,7 +232,31 @@ public class PeoplesCollectionService extends Service
 
 	@Override
 	protected void sync(EntityManager manager, User user, LoginDetails details) {
-		// TODO Auto-generated method stub
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUserID(), details.getPassword());
+		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
 		
+		ArrayList<String> itemsSeen = new ArrayList<String>();
+		for(PeoplesCollectionTrailListItem trailItem : trailsResponse.GetMyTrails())
+		{
+			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailItem.GetPropertiesId());
+			GPSTraceItem item = new GPSTraceItem(user);
+			try
+			{
+				ItemFactory.toGPSTraceItem(user, trail, item);
+				itemsSeen.add(item.getExternalID());
+			}
+			catch (Exception e)
+			{
+				
+			}
+			
+			item.saveUpdatedItem();
+		}
+		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
+		
+		int itemsDeleted = cleanupItems(manager, itemsSeen, user);
+		details.setLastSync();			
+		log.info("Finished PeoplesCollection import, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");			
+
 	}
 }

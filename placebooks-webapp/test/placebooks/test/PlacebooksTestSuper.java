@@ -21,6 +21,8 @@ import placebooks.services.model.EverytrailLoginResponse;
  */
 public class PlacebooksTestSuper
 {
+	protected static EverytrailService everytrailService = new EverytrailService();
+	
 	protected static String test_user_email = "everytrail_test@live.co.uk";
 	protected static String test_everytrail_username = "placebooks_everytrail_test";
 	protected static String test_everytrail_password = "testPass1!";		
@@ -29,7 +31,8 @@ public class PlacebooksTestSuper
 
 	protected static String test_peoplescollection_username = "placebooksTest";
 	protected static String test_peoplescollection_password = "testPass1!";		
-	
+	protected static int test_peoplescollection_item_id = 41981;
+	protected static String test_peoplescollection_item_title = "Llanddewi Brefi YFC Annual Dinner, 1975";
 	
 	protected static final Logger log = 
 		Logger.getLogger(EverytrailServiceTest.class.getName());

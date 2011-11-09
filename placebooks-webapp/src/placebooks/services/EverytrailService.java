@@ -13,7 +13,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -38,7 +36,6 @@ import placebooks.controller.PropertiesSingleton;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
-import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.services.model.EverytrailLoginResponse;
@@ -54,7 +51,7 @@ public class EverytrailService extends Service
 {
 	public final static String SERVICE_NAME = "Everytrail";
 
-	private final String apiBaseUrl = "http://www.everytrail.com/api/";
+	private final static String apiBaseUrl = "http://www.everytrail.com/api/";
 
 	private static final Logger log = Logger.getLogger(EverytrailService.class.getName());
 
@@ -731,42 +728,9 @@ public class EverytrailService extends Service
 				}			 
 			}
 	
-			log.debug("Checking for deleted items...");
-			int deletedItems = 0;
-			try
-			{
-				manager.getTransaction().begin();
-				TypedQuery<PlaceBookItem> q = manager.createQuery("SELECT placebookitem FROM PlaceBookItem AS placebookitem WHERE (placebookitem.owner = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
-				q.setParameter(1, user);
-				Collection<PlaceBookItem> items = q.getResultList();
-				for(PlaceBookItem placebookitem: items)
-				{
-					if(!available_ids.contains(placebookitem.getExternalID()))
-					{
-						log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
-						manager.remove(placebookitem);
-						deletedItems++;
-					}
-					else
-					{
-						log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
-					}
-				}
-	
-				manager.getTransaction().commit();
-			}
-			finally
-			{
-				if (manager.getTransaction().isActive())
-				{
-					manager.getTransaction().rollback();
-					log.error("Rolling Everytrail cleanup back");
-					return;
-				}
-			}
-			
+			int itemsDeleted = cleanupItems(manager, imported_ids, user);
 			details.setLastSync();			
-			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + deletedItems + " removed");			
+			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + itemsDeleted + " removed");			
 		}
 		finally
 		{

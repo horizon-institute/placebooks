@@ -3,6 +3,7 @@
  */
 package placebooks.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,10 +31,14 @@ import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.services.EverytrailService;
+import placebooks.services.PeoplesCollectionService;
+import placebooks.services.model.PeoplesCollectionTrailResponse;
 
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.geo.impl.GeoRssWhere;
 import com.google.gdata.data.youtube.VideoEntry;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -67,8 +72,7 @@ public class ItemFactory
 			}
 			else if(l.size()>1)
 			{
-				//EntityTransaction t = em.getTransaction();
-				log.warn("Removing duplicate Everytrail items for " + itemToSave.getExternalID());
+				log.warn("Removing duplicate items for " + itemToSave.getExternalID());
 				for(PlaceBookItem o : l)
 				{
 					log.debug("Removing: " + o.getKey());
@@ -111,18 +115,18 @@ public class ItemFactory
 			gpsItem.setExternalID("everytrail-" + tripId);
 			gpsItem.addMetadataEntry("trip", tripId)	;	
 		}
-		
+
 		if(tripName!=null)
 		{
 			log.debug("Trip name is: " + tripName);
 			gpsItem.addMetadataEntryIndexed("trip_name", tripName);	
 			gpsItem.addMetadataEntryIndexed("title", tripName);
 		}
-		
-		
+
+
 		String tripGpxUrlString = "";
 		URL tripGpxUrl = null;
-		
+
 		//Then look at the properties in the child nodes to get url, title, description, etc.
 		final NodeList tripProperties = tripItem.getChildNodes();
 		for (int propertyIndex = 0; propertyIndex < tripProperties.getLength(); propertyIndex++)
@@ -153,8 +157,8 @@ public class ItemFactory
 		{
 			log.error("Can't create GPX URL: " + tripGpxUrlString, e);
 		}
-		
-		
+
+
 		int tryCount = 0;
 		boolean keepTrying = true;
 		String gpxString = "";
@@ -187,8 +191,8 @@ public class ItemFactory
 		}
 	}
 
-	
-	
+
+
 
 
 
@@ -282,7 +286,6 @@ public class ItemFactory
 				}
 				try
 				{
-					//final GeometryFactory gf = new GeometryFactory();
 					final Geometry newGeom = new WKTReader().read("POINT ( " + lat + " " + lon +" )"); 
 					log.debug("Detected coordinates " + lat.toString() + ", " + lon.toString());
 					geom = newGeom;
@@ -388,5 +391,70 @@ public class ItemFactory
 			log.info("Can't get location of video...");
 		}
 		return new VideoItem(owner, geom, sourceUrl, videoFile.getAbsolutePath());
+	}
+
+	/**
+	 * Convert an Everytrail track to a GPSTraceItem
+	 * @param owner User creating this item
+	 * @param trackItem the track item as a DOM node from EverytrailTracks response
+	 * @param tripId 
+	 * @param tripName 
+	 * @throws Exception 
+	 */
+	public static void toGPSTraceItem(final User owner, final PeoplesCollectionTrailResponse trail, GPSTraceItem gpsItem) throws Exception
+	{
+		//tripItem.toString();
+		log.debug(trail.GetProperties().GetTitle());
+		String trailTitle = trail.GetProperties().GetTitle();
+		String trailId = Integer.toString(trail.GetProperties().GetTrailId());
+
+		gpsItem.setGeometry(trail.GetGeometry());
+		gpsItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+
+		if(trail!=null)
+		{
+			log.debug("Trip id is: " + trailId);
+			gpsItem.setExternalID("peoplescollection-" + trailId);
+			gpsItem.addMetadataEntry("trip", trailId)	;	
+		}
+
+		if(trailTitle!=null)
+		{
+			log.debug("Trail name is: " + trailTitle);
+			gpsItem.addMetadataEntryIndexed("trip_name", trailTitle);	
+			gpsItem.addMetadataEntryIndexed("title", trailTitle);
+		}
+
+
+		StringBuilder trackGPXBuilder = new StringBuilder();
+		trackGPXBuilder.append("<?xml version='1.0' encoding='UTF-8'?>");
+		trackGPXBuilder.append("<gpx version='1.0' creator='Placebooks - http://www.placebooks.org' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='http://www.topografix.com/GPX/1/0' xsi:schemaLocation='http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd'>");
+
+		Envelope envelope = new Envelope();
+		envelope.expandToInclude(trail.GetGeometry().getEnvelopeInternal());
+		double xMin = envelope.getMinX();
+		double yMin = envelope.getMinY();
+
+		double xMax = envelope.getMaxX();
+		double yMax = envelope.getMaxY();
+
+		trackGPXBuilder.append("<bounds minlat='" + yMin + "' minlon='" + xMin + "' maxlat='" + yMax + "' maxlon='" + xMax + "'/>");
+		trackGPXBuilder.append("<trk>");
+		trackGPXBuilder.append("<name>" + trailTitle + "</name>");
+		trackGPXBuilder.append("<trkseg>");
+		for(Coordinate c : trail.GetGeometry().getCoordinates())
+		{
+			trackGPXBuilder.append("<trkpt lat='" + c.y + "' lon='" + c.x + "'>");
+			trackGPXBuilder.append("<ele>0</ele>");
+			trackGPXBuilder.append("</trkpt>");
+		}
+
+		trackGPXBuilder.append("</trkseg>");
+		trackGPXBuilder.append("</trk>");
+		trackGPXBuilder.append("</gpx>");
+
+		log.debug(trackGPXBuilder.toString());
+		byte[] bytes = trackGPXBuilder.toString().getBytes("UTF-8");
+		gpsItem.readTrace(new ByteArrayInputStream(bytes));
 	}
 }

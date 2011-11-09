@@ -44,7 +44,7 @@ public class PeoplesCollectionGeometryPoint
 	public Geometry GetGeometry() throws IOException {
 		try
 		{
-			return new WKTReader().read(type + " " + coordinates.toString());
+			return new WKTReader().read(type + "(" + coordinates[0] + " " + coordinates[1] + ")");
 		}
 		catch (ParseException e)
 		{
