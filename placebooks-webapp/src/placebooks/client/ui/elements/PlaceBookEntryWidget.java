@@ -1,7 +1,5 @@
 package placebooks.client.ui.elements;
 
-import java.util.Formatter;
-
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.ui.PlaceBookEditor;
