@@ -50,8 +50,11 @@ public class PlaceBookShelf extends Composite
 	Panel placebooks;
 
 	@UiField
-	Panel indicator;
+	Panel progress;
 
+	@UiField
+	Label progressLabel;
+	
 	@UiField
 	Panel mapPanel;
 
@@ -70,7 +73,7 @@ public class PlaceBookShelf extends Composite
 	@UiField
 	Panel mapToggle;
 	
-	boolean mapVisible = true;
+	boolean mapVisible = false;
 
 	public PlaceBookShelf()
 	{
@@ -161,7 +164,7 @@ public class PlaceBookShelf extends Composite
 		{
 			return;
 		}
-		indicator.setVisible(false);
+		progress.setVisible(false);
 		mapPanel.setVisible(true);
 		mapToggle.setVisible(true);
 		placebooks.clear();
@@ -271,7 +274,7 @@ public class PlaceBookShelf extends Composite
 	private void recenter()
 	{
 		if (map == null) { return; }
-		if (!isVisible()) { return; }
+		if (!mapPanel.isVisible()) { return; }
 
 		try
 		{
@@ -288,18 +291,26 @@ public class PlaceBookShelf extends Composite
 		}
 	}
 	
-	private void setMapVisible(boolean visible)
+	public void setMapVisible(boolean visible)
 	{
 		mapVisible = visible;
+		mapPanel.setVisible(mapVisible);
+		for (PlaceBookEntryWidget widget : widgets)
+		{
+			widget.setMarkerVisible(mapVisible);
+		}
+		
 		if(mapVisible)
 		{
 			mapToggleText.setText("Hide Map");
 			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
 			placebooks.getElement().getStyle().clearRight();
 			placebooks.getElement().getStyle().clearTop();
-			placebooks.getElement().getStyle().clearMarginLeft();
-			placebooks.getElement().getStyle().clearMarginRight();					
+			placebooks.getElement().getStyle().clearPaddingLeft();
+			placebooks.getElement().getStyle().clearPaddingRight();					
 			placebooks.setWidth("190px");
+			
+			recenter();
 		}
 		else
 		{
@@ -307,16 +318,9 @@ public class PlaceBookShelf extends Composite
 			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
 			placebooks.getElement().getStyle().setRight(0, Unit.PX);
 			placebooks.getElement().getStyle().setTop(20, Unit.PX);
-			placebooks.getElement().getStyle().setMarginLeft(40, Unit.PX);
-			placebooks.getElement().getStyle().setMarginRight(40, Unit.PX);			
+			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
+			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);			
 			placebooks.getElement().getStyle().clearWidth();
-		}
-		
-		mapPanel.setVisible(mapVisible);
-
-		for (PlaceBookEntryWidget widget : widgets)
-		{
-			widget.setMarkerVisible(mapVisible);
 		}		
 	}
 
@@ -324,5 +328,18 @@ public class PlaceBookShelf extends Composite
 	void toggleMapVisible(ClickEvent event)
 	{
 		setMapVisible(!mapVisible);
+	}
+
+	public void showProgress(String string)
+	{
+		placebooks.clear();
+		widgets.clear();
+		markerLayer.clearMarkers();
+
+		progress.setVisible(true);
+		progressLabel.setText(string);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);
+		
 	}
 }

@@ -5,12 +5,17 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookShelf;
 import placebooks.client.ui.images.markers.Markers;
+import placebooks.client.ui.items.MapItem;
 
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.geolocation.client.Geolocation;
+import com.google.gwt.geolocation.client.Position;
+import com.google.gwt.geolocation.client.PositionError;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.place.shared.PlaceTokenizer;
@@ -26,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookSearch extends PlaceBookPlace
 {
-	@Prefix("mapsearch")
+	@Prefix("search")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookSearch>
 	{
 		@Override
@@ -54,7 +59,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 	@UiField
 	TextBox searchBox;
 		
-	private final String searchString;
+	private String searchString;
 
 	public PlaceBookSearch(final String search)
 	{
@@ -107,11 +112,6 @@ public class PlaceBookSearch extends PlaceBookPlace
 		}
 	}
 	
-	public void setSearchShelf(final Shelf newShelf)
-	{
-		shelf.setShelf(this, newShelf, searchString.equals(""));
-	}
-
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
@@ -125,16 +125,9 @@ public class PlaceBookSearch extends PlaceBookPlace
 		GWT.log("Search: " + searchString);
 		// setShelf(shelf);
 
-		PlaceBookService.search(searchString, new AbstractCallback()
-		{
-			@Override
-			public void success(final Request request, final Response response)
-			{
-				setSearchShelf(Shelf.parse(response.getText()));
-			}
-		});
-
 		panel.setWidget(widget);
+		
+		search();
 	}
 
 	@UiHandler("searchButton")
@@ -154,6 +147,47 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	private void search()
 	{
-		getPlaceController().goTo(new PlaceBookSearch(searchBox.getText(), getShelf()));
+		searchString = searchBox.getText();
+		shelf.showProgress("SEARCHING");
+		if(searchString.equals("location:current"))
+		{
+			Geolocation geolocation = Geolocation.getIfSupported();
+			geolocation.getCurrentPosition(new Callback<Position, PositionError>()
+			{
+				@Override
+				public void onSuccess(Position result)
+				{
+					String geometry = MapItem.POINT_PREFIX + result.getCoordinates().getLatitude() + " " + result.getCoordinates().getLongitude() + ")";
+					
+					PlaceBookService.searchLocation(geometry, new AbstractCallback()
+					{
+						@Override
+						public void success(final Request request, final Response response)
+						{
+							shelf.setShelf(PlaceBookSearch.this, Shelf.parse(response.getText()), true);
+							shelf.setMapVisible(true);							
+						}
+					});
+				}
+				
+				@Override
+				public void onFailure(PositionError reason)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		}
+		else
+		{
+			PlaceBookService.search(searchString, new AbstractCallback()
+			{
+				@Override
+				public void success(final Request request, final Response response)
+				{
+					shelf.setShelf(PlaceBookSearch.this, Shelf.parse(response.getText()), searchString.equals(""));
+				}
+			});
+		}
 	}
 }

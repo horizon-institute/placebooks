@@ -112,7 +112,6 @@
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
-	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
 	<g:FlowPanel styleName="{style.height}">
 		<p:PlaceBookToolbar ui:field="toolbar" />
 

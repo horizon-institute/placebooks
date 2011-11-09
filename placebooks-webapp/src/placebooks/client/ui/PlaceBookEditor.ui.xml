@@ -112,25 +112,7 @@
 		
 		.actionMenu {
 			font: 16px verdana, arial, sans-serif;
-			padding-top: 5px;
-		}
-		
-		.placeBookMenu {
-			border: 1px solid black;
-			border-bottom: 0px;
-			border-top-left-radius: 5px;
-			border-top-right-radius: 5px;
-			background-color: white;
-			font-size: 12px;
-			padding: 0 5px;
-			margin-top: 10px;
-			margin-right: 5px;
-			line-height: 30px;
-			cursor: default;
-		}
-		
-		.placeBookMenu:HOVER {
-			background-color: rgba(255, 255, 255, 0.2);
+			padding: 5px;
 		}
 		
 		.imageButton {
@@ -155,8 +137,59 @@
 		.spacer {
 			-webkit-box-flex: 1;
 		}
+		
+		.zoomPanel {
+			padding: 0px 12px;	
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;			
+		}
+		
+		.zoomLabel {
+			-webkit-box-flex: 1;
+			padding-right: 10px;
+		}
+		
+		.zoomButton {
+			padding: 3px 5px;
+			cursor: pointer;
+			border: 1px solid #FFF;			
+		}	
+
+		.zoomButton:HOVER {
+			background: #ccc;
+			border: 1px solid #BBB;
+		}	
+		
+		.dropMenu {
+			position: absolute;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 30;
+			padding: 0px;
+			-moz-transition: opacity .5s linear, visibility .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+			background: #FFF;
+			-moz-box-shadow: 3px 3px 4px #222;
+			-webkit-box-shadow: 3px 3px 4px #222;
+			box-shadow: 3px 3px 6px #222;
+			border: 1px solid #DDD;
+		}
+		
+		.menuItem {
+			padding: 3px 12px;
+			cursor: pointer;
+			border-top: 1px solid #FFF;
+			border-bottom: 1px solid #FFF;			
+		}
+		
+		.menuItem:HOVER {
+			background: #ccc;
+			border-top: 1px solid #BBB;
+			border-bottom: 1px solid #BBB;
+		}
 	</ui:style>
-	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
 		<g:SimplePanel styleName="{style.loadingPanel}"
@@ -170,21 +203,22 @@
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
-				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" />
-				<g:FlowPanel styleName="{style.spacer}"/>
+				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" addStyleNames="{style.spacer}" />
 				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<g:SimplePanel styleName="{style.innerCanvasPanel}"
 				ui:field="canvasPanel" />
 		</g:FlowPanel>
-		<p:DropMenu ui:field="dropMenu" styleName="{styles.style.dropMenu}">
-			<g:Label ui:field="publish" styleName="{styles.style.menuItem}">Publish</g:Label>
-			<g:Label ui:field="print" styleName="{styles.style.menuItem}">Print</g:Label>
-			<g:Label>Zoom</g:Label>
-			<g:Label>-</g:Label>
-			<g:Label>100%</g:Label>
-			<g:Label>+</g:Label>
-			<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete</g:Label>
+		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
+			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>
+			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>
+			<g:FlowPanel styleName="{style.zoomPanel}">
+				<g:Label styleName="{style.zoomLabel}">Zoom</g:Label>
+				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
+				<g:Label ui:field="zoomLabel">100%</g:Label>
+				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
+			</g:FlowPanel>			
+			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>

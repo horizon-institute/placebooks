@@ -1,5 +1,7 @@
 package placebooks.client.ui.elements;
 
+import java.util.Formatter;
+
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.ui.PlaceBookEditor;
@@ -16,6 +18,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -39,6 +42,8 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	Label title;
 	@UiField
 	Label author;
+	@UiField
+	Label distance;	
 	@UiField
 	Image markerImage;
 	
@@ -71,6 +76,18 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		else
 		{
 			author.setVisible(false);
+		}
+		
+		if(entry.getDistance() != -1)
+		{
+			double milesDist = ((entry.getDistance() * Math.PI) / 180.0) * 3966.8;  
+			NumberFormat fmt = NumberFormat.getDecimalFormat();
+			distance.setText(fmt.format(milesDist) + " miles");
+			distance.setVisible(true);
+		}
+		else
+		{
+			distance.setVisible(false);			
 		}
 		
 		markerImage.setVisible(false);

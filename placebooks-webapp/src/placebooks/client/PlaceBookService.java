@@ -90,6 +90,11 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
 	}
 
+	public static void searchLocation(final String geometry, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebook/" + geometry, callback);
+	}
+	
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
 			final RequestCallback callback)
 	{

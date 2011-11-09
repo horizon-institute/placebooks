@@ -20,7 +20,6 @@
 
 		}
 	</ui:style>	
-	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>	
 	<g:FlowPanel styleName="{style.parent}">
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		

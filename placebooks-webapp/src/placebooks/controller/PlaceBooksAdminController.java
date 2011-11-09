@@ -586,7 +586,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-
+	
 	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
 	public ModelAndView getServerInfoJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{

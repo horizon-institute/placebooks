@@ -2,13 +2,13 @@ package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -61,9 +61,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 	DropMenu dropMenu;
 
 	@UiField
-	Panel menuButton;
-
-	@UiField
 	Panel infoPanel;
 
 	@UiField
@@ -76,11 +73,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 	Label titleLabel;
 
 	@UiField
-	Label dropArrow;
-
-	@UiField
 	Label delete;
 
+	@UiField
+	PlaceBookToolbarItem actionMenu;
+	
 	@UiField
 	Anchor authorLabel;
 
@@ -192,7 +189,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "menuButton" })
+	@UiHandler(value = { "dropMenu", "actionMenu" })
 	void hideMenu(final MouseOutEvent event)
 	{
 		dropMenu.startHideMenu();
@@ -204,10 +201,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
 	}
 
-	@UiHandler("menuButton")
+	@UiHandler("actionMenu")
 	void showMenuButton(final MouseOverEvent event)
 	{
-		dropMenu.showMenu(menuButton.getAbsoluteLeft(), menuButton.getAbsoluteTop() + menuButton.getOffsetHeight());
+		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
 	@Override
@@ -232,14 +229,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	private void setEnabledDropMenu(final boolean enabled)
 	{
-		dropArrow.setVisible(enabled);
-		if (enabled)
-		{
-			menuButton.addStyleName(Resources.STYLES.style().button());
-		}
-		else
-		{
-			menuButton.removeStyleName(Resources.STYLES.style().button());
-		}
+		actionMenu.setVisible(enabled);
 	}
 }

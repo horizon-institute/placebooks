@@ -3,17 +3,12 @@
 	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.infoPanel {
-			padding: 10px 30px;
+			padding: 0px 30px;
 			background: #EEE;
 			border-bottom: 1px solid #CCC;
-		}
-		
-		.fblike {
-			float: right;
-		}
-
-		.gplus {
-			float: right;
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
 		}
 		
 		.title {
@@ -29,44 +24,74 @@
 			vertical-align: 20%;
 		} 
 		
-		.menu {
-			display: inline-block;
-			padding: 0 5px;
-		}
-		
 		.parent {
 			height: 100%;
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 		}
 		
+		.spacer {
+			-webkit-box-flex: 1;
+			padding: 7px 0;
+		}
+		
+		.actionMenu {
+			font: 16px verdana, arial, sans-serif;
+			padding: 5px;			
+		}
+		
 		.canvas {
 			-webkit-box-flex: 1;
 			overflow: auto;
-
 		}
+		
+		.dropMenu {
+			position: absolute;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 30;
+			padding: 0px;
+			-moz-transition: opacity .5s linear, visibility .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+			background: #FFF;
+			-moz-box-shadow: 3px 3px 4px #222;
+			-webkit-box-shadow: 3px 3px 4px #222;
+			box-shadow: 3px 3px 6px #222;
+			border: 1px solid #DDD;
+		}
+		
+		.menuItem {
+			padding: 3px 12px;
+			cursor: pointer;
+			border-top: 1px solid #FFF;
+			border-bottom: 1px solid #FFF;			
+		}
+		
+		.menuItem:HOVER {
+			background: #ccc;
+			border-top: 1px solid #BBB;
+			border-bottom: 1px solid #BBB;
+		}		
 	</ui:style>	
-	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<p:PlaceBookToolbar ui:field="toolbar" />
-			<g:FlowPanel styleName="{style.infoPanel}" ui:field="infoPanel">
-				<p:GooglePlusOne ui:field="googlePlus" styleName="{style.gplus}"/>			
-				<p:FacebookLikeButton ui:field="facebookLike" styleName="{style.fblike}"/>		
-				<g:FlowPanel>
-					<p:MousePanel styleName="{style.menu}" ui:field="menuButton">
-						<g:InlineLabel ui:field="titleLabel" styleName="{style.title}" />
-						<g:InlineLabel styleName="{style.dropArrow}" ui:field="dropArrow">▼</g:InlineLabel>
-					</p:MousePanel>
-					<p:DropMenu ui:field="dropMenu" styleName="{styles.style.dropMenu}">
-						<g:Label ui:field="delete" styleName="{styles.style.menuItem}">Delete PlaceBook</g:Label>			
-					</p:DropMenu>		
+			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
+				<g:FlowPanel styleName="{style.spacer}">
+					<g:Label ui:field="titleLabel" styleName="{style.title}" />
 					<g:FlowPanel>			
 						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
 						<g:Anchor ui:field="authorLabel" styleName="{style.author}"/>
 					</g:FlowPanel>					
-				</g:FlowPanel>							
+				</g:FlowPanel>
+				<p:GooglePlusOne ui:field="googlePlus"/>			
+				<p:FacebookLikeButton ui:field="facebookLike"/>				
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
+			<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
+				<g:Label ui:field="delete" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
+			</p:DropMenu>		
 		</g:FlowPanel>		
 		<g:FlowPanel ui:field="canvasPanel" styleName="{style.canvas}" />
 	</g:FlowPanel>

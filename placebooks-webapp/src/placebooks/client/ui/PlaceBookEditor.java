@@ -1,8 +1,5 @@
 package placebooks.client.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
@@ -18,7 +15,6 @@ import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
-import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.palette.Palette;
 
 import com.google.gwt.core.client.GWT;
@@ -191,6 +187,9 @@ public class PlaceBookEditor extends PlaceBookPlace
 	PlaceBookToolbarItem saveStatusPanel;
 
 	@UiField
+	Label zoomLabel;
+	
+	@UiField
 	TextBox title;
 
 	@UiField
@@ -198,9 +197,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 	
 	@UiField
 	DropMenu dropMenu;
-	
-	//@UiField
-	//Label zoomLabel;
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
@@ -209,8 +205,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 	private PlaceBookInteractionHandler interactionHandler;
 
 	private PlaceBook placebook;
-
-	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
 	private SaveContext saveContext = new SaveContext();
 
@@ -313,15 +307,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 		toolbar.setPlace(this);
 
-		menuItems.add(new MenuItem("Print Preview")
-		{
-			@Override
-			public void run()
-			{
-				getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));
-			}
-		});
-
 		title.setMaxLength(64);
 
 		updatePalette();
@@ -379,14 +364,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 				palette.setPalette(items, interactionHandler);
 			}
 		});
-	}
-
-	//@UiHandler("menu")
-	void handlePlaceBookMenu(final ClickEvent event)
-	{
-		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement()
-				.getAbsoluteTop() + event.getRelativeElement().getOffsetHeight(), false);
-		event.stopPropagation();
 	}
 
 	@UiHandler("publish")
@@ -469,13 +446,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 		saveContext.markChanged();
 	}
 
-	//@UiHandler("zoomIn")
+	@UiHandler("zoomIn")
 	void handleZoomIn(final ClickEvent event)
 	{
 		setZoom(zoom + 20);
 	}
 
-	//@UiHandler("zoomOut")
+	@UiHandler("zoomOut")
 	void handleZoomOut(final ClickEvent event)
 	{
 		setZoom(zoom - 20);
@@ -504,13 +481,19 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
+
+	@UiHandler("preview")
+	void preview(final ClickEvent event)
+	{
+		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));		
+	}
 	
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
 		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
 		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
-		//zoomLabel.setText(zoom + "%");
+		zoomLabel.setText(zoom + "%");
 		for (final PlaceBookPanel panel : canvas.getPanels())
 		{
 			panel.reflow();

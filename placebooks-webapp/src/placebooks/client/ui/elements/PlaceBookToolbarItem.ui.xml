@@ -4,14 +4,12 @@
 		.enabled {
 			padding: 0 10px;
 			cursor: pointer;
-			display: inline-block;
 		}
 		
 		.disabled {
 			padding: 0 10px;
 			cursor: default;
 			opacity: 0.5;
-			display: inline-block;			
 		}
 		
 		.enabled:HOVER {

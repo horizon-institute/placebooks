@@ -3,6 +3,7 @@ package placebooks.client.ui.items;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
@@ -16,6 +17,7 @@ import placebooks.client.ui.openlayers.OSLayer;
 import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -79,6 +81,34 @@ public class MapItem extends PlaceBookItemWidget
 		recenter();
 	}
 
+	private ImageResource getMarker(final PlaceBookItem item)
+	{
+		if(item.is(ItemType.AUDIO))
+		{
+			return Markers.IMAGES.marker_audio();
+		}
+		else if(item.is(ItemType.VIDEO))
+		{
+			return Markers.IMAGES.marker_video();			
+		}
+		else if(item.is(ItemType.WEB))
+		{
+			return Markers.IMAGES.marker_web();			
+		}
+		else if(item.is(ItemType.TEXT))
+		{
+			return Markers.IMAGES.marker_text();
+		}
+		else if(item.is(ItemType.IMAGE))
+		{
+			return Markers.IMAGES.marker_image();
+		}		
+		else
+		{
+			return Markers.IMAGES.marker();
+		}
+	}
+	
 	public void refreshMarkers()
 	{
 		// GWT.log("Refresh Markers " + placebook);
@@ -99,7 +129,7 @@ public class MapItem extends PlaceBookItemWidget
 						final LonLat lonlat = LonLat
 								.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
 								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
-						final Marker marker = Marker.create(Markers.IMAGES.marker(), lonlat);
+						final Marker marker = Marker.create(getMarker(item), lonlat);
 						// marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
 						markerLayer.addMarker(marker);
 					}

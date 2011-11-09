@@ -54,6 +54,7 @@
 			<g:FlowPanel styleName="{style.textInnerPanel}">			
 				<g:Label styleName="{style.title}" ui:field="title" />
 				<g:Label styleName="{style.author}" ui:field="author" />
+				<g:Label styleName="{style.author}" ui:field="distance" />				
 			</g:FlowPanel>			
 		</g:FlowPanel>
 	</p:MousePanel>
