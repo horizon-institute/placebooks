@@ -10,8 +10,9 @@ import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.DatePrinter;
+import placebooks.client.ui.elements.EnabledButtonCell;
 
-import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -116,27 +117,25 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			}
 		};
 		cellTable.addColumn(lastUpdateColumn, "Status");
+		
+		final EnabledButtonCell<LoginDetails> syncCell = new EnabledButtonCell<LoginDetails>()
+		{
 
-		// Update
-		final ActionCell<LoginDetails> updateCell = new ActionCell<LoginDetails>("Sync Now",
-				new ActionCell.Delegate<LoginDetails>()
-				{
-					@Override
-					public void execute(final LoginDetails details)
-					{
-						PlaceBookService.sync(details.getService(), new AbstractCallback()
-						{
-							@Override
-							public void success(final Request request, final Response response)
-							{
-							}
-						});
-						details.setSyncInProgress(true);
-						setUser(user);
-					}
-				});
+			@Override
+			public String getText(LoginDetails object)
+			{
+				return "Sync Now";
+			}
 
-		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(updateCell)
+			@Override
+			public boolean isEnabled(LoginDetails object)
+			{
+				return !object.isSyncInProgress();
+			}
+		};
+		
+		
+		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(syncCell)
 		{
 			@Override
 			public LoginDetails getValue(final LoginDetails details)
@@ -144,6 +143,22 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				return details;
 			}
 		};
+		updateColumn.setFieldUpdater(new FieldUpdater<LoginDetails, LoginDetails>()
+		{
+			@Override
+			public void update(int index, LoginDetails object, LoginDetails value)
+			{
+				PlaceBookService.sync(object.getService(), new AbstractCallback()
+				{
+					@Override
+					public void success(final Request request, final Response response)
+					{
+					}
+				});
+				object.setSyncInProgress(true);
+				setUser(user);			
+			}
+		});
 		cellTable.addColumn(updateColumn);
 	}
 
