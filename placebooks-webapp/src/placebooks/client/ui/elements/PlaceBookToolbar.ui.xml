@@ -47,6 +47,7 @@
 		
 		.toolbarLogin {
 			margin-right: 50px;
+			display: -webkit-box;
 		}
 		
 		.spacer {
