@@ -509,6 +509,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 			final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
+			saveContext.setState(SaveState.saved);
+			
 			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
 		}
 		else
