@@ -6,10 +6,10 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.EnumSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -20,12 +20,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
-import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
@@ -34,12 +33,12 @@ import org.w3c.dom.Element;
 import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
 @Entity
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PlaceBook
 {
 	public enum State
@@ -209,6 +208,7 @@ public class PlaceBook
 			if (g != null)
 			{
 				// A Geometry with no dimensions has to be handled
+				System.out.println("Inclunding item " + item.getClass().getSimpleName() + ":"+ item.getKey() + " = " + g.toText());
 				if (g.getBoundary().isEmpty()) 
 				{
 					Coordinate[] cs = g.getCoordinates();

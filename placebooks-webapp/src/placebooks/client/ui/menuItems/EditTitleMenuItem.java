@@ -1,6 +1,6 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 import placebooks.client.ui.PlaceBookEditor.SaveContext;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -51,8 +51,8 @@ public class EditTitleMenuItem extends MenuItem
 		panel.add(title);
 		panel.add(uploadButton);
 
-		dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
-		dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
+		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
+		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
 		dialogBox.setGlassEnabled(true);
 		dialogBox.setAnimationEnabled(true);
 		dialogBox.setWidget(panel);

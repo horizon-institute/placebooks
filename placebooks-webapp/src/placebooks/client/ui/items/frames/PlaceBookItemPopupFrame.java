@@ -3,10 +3,10 @@ package placebooks.client.ui.items.frames;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
-import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler.DragState;
+import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
@@ -113,7 +113,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	{
 		super();
 		rootPanel = widgetPanel;
-		widgetPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		widgetPanel.setStyleName(Resources.STYLES.style().widgetPanel());
 		createFrame();
 		this.interactionHandler = interactHandler;
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());

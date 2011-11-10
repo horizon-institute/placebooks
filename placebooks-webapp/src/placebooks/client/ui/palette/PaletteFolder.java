@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,7 +30,7 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 			add(new PaletteBackItem("Back", parent, palette));
 		}
 
-		image.setResource(Resources.INSTANCE.folder());
+		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override

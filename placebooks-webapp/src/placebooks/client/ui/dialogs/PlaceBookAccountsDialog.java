@@ -9,10 +9,10 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.elements.DatePrinter;
+import placebooks.client.ui.elements.EnabledButtonCell;
 
-import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -26,15 +26,13 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionModel;
 
-public class PlaceBookAccountsDialog extends Composite
+public class PlaceBookAccountsDialog extends PlaceBookDialog
 {
 	interface PlaceBookAccountsDialogUiBinder extends UiBinder<Widget, PlaceBookAccountsDialog>
 	{
@@ -42,7 +40,7 @@ public class PlaceBookAccountsDialog extends Composite
 
 	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
 
-	private static final String[] SERVICES = { "Everytrail" };
+	private static final String[] SERVICES = { "Everytrail", "PeoplesCollection" };
 
 	private static final ProvidesKey<LoginDetails> keyProvider = new ProvidesKey<LoginDetails>()
 	{
@@ -64,8 +62,9 @@ public class PlaceBookAccountsDialog extends Composite
 
 	public PlaceBookAccountsDialog(final User user)
 	{
+		super(true);
 		this.user = user;
-		initWidget(uiBinder.createAndBindUi(this));
+		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
 		updateUser();		
 	}
@@ -118,27 +117,25 @@ public class PlaceBookAccountsDialog extends Composite
 			}
 		};
 		cellTable.addColumn(lastUpdateColumn, "Status");
+		
+		final EnabledButtonCell<LoginDetails> syncCell = new EnabledButtonCell<LoginDetails>()
+		{
 
-		// Update
-		final ActionCell<LoginDetails> updateCell = new ActionCell<LoginDetails>("Sync Now",
-				new ActionCell.Delegate<LoginDetails>()
-				{
-					@Override
-					public void execute(final LoginDetails details)
-					{
-						PlaceBookService.sync(details.getService(), new AbstractCallback()
-						{
-							@Override
-							public void success(final Request request, final Response response)
-							{
-							}
-						});
-						details.setSyncInProgress(true);
-						setUser(user);
-					}
-				});
+			@Override
+			public String getText(LoginDetails object)
+			{
+				return "Sync Now";
+			}
 
-		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(updateCell)
+			@Override
+			public boolean isEnabled(LoginDetails object)
+			{
+				return !object.isSyncInProgress();
+			}
+		};
+		
+		
+		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(syncCell)
 		{
 			@Override
 			public LoginDetails getValue(final LoginDetails details)
@@ -146,6 +143,22 @@ public class PlaceBookAccountsDialog extends Composite
 				return details;
 			}
 		};
+		updateColumn.setFieldUpdater(new FieldUpdater<LoginDetails, LoginDetails>()
+		{
+			@Override
+			public void update(int index, LoginDetails object, LoginDetails value)
+			{
+				PlaceBookService.sync(object.getService(), new AbstractCallback()
+				{
+					@Override
+					public void success(final Request request, final Response response)
+					{
+					}
+				});
+				object.setSyncInProgress(true);
+				setUser(user);			
+			}
+		});
 		cellTable.addColumn(updateColumn);
 	}
 
@@ -211,9 +224,6 @@ public class PlaceBookAccountsDialog extends Composite
 				@Override
 				public void onClick(final ClickEvent arg0)
 				{
-					final PopupPanel dialogBox = new PopupPanel();
-					dialogBox.setGlassEnabled(true);
-					dialogBox.setAnimationEnabled(true);
 					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service
 							+ " Username:");
 					account.addClickHandler(new ClickHandler()
@@ -222,7 +232,7 @@ public class PlaceBookAccountsDialog extends Composite
 						@Override
 						public void onClick(final ClickEvent event)
 						{
-							dialogBox.getElement().getStyle().setCursor(Cursor.WAIT);
+							account.getElement().getStyle().setCursor(Cursor.WAIT);
 							account.setDisabled();
 							PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), service,
 															new AbstractCallback()
@@ -232,7 +242,7 @@ public class PlaceBookAccountsDialog extends Composite
 																		final Response response)
 																{
 																	account.setErrorText(service + " Login Failed");
-																	dialogBox.getElement().getStyle().clearCursor();																	
+																	account.getElement().getStyle().clearCursor();																	
 																	account.setEnabled();																	
 																}
 
@@ -240,7 +250,7 @@ public class PlaceBookAccountsDialog extends Composite
 																public void success(final Request request,
 																		final Response response)
 																{
-																	dialogBox.hide();
+																	account.hide();
 																	Shelf shelf = Shelf.parse(response.getText());
 																	if(shelf != null)
 																	{
@@ -250,13 +260,9 @@ public class PlaceBookAccountsDialog extends Composite
 															});
 						}
 					});
-					dialogBox.add(account);
-					dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-					dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-					dialogBox.setAutoHideEnabled(true);
 
-					dialogBox.center();
-					dialogBox.show();
+					account.center();
+					account.show();
 				}
 			}));
 		}	

@@ -1,21 +1,15 @@
 package placebooks.model.json;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.util.Date;
 
-public class ShelfEntry
+public abstract class ShelfEntry
 {
-	@JsonProperty	
 	private String title;
 
-	@JsonProperty
 	private String key;
 
-	@JsonProperty
 	private String owner;
 
-	@JsonProperty	
 	private Date timestamp;
 	
 	public ShelfEntry()
@@ -42,24 +36,23 @@ public class ShelfEntry
 		return title;
 	}
 
-	public void setKey(final String key)
+	protected void setKey(final String key)
 	{
 		this.key = key;
 	}
 
-	public void setOwner(final String owner)
+	protected void setOwner(final String owner)
 	{
 		this.owner = owner;
 	}
 
-	public void setTimestamp(final Date timestamp)
+	protected void setTimestamp(final Date timestamp)
 	{
 		this.timestamp = timestamp;
 	}
 
-	public void setTitle(final String title)
+	protected void setTitle(final String title)
 	{
 		this.title = title;
 	}
-
 }

@@ -2,11 +2,8 @@ package placebooks.model.json;
 
 import placebooks.model.PlaceBook;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 public class PlaceBookSearchEntry extends PlaceBookEntry
 {
-	@JsonProperty	
 	private int score;
 	
 	private String ownerName;

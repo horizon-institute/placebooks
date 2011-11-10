@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+	<ui:with field='res' type='placebooks.client.ui.styles.Styles'/>	
 	<g:FlowPanel>
 		<p:PlaceBookToolbar ui:field="toolbar"/>
 		<g:HTMLPanel styleName="{res.style.content}">

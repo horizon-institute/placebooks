@@ -1,0 +1,29 @@
+.dropMenu {
+	position: absolute;
+	opacity: 0;
+	visibility: hidden;
+	z-index: 30;
+	border: 2px solid #000;
+	padding: 2px;
+	-webkit-transition: opacity .5s linear, visibility .5s linear;
+	transition: opacity .5s linear, visibility .5s linear;
+	background: #fff;
+	-moz-box-shadow: 3px 3px 4px #222;
+	-webkit-box-shadow: 3px 3px 4px #222;
+	box-shadow: 3px 3px 6px #222;
+}
+
+.insert {
+	width: 100%;
+	position: relative;
+}
+
+.insertInner {
+	border: 2px dashed #999;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	margin: 5px;
+}

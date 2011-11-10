@@ -1,36 +1,64 @@
 package placebooks.client.ui.elements;
 
-import placebooks.client.resources.Resources;
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasMouseOutHandlers;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookToolbarItem extends FlowPanel implements HasClickHandlers, HasText
+public class PlaceBookToolbarItem extends Composite implements HasClickHandlers, HasMouseOverHandlers, HasMouseOutHandlers, HasHTML
 {
+	interface PlaceBookToolbarItemUiBinder extends UiBinder<Widget, PlaceBookToolbarItem>
+	{
+	}
+
+	private static final PlaceBookToolbarItemUiBinder uiBinder = GWT.create(PlaceBookToolbarItemUiBinder.class);
+
+	interface Style extends CssResource
+	{
+		String enabled();
+		String disabled();
+	}
+
 	private boolean enabled;
-	private final Image image = new Image();
-	private final InlineLabel label = new InlineLabel();
+
+	@UiField
+	Image image;
+	@UiField
+	HTML label;
+	
+	@UiField
+	Style style;
 
 	PlaceBookToolbarItem()
 	{
-		image.setVisible(false);		
-		add(image);
-		add(label);
+		initWidget(uiBinder.createAndBindUi(this));
+		image.setVisible(false);
 		setEnabled(true);
 	}
 
 	public HandlerRegistration addClickHandler(ClickHandler handler)
 	{
 		return addDomHandler(handler, ClickEvent.getType());
-	}	
+	}
+
+
 	
 	public void hideImage()
 	{
@@ -41,17 +69,17 @@ public class PlaceBookToolbarItem extends FlowPanel implements HasClickHandlers,
 	{
 		return enabled;
 	}
-	
+
 	public void setEnabled(final boolean enabled)
 	{
 		this.enabled = enabled;
 		if (enabled)
 		{
-			setStyleName(Resources.INSTANCE.style().toolbarItem());
+			setStylePrimaryName(style.enabled());
 		}
 		else
 		{
-			setStyleName(Resources.INSTANCE.style().toolbarItemDisabled());
+			setStylePrimaryName(style.disabled());
 		}
 	}
 
@@ -62,7 +90,7 @@ public class PlaceBookToolbarItem extends FlowPanel implements HasClickHandlers,
 			image.setVisible(true);
 			image.setResource(imageResource);
 			image.getElement().getStyle().setMarginRight(5, Unit.PX);
-			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);
+			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);			
 		}
 		else
 		{
@@ -82,4 +110,27 @@ public class PlaceBookToolbarItem extends FlowPanel implements HasClickHandlers,
 		return label.getText();
 	}
 
+	@Override
+	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler)
+	{
+		return addDomHandler(handler, MouseOutEvent.getType());
+	}
+
+	@Override
+	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler)
+	{
+		return addDomHandler(handler, MouseOverEvent.getType());
+	}
+
+	@Override
+	public String getHTML()
+	{
+		return label.getHTML();
+	}
+
+	@Override
+	public void setHTML(String html)
+	{
+		label.setHTML(html);		
+	}
 }

@@ -1,0 +1,130 @@
+html {
+	height: 100%;
+}
+
+body {
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	margin: 0px;
+	overflow: hidden;
+	height: 100%;
+}
+
+a {
+	color: #66d;
+	cursor: pointer;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.dropIcon {
+	font-size: 8px;
+	vertical-align: top;
+}
+
+.dropMenu {
+	position: absolute;
+	opacity: 0;
+	visibility: hidden;
+	z-index: 30;
+	border: 2px solid #000;
+	padding: 2px;
+	-webkit-transition: opacity .5s linear, visibility .5s linear;
+	transition: opacity .5s linear, visibility .5s linear;
+	background: #fff;
+	-moz-box-shadow: 3px 3px 4px #222;
+	-webkit-box-shadow: 3px 3px 4px #222;
+	box-shadow: 3px 3px 6px #222;
+}
+
+.glassPanel {
+	background: #000;
+	opacity: 0.5;
+	z-index: 45;
+}
+
+.popupPanel {
+	border: 1px solid #447;
+	border-radius: 5px;
+	padding: 3px 5px;
+	z-index: 50;
+	background-color: #669;
+}
+
+.widgetPanel {
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+	margin-bottom: 5px;
+}
+
+.content {
+	margin: auto;
+	width: 800px;
+	overflow-y: auto;
+	height: 100%;
+}
+
+.frameWidgetPanel {
+	overflow: hidden;
+	margin-top: 24px;
+	margin-bottom: 6px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.textitem {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-o-user-select: text;
+	user-select: text;
+}
+
+.mapLabel {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	color: white;
+	padding: 2px 5px;
+	border-bottom: 1px solid black;
+}
+
+img {
+	-webkit-user-drag: none;
+	user-drag: none;
+}
+
+.menuItem {
+	padding: 1px 8px;
+	border-radius: 5px;
+	cursor: default;
+	border: 1px solid #fff;
+}
+
+.menuItem:HOVER {
+	background: #cce;
+	border: 1px solid #bbc;
+}
+
+.dragFrame {
+	position: absolute;
+	opacity: 0.7;
+	visibility: hidden;
+	z-index: 100;
+	-moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	-webkit-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.6);
+	box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.button {
+	cursor: pointer;
+}
+	
+.button:HOVER {
+	background-color: rgba(255, 255, 255, 0.8);
+}

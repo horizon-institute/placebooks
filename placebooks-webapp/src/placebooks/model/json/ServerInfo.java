@@ -1,23 +1,17 @@
 package placebooks.model.json;
 
-import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.PlaceBooksAdminHelper;
-
-import org.codehaus.jackson.annotate.JsonProperty;
+import placebooks.controller.PropertiesSingleton;
 
 public class ServerInfo
 {
-	@JsonProperty
-	private String openSpaceKey;
+	private final String openSpaceKey;
 
-	@JsonProperty
-	private String openSpaceHost;
+	private final String openSpaceHost;
 
-	@JsonProperty
-	private String openSpaceBaseURL;
+	private final String openSpaceBaseURL;
 
-	@JsonProperty
-	private String serverName;
+	private final String serverName;
 
 	public ServerInfo()
 	{

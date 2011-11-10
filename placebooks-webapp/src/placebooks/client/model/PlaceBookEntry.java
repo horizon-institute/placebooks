@@ -20,9 +20,13 @@ public class PlaceBookEntry extends JavaScriptObject
 
 	public final native String getOwnerName() /*-{ return this.ownerName; }-*/;
 
-	public final native int getScore() /*-{ return this.score; }-*/;
+	public final native int getScore() /*-{ return this.score || 0; }-*/;
+	
+	public final native float getDistance() /*-{ return this.distance || -1; }-*/;	
 
 	public final native String getState() /*-{ return this.state; }-*/;
+	
+	public final native String getCenter() /*-{ return this.center; }-*/;	
 	
 	public final native String getPreviewImage() /*-{ return this.previewImage; }-*/;	
 

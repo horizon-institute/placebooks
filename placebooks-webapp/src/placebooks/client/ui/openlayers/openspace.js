@@ -13,8 +13,8 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 							new Array
 								(
 									"OpenSpace",
-									"http://openspacepro.ordnancesurvey.co.uk/osmapapi/ts",												
-									{ format:'image/png', key:"85DBC43A176CF323G2014A2BF8658124", url:"http://www.placebooks.org" },
+									options.tileURL,
+									{ format:'image/png', key:options.key, url:options.hostURL },
 									OpenLayers.Util.extend
 										(
 											options,
@@ -55,7 +55,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 						}
 						else
 						{
-							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":""}) );							
+							delete this.params.product;
 						}
 					}
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );

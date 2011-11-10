@@ -1,33 +1,31 @@
 package placebooks.client.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.Shelf;
-import placebooks.client.resources.Resources;
+import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
+import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPanel;
-import placebooks.client.ui.elements.PlaceBookPublish;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
-import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.palette.Palette;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -46,7 +44,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -118,26 +115,25 @@ public class PlaceBookEditor extends PlaceBookPlace
 				case saved:
 					saveStatusPanel.setText("Saved");
 					saveStatusPanel.hideImage();
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
+					saveStatusPanel.setEnabled(false);
 					break;
 
 				case not_saved:
 					saveStatusPanel.setText("Save");
 					saveStatusPanel.hideImage();
-					// saveStatusPanel.setResource(Resources.INSTANCE.save());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
+					saveStatusPanel.setEnabled(true);					
 					break;
 
 				case saving:
 					saveStatusPanel.setText("Saving");
-					saveStatusPanel.setImage(Resources.INSTANCE.progress2());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItemDisabled());
+					saveStatusPanel.setImage(Resources.IMAGES.progress2());
+					saveStatusPanel.setEnabled(false);					
 					break;
 
 				case save_error:
 					saveStatusPanel.setText("Error Saving");
-					saveStatusPanel.setImage(Resources.INSTANCE.error());
-					saveStatusPanel.setStyleName(Resources.INSTANCE.style().saveItem());
+					saveStatusPanel.setImage(Resources.IMAGES.error());
+					saveStatusPanel.setEnabled(true);					
 					break;
 
 				default:
@@ -191,10 +187,16 @@ public class PlaceBookEditor extends PlaceBookPlace
 	PlaceBookToolbarItem saveStatusPanel;
 
 	@UiField
+	Label zoomLabel;
+	
+	@UiField
 	TextBox title;
 
 	@UiField
-	Label zoomLabel;
+	PlaceBookToolbarItem actionMenu;
+	
+	@UiField
+	DropMenu dropMenu;
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
@@ -203,8 +205,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 	private PlaceBookInteractionHandler interactionHandler;
 
 	private PlaceBook placebook;
-
-	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
 	private SaveContext saveContext = new SaveContext();
 
@@ -307,100 +307,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 		toolbar.setPlace(this);
 
-		menuItems.add(new MenuItem("Delete Placebook")
-		{
-			@Override
-			public void run()
-			{
-				final Panel panel = new FlowPanel();
-				final PopupPanel dialogBox = new PopupPanel(true, true);
-				dialogBox.getElement().getStyle().setZIndex(2000);
-
-				final Label warning = new Label(
-						"You will not be able to get your placebook back after deleting it. Are you sure?");
-				final Button okbutton = new Button("Delete", new ClickHandler()
-				{
-					@Override
-					public void onClick(final ClickEvent event)
-					{
-						PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
-						{
-							@Override
-							public void failure(final Request request, final Response response)
-							{
-								dialogBox.hide();
-							}
-
-							@Override
-							public void success(final Request request, final Response response)
-							{
-								dialogBox.hide();
-								getPlaceController().goTo(new PlaceBookHome());
-							}
-						});
-					}
-				});
-				final Button cancelButton = new Button("Cancel", new ClickHandler()
-				{
-					@Override
-					public void onClick(final ClickEvent event)
-					{
-						dialogBox.hide();
-					}
-				});
-
-				panel.add(warning);
-				panel.add(okbutton);
-				panel.add(cancelButton);
-
-				dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
-				dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
-				dialogBox.setGlassEnabled(true);
-				dialogBox.setAnimationEnabled(true);
-				dialogBox.setWidget(panel);
-				dialogBox.center();
-				dialogBox.show();
-			}
-		});
-		menuItems.add(new MenuItem("Print Preview")
-		{
-			@Override
-			public void run()
-			{
-				getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));
-			}
-		});
-		menuItems.add(new MenuItem("Publish")
-		{
-			@Override
-			public void run()
-			{
-				final PopupPanel dialogBox = new PopupPanel();
-				dialogBox.setGlassEnabled(true);
-				dialogBox.setAnimationEnabled(true);
-				final PlaceBookPublish publish = new PlaceBookPublish(PlaceBookEditor.this, canvas);
-				publish.addClickHandler(new ClickHandler()
-				{
-					@Override
-					public void onClick(final ClickEvent event)
-					{
-						loadingPanel.setVisible(true);
-						dialogBox.hide();
-					}
-				});
-				dialogBox.add(publish);
-
-				dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-				dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-				dialogBox.setAutoHideEnabled(true);
-
-				dialogBox.getElement().getStyle().setZIndex(1000);
-				dialogBox.show();
-				dialogBox.center();
-				dialogBox.getElement().getStyle().setTop(50, Unit.PX);
-			}
-		});
-
 		title.setMaxLength(64);
 
 		updatePalette();
@@ -413,8 +319,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 			}
 		};
 		timer.scheduleRepeating(120000);
-
-		RootPanel.get().getElement().getStyle().setOverflow(Overflow.HIDDEN);
 
 		panel.setWidget(editor);
 
@@ -462,14 +366,79 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("menu")
-	void handlePlaceBookMenu(final ClickEvent event)
+	@UiHandler("publish")
+	void publish(final ClickEvent event)
 	{
-		interactionHandler.showMenu(menuItems, event.getRelativeElement().getAbsoluteLeft(), event.getRelativeElement()
-				.getAbsoluteTop() + event.getRelativeElement().getOffsetHeight(), false);
-		event.stopPropagation();
-	}
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		publish.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				loadingPanel.setVisible(true);
+				publish.hide();
+			}
+		});
 
+		publish.show();
+		publish.center();
+		publish.getElement().getStyle().setTop(50, Unit.PX);
+	}
+	
+	@UiHandler("delete")
+	void delete(final ClickEvent event)
+	{
+		final Panel panel = new FlowPanel();
+		final PopupPanel dialogBox = new PopupPanel(true, true);
+		dialogBox.getElement().getStyle().setZIndex(2000);
+
+		final Label warning = new Label(
+				"You will not be able to get your placebook back after deleting it. Are you sure?");
+		final Button okbutton = new Button("Delete", new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+				{
+					@Override
+					public void failure(final Request request, final Response response)
+					{
+						dialogBox.hide();
+					}
+
+					@Override
+					public void success(final Request request, final Response response)
+					{
+						dialogBox.hide();
+						getPlaceController().goTo(new PlaceBookHome());
+					}
+				});
+			}
+		});
+		final Button cancelButton = new Button("Cancel", new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				dialogBox.hide();
+			}
+		});
+
+		panel.add(warning);
+		panel.add(okbutton);
+		panel.add(cancelButton);
+
+		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
+		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
+		dialogBox.setGlassEnabled(true);
+		dialogBox.setAnimationEnabled(true);
+		dialogBox.setWidget(panel);
+		dialogBox.center();
+		dialogBox.show();
+	}
+	
+	
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
@@ -494,6 +463,31 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return placebookKey;
 	}
 
+	@UiHandler(value = { "dropMenu", "actionMenu" })
+	void hideMenu(final MouseOutEvent event)
+	{
+		dropMenu.startHideMenu();
+	}
+
+	@UiHandler("dropMenu")
+	void showMenu(final MouseOverEvent event)
+	{
+		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+	}
+
+	@UiHandler("actionMenu")
+	void showMenuButton(final MouseOverEvent event)
+	{
+		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
+	}
+
+
+	@UiHandler("preview")
+	void preview(final ClickEvent event)
+	{
+		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));		
+	}
+	
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
@@ -515,6 +509,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 			final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
+			saveContext.setState(SaveState.saved);
+			
 			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
 		}
 		else

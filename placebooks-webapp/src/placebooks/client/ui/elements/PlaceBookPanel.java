@@ -5,17 +5,34 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPanel extends FlowPanel
 {
+	interface Style extends CssResource
+	{
+		String panel();
+	    String innerPanel();
+	    String panelEdge();
+	}
+
+	interface Bundle extends ClientBundle
+	{
+		@Source("PlaceBookPanel.css")
+		Style style();
+	}
+	
+	private static final Bundle STYLES = GWT.create(Bundle.class);
+	
 	protected static final double HEIGHT_PRECISION = 10000;
 
 	private static final Comparator<PlaceBookItemFrame> orderComparator = new Comparator<PlaceBookItemFrame>()
@@ -38,17 +55,18 @@ public class PlaceBookPanel extends FlowPanel
 	public PlaceBookPanel(final int index, final int columns, final double left, final double width,
 			final boolean visible)
 	{
+		STYLES.style().ensureInjected();
 		this.panelIndex = index;
 		column = index % columns;
-		setStyleName(Resources.INSTANCE.style().panel());
+		setStyleName(STYLES.style().panel());
 		if (visible && column != 0)
 		{
-			addStyleName(Resources.INSTANCE.style().panelEdge());
+			addStyleName(STYLES.style().panelEdge());
 		}
 		getElement().getStyle().setLeft(left, Unit.PCT);
 		getElement().getStyle().setWidth(width, Unit.PCT);
 
-		innerPanel.setStyleName(Resources.INSTANCE.style().innerPanel());
+		innerPanel.setStyleName(STYLES.style().innerPanel());
 
 		add(innerPanel);
 	}

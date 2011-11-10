@@ -1,0 +1,61 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.author {
+			font-size: 10px;
+			color: #555;
+		}
+		
+		.container {
+			cursor: default;
+		}
+		
+		.placebookEntry {
+			padding: 5px;
+			margin: 0;
+			width: 150px;
+			text-align: center;
+			border-radius: 16px;
+			display: -webkit-inline-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
+			vertical-align: top;		
+		}
+		
+		.textPanel {
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: start;
+			max-width: 132px;
+		}
+		
+		.textInnerPanel {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
+		}
+
+		.placebookEntry:HOVER {
+			background-color: #DDD;
+		}
+		
+		.title {
+			font-family: mako, sans-serif;
+			font-size: 16px;
+		}		
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<ui:with field='markers' type='placebooks.client.ui.images.markers.Markers'/>	
+	<p:MousePanel styleName="{style.placebookEntry}" ui:field="container">
+		<g:Image resource="{images.placebook128}" ui:field="image" />
+		<g:FlowPanel styleName="{style.textPanel}">
+			<g:Image ui:field="markerImage" resource="{markers.markera}" />
+			<g:FlowPanel styleName="{style.textInnerPanel}">			
+				<g:Label styleName="{style.title}" ui:field="title" />
+				<g:Label styleName="{style.author}" ui:field="author" />
+				<g:Label styleName="{style.author}" ui:field="distance" />				
+			</g:FlowPanel>			
+		</g:FlowPanel>
+	</p:MousePanel>
+</ui:UiBinder> 

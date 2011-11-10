@@ -1,6 +1,6 @@
 package placebooks.client.ui.palette;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -16,7 +16,7 @@ public class PaletteBackItem extends PaletteItem
 
 		text.setText(name);
 
-		image.setResource(Resources.INSTANCE.folder());
+		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override

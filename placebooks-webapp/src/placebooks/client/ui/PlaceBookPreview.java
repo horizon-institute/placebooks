@@ -4,15 +4,14 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.Shelf;
-import placebooks.client.resources.Resources;
+import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -24,13 +23,11 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPreview extends PlaceBookPlace
@@ -57,16 +54,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	private static final PlaceBookPreviewUiBinder uiBinder = GWT.create(PlaceBookPreviewUiBinder.class);
 
-	private boolean dropMenuEnabled = false;
-
 	@UiField
 	Panel canvasPanel;
 
 	@UiField
-	Panel dropMenu;
-
-	@UiField
-	Panel menuButton;
+	DropMenu dropMenu;
 
 	@UiField
 	Panel infoPanel;
@@ -81,11 +73,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 	Label titleLabel;
 
 	@UiField
-	Label dropArrow;
-
-	@UiField
 	Label delete;
 
+	@UiField
+	PlaceBookToolbarItem actionMenu;
+	
 	@UiField
 	Anchor authorLabel;
 
@@ -93,15 +85,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	private PlaceBook placebook;
 	private final String placebookKey;
-
-	private final Timer hideMenuTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			hideMenu();
-		}
-	};
 
 	public PlaceBookPreview(final Shelf shelf, final PlaceBook placebook)
 	{
@@ -120,13 +103,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 	public PlaceBookCanvas getCanvas()
 	{
 		return canvas;
-	}
-
-	public void hideMenu()
-	{
-		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		dropMenu.getElement().getStyle().setOpacity(0);
-		hideMenuTimer.cancel();
 	}
 
 	public void setPlaceBook(final PlaceBook placebook)
@@ -159,18 +135,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 		refresh();
 	}
 
-	public void showMenu(final int x, final int y)
-	{
-		if (dropMenuEnabled)
-		{
-			dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-			dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
-			dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-			dropMenu.getElement().getStyle().setOpacity(0.9);
-			hideMenuTimer.cancel();
-		}
-	}
-
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
@@ -182,7 +146,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		toolbar.setPlace(this);
 
-		RootPanel.get().getElement().getStyle().clearOverflow();
 		panel.setWidget(preview);
 		canvas.reflow();
 
@@ -226,22 +189,22 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "menuButton" })
+	@UiHandler(value = { "dropMenu", "actionMenu" })
 	void hideMenu(final MouseOutEvent event)
 	{
-		hideMenuTimer.schedule(500);
+		dropMenu.startHideMenu();
 	}
 
 	@UiHandler("dropMenu")
 	void showMenu(final MouseOverEvent event)
 	{
-		showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
 	}
 
-	@UiHandler("menuButton")
+	@UiHandler("actionMenu")
 	void showMenuButton(final MouseOverEvent event)
 	{
-		showMenu(menuButton.getAbsoluteLeft(), menuButton.getAbsoluteTop() + menuButton.getOffsetHeight());
+		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
 	@Override
@@ -266,15 +229,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	private void setEnabledDropMenu(final boolean enabled)
 	{
-		dropMenuEnabled = enabled;
-		dropArrow.setVisible(enabled);
-		if (enabled)
-		{
-			menuButton.addStyleName(Resources.INSTANCE.style().button());
-		}
-		else
-		{
-			menuButton.removeStyleName(Resources.INSTANCE.style().button());
-		}
+		actionMenu.setVisible(enabled);
 	}
 }

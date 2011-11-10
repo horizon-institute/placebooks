@@ -10,12 +10,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookCreateAccountDialog extends Composite
+public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 {
 
 	interface CreateAccountUiBinder extends UiBinder<Widget, PlaceBookCreateAccountDialog>
@@ -43,7 +42,8 @@ public class PlaceBookCreateAccountDialog extends Composite
 
 	public PlaceBookCreateAccountDialog()
 	{
-		initWidget(uiBinder.createAndBindUi(this));
+		super(true);
+		setWidget(uiBinder.createAndBindUi(this));
 		createAccount.setEnabled(false);
 	}
 

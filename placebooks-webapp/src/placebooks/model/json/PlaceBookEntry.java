@@ -1,43 +1,46 @@
 package placebooks.model.json;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import placebooks.model.PlaceBook;
 
 public class PlaceBookEntry extends ShelfEntry
 {
-	@JsonProperty
-	private String description;
+	private final String description;
 
-	@JsonProperty
-	private int numItems;
+	private final int numItems;
 
-	@JsonProperty
-	private String packagePath;
+	private final String packagePath;
 
-	@JsonProperty
-	private String state;
+	private final String state;
 
-	@JsonProperty
-	private String previewImage;
+	// private String geometry;
 
-	public PlaceBookEntry()
-	{
-		super();
-	}
+	private String center;
+
+	private final String previewImage;
 
 	public PlaceBookEntry(final PlaceBook placebook)
 	{
 		super();
 		setKey(placebook.getKey());
-		this.description = placebook.getMetadataValue("description");
 		setTitle(placebook.getMetadataValue("title"));
-		setPreviewImage(placebook.getMetadataValue("placebookImage"));
-		this.numItems = placebook.getItems().size();
 		setOwner(placebook.getOwner().getKey());
-		setTimestamp(placebook.getTimestamp());
+		setTimestamp(placebook.getTimestamp());		
+		this.description = placebook.getMetadataValue("description");
+		this.previewImage = placebook.getMetadataValue("placebookImage");
+		this.numItems = placebook.getItems().size();
 		this.packagePath = placebook.getPackagePath();
 		this.state = placebook.getState().toString();
+
+		if (placebook.getGeometry() != null)
+		{
+			// this.geometry = placebook.getGeometry().toString();
+			this.center = placebook.getGeometry().getCentroid().toString();
+		}
+	}
+
+	public String getCenter()
+	{
+		return center;
 	}
 
 	public String getDescription()
@@ -64,25 +67,4 @@ public class PlaceBookEntry extends ShelfEntry
 	{
 		return state;
 	}
-
-	public void setDescription(final String description)
-	{
-		this.description = description;
-	}
-
-	public void setNumItems(final int numItems)
-	{
-		this.numItems = numItems;
-	}
-
-	public void setPackagePath(final String packagePath)
-	{
-		this.packagePath = packagePath;
-	}
-
-	public void setPreviewImage(final String imageID)
-	{
-		this.previewImage = imageID;
-	}
-
 }

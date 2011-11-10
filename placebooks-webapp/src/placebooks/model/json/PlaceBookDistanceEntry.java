@@ -2,14 +2,11 @@ package placebooks.model.json;
 
 import placebooks.model.PlaceBook;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 public class PlaceBookDistanceEntry extends PlaceBookEntry
 {
-	@JsonProperty	
-	private double distance;
+	private final double distance;
 	
-	private String ownerName;
+	private final String ownerName;
 
 	public PlaceBookDistanceEntry(final PlaceBook p, final double distance)
 	{

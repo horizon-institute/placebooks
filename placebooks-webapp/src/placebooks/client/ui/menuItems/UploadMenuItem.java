@@ -2,9 +2,9 @@ package placebooks.client.ui.menuItems;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -137,8 +137,8 @@ public class UploadMenuItem extends MenuItem
 		panel.add(hidden);
 		panel.add(uploadButton);
 
-		dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
-		dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
+		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
+		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
 		dialogBox.setGlassEnabled(true);
 		dialogBox.setAnimationEnabled(true);
 		dialogBox.setWidget(form);

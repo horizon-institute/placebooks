@@ -239,6 +239,11 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 	}
 
+	public String getHash()
+	{
+		return hash;
+	}
+	
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
 		log.info("writeDataToDisk(" + name +"," + is +")");

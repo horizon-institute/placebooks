@@ -37,13 +37,11 @@ import placebooks.controller.SearchHelper;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, 
-				getterVisibility = Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS)
 public abstract class PlaceBookItem implements IUpdateableExternal
 {
-	protected static final Logger log = 
-		Logger.getLogger(PlaceBookItem.class.getName());
+	protected static final Logger log = Logger.getLogger(PlaceBookItem.class.getName());
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
@@ -53,16 +51,17 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
-	// External id is a string key to identify externally sourced data and consists of the source name 
-	// e.g (everytrail) and it's id with a hyphen in between.... "everytrail-123456" 
+	// External id is a string key to identify externally sourced data and consists of the source
+	// name
+	// e.g (everytrail) and it's id with a hyphen in between.... "everytrail-123456"
 	protected String externalID = null;
-	
+
 	@OneToOne(cascade = ALL, mappedBy = "item")
 	@JsonIgnore
 	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection	
+	@ElementCollection
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore
@@ -76,15 +75,15 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	@ManyToOne
 	private PlaceBook placebook; // PlaceBook this PlaceBookItem belongs to
 
-	private String sourceURL; // The original internet resource string if it 
-							  // exists
+	private String sourceURL; // The original internet resource string if it
+								// exists
 
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
 	PlaceBookItem()
 	{
-		index.setPlaceBookItem(this);		
+		index.setPlaceBookItem(this);
 	}
 
 	public PlaceBookItem(final PlaceBookItem p)
@@ -92,13 +91,13 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		this.owner = p.getOwner();
 		if (p.getGeometry() != null)
 		{
-			this.geom = (Geometry)p.getGeometry().clone();
+			this.geom = (Geometry) p.getGeometry().clone();
 		}
 		else
 		{
 			this.geom = null;
 		}
-		
+
 		if (p.getSourceURL() != null)
 		{
 			this.sourceURL = new String(p.getSourceURL().toString());
@@ -110,26 +109,25 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 		this.parameters = new HashMap<String, Integer>(p.getParameters());
 		this.metadata = new HashMap<String, String>(p.getMetadata());
-		
+
 		index.setPlaceBookItem(this);
 		this.index.addAll(p.getSearchIndex().getIndex());
 
-		if(p.getTimestamp() != null)
+		if (p.getTimestamp() != null)
 		{
-			this.timestamp = (Date)p.getTimestamp().clone();
-			log.info("Copied PlaceBookItem, concrete name: " + getEntityName()
-					 + ", timestamp=" + this.timestamp.toString());			
+			this.timestamp = (Date) p.getTimestamp().clone();
+			log.info("Copied PlaceBookItem, concrete name: " + getEntityName() + ", timestamp="
+					+ this.timestamp.toString());
 		}
 		else
 		{
 			this.timestamp = null;
-			log.info("Copied PlaceBookItem, concrete name: " + getEntityName());			
+			log.info("Copied PlaceBookItem, concrete name: " + getEntityName());
 		}
 	}
 
 	// Make a new PlaceBookItem
-	public PlaceBookItem(final User owner, final Geometry geom, 
-						 final URL sourceURL)
+	public PlaceBookItem(final User owner, final Geometry geom, final URL sourceURL)
 	{
 		this.owner = owner;
 		this.geom = geom;
@@ -140,11 +138,12 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 			this.sourceURL = null;
 
 		index.setPlaceBookItem(this);
-		log.info("Created new PlaceBookItem, concrete name: " + getEntityName()
-				 + ", timestamp=" + this.timestamp.toString());
+		log.info("Created new PlaceBookItem, concrete name: " + getEntityName() + ", timestamp="
+				+ this.timestamp.toString());
 	}
 
 	private final static int VALUE_LENGTH_LIMIT = 511;
+
 	public void addMetadataEntry(String key, String value)
 	{
 		if (value == null)
@@ -153,15 +152,15 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		}
 		else
 		{
-			if(key.length()>VALUE_LENGTH_LIMIT)
+			if (key.length() > VALUE_LENGTH_LIMIT)
 			{
 				log.warn("Metadata Key entry too long, truncating: " + key);
-				key = key.substring(0,  VALUE_LENGTH_LIMIT);
+				key = key.substring(0, VALUE_LENGTH_LIMIT);
 			}
-			if(value.length()>511)
+			if (value.length() > 511)
 			{
 				log.warn("Metadata Value entry too long, truncating: " + value);
-				value = value.substring(0,  VALUE_LENGTH_LIMIT);
+				value = value.substring(0, VALUE_LENGTH_LIMIT);
 			}
 			metadata.put(key, value);
 		}
@@ -210,8 +209,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		if (getTimestamp() != null)
 		{
 			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(
-				getTimestamp().toString()));
+			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
 			item.appendChild(timestamp);
 		}
 
@@ -227,21 +225,18 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		if (getSourceURL() != null)
 		{
 			final Element url = config.createElement("url");
-			url.appendChild(config.createTextNode(
-				getSourceURL().toExternalForm()));
+			url.appendChild(config.createTextNode(getSourceURL().toExternalForm()));
 			item.appendChild(url);
 		}
 
 		// Write metadata and parameters
 		if (this.hasMetadata())
 		{
-			item.appendChild(setToConfig(config, this.getMetadata(), 
-							 "metadata"));
+			item.appendChild(setToConfig(config, this.getMetadata(), "metadata"));
 		}
 		if (this.hasParameters())
 		{
-			item.appendChild(setToConfig(config, this.getParameters(), 
-							 "parameters"));
+			item.appendChild(setToConfig(config, this.getParameters(), "parameters"));
 		}
 
 		return item;
@@ -260,7 +255,6 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		return geom;
 	}
 
-	
 	public String getKey()
 	{
 		return id;
@@ -303,15 +297,12 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 	public URL getSourceURL()
 	{
-		if(sourceURL == null)
-		{
-			return null;
-		}
+		if (sourceURL == null) { return null; }
 		try
 		{
 			return new URL(sourceURL);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return null;
 		}
@@ -332,7 +323,9 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		return (!parameters.isEmpty());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
@@ -345,9 +338,9 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		{
 			em.getTransaction().begin();
 			item = ItemFactory.GetExistingItem(this, em);
-			if(item != null)
+			if (item != null)
 			{
-				
+
 				log.debug("Existing item found so updating");
 				item.update(this);
 				returnItem = item;
@@ -371,7 +364,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		}
 		return returnItem;
 	}
-	
+
 	public void setExternalID(final String id)
 	{
 		this.externalID = id;
@@ -386,7 +379,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	{
 		this.metadata.putAll(new_data);
 	}
-	
+
 	public void setOwner(final User owner)
 	{
 		this.owner = owner;
@@ -396,7 +389,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	{
 		this.parameters.putAll(new_data);
 	}
-	
+
 	public void setPlaceBook(final PlaceBook placebook)
 	{
 		this.placebook = placebook;
@@ -415,8 +408,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		this.timestamp = timestamp;
 	}
 
-	private Element setToConfig(final Document config, final Map<String, ?> m, 
-							    final String name)
+	private Element setToConfig(final Document config, final Map<String, ?> m, final String name)
 	{
 		if (!m.isEmpty())
 		{
@@ -424,9 +416,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 			for (final Map.Entry<String, ?> e : m.entrySet())
 			{
 				final Element elem = config.createElement(e.getKey());
-				elem.appendChild(
-					config.createTextNode(e.getValue().toString())
-				);
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
 			}
 
@@ -435,57 +425,52 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 		return null;
 	}
-	
+
 	@Override
 	public final void update(IUpdateableExternal item)
 	{
-		if(this == item)
-		{
-			return;
-		}
-		
-		if(item == null)
-		{
-			throw new NullPointerException();
-		}
-		
-		updateItem(item);	
+		if (this == item) { return; }
+
+		if (item == null) { throw new NullPointerException(); }
+
+		updateItem(item);
 	}
-	
+
 	/**
-	 * Implementation of 'update' for placebook item superclass to update all base fields.
-	 * This should be called from descendant classes in their implementation of 'update' 
+	 * Implementation of 'update' for placebook item superclass to update all base fields. This
+	 * should be called from descendant classes in their implementation of 'update'
+	 * 
 	 * @param item
 	 */
 	protected void updateItem(IUpdateableExternal updateItem)
 	{
 		PlaceBookItem item = (PlaceBookItem) updateItem;
 		parameters.clear();
-		for(Entry<String, Integer> entry: item.getParameters().entrySet())
+		for (Entry<String, Integer> entry : item.getParameters().entrySet())
 		{
-			addParameterEntry(entry.getKey(), entry.getValue());	
+			addParameterEntry(entry.getKey(), entry.getValue());
 		}
 
 		index.clear();
 		metadata.clear();
-		for(Entry<String, String> entry: item.getMetadata().entrySet())
+		for (Entry<String, String> entry : item.getMetadata().entrySet())
 		{
 			addMetadataEntry(entry.getKey(), entry.getValue());
 		}
-		
-		if(item.getGeometry() != null)
+
+		if (item.getGeometry() != null)
 		{
 			geom = item.getGeometry();
 		}
-		
-		if(item.getSourceURL() != null)
+
+		if (item.getSourceURL() != null)
 		{
 			sourceURL = item.getSourceURL().toExternalForm();
 		}
-		
-		if(item.getTimestamp() == null)
+
+		if (item.getTimestamp() == null)
 		{
 			item.setTimestamp(new Date());
-		}	
+		}
 	}
 }

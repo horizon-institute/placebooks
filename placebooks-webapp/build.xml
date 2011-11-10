@@ -66,15 +66,7 @@
     </path>
 	
 	<!-- Configure the custom Ant tasks for the Manager application -->
-  	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
-		<classpath refid="classpath" />
-	</taskdef>
-  	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
-		<classpath refid="classpath" />
-	</taskdef>
-  	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
-		<classpath refid="classpath" />
-	</taskdef>
+
 	
 	<target name="git.revision" description="Store git revision in ${repository.version}">
 	    <exec executable="${git.file}" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">

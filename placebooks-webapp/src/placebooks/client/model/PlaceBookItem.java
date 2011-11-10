@@ -1,7 +1,7 @@
 package placebooks.client.model;
 
 import placebooks.client.PlaceBookService;
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -56,25 +56,25 @@ public class PlaceBookItem extends JavaScriptObject
 	{
 		if (is(ItemType.TEXT))
 		{
-			return Resources.INSTANCE.text();
+			return Resources.IMAGES.pallette_text();
 		}
 		else if (is(ItemType.IMAGE))
 		{
-			return Resources.INSTANCE.picture();
+			return Resources.IMAGES.pallette_image();
 		}
 		else if (is(ItemType.VIDEO))
 		{
-			return Resources.INSTANCE.movies();
+			return Resources.IMAGES.pallette_video();
 		}
 		else if (is(ItemType.AUDIO))
 		{
-			return Resources.INSTANCE.music();
+			return Resources.IMAGES.pallette_audio();
 		}
 		else if (is(ItemType.GPS))
 		{
-			return Resources.INSTANCE.map();
+			return Resources.IMAGES.pallette_map();
 		}
-		else if (is(ItemType.WEB)) { return Resources.INSTANCE.web_page(); }
+		else if (is(ItemType.WEB)) { return Resources.IMAGES.pallette_web(); }
 		return null;
 	}
 

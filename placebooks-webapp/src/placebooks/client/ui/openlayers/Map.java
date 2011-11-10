@@ -74,6 +74,11 @@ public class Map extends JavaScriptObject
 		return this.events;
 	}-*/;
 
+	public final native void raiseLayer(Layer layer, int delta)
+	/*-{
+		return this.raiseLayer(layer, delta);
+	}-*/;
+	
 	public final native LonLat getLonLatFromPixel(final JavaScriptObject pixels)
 	/*-{
 		return this.getLonLatFromPixel(pixels);
@@ -95,6 +100,16 @@ public class Map extends JavaScriptObject
 		return this.maxExtent;
 	}-*/;
 
+	public final native Element getDiv()
+	/*-{
+		return this.div;
+	}-*/;	
+	
+	public final native void render()
+	/*-{
+		this.render(this.div);
+	}-*/;
+	
 	public final native Projection getProjection()
 	/*-{
 		return this.getProjectionObject();

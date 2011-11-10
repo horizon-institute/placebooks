@@ -8,6 +8,9 @@ import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.view.client.ProvidesKey;
@@ -16,6 +19,19 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PlaceBookList extends CellList<PlaceBookEntry>
 {
+	interface Style extends CssResource
+	{
+		String listItem();
+	}
+
+	interface Bundle extends ClientBundle
+	{
+		@Source("PlaceBookList.css")
+		Style style();
+	}
+	
+	private static final Bundle STYLES = GWT.create(Bundle.class);
+	
 	static class PlaceBookCell extends AbstractCell<PlaceBookEntry>
 	{
 		public PlaceBookCell()
@@ -28,7 +44,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			// Value can be null, so do a null check..
 			if (value == null) { return; }
 
-			sb.appendHtmlConstant("<div class=\"" + placebooks.client.resources.Resources.INSTANCE.style().listItem()
+			sb.appendHtmlConstant("<div class=\"" + STYLES.style().listItem()
 					+ "\">");
 
 			// Add the name and address.
@@ -76,8 +92,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 	public PlaceBookList()
 	{
 		super(new PlaceBookCell(), placebookKeyProvider);
-		// cellList.setPageSize(30);
-		// cellList.setKeyboardPagingPolicy(KeyboardPagingPolicy.INCREASE_RANGE);
+		STYLES.style().ensureInjected();
 		setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 	}
 
@@ -113,5 +128,4 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			setRowData(entries);
 		}
 	}
-
 }

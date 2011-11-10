@@ -14,11 +14,12 @@ public class FacebookLikeButton extends Composite
 		frame = new Frame();
 		initWidget(frame);
 		frame.getElement().getStyle().setBorderWidth(0, Unit.PX);
-		frame.setHeight("35px");
+		frame.setHeight("20px");
+		frame.setWidth("90px");
 	}
 	
 	public void setURL(final String url)
 	{
-		frame.setUrl("http://www.facebook.com/plugins/like.php?href=" + URL.encodeQueryString(url));
+		frame.setUrl("http://www.facebook.com/plugins/like.php?href=" + URL.encodeQueryString(url) + "&layout=button_count");
 	}
 }

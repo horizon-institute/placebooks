@@ -1,0 +1,15 @@
+.dialog {
+	background-color: #fff;
+	border: 5px solid #999;
+	border-radius: 10px;
+	-moz-box-shadow: 3px 3px 4px #666;
+	-webkit-box-shadow: 3px 3px 4px #666;
+	box-shadow: 3px 3px 6px #666;
+	z-index: 2001;
+}
+
+.dialogGlass {
+	background-color: #000;
+	opacity: 0.6;
+	z-index: 2000;
+}

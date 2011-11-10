@@ -10,13 +10,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookLoginDialog extends Composite
+public class PlaceBookLoginDialog extends PlaceBookDialog
 {
 
 	interface LoginDialogUiBinder extends UiBinder<Widget, PlaceBookLoginDialog>
@@ -45,7 +44,8 @@ public class PlaceBookLoginDialog extends Composite
 
 	public PlaceBookLoginDialog(final String title, final String submitText, final String usernameText)
 	{
-		initWidget(uiBinder.createAndBindUi(this));
+		super(true);
+		setWidget(uiBinder.createAndBindUi(this));
 		submit.setEnabled(false);
 		submit.setText(submitText);
 		titleLabel.setText(title);

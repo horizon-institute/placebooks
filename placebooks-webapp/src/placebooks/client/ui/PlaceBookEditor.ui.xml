@@ -1,5 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
@@ -7,19 +9,18 @@
 			left: 0px;
 			right: 120px;
 			bottom: 0px;
-			background: #BBD;		
+			background: #DDD;
 			overflow-x: auto;
-			overflow-y: scroll;	
+			overflow-y: scroll;
 		}
 		
 		.innerCanvasPanel {
-			position: absolute;
 			top: 20px;
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
 			margin: 20px;
-		}		
+		}
 		
 		.palette {
 			position: absolute;
@@ -28,11 +29,13 @@
 			right: 0px;
 			bottom: 0px;
 			width: 120px;
-			z-index: -10;
-			background: #556;	
+			background: #556;
 			overflow: auto;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-box-align: center;
 		}
-			
+		
 		.loadingPanel {
 			position: absolute;
 			text-align: center;
@@ -41,23 +44,23 @@
 			bottom: 0px;
 			left: 0px;
 			z-index: 20;
-			background: rgba(0,0,0,0.4);	
+			background: rgba(0, 0, 0, 0.4);
 		}
 		
 		.loading {
 			background: #555;
 			border: 1px solid #333;
 			border-radius: 5px;
-			margin-top: 100px;
+			margin-top: 200px;
 			padding: 10px 20px;
 			display: inline-block;
 		}
-
+		
 		.savingLabel {
 			line-height: 40px;
 			padding: 0 15px;
 		}
-
+		
 		.populate {
 			position: absolute;
 			text-align: center;
@@ -65,19 +68,20 @@
 			right: 0px;
 			height: 20px;
 			width: 120px;
-			z-index: -5;			
+			z-index: -5;
 		}
 		
 		.titleLabel {
 			-webkit-user-select: text;
 			-moz-user-select: text;
-			-o-user-select: text;			
-			user-select: text;	
+			-o-user-select: text;
+			user-select: text;
 			display: inline;
 			border: 0px;
 			background: transparent;
-			font: 18px/40px mako, sans-serif;
-			width: 250px;			
+			font: 18px/40px verdana, arial, sans-serif;
+			width: 300px;
+			margin-right: 20px;
 		}
 		
 		.loadingLabel {
@@ -88,78 +92,134 @@
 			vertical-align: top;
 		}
 		
-		.toolbar {
-			font: 18px/40px mako, sans-serif;
-			height: 40px;
-			color: #000;
-			padding: 0 20px;
-		}
-		
 		.account {
 			padding: 0px;
-			float:right;
+			float: right;
 			cursor: default;
 		}
 		
 		.body {
-			-webkit-user-select: none;	
+			-webkit-user-select: none;
 			-moz-user-select: none;
-			-o-user-select: none;			
+			-o-user-select: none;
 			user-select: none;
-			overflow: hidden;			
+			overflow: hidden;
 		}
-
+		
 		.floatLeft {
 			float: left;
 		}
 		
-		.floatRight {
-			float: right;	
+		.actionMenu {
+			font: 16px verdana, arial, sans-serif;
+			padding: 5px;
 		}
 		
-		.placeBookMenu {
-			border: 1px solid black;
-			border-bottom: 0px;
-			border-top-left-radius: 5px;
-			border-top-right-radius: 5px;
-			background-color: white;
-			font-size: 12px;
-			padding: 0 5px;
-			margin-top: 10px;
-			margin-right: 5px;
-			line-height: 30px;
-			cursor: default;
-		}
-		
-		.placeBookMenu:HOVER {
-			background-color: rgba(255,255,255,0.2);			
-		}		
-
 		.imageButton {
 			padding: 0 5px;
 			padding-top: 2px;
 			height: 38px;
 		}
-				
-		.imageButton:HOVER {
-			background-color: rgba(255,255,255,0.2);			
+		
+		.infoPanel {
+			padding: 0px 30px;
+			background: #EEE;
+			border-bottom: 1px solid #CCC;
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
 		}
-	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
+		
+		.imageButton:HOVER {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+		
+		.spacer {
+			-webkit-box-flex: 1;
+		}
+		
+		.zoomPanel {
+			padding: 0px 12px;	
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;			
+		}
+		
+		.zoomLabel {
+			-webkit-box-flex: 1;
+			padding-right: 10px;
+		}
+		
+		.zoomButton {
+			padding: 3px 5px;
+			cursor: pointer;
+			border: 1px solid #FFF;			
+		}	
+
+		.zoomButton:HOVER {
+			background: #ccc;
+			border: 1px solid #BBB;
+		}	
+		
+		.dropMenu {
+			position: absolute;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 30;
+			padding: 0px;
+			-moz-transition: opacity .5s linear, visibility .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+			background: #FFF;
+			-moz-box-shadow: 3px 3px 4px #222;
+			-webkit-box-shadow: 3px 3px 4px #222;
+			box-shadow: 3px 3px 6px #222;
+			border: 1px solid #DDD;
+		}
+		
+		.menuItem {
+			padding: 3px 12px;
+			cursor: pointer;
+			border-top: 1px solid #FFF;
+			border-bottom: 1px solid #FFF;			
+		}
+		
+		.menuItem:HOVER {
+			background: #ccc;
+			border-top: 1px solid #BBB;
+			border-bottom: 1px solid #BBB;
+		}
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
-		<g:SimplePanel styleName="{style.loadingPanel}" ui:field="loadingPanel"><g:FlowPanel styleName="{style.loading}"><g:Image resource='{res.progress}' /><g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel></g:FlowPanel></g:SimplePanel>
+		<g:SimplePanel styleName="{style.loadingPanel}"
+			ui:field="loadingPanel">
+			<g:FlowPanel styleName="{style.loading}">
+				<g:Image resource='{images.progress}' />
+				<g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel>
+			</g:FlowPanel>
+		</g:SimplePanel>
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
-			<g:FlowPanel styleName="{style.toolbar}">
-				<g:Label styleName="{style.account}" ui:field="zoomLabel">100%</g:Label>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomIn"><g:Image resource="{res.zoom_in}" /></p:MousePanel>
-				<p:MousePanel addStyleNames="{style.imageButton} {style.floatRight}" ui:field="zoomOut"><g:Image resource="{res.zoom_out}" /></p:MousePanel>
-				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" />
-				<p:MousePanel addStyleNames="{style.placeBookMenu} {style.floatLeft}" ui:field="menu"><!--<g:Image resource="{res.placebook16}"/>--><g:InlineLabel>PlaceBook&nbsp;</g:InlineLabel><g:InlineLabel styleName="{res.style.dropIcon}">&#9660;</g:InlineLabel></p:MousePanel>						
-				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />			
+			<g:FlowPanel styleName="{style.infoPanel}">
+				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
+				<p:PlaceBookToolbarItem ui:field="saveStatusPanel" addStyleNames="{style.spacer}" />
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
+			</g:FlowPanel>
+			<g:SimplePanel styleName="{style.innerCanvasPanel}"
+				ui:field="canvasPanel" />
+		</g:FlowPanel>
+		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
+			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>
+			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>
+			<g:FlowPanel styleName="{style.zoomPanel}">
+				<g:Label styleName="{style.zoomLabel}">Zoom</g:Label>
+				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
+				<g:Label ui:field="zoomLabel">100%</g:Label>
+				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
 			</g:FlowPanel>			
-			<g:SimplePanel styleName="{style.innerCanvasPanel}" ui:field="canvasPanel" />
-		</g:FlowPanel>	
+			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
+		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>
 </ui:UiBinder>

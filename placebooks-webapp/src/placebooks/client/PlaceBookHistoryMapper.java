@@ -10,10 +10,9 @@ import placebooks.client.ui.PlaceBookSearch;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
-@WithTokenizers({ PlaceBookEditor.Tokenizer.class,
+@WithTokenizers({ PlaceBookEditor.Tokenizer.class, PlaceBookSearch.Tokenizer.class,
 					PlaceBookHome.Tokenizer.class, PlaceBookPreview.Tokenizer.class,
-					PlaceBookLibrary.Tokenizer.class, PlaceBookLibrary.Tokenizer.class,
-					PlaceBookSearch.Tokenizer.class, PlaceBookAppInstall.Tokenizer.class })
+					PlaceBookLibrary.Tokenizer.class, PlaceBookAppInstall.Tokenizer.class })
 public interface PlaceBookHistoryMapper extends PlaceHistoryMapper
 {
 }

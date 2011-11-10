@@ -3,7 +3,6 @@
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
 		.panel {
-			display: inline-block;
 			padding: 5px;
 			margin: 10px auto;
 			text-align: center;

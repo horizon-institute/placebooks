@@ -4,7 +4,6 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
-import placebooks.client.resources.Resources;
 import placebooks.client.ui.PlaceBookEditor;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookLibrary;
@@ -14,9 +13,6 @@ import placebooks.client.ui.dialogs.PlaceBookCreateAccountDialog;
 import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Display;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -27,12 +23,8 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookToolbar extends Composite
@@ -53,30 +45,15 @@ public class PlaceBookToolbar extends Composite
 	PlaceBookToolbarItem libraryItem;
 
 	@UiField
-	Panel dropMenu;
+	DropMenu dropMenu;
 
 	@UiField
-	Label divider;
+	PlaceBookToolbarItem accountItem;
 
-	@UiField
-	Label signupLabel;
-
-	@UiField
-	HTML loginLabel;
-	
 	@UiField
 	Panel loginPanel;
 
 	private User user;
-
-	private final Timer hideMenuTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			hideMenu();
-		}
-	};
 
 	private PlaceBookPlace place;
 
@@ -156,17 +133,10 @@ public class PlaceBookToolbar extends Composite
 		}
 	}
 
-	public void hideMenu()
-	{
-		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		dropMenu.getElement().getStyle().setOpacity(0);
-		hideMenuTimer.cancel();
-	}
-
-	@UiHandler(value={"dropMenu", "loginLabel"})
+	@UiHandler(value={"dropMenu", "accountItem"})
 	void hideMenuTimerStart(final MouseOutEvent event)
 	{
-		hideMenuTimer.schedule(500);
+		dropMenu.startHideMenu();
 	}
 
 	@UiHandler("loginLabel")
@@ -174,26 +144,18 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (user == null)
 		{
-			final PopupPanel dialogBox = new PopupPanel();
-			dialogBox.setGlassEnabled(true);
-			dialogBox.setAnimationEnabled(true);
 			final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Login", "Login", "Email:");
 			account.addClickHandler(new ClickHandler()
 			{
 				@Override
 				public void onClick(final ClickEvent event)
 				{
-					dialogBox.hide();
+					account.hide();
 					PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);
 				}
 			});
-			dialogBox.add(account);
-			dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-			dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-			dialogBox.setAutoHideEnabled(true);
-
-			dialogBox.center();
-			dialogBox.show();
+			account.center();
+			account.show();
 			account.focus();
 		}
 	}
@@ -201,7 +163,7 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		hideMenu();
+		dropMenu.hideMenu();
 		PlaceBookService.logout(new AbstractCallback()
 		{
 			@Override
@@ -237,88 +199,57 @@ public class PlaceBookToolbar extends Composite
 		this.user = user;
 		if (user != null)
 		{
-			getElement().getStyle().setDisplay(Display.BLOCK);
-			divider.setVisible(false);
-			signupLabel.setVisible(false);
-			loginLabel.setHTML(user.getName() + "&nbsp;<span class=\"" + Resources.INSTANCE.style().dropIcon() + "\">&#9660;</span>");
+			loginPanel.setVisible(false);
+			accountItem.setVisible(true);
+			accountItem.setHTML(user.getName());
 
 		}
 		else
 		{
-			getElement().getStyle().setDisplay(Display.BLOCK);
-
-			divider.setVisible(true);
-			signupLabel.setVisible(true);
-			loginLabel.setText("LOGIN");
+			loginPanel.setVisible(true);
+			accountItem.setVisible(false);
 		}
 	}
 
 	@UiHandler("linkedAccounts")
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
-		hideMenu();
-		final PopupPanel dialogBox = new PopupPanel();
-		dialogBox.setGlassEnabled(true);
-		dialogBox.setAnimationEnabled(true);
+		dropMenu.hideMenu();
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
-		dialogBox.setWidget(account);
-
-		dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-		dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-		dialogBox.setAutoHideEnabled(true);
-
-		dialogBox.setWidth("500px");
-
-		dialogBox.center();
-		dialogBox.show();
-	}
-
-	public void showMenu(final int x, final int y)
-	{
-		dropMenu.getElement().getStyle().setTop(y, Unit.PX);
-		dropMenu.getElement().getStyle().setLeft(x, Unit.PX);
-		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
-		dropMenu.getElement().getStyle().setOpacity(0.9);
-		hideMenuTimer.cancel();
+		account.setWidth("500px");
+		account.center();
+		account.show();
 	}
 
 	@UiHandler("dropMenu")
 	void showMenu(final MouseOverEvent event)
 	{
-		showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
 	}
 
-	@UiHandler("loginLabel")
+	@UiHandler("accountItem")
 	void showMenuLogin(final MouseOverEvent event)
 	{
 		if (user != null)
 		{
-			showMenu(loginLabel.getAbsoluteLeft(), loginLabel.getAbsoluteTop() + loginLabel.getOffsetHeight());
+			dropMenu.showMenu(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
 		}
 	}
 
 	@UiHandler("signupLabel")
 	void signup(final ClickEvent event)
 	{
-		final PopupPanel dialogBox = new PopupPanel();
-		dialogBox.setGlassEnabled(true);
-		dialogBox.setAnimationEnabled(true);
 		final PlaceBookCreateAccountDialog account = new PlaceBookCreateAccountDialog();
 		account.setCallback(new AbstractCallback()
 		{
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				dialogBox.hide();
+				account.hide();
 				PlaceBookService.login(account.getEmail(), account.getPassword(), shelfCallback);
 			}
 		});
-		dialogBox.add(account);
-		dialogBox.setStyleName(Resources.INSTANCE.style().dialog());
-		dialogBox.setGlassStyleName(Resources.INSTANCE.style().dialogGlass());
-		dialogBox.setAutoHideEnabled(true);
-
-		dialogBox.center();
-		dialogBox.show();
+		account.center();
+		account.show();
 	}
 }

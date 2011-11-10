@@ -15,7 +15,6 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
@@ -75,7 +74,6 @@ public class ItemFactory
 			}
 			else if(l.size()>1)
 			{
-				EntityTransaction t = em.getTransaction();
 				log.warn("Removing duplicate items for " + itemToSave.getExternalID());
 				for(PlaceBookItem o : l)
 				{
