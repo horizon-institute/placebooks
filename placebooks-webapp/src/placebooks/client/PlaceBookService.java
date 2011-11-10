@@ -129,4 +129,9 @@ public class PlaceBookService
 	{
 		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
 	}
+
+	public static void getServerInfo(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
+	}
 }

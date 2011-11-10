@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import placebooks.client.AbstractCallback;
+import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.ServerInfo;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.images.markers.Markers;
@@ -28,6 +31,8 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -79,12 +84,7 @@ public class PlaceBookShelf extends Composite
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		map = Map.create(mapPanel.getElement(), true);
-		map.addLayer(OSLayer.create("glayer"));
-		markerLayer = MarkerLayer.create("markerLayer");
-		map.addLayer(markerLayer);
-		mapPanel.setVisible(false);
-		mapToggle.setVisible(false);
+		createMap();
 
 		addDomHandler(new LoadHandler()
 		{
@@ -97,6 +97,46 @@ public class PlaceBookShelf extends Composite
 		}, LoadEvent.getType());
 	}
 
+	private void createMap()
+	{
+		if(MapItem.serverInfo != null)
+		{
+			createMap(MapItem.serverInfo);
+		}
+		else
+		{
+			PlaceBookService.getServerInfo(new AbstractCallback()
+			{	
+				@Override
+				public void success(Request request, Response response)
+				{
+					try
+					{
+						MapItem.serverInfo = ServerInfo.parse(response.getText());
+						if(MapItem.serverInfo != null)
+						{
+							createMap(MapItem.serverInfo);						
+						}
+					}
+					catch(Exception e)
+					{
+						
+					}
+				}
+			});
+		}
+	}
+	
+	private void createMap(ServerInfo serverInfo)
+	{
+		map = Map.create(mapPanel.getElement(), true);
+		map.addLayer(OSLayer.create("glayer", serverInfo));
+		markerLayer = MarkerLayer.create("markerLayer");
+		map.addLayer(markerLayer);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);		
+	}
+	
 	public ImageResource getMarker(int index)
 	{
 		switch (index)

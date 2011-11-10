@@ -4,6 +4,9 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class ServerInfo extends JavaScriptObject
 {
+	public static final native ServerInfo parse(final String json) /*-{ return eval('(' + json + ')'); }-*/;
+
+	
 	protected ServerInfo()
 	{
 	}
