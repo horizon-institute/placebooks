@@ -3,6 +3,7 @@ placebooks-androidapp/bin
 thumbs.db
 .settings
 .buildpath
+.classpath
 .DS_Store
 datanucleus.log
 *.bak
