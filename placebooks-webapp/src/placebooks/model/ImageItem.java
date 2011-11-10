@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class ImageItem extends MediaItem
 {
-	ImageItem()
+	public ImageItem()
 	{
 	}
 

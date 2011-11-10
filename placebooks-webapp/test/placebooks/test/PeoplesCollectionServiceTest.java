@@ -99,13 +99,29 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		
 		PeoplesCollectionTrailResponse trailDetails = PeoplesCollectionService.Trail(trail.GetPropertiesId());
 		log.debug("Items for trail #" + trail.GetPropertiesId() + " = " + trailDetails.GetProperties().GetItems().length);
-		assertFalse("No trail items returned", (trailDetails.GetProperties().GetItems().length==0));
+		assertEquals("Trail items returned, none exptected", trailDetails.GetProperties().GetItems().length, 0);
 		
 		for(int itemId : trailDetails.GetProperties().GetItems())
 		{
 			PeoplesCollectionItemResponse response = PeoplesCollectionService.Item(itemId);
 			log.debug("Number of objects: " + response.GetTotalObjects());
 			assertEquals("Features returned for get item where 0 expected", 0, response.GetTotalObjects());
+			for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
+			{
+				log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
+			}
+		}
+	
+		
+		trailDetails = PeoplesCollectionService.Trail(test_peoplescollection_trail_id);
+		log.debug("Items for trail #" + test_peoplescollection_trail_id + " = " + trailDetails.GetProperties().GetItems().length);
+		assertFalse("No trail items returned", (trailDetails.GetProperties().GetItems().length==0));
+		
+		for(int itemId : trailDetails.GetProperties().GetItems())
+		{
+			PeoplesCollectionItemResponse response = PeoplesCollectionService.Item(itemId);
+			log.debug("Number of objects: " + response.GetTotalObjects());
+			assertTrue("No Features returned for get item where >0 expected", response.GetTotalObjects()>0);
 			for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
 			{
 				log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
@@ -127,8 +143,9 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		for(PeoplesCollectionItemFeature feature : response.getFeatures()) 
 		{
 			log.debug("Item :" + feature.GetProperties().GetTitle() + " id: " +  + feature.GetProperties().GetId());
-			if(feature.GetProperties().GetId()==test_peoplescollection_item_id)
+			if(feature.GetPropertiesId()==test_peoplescollection_item_id)
 			{
+				log.info("feature #" + feature.GetPropertiesId() + ", Type: '" + feature.GetProperties().GetObjectType() + "', Title: " + feature.GetProperties().GetTitle());
 				assertEquals("Item title doesn't match expected value", test_peoplescollection_item_title, feature.GetProperties().GetTitle());
 			}
 		}

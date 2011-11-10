@@ -3,8 +3,6 @@
  */
 package placebooks.services;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -22,21 +20,17 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
 import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
 import placebooks.model.User;
+import placebooks.services.model.PeoplesCollectionItemFeature;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
 import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
-
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * @author pszmp
@@ -161,7 +155,6 @@ public class PeoplesCollectionService extends Service
 		PeoplesCollectionTrailsResponse returnResult = null;
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		mapper.enableDefaultTyping();
-		mapper.registerSubtypes(Point.class, MultiPoint.class, LineString.class, MultiLineString.class, Polygon.class, MultiPolygon.class, GeometryCollection.class);
 		
 		try
 		{
@@ -219,8 +212,9 @@ public class PeoplesCollectionService extends Service
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		try
 		{
+			//log.debug(response);
 			result = mapper.readValue(response.toString(), PeoplesCollectionItemResponse.class);
-			log.debug("PeoplesCollection response decoded: Total objects" + result.GetTotalObjects());
+			log.debug("PeoplesCollection response decoded: Total objects: " + result.GetTotalObjects());
 		}
 		catch(Exception ex)
 		{
@@ -236,21 +230,53 @@ public class PeoplesCollectionService extends Service
 		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
 		
 		ArrayList<String> itemsSeen = new ArrayList<String>();
-		for(PeoplesCollectionTrailListItem trailItem : trailsResponse.GetMyTrails())
+		for(PeoplesCollectionTrailListItem trailListItem : trailsResponse.GetMyTrails())
 		{
-			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailItem.GetPropertiesId());
-			GPSTraceItem item = new GPSTraceItem(user);
+			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
+			GPSTraceItem traceItem = new GPSTraceItem(user);
 			try
 			{
-				ItemFactory.toGPSTraceItem(user, trail, item);
-				itemsSeen.add(item.getExternalID());
+				ItemFactory.toGPSTraceItem(user, trail, traceItem);
+				itemsSeen.add(traceItem.getExternalID());
+				
+				for(int trailItemId : trail.GetProperties().GetItems())
+				{
+					PeoplesCollectionItemResponse trailItem = Item(trailItemId);
+					PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
+					for(PeoplesCollectionItemFeature feature : features)
+					{
+						String featureType = feature.GetProperties().GetIcontype();
+						PlaceBookItem addedItem = null;
+						if(featureType.equals("image"))
+						{
+							ImageItem newItem = new ImageItem();
+							ItemFactory.toImageItem(user, feature, trailListItem.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							addedItem = newItem;
+						}
+						if(featureType.equals("story"))
+						{
+							TextItem newItem = new TextItem();
+							ItemFactory.toTextItem(user, feature, trailListItem.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							addedItem = newItem;
+						}
+
+						if(addedItem==null)
+						{
+								log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
+						}
+						else
+						{
+							addedItem.saveUpdatedItem();
+							itemsSeen.add(addedItem.getExternalID());
+						}
+					}
+				}
+				
 			}
 			catch (Exception e)
 			{
-				
+				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
 			}
-			
-			item.saveUpdatedItem();
 		}
 		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
 		

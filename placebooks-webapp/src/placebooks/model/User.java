@@ -125,6 +125,11 @@ public class User
 		friends.remove(friend);
 	}
 
+	public void remove(final LoginDetails loginDetails)
+	{
+		this.loginDetails.remove(loginDetails);
+	}
+	
 	public void setName(final String name)
 	{
 		this.name = name;

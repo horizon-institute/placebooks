@@ -189,11 +189,27 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		em.persist(p);
 	}
 
-	@Test
+	//@Test
 	public void testGetPeoplesCollectionDataForAUser() throws Exception
 	{
-		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
-		PeoplesCollectionService service = new PeoplesCollectionService();
+		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
+		final PeoplesCollectionService service = new PeoplesCollectionService();
+		service.sync(em, user, true);
+	}
+
+	@Test
+	public void testSyncPeoplesCollectionData() throws Exception
+	{
+		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
+		final PeoplesCollectionService service = new PeoplesCollectionService();
+		service.sync(em, user, true);
+		
+		//Now try replacing the data with some other items
+		final LoginDetails oldLoginDetails = user.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
+		user.remove(oldLoginDetails);
+		User otherUser = UserManager.getUser(em,  "everytrail_test@live.co.uk");
+		final LoginDetails newLoginDetails = otherUser.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
+		user.add(newLoginDetails);
 		service.sync(em, user, true);
 	}
 	

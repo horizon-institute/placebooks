@@ -29,6 +29,11 @@ public class InitializeDatabase
 			final User users = new User("Stuart Reeves", "stuart@tropic.org.uk", encoder.encodePassword("test", null));
 			final User userm = new User("Mark Paxton", "mcp@cs.nott.ac.uk", encoder.encodePassword("test", null));
 			final User userd = new User("Mark Davies", "markdavies_@hotmail.com", encoder.encodePassword("test", null));
+
+			final LoginDetails markdPcwLoginDetails = new LoginDetails(userd, PeoplesCollectionService.SERVICE_NAME, "swnymor",
+					"swnymor", "password");
+			userd.add(markdPcwLoginDetails);
+
 			
 			final User userTest = new User("Everytrail Test User", "everytrail_test@live.co.uk",
 					encoder.encodePassword("testPass!", null));
@@ -47,6 +52,7 @@ public class InitializeDatabase
 			manager.persist(userk);
 			manager.persist(users);
 			manager.persist(userm);
+			manager.persist(userd);
 			manager.persist(userTest);
 			manager.persist(userYTTest);
 	

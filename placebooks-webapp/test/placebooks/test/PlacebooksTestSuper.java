@@ -31,6 +31,7 @@ public class PlacebooksTestSuper
 
 	protected static String test_peoplescollection_username = "placebooksTest";
 	protected static String test_peoplescollection_password = "testPass1!";		
+	protected static int test_peoplescollection_trail_id = 789;
 	protected static int test_peoplescollection_item_id = 41981;
 	protected static String test_peoplescollection_item_title = "Llanddewi Brefi YFC Annual Dinner, 1975";
 	

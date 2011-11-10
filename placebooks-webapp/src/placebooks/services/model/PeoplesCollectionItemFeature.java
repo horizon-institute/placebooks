@@ -60,5 +60,10 @@ public class PeoplesCollectionItemFeature
 	{
 		return properties;
 	}
-
+	
+	public int GetPropertiesId()
+	{
+		return properties.GetId();
+	}
+	
 }
