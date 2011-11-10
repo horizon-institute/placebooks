@@ -24,7 +24,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 																"<a href=\"http://openspace.ordnancesurvey.co.uk/openspace/developeragreement.html#enduserlicense\" target=\"_blank\">End User License Agreement</a>",
 												projection:		EPSG27700,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
-												resolutions:	new Array( 2500, 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
+												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
 												tile200:		new OpenLayers.Size( 200, 200 ),
 												//tile250:		new OpenLayers.Size( 250, 250 )
 											}
