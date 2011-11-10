@@ -75,17 +75,16 @@ public abstract class Service
 				{
 					if(itemsToKeep.contains(placebookitem.getExternalID()))
 					{
-						log.debug("Keeping item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+						log.debug("Keeping item: " + placebookitem.getExternalID() + " id: " + placebookitem.getKey());
 					}
 					else
 					{
-						log.debug("Removing item: " + placebookitem.getExternalID() + " id:" + placebookitem.getKey());
+						log.debug("Removing item: " + placebookitem.getExternalID() + " id: " + placebookitem.getKey());
 						manager.remove(placebookitem);
 						deletedItems++;
 					}
 				}
 			}
-
 			manager.getTransaction().commit();
 		}
 		finally

@@ -47,28 +47,44 @@ public class PeoplesCollectionGeometryLineString
 	public Geometry GetGeometry() throws IOException {
 		try
 		{
-			StringBuilder wktStringBuilder = new StringBuilder(type + "(");
-			
-			boolean first = true;
-			for(float[] coordinate : coordinates)
+			StringBuilder wktStringBuilder = new StringBuilder();
+			if(coordinates.length==1)
 			{
-				if(first)
+				log.warn("Converting LineString to Point in Peoplescollection item");
+				wktStringBuilder.append("POINT (" + coordinates[0][0] + " " +  coordinates[0][1] + ")");
+			}
+			else
+			{
+				wktStringBuilder.append(type.toUpperCase());
+				if(coordinates.length==0)
 				{
-					first = false;
+					wktStringBuilder.append(" EMPTY");
 				}
 				else
 				{
-					wktStringBuilder.append(", ");
+					wktStringBuilder.append(" (");
+					boolean first = true;
+					for(float[] coordinate : coordinates)
+					{
+						if(first)
+						{
+							first = false;
+						}
+						else
+						{
+							wktStringBuilder.append(", ");
+						}
+						wktStringBuilder.append(coordinate[0] + " " +  coordinate[1]);
+					}
+					wktStringBuilder.append(")");
 				}
-				wktStringBuilder.append(coordinate[0] + " " +  coordinate[1]);
 			}
-			wktStringBuilder.append(")");
-			log.debug("Creating WKT string:" + wktStringBuilder.toString());
+			log.debug("Created WKT string:" + wktStringBuilder.toString());
 			return new WKTReader().read(wktStringBuilder.toString());
 		}
 		catch (ParseException e)
 		{
-			throw new IOException("Parse Error", e);
+			throw new IOException("WKT Parse Error", e);
 		}
 	}
 }

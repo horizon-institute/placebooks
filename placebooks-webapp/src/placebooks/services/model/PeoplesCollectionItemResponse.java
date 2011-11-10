@@ -34,6 +34,7 @@ public class PeoplesCollectionItemResponse
 	{
 		return total_objects;
 	}
+	
 	public PeoplesCollectionItemFeature[] getFeatures()
 	{ 
 		return features;
