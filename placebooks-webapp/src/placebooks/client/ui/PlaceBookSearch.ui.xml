@@ -37,6 +37,8 @@
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
 		}
 		
 		.searchBar {
@@ -50,6 +52,12 @@
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 		}
+		
+		.nearbyLink {
+ 			margin: 0 auto;
+			width: 80%;
+			display: block;
+}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
@@ -64,6 +72,7 @@
 					<g:Image resource="{images.search}" />
 				</p:MousePanel>
 			</g:FlowPanel>
+			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}">Find Nearby PlaceBooks</g:Anchor>
 		</g:FlowPanel>
 
 		<p:PlaceBookShelf ui:field="shelf" />

@@ -26,6 +26,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -58,6 +59,9 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	@UiField
 	TextBox searchBox;
+	
+	@UiField
+	Anchor nearbyLink;
 		
 	private String searchString;
 
@@ -129,6 +133,12 @@ public class PlaceBookSearch extends PlaceBookPlace
 		
 		search();
 	}
+	
+	@UiHandler("nearbyLink")
+	void handleSearchNearby(final ClickEvent event)
+	{
+		getPlaceController().goTo(new PlaceBookSearch("location:current"));
+	}
 
 	@UiHandler("searchButton")
 	void handleSearch(final ClickEvent event)
@@ -151,6 +161,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 		shelf.showProgress("SEARCHING");
 		if(searchString.equals("location:current"))
 		{
+			nearbyLink.setVisible(false);
 			Geolocation geolocation = Geolocation.getIfSupported();
 			geolocation.getCurrentPosition(new Callback<Position, PositionError>()
 			{
@@ -180,6 +191,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 		}
 		else
 		{
+			nearbyLink.setVisible(true);
 			PlaceBookService.search(searchString, new AbstractCallback()
 			{
 				@Override

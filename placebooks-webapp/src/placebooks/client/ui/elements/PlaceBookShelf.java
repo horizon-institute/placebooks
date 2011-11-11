@@ -374,8 +374,11 @@ public class PlaceBookShelf extends Composite
 	{
 		placebooks.clear();
 		widgets.clear();
-		markerLayer.clearMarkers();
-
+		if(markerLayer != null)
+		{
+			markerLayer.clearMarkers();
+		}
+			
 		progress.setVisible(true);
 		progressLabel.setText(string);
 		mapPanel.setVisible(false);
