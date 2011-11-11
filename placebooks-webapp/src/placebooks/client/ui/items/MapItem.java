@@ -119,6 +119,7 @@ public class MapItem extends PlaceBookItemWidget
 	public void refreshMarkers()
 	{
 		// GWT.log("Refresh Markers " + placebook);
+		if(markerLayer == null) { return; }
 		markerLayer.clearMarkers();
 		if (placebook == null) { return; }
 
@@ -165,13 +166,6 @@ public class MapItem extends PlaceBookItemWidget
 		refreshMarkers();
 	}
 
-	@Override
-	protected void onAttach()
-	{
-		super.onAttach();
-		createMap();
-	}
-
 	private void createMap(ServerInfo serverInfo)
 	{
 		map = Map.create(panel.getElement(), controls);
@@ -204,6 +198,7 @@ public class MapItem extends PlaceBookItemWidget
 		map.addLayer(markerLayer);
 
 		createRoute();
+		refreshMarkers();
 	}
 	
 	private void createMap()
@@ -277,6 +272,11 @@ public class MapItem extends PlaceBookItemWidget
 			final Bounds routeBounds = routeLayer.getDataExtent();
 			if (routeBounds != null)
 			{
+//				GWT.log(routeBounds.toString());			
+//				Bounds transformed = routeBounds.transform(map.getProjection(), map.getDisplayProjection());
+//				GWT.log(transformed.toString());
+//				GWT.log(routeBounds.toString());
+				
 				if (bounds == null)
 				{
 					bounds = routeBounds;
