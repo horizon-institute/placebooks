@@ -8,6 +8,7 @@ import placebooks.client.Resources;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 {
@@ -19,17 +20,21 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 
 	public PaletteFolder(final String name, final PaletteFolder parent, final Palette palette)
 	{
-		super();
+		super(name);
 		this.parent = parent;
 		this.palette = palette;
+	}
 
-		text.setText(name);
+	@Override
+	public Widget createWidget()
+	{
+		Widget result = super.createWidget();
 
 		if (parent != null)
 		{
 			add(new PaletteBackItem("Back", parent, palette));
 		}
-
+	
 		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{
@@ -39,6 +44,8 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 				palette.setPaletteFolder(PaletteFolder.this);
 			}
 		});
+		
+		return result;
 	}
 
 	public void add(final PaletteItem item)

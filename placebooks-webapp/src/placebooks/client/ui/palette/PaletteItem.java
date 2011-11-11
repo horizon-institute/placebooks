@@ -5,12 +5,11 @@ import placebooks.client.ui.elements.MousePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PaletteItem extends Composite
+public class PaletteItem
 {
 	interface PaletteItemUiBinder extends UiBinder<Widget, PaletteItem>
 	{
@@ -27,14 +26,23 @@ public class PaletteItem extends Composite
 	@UiField
 	Label text;
 
-	public PaletteItem()
+	private String name;
+	
+	public PaletteItem(final String name)
 	{
-		initWidget(uiBinder.createAndBindUi(this));
+		this.name = name;
 	}
 
 	public String getName()
 	{
-		return text.getText();
+		return name;
+	}
+	
+	public Widget createWidget()
+	{
+		Widget result = uiBinder.createAndBindUi(this);		
+		text.setText(name);
+		return result;
 	}
 
 	public boolean isFolder()

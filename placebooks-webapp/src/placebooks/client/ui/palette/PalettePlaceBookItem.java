@@ -10,19 +10,26 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PalettePlaceBookItem extends PaletteItem
 {
 	private final PlaceBookItem item;
+	private final PlaceBookInteractionHandler handler;
 
 	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
 	{
-		super();
+		super(placeBookItem.getMetadata("title", "Unnamed"));
 
 		this.item = placeBookItem;
-
-		text.setText(placeBookItem.getMetadata("title", "Unnamed"));
-
+		this.handler = dragHandler;
+	}
+	
+	@Override
+	public Widget createWidget()
+	{
+		Widget result =super.createWidget();
+		
 		panel.getElement().getStyle().setCursor(Cursor.MOVE);
 
 		if (item.is(ItemType.IMAGE) && item.getKey() != null)
@@ -40,13 +47,16 @@ public class PalettePlaceBookItem extends PaletteItem
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				if (dragHandler.canAdd(item))
+				if (handler.canAdd(item))
 				{
-					dragHandler.setupDrag(event, createItem(), null);
+					handler.setupDrag(event, createItem(), null);
 				}
 			}
-		});
+		});		
+		return result;
 	}
+
+
 
 	private PlaceBookItemWidget createItem()
 	{
