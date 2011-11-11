@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -33,7 +34,6 @@ import placebooks.model.VideoItem;
 import placebooks.services.EverytrailService;
 import placebooks.services.PeoplesCollectionService;
 import placebooks.services.model.PeoplesCollectionItemFeature;
-import placebooks.services.model.PeoplesCollectionProperties;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 
 import com.google.gdata.data.DateTime;
