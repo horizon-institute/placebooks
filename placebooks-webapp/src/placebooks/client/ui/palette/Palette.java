@@ -115,7 +115,7 @@ public class Palette extends FlowPanel
 		clear();
 		for (final PaletteItem paletteItem : folder)
 		{
-			add(paletteItem);
+			add(paletteItem.createWidget());
 		}
 	}
 }
