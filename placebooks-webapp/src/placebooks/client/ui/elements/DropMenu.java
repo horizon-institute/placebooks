@@ -26,6 +26,12 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 	};
 	
 
+	public DropMenu()
+	{
+		super();
+		setVisible(false);
+	}
+
 	@Override
 	public HandlerRegistration addMouseOutHandler(final MouseOutHandler handler)
 	{
@@ -47,6 +53,7 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 	
 	public void showMenu(final int x, final int y)
 	{
+		setVisible(true);
 		if(this != current)
 		{
 			if(current != null)
