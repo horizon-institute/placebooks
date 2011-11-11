@@ -966,11 +966,13 @@ public class PlaceBooksAdminController
 						{
 							final ImageReader read = readers.next();
 							fmt = read.getFormatName();
+							read.dispose();
 						}
 
 						final OutputStream out = res.getOutputStream();
 						ImageIO.write(ImageIO.read(image), fmt, out);
 						out.close();
+						iis.close();
 					}
 					catch (final IOException e)
 					{
