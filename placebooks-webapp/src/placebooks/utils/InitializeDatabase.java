@@ -34,6 +34,12 @@ public class InitializeDatabase
 					"swnymor", "password");
 			userd.add(markdPcwLoginDetails);
 
+			final User alan = new User("Alan Chamberlain", "azc@Cs.Nott.AC.UK", encoder.encodePassword("test", null));
+
+			final LoginDetails alanPcwLoginDetails = new LoginDetails(alan, PeoplesCollectionService.SERVICE_NAME, "alan_chamberlain",
+					"alan_chamberlain", "g2veji");
+			alan.add(alanPcwLoginDetails);
+			
 			
 			final User userTest = new User("Everytrail Test User", "everytrail_test@live.co.uk",
 					encoder.encodePassword("testPass!", null));
@@ -53,6 +59,7 @@ public class InitializeDatabase
 			manager.persist(users);
 			manager.persist(userm);
 			manager.persist(userd);
+			manager.persist(alan);
 			manager.persist(userTest);
 			manager.persist(userYTTest);
 	

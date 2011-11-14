@@ -408,7 +408,7 @@ public class ItemFactory
 		//tripItem.toString();
 		log.debug(trail.GetProperties().GetTitle());
 		String trailTitle = trail.GetProperties().GetTitle();
-		String trailId = Integer.toString(trail.GetProperties().GetTrailId());
+		String trailId = Integer.toString(trail.GetPropertiesId());
 
 		gpsItem.setGeometry(trail.GetGeometry());
 		gpsItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
@@ -429,9 +429,9 @@ public class ItemFactory
 
 
 		StringBuilder trackGPXBuilder = new StringBuilder();
-		trackGPXBuilder.append("<?xml version='1.0' encoding='UTF-8'?>");
-		trackGPXBuilder.append("<gpx version='1.0' creator='Placebooks - http://www.placebooks.org' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='http://www.topografix.com/GPX/1/0' xsi:schemaLocation='http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd'>");
-
+		trackGPXBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		trackGPXBuilder.append("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Placebooks - http://www.placebooks.org\" version=\"1.1\">");
+		
 		Envelope envelope = new Envelope();
 		envelope.expandToInclude(trail.GetGeometry().getEnvelopeInternal());
 		double xMin = envelope.getMinX();
@@ -440,13 +440,16 @@ public class ItemFactory
 		double xMax = envelope.getMaxX();
 		double yMax = envelope.getMaxY();
 
-		trackGPXBuilder.append("<bounds minlat='" + yMin + "' minlon='" + xMin + "' maxlat='" + yMax + "' maxlon='" + xMax + "'/>");
+		trackGPXBuilder.append("<metadata>"); 
+		trackGPXBuilder.append("<bounds minlat=\"" + yMin + "\" minlon=\"" + xMin + "\" maxlat=\"" + yMax + "\" maxlon=\"" + xMax + "\"/>");
+		trackGPXBuilder.append("<name>" + trailTitle + "</name>");
+		trackGPXBuilder.append("</metadata>"); 
 		trackGPXBuilder.append("<trk>");
 		trackGPXBuilder.append("<name>" + trailTitle + "</name>");
 		trackGPXBuilder.append("<trkseg>");
 		for(Coordinate c : trail.GetGeometry().getCoordinates())
 		{
-			trackGPXBuilder.append("<trkpt lat='" + c.y + "' lon='" + c.x + "'>");
+			trackGPXBuilder.append("<trkpt lat=\"" + c.y + "\" lon=\"" + c.x + "\">");
 			trackGPXBuilder.append("<ele>0</ele>");
 			trackGPXBuilder.append("</trkpt>");
 		}
@@ -521,7 +524,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());
+				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());				
 			}
 			catch (final IOException ex)
 			{

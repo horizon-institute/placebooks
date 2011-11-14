@@ -207,6 +207,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public void setPath(final String filepath)
 	{
+		log.debug("Setting path for item " + this.getExternalID() + " as " + filepath);
 		this.path = filepath;
 	}
 

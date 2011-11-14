@@ -132,7 +132,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	}
 
 
-	@Test
+	//@Test
 	public void testGetEverytrailDataForAUser() throws Exception
 	{
 		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
@@ -200,7 +200,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	@Test
 	public void testSyncPeoplesCollectionData() throws Exception
 	{
-		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
+		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
 		final PeoplesCollectionService service = new PeoplesCollectionService();
 		service.sync(em, user, true);
 		
