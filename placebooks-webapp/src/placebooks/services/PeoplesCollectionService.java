@@ -238,6 +238,8 @@ public class PeoplesCollectionService extends Service
 			{
 				ItemFactory.toGPSTraceItem(user, trail, traceItem);
 				itemsSeen.add(traceItem.getExternalID());
+				log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
+				traceItem.saveUpdatedItem();
 				
 				for(int trailItemId : trail.GetProperties().GetItems())
 				{
@@ -250,13 +252,15 @@ public class PeoplesCollectionService extends Service
 						if(featureType.equals("image"))
 						{
 							ImageItem newItem = new ImageItem();
-							ItemFactory.toImageItem(user, feature, trailListItem.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
 							addedItem = newItem;
 						}
 						if(featureType.equals("story"))
 						{
 							TextItem newItem = new TextItem();
-							ItemFactory.toTextItem(user, feature, trailListItem.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
 							addedItem = newItem;
 						}
 
@@ -266,7 +270,7 @@ public class PeoplesCollectionService extends Service
 						}
 						else
 						{
-							addedItem.saveUpdatedItem();
+							log.debug("Saved item: " + addedItem.getExternalID());
 							itemsSeen.add(addedItem.getExternalID());
 						}
 					}

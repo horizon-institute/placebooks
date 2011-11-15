@@ -47,25 +47,26 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookEditor extends PlaceBookPlace
+public class PlaceBookBookEditor extends PlaceBookPlace
 {
+
 	@Prefix("edit")
-	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookBookEditor>
 	{
 		@Override
-		public PlaceBookEditor getPlace(final String token)
+		public PlaceBookBookEditor getPlace(final String token)
 		{
-			return new PlaceBookEditor(token, null);
+			return new PlaceBookBookEditor(token, null);
 		}
 
 		@Override
-		public String getToken(final PlaceBookEditor place)
+		public String getToken(final PlaceBookBookEditor place)
 		{
 			return place.getKey();
 		}
 	}
 
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
+	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookBookEditor>
 	{
 	}
 
@@ -112,14 +113,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookKey;
 
-	public PlaceBookEditor(final PlaceBook placebook, final Shelf shelf)
+	public PlaceBookBookEditor(final PlaceBook placebook, final Shelf shelf)
 	{
 		super(shelf);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookEditor(final String placebookKey, final Shelf shelf)
+	public PlaceBookBookEditor(final String placebookKey, final Shelf shelf)
 	{
 		super(shelf);
 		this.placebookKey = placebookKey;
@@ -137,7 +138,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	}
 
-	public PlaceBookSaveItem getSaveContext()
+	public PlaceBookSaveItem getSaveItem()
 	{
 		return saveItem;
 	}
@@ -298,7 +299,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("publish")
 	void publish(final ClickEvent event)
 	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookBookEditor.this, canvas);
 		publish.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -440,7 +441,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 			saveItem.setState(SaveState.saved);
 			
-			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
+			getPlaceController().goTo(new PlaceBookBookEditor(placebook, getShelf()));
 		}
 		else
 		{

@@ -2,7 +2,7 @@ package placebooks.client.ui.elements;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -76,12 +76,12 @@ public class PlaceBookInteractionHandler
 	private int originx;
 	private int originy;
 
-	private final SaveContext saveContext;
+	private final PlaceBookSaveItem saveContext;
 
 	private PlaceBookItemFrame selected;
 
 	public PlaceBookInteractionHandler(final PlaceBookCanvas canvas, final PlaceBookItemFrameFactory factory,
-			final SaveContext saveContext)
+			final PlaceBookSaveItem saveContext)
 	{
 		STYLES.style().ensureInjected();
 		this.canvas = canvas;
@@ -113,9 +113,20 @@ public class PlaceBookInteractionHandler
 		return canvas;
 	}
 
-	public SaveContext getContext()
+	public PlaceBookSaveItem getContext()
 	{
 		return saveContext;
+	}
+	
+	public void refreshMap()
+	{
+		for (final PlaceBookItemFrame itemFrame : canvas.getItems())
+		{
+			if (itemFrame.getItemWidget() instanceof MapItem)
+			{
+				((MapItem) itemFrame.getItemWidget()).refreshMarkers();
+			}
+		}
 	}
 
 	private PlaceBookPanel getPanel(final MouseEvent<?> event)

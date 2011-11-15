@@ -30,9 +30,26 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 	{
 		Widget result = super.createWidget();
 
-		if (parent != null)
+		
+		if ((parent != null))
 		{
-			add(new PaletteBackItem("Back", parent, palette));
+			// Fix to avoid/remove multiple back folder icons
+			boolean backFound = false;
+			for(PaletteItem item : children )
+			{
+				if(item instanceof PaletteBackItem)
+				{
+					if(backFound)
+					{
+						children.remove(item);
+					}
+					backFound = true;
+				}
+			}
+			if(!backFound)
+			{
+				add(new PaletteBackItem("Back", parent, palette));
+			}
 		}
 	
 		image.setResource(Resources.IMAGES.pallette_folder());
