@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.elements.PlaceBookCanvas;
-import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -22,7 +22,7 @@ public class DeleteItemMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		final PlaceBookPanel panel = item.getPanel();
+		final PlaceBookColumn panel = item.getPanel();
 		canvas.remove(item);
 		if (panel != null)
 		{

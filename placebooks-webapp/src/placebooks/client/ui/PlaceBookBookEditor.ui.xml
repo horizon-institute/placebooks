@@ -38,22 +38,22 @@
 		
 		.loadingPanel {
 			position: absolute;
-			text-align: center;
-			top: 0px;
-			right: 0px;
-			bottom: 0px;
-			left: 0px;
+			top: 40px;
+			right: 0;
+			bottom: 0;
+			left: 0;
 			z-index: 20;
-			background: rgba(0, 0, 0, 0.4);
+			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
+			display: -webkit-box;
+			-webkit-box-pack: center;
+			-webkit-box-align: center;
 		}
 		
 		.loading {
 			background: #555;
 			border: 1px solid #333;
 			border-radius: 5px;
-			margin-top: 200px;
 			padding: 10px 20px;
-			display: inline-block;
 		}
 		
 		.savingLabel {

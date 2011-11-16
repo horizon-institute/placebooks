@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.title {
-			background-color: #999;
+			background-color: #222;
 			padding: 10px;
 			font-weight: bold;
 			color: #FFF;

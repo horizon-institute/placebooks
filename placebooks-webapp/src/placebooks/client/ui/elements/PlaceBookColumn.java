@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookPanel extends FlowPanel
+public class PlaceBookColumn extends FlowPanel
 {
 	interface Style extends CssResource
 	{
@@ -52,7 +52,7 @@ public class PlaceBookPanel extends FlowPanel
 
 	private final int panelIndex;
 
-	public PlaceBookPanel(final int index, final int columns, final double left, final double width,
+	public PlaceBookColumn(final int index, final int columns, final double left, final double width,
 			final boolean visible)
 	{
 		STYLES.style().ensureInjected();

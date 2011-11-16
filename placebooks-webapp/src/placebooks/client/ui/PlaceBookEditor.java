@@ -9,8 +9,8 @@ import placebooks.client.model.Shelf;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
-import placebooks.client.ui.elements.PlaceBookPanel;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
@@ -24,8 +24,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -392,22 +390,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "actionMenu" })
-	void hideMenu(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
-	}
-
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("actionMenu")
-	void showMenuButton(final MouseOverEvent event)
+	void showMenu(final ClickEvent event)
 	{
-		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
+		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
 
@@ -423,7 +409,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
 		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
 		zoomLabel.setText(zoom + "%");
-		for (final PlaceBookPanel panel : canvas.getPanels())
+		for (final PlaceBookColumn panel : canvas.getPanels())
 		{
 			panel.reflow();
 		}

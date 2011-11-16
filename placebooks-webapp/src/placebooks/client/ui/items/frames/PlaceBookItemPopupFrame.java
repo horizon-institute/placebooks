@@ -6,7 +6,7 @@ import java.util.Collection;
 import placebooks.client.Resources;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler.DragState;
-import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
@@ -206,7 +206,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
-	public void setPanel(final PlaceBookPanel newPanel)
+	public void setPanel(final PlaceBookColumn newPanel)
 	{
 		if (panel == newPanel) { return; }
 		if (panel != null)
