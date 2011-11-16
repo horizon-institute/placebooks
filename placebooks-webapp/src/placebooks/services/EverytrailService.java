@@ -626,10 +626,6 @@ public class EverytrailService extends Service
 	@Override
 	protected void sync(EntityManager manager, User user, LoginDetails details)
 	{
-		manager.getTransaction().begin();
-		details.setSyncInProgress(true);
-		manager.merge(details);
-		manager.getTransaction().commit();
 		try
 		{
 			final EverytrailLoginResponse loginResponse =  userLogin(details.getUsername(), details.getPassword());
@@ -640,12 +636,15 @@ public class EverytrailService extends Service
 				return;
 			}
 	
-			manager.getTransaction().begin();
-			// Save user id
-			details.setUserID(loginResponse.getValue());
-			manager.merge(details);
-			manager.getTransaction().commit();
-				
+			// Save user id if needed
+			if(loginResponse.getValue()!=details.getUserID())
+			{
+				manager.getTransaction().begin();
+				details.setUserID(loginResponse.getValue());
+				manager.merge(details);
+				manager.getTransaction().commit();
+			}	
+			
 			ArrayList<String> imported_ids = new ArrayList<String>(); 
 			ArrayList<String> available_ids = new ArrayList<String>(); 
 	
@@ -738,15 +737,7 @@ public class EverytrailService extends Service
 			{
 				manager.getTransaction().rollback();
 			}			
-			manager.getTransaction().begin();
-			details.setSyncInProgress(false);
-			manager.merge(details);
-			manager.getTransaction().commit();
-			log.info("Synced: " + details.getLastSync());			
-			manager.close();
 		}		
-
-		
 	}
 
 	@Override

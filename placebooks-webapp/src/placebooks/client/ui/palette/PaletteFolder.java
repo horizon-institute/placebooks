@@ -22,36 +22,20 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 	{
 		super(name);
 		this.parent = parent;
-		this.palette = palette;
+		this.palette = palette;	
+		
+		//MCP moved adding of backitem here from createwidget which is called multiple times 
+		// so keeps adding back to children
+		if ((parent != null))
+		{
+			add(new PaletteBackItem("Back", parent, palette));
+		}
 	}
 
 	@Override
 	public Widget createWidget()
 	{
 		Widget result = super.createWidget();
-
-		
-		if ((parent != null))
-		{
-			// Fix to avoid/remove multiple back folder icons
-			boolean backFound = false;
-			for(PaletteItem item : children )
-			{
-				if(item instanceof PaletteBackItem)
-				{
-					if(backFound)
-					{
-						children.remove(item);
-					}
-					backFound = true;
-				}
-			}
-			if(!backFound)
-			{
-				add(new PaletteBackItem("Back", parent, palette));
-			}
-		}
-	
 		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{

@@ -228,9 +228,16 @@ public class PeoplesCollectionService extends Service
 	protected void sync(EntityManager manager, User user, LoginDetails details) {
 		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUserID(), details.getPassword());
 		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
+		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
 		
 		ArrayList<String> itemsSeen = new ArrayList<String>();
-		for(PeoplesCollectionTrailListItem trailListItem : trailsResponse.GetMyTrails())
+		
+		ArrayList<PeoplesCollectionTrailListItem> allTrailListItems = new ArrayList<PeoplesCollectionTrailListItem>();
+		
+		allTrailListItems.addAll( trailsResponse.GetMyTrails());
+		allTrailListItems.addAll( trailsResponse.GetMyFavouriteTrails());
+		
+		for(PeoplesCollectionTrailListItem trailListItem : allTrailListItems)
 		{
 			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
 			GPSTraceItem traceItem = new GPSTraceItem(user);
@@ -282,11 +289,8 @@ public class PeoplesCollectionService extends Service
 				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
 			}
 		}
-		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
 		
 		int itemsDeleted = cleanupItems(manager, itemsSeen, user);
-		details.setLastSync();			
 		log.info("Finished PeoplesCollection import, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");			
-
 	}
 }
