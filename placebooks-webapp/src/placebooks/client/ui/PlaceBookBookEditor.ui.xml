@@ -163,13 +163,18 @@
 		
 		.dropMenu {
 			position: absolute;
+			opacity: 0;
+			visibility: hidden;
 			z-index: 30;
 			padding: 0px;
+			-moz-transition: opacity .5s linear, visibility .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
 			background: #FFF;
-			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+			-moz-box-shadow: 3px 3px 4px #222;
+			-webkit-box-shadow: 3px 3px 4px #222;
+			box-shadow: 3px 3px 6px #222;
 			border: 1px solid #DDD;
-			-webkit-transition: clip 0.2s linear;
-	        transition: clip 0.5s linear;  					
 		}
 		
 		.menuItem {
@@ -213,7 +218,7 @@
 				<g:Label ui:field="zoomLabel">100%</g:Label>
 				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
 			</g:FlowPanel>			
-			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>		
+			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 	</p:MousePanel>

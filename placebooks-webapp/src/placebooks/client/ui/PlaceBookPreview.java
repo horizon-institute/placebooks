@@ -13,8 +13,6 @@ import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -189,22 +187,16 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "actionMenu" })
-	void hideMenu(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
-	}
-
 	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
+	void showMenu(final ClickEvent event)
 	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+		dropMenu.show(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
 	}
 
 	@UiHandler("actionMenu")
-	void showMenuButton(final MouseOverEvent event)
+	void showMenuButton(final ClickEvent event)
 	{
-		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
+		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
 	@Override

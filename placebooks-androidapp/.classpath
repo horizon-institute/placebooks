@@ -5,7 +5,5 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="lib/simple-xml-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/gpx-bindings.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pszmp/lib/jcoord-1.1-b.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pszmp/lib/jts-1.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

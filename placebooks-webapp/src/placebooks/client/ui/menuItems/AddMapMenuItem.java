@@ -4,22 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
-import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class AddMapMenuItem extends MenuItem
 {
-	private final PlaceBookCanvas canvas;
-	private final SaveContext context;
+	private final PlaceBookInteractionHandler handler;
 	private final PlaceBookItemFrame item;
 
-	public AddMapMenuItem(final SaveContext context, final PlaceBookCanvas canvas, final PlaceBookItemFrame item)
+	public AddMapMenuItem(final PlaceBookInteractionHandler handler, final PlaceBookItemFrame item)
 	{
 		super("Add to Map");
-		this.canvas = canvas;
 		this.item = item;
-		this.context = context;
+		this.handler = handler;
 	}
 
 	@Override
@@ -33,7 +30,7 @@ public class AddMapMenuItem extends MenuItem
 	public void run()
 	{
 		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
-		for (final PlaceBookItemFrame itemFrame : canvas.getItems())
+		for (final PlaceBookItemFrame itemFrame : handler.getCanvas().getItems())
 		{
 			if (itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 			{
@@ -44,8 +41,8 @@ public class AddMapMenuItem extends MenuItem
 		if (mapItems.size() == 1)
 		{
 			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
-			context.refreshMap();
-			context.markChanged();
+			handler.refreshMap();
+			handler.getContext().markChanged();
 		}
 	}
 }

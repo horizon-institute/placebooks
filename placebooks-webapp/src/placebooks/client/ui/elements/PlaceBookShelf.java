@@ -305,7 +305,7 @@ public class PlaceBookShelf extends Composite
 			{
 				if (widget.getMarker() != null)
 				{
-					widget.getMarker().getIcon().getImageDiv().getStyle().setOpacity(0.5);
+					widget.getMarker().getIcon().getImageDiv().getStyle().setOpacity(0.3);
 				}
 			}
 		}

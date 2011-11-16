@@ -937,8 +937,10 @@ public class PlaceBooksAdminController
 
 			if (i != null)
 			{
-				em.getTransaction().begin();
-				em.getTransaction().commit();
+				if(i.getTimestamp() != null)
+				{
+					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
+				}
 
 				if (i.getPath() == null)
 				{

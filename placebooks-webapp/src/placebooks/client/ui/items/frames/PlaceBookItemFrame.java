@@ -1,7 +1,7 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
 import com.google.gwt.user.client.ui.Panel;
@@ -11,7 +11,7 @@ public abstract class PlaceBookItemFrame
 {
 	protected PlaceBookItemWidget itemWidget;
 
-	protected PlaceBookPanel panel;
+	protected PlaceBookColumn panel;
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
@@ -31,7 +31,7 @@ public abstract class PlaceBookItemFrame
 		return itemWidget;
 	}
 
-	public PlaceBookPanel getPanel()
+	public PlaceBookColumn getPanel()
 	{
 		return panel;
 	}
@@ -82,7 +82,7 @@ public abstract class PlaceBookItemFrame
 		});
 	}
 
-	public void setPanel(final PlaceBookPanel newPanel)
+	public void setPanel(final PlaceBookColumn newPanel)
 	{
 		if (panel == newPanel) { return; }
 		if (panel != null)

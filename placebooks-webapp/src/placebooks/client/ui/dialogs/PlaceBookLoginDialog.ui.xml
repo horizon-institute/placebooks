@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.title {
-			background-color: #999;
+			background-color: #222;
 			padding: 10px;
 			font-weight: bold;
 			color: #FFF;
@@ -29,7 +29,7 @@
 	<g:FlowPanel>
 		<g:Label ui:field="titleLabel" styleName="{style.title}">Link Everytrail Account</g:Label>
 		<g:Label ui:field="errorLabel" styleName="{style.error}"></g:Label>
-		<g:FlowPanel styleName="{style.content}">
+		<g:FlowPanel ui:field="content" styleName="{style.content}">
 			<g:Label ui:field="usernameLabel">UserName:</g:Label>
 			<g:TextBox ui:field="username"  name="pb_username" />
 			<g:Label>Password:</g:Label>

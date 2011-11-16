@@ -15,8 +15,6 @@ import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
@@ -133,12 +131,6 @@ public class PlaceBookToolbar extends Composite
 		}
 	}
 
-	@UiHandler(value={"dropMenu", "accountItem"})
-	void hideMenuTimerStart(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
-	}
-
 	@UiHandler("loginLabel")
 	void login(final ClickEvent event)
 	{
@@ -163,7 +155,6 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		dropMenu.hideMenu();
 		PlaceBookService.logout(new AbstractCallback()
 		{
 			@Override
@@ -202,7 +193,6 @@ public class PlaceBookToolbar extends Composite
 			loginPanel.setVisible(false);
 			accountItem.setVisible(true);
 			accountItem.setHTML(user.getName());
-
 		}
 		else
 		{
@@ -214,25 +204,18 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("linkedAccounts")
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
-		dropMenu.hideMenu();
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
 		account.setWidth("500px");
 		account.center();
 		account.show();
 	}
 
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("accountItem")
-	void showMenuLogin(final MouseOverEvent event)
+	void showMenuLogin(final ClickEvent event)
 	{
 		if (user != null)
 		{
-			dropMenu.showMenu(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
+			dropMenu.show(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
 		}
 	}
 

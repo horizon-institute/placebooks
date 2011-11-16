@@ -57,7 +57,7 @@ public class PlaceBookService
 
 	public static void login(final String email, final String password, final RequestCallback callback)
 	{
-		serverRequest(	getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password,
+		serverRequest(	getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password + "&_spring_security_remember_me=true",
 						callback);
 	}
 

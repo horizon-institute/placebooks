@@ -1,5 +1,8 @@
 package placebooks.client.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
@@ -11,6 +14,7 @@ import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
@@ -45,25 +49,26 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookEditor extends PlaceBookPlace
+public class PlaceBookBookEditor extends PlaceBookPlace
 {
-	@Prefix("edit")
-	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
+
+	@Prefix("bookedit")
+	public static class Tokenizer implements PlaceTokenizer<PlaceBookBookEditor>
 	{
 		@Override
-		public PlaceBookEditor getPlace(final String token)
+		public PlaceBookBookEditor getPlace(final String token)
 		{
-			return new PlaceBookEditor(token, null);
+			return new PlaceBookBookEditor(token, null);
 		}
 
 		@Override
-		public String getToken(final PlaceBookEditor place)
+		public String getToken(final PlaceBookBookEditor place)
 		{
 			return place.getKey();
 		}
 	}
 
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
+	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookBookEditor>
 	{
 	}
 
@@ -100,6 +105,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
+	private final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
+	
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
 
 	private PlaceBookInteractionHandler interactionHandler;
@@ -110,23 +117,18 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookKey;
 
-	public PlaceBookEditor(final PlaceBook placebook, final Shelf shelf)
+	public PlaceBookBookEditor(final PlaceBook placebook, final Shelf shelf)
 	{
 		super(shelf);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookEditor(final String placebookKey, final Shelf shelf)
+	public PlaceBookBookEditor(final String placebookKey, final Shelf shelf)
 	{
 		super(shelf);
 		this.placebookKey = placebookKey;
 		this.placebook = null;
-	}
-
-	public PlaceBookCanvas getCanvas()
-	{
-		return canvas;
 	}
 
 	public PlaceBookInteractionHandler getDragHandler()
@@ -135,7 +137,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	}
 
-	public PlaceBookSaveItem getSaveContext()
+	public PlaceBookSaveItem getSaveItem()
 	{
 		return saveItem;
 	}
@@ -296,7 +298,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("publish")
 	void publish(final ClickEvent event)
 	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookBookEditor.this, canvas);
 		publish.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -390,8 +392,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler("actionMenu")
+	@UiHandler("dropMenu")
 	void showMenu(final ClickEvent event)
+	{
+		dropMenu.show(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
+	}
+
+	@UiHandler("actionMenu")
+	void showMenuButton(final ClickEvent event)
 	{
 		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
@@ -400,7 +408,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("preview")
 	void preview(final ClickEvent event)
 	{
-		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));		
+		getPlaceController().goTo(new PlaceBookPreview(getShelf(), placebook));		
 	}
 	
 	private void setZoom(final int zoom)
@@ -426,7 +434,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 			saveItem.setState(SaveState.saved);
 			
-			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
+			getPlaceController().goTo(new PlaceBookBookEditor(placebook, getShelf()));
 		}
 		else
 		{

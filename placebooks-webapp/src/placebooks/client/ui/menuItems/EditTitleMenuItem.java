@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,10 +14,10 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class EditTitleMenuItem extends MenuItem
 {
-	private final SaveContext context;
+	private final PlaceBookSaveItem context;
 	private final PlaceBookItemFrame item;
 
-	public EditTitleMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public EditTitleMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
 	{
 		super("Edit Title");
 		this.item = item;

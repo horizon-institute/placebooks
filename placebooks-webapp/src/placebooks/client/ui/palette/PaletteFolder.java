@@ -22,13 +22,10 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 	{
 		super(name);
 		this.parent = parent;
-		this.palette = palette;	
-		
-		//MCP moved adding of backitem here from createwidget which is called multiple times 
-		// so keeps adding back to children
-		if ((parent != null))
+		this.palette = palette;
+		if(parent != null)
 		{
-			add(new PaletteBackItem("Back", parent, palette));
+			add(new PaletteBackItem("Back", parent, palette));			
 		}
 	}
 
@@ -36,6 +33,7 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 	public Widget createWidget()
 	{
 		Widget result = super.createWidget();
+
 		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{

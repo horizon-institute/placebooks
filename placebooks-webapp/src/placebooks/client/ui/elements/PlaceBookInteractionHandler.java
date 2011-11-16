@@ -2,7 +2,7 @@ package placebooks.client.ui.elements;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -71,17 +71,17 @@ public class PlaceBookInteractionHandler
 	private int offsetx;
 	private int offsety;
 
-	private PlaceBookPanel oldPanel = null;
+	private PlaceBookColumn oldPanel = null;
 
 	private int originx;
 	private int originy;
 
-	private final SaveContext saveContext;
+	private final PlaceBookSaveItem saveContext;
 
 	private PlaceBookItemFrame selected;
 
 	public PlaceBookInteractionHandler(final PlaceBookCanvas canvas, final PlaceBookItemFrameFactory factory,
-			final SaveContext saveContext)
+			final PlaceBookSaveItem saveContext)
 	{
 		STYLES.style().ensureInjected();
 		this.canvas = canvas;
@@ -113,16 +113,27 @@ public class PlaceBookInteractionHandler
 		return canvas;
 	}
 
-	public SaveContext getContext()
+	public PlaceBookSaveItem getContext()
 	{
 		return saveContext;
 	}
+	
+	public void refreshMap()
+	{
+		for (final PlaceBookItemFrame itemFrame : canvas.getItems())
+		{
+			if (itemFrame.getItemWidget() instanceof MapItem)
+			{
+				((MapItem) itemFrame.getItemWidget()).refreshMarkers();
+			}
+		}
+	}
 
-	private PlaceBookPanel getPanel(final MouseEvent<?> event)
+	private PlaceBookColumn getPanel(final MouseEvent<?> event)
 	{
 		final int canvasx = event.getX();// RelativeX(canvas.getElement());
 		final int canvasy = event.getY();// RelativeY(canvas.getElement());
-		for (final PlaceBookPanel panel : canvas.getPanels())
+		for (final PlaceBookColumn panel : canvas.getPanels())
 		{
 			if (panel.isIn(canvasx, canvasy)) { return panel; }
 		}
@@ -189,7 +200,7 @@ public class PlaceBookInteractionHandler
 			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
 			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
 
-			final PlaceBookPanel newPanel = getPanel(event);
+			final PlaceBookColumn newPanel = getPanel(event);
 			if (oldPanel != newPanel && oldPanel != null)
 			{
 				oldPanel.reflow();
@@ -229,7 +240,7 @@ public class PlaceBookInteractionHandler
 			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			insert.removeFromParent();
 
-			final PlaceBookPanel newPanel = getPanel(event);
+			final PlaceBookColumn newPanel = getPanel(event);
 			if (oldPanel != newPanel && oldPanel != null)
 			{
 				oldPanel.reflow();

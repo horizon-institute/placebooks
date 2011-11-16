@@ -20,16 +20,11 @@
 		
 		.toolbarMenu {
 			position: absolute;
-			opacity: 0;
-			visibility: hidden;
 			z-index: 30;
-			-webkit-transition: opacity .5s linear, visibility .5s linear;
-			transition: opacity .5s linear, visibility .5s linear;
 			background: #000;
-			font-size: 14px;
-			-moz-box-shadow: 3px 3px 4px #222;
-			-webkit-box-shadow: 3px 3px 4px #222;
-			box-shadow: 3px 3px 6px #222;
+			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+			-webkit-transition: clip 0.2s linear;
+	        transition: clip 0.5s linear;  			
 		}		
 		
 		.left {
@@ -39,6 +34,8 @@
 		.toolbarMenuItem {
 			padding: 1px 8px;
 			cursor: pointer;
+			font-size: 14px;
+			color: #EEE;			
 		}
 		
 		.toolbarMenuItem:HOVER {
@@ -69,7 +66,7 @@
 		<p:PlaceBookToolbarItem addStyleNames="{style.toolbarLogin}" ui:field="accountItem" />		
 		<p:DropMenu ui:field="dropMenu" styleName="{style.toolbarMenu}">
 			<g:Label ui:field="linkedAccounts" styleName="{style.toolbarMenuItem}">Linked Accounts</g:Label>
-			<g:Label ui:field="logout" styleName="{style.toolbarMenuItem}">Logout</g:Label>				
+			<g:Label ui:field="logout" styleName="{style.toolbarMenuItem}">Logout</g:Label>
 		</p:DropMenu>		
 	</g:FlowPanel>
 </ui:UiBinder> 

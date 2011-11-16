@@ -1,14 +1,14 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class ShowTrailMenuItem extends MenuItem
 {
-	private final SaveContext context;
+	private final PlaceBookSaveItem context;
 	private final PlaceBookItemFrame item;
 
-	public ShowTrailMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public ShowTrailMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
 	{
 		super("Show Trail");
 
