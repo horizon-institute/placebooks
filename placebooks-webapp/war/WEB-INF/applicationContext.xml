@@ -29,7 +29,7 @@
 							    access="isAuthenticated()" />
 		<security:intercept-url pattern="/editor.html" 
 							    access="isAuthenticated()" />		
-        <security:intercept-url pattern="/**" access="permitAll" />	
+        <security:intercept-url pattern="/**" access="permitAll" />
         <security:remember-me key="placebooks" />
 	</security:http>
 
