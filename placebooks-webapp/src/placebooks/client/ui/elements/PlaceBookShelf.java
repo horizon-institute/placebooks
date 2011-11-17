@@ -59,7 +59,7 @@ public class PlaceBookShelf extends Composite
 
 	@UiField
 	Label progressLabel;
-	
+
 	@UiField
 	Panel mapPanel;
 
@@ -68,16 +68,16 @@ public class PlaceBookShelf extends Composite
 	private final Collection<PlaceBookEntryWidget> widgets = new ArrayList<PlaceBookEntryWidget>();
 
 	private MarkerLayer markerLayer;
-	
+
 	@UiField
 	Label mapToggleText;
-	
+
 	@UiField
 	Image mapToggleImage;
-	
+
 	@UiField
 	Panel mapToggle;
-	
+
 	boolean mapVisible = false;
 
 	public PlaceBookShelf()
@@ -90,54 +90,14 @@ public class PlaceBookShelf extends Composite
 		{
 
 			@Override
-			public void onLoad(LoadEvent event)
+			public void onLoad(final LoadEvent event)
 			{
 				recenter();
 			}
 		}, LoadEvent.getType());
 	}
 
-	private void createMap()
-	{
-		if(MapItem.serverInfo != null)
-		{
-			createMap(MapItem.serverInfo);
-		}
-		else
-		{
-			PlaceBookService.getServerInfo(new AbstractCallback()
-			{	
-				@Override
-				public void success(Request request, Response response)
-				{
-					try
-					{
-						MapItem.serverInfo = ServerInfo.parse(response.getText());
-						if(MapItem.serverInfo != null)
-						{
-							createMap(MapItem.serverInfo);						
-						}
-					}
-					catch(Exception e)
-					{
-						
-					}
-				}
-			});
-		}
-	}
-	
-	private void createMap(ServerInfo serverInfo)
-	{
-		map = Map.create(mapPanel.getElement(), true);
-		map.addLayer(OSLayer.create("glayer", serverInfo));
-		markerLayer = MarkerLayer.create("markerLayer");
-		map.addLayer(markerLayer);
-		mapPanel.setVisible(false);
-		mapToggle.setVisible(false);		
-	}
-	
-	public ImageResource getMarker(int index)
+	public ImageResource getMarker(final int index)
 	{
 		switch (index)
 		{
@@ -198,12 +158,42 @@ public class PlaceBookShelf extends Composite
 		}
 	}
 
+	public void setMapVisible(final boolean visible)
+	{
+		mapVisible = visible;
+		mapPanel.setVisible(mapVisible);
+		for (final PlaceBookEntryWidget widget : widgets)
+		{
+			widget.setMarkerVisible(mapVisible);
+		}
+
+		if (mapVisible)
+		{
+			mapToggleText.setText("Hide Map");
+			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
+			placebooks.getElement().getStyle().clearRight();
+			placebooks.getElement().getStyle().clearTop();
+			placebooks.getElement().getStyle().clearPaddingLeft();
+			placebooks.getElement().getStyle().clearPaddingRight();
+			placebooks.setWidth("190px");
+
+			recenter();
+		}
+		else
+		{
+			mapToggleText.setText("Show Map");
+			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
+			placebooks.getElement().getStyle().setRight(0, Unit.PX);
+			placebooks.getElement().getStyle().setTop(20, Unit.PX);
+			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
+			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);
+			placebooks.getElement().getStyle().clearWidth();
+		}
+	}
+
 	public void setShelf(final PlaceBookPlace place, final Shelf shelf, final boolean includeZero)
 	{
-		if(shelf == null)
-		{
-			return;
-		}
+		if (shelf == null) { return; }
 		progress.setVisible(false);
 		mapPanel.setVisible(true);
 		mapToggle.setVisible(true);
@@ -249,25 +239,32 @@ public class PlaceBookShelf extends Composite
 
 				if (entry.getCenter() != null)
 				{
-					String geometry = entry.getCenter();
+					final String geometry = entry.getCenter();
 					if (geometry.startsWith(MapItem.POINT_PREFIX))
 					{
-						final LonLat lonlat = LonLat
-								.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
-																		geometry.length() - 1)).cloneLonLat()
-								.transform(map.getDisplayProjection(), map.getProjection());
-						final ImageResource markerImage = getMarker(markerIndex);
-						markerIndex++;
-						final Marker marker = Marker.create(markerImage, lonlat);
-						widget.setMarker(marker, markerImage);
-						markerLayer.addMarker(marker);
+						try
+						{
+							final LonLat lonlat = LonLat
+									.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
+																			geometry.length() - 1)).cloneLonLat()
+									.transform(map.getDisplayProjection(), map.getProjection());
+							final ImageResource markerImage = getMarker(markerIndex);
+							markerIndex++;
+							final Marker marker = Marker.create(markerImage, lonlat);
+							widget.setMarker(marker, markerImage);
+							markerLayer.addMarker(marker);
+						}
+						catch(Exception e)
+						{
+							GWT.log(e.getMessage());
+						}
 					}
 				}
 
 				widget.addMouseOverHandler(new MouseOverHandler()
 				{
 					@Override
-					public void onMouseOver(MouseOverEvent event)
+					public void onMouseOver(final MouseOverEvent event)
 					{
 						highlight(entry);
 					}
@@ -275,7 +272,7 @@ public class PlaceBookShelf extends Composite
 				widget.addMouseOutHandler(new MouseOutHandler()
 				{
 					@Override
-					public void onMouseOut(MouseOutEvent event)
+					public void onMouseOut(final MouseOutEvent event)
 					{
 						highlight(null);
 					}
@@ -290,9 +287,71 @@ public class PlaceBookShelf extends Composite
 		recenter();
 	}
 
-	private void highlight(PlaceBookEntry highlight)
+	public void showProgress(final String string)
 	{
-		for (PlaceBookEntryWidget widget : widgets)
+		placebooks.clear();
+		widgets.clear();
+		if (markerLayer != null)
+		{
+			markerLayer.clearMarkers();
+		}
+
+		progress.setVisible(true);
+		progressLabel.setText(string);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);
+
+	}
+
+	@UiHandler("mapToggle")
+	void toggleMapVisible(final ClickEvent event)
+	{
+		setMapVisible(!mapVisible);
+	}
+
+	private void createMap()
+	{
+		if (MapItem.serverInfo != null)
+		{
+			createMap(MapItem.serverInfo);
+		}
+		else
+		{
+			PlaceBookService.getServerInfo(new AbstractCallback()
+			{
+				@Override
+				public void success(final Request request, final Response response)
+				{
+					try
+					{
+						MapItem.serverInfo = ServerInfo.parse(response.getText());
+						if (MapItem.serverInfo != null)
+						{
+							createMap(MapItem.serverInfo);
+						}
+					}
+					catch (final Exception e)
+					{
+
+					}
+				}
+			});
+		}
+	}
+
+	private void createMap(final ServerInfo serverInfo)
+	{
+		map = Map.create(mapPanel.getElement(), true);
+		map.addLayer(OSLayer.create("glayer", serverInfo));
+		markerLayer = MarkerLayer.create("markerLayer");
+		map.addLayer(markerLayer);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);
+	}
+
+	private void highlight(final PlaceBookEntry highlight)
+	{
+		for (final PlaceBookEntryWidget widget : widgets)
 		{
 			if (highlight == null || widget.getEntry().getKey().equals(highlight.getKey()))
 			{
@@ -329,60 +388,5 @@ public class PlaceBookShelf extends Composite
 		{
 			GWT.log(e.getMessage(), e);
 		}
-	}
-	
-	public void setMapVisible(boolean visible)
-	{
-		mapVisible = visible;
-		mapPanel.setVisible(mapVisible);
-		for (PlaceBookEntryWidget widget : widgets)
-		{
-			widget.setMarkerVisible(mapVisible);
-		}
-		
-		if(mapVisible)
-		{
-			mapToggleText.setText("Hide Map");
-			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
-			placebooks.getElement().getStyle().clearRight();
-			placebooks.getElement().getStyle().clearTop();
-			placebooks.getElement().getStyle().clearPaddingLeft();
-			placebooks.getElement().getStyle().clearPaddingRight();					
-			placebooks.setWidth("190px");
-			
-			recenter();
-		}
-		else
-		{
-			mapToggleText.setText("Show Map");
-			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
-			placebooks.getElement().getStyle().setRight(0, Unit.PX);
-			placebooks.getElement().getStyle().setTop(20, Unit.PX);
-			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
-			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);			
-			placebooks.getElement().getStyle().clearWidth();
-		}		
-	}
-
-	@UiHandler("mapToggle")
-	void toggleMapVisible(ClickEvent event)
-	{
-		setMapVisible(!mapVisible);
-	}
-
-	public void showProgress(String string)
-	{
-		placebooks.clear();
-		widgets.clear();
-		if(markerLayer != null)
-		{
-			markerLayer.clearMarkers();
-		}
-			
-		progress.setVisible(true);
-		progressLabel.setText(string);
-		mapPanel.setVisible(false);
-		mapToggle.setVisible(false);
-		
 	}
 }
