@@ -38,10 +38,14 @@ public abstract class Service
 		else
 		{
 			log.info(details.getService() +  " sync starting");
+			manager.getTransaction().begin();
+			details.setSyncInProgress(true);
+			manager.merge(details);
+			manager.getTransaction().commit();			
 		}
 		if(!force && details.getLastSync() != null)
 		{
-			log.info("Last sync: " + details.getLastSync());
+			log.info("Last sync of " + getName()  + ": " + details.getLastSync());
 			final Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
@@ -49,11 +53,19 @@ public abstract class Service
 			calendar.set(Calendar.MILLISECOND,0);
 			if(calendar.getTime().before(details.getLastSync()))
 			{
+				log.debug("Not syncing " + getName()  + " automatically as last sync date was today.");
 				return;
 			}		
 		}
 
 		sync(manager, user, details);
+		
+		manager.getTransaction().begin();
+		details.setSyncInProgress(false);
+		manager.merge(details);
+		manager.getTransaction().commit();
+		log.info("Synced " + getName() +": " + details.getLastSync());			
+		manager.close();
 	}
 	
 	public abstract String getName();
