@@ -187,14 +187,8 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler("dropMenu")
-	void showMenu(final ClickEvent event)
-	{
-		dropMenu.show(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("actionMenu")
-	void showMenuButton(final ClickEvent event)
+	void showMenu(final ClickEvent event)
 	{
 		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}

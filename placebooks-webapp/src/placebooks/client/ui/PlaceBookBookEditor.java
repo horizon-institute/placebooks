@@ -392,12 +392,6 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler("dropMenu")
-	void showMenu(final ClickEvent event)
-	{
-		dropMenu.show(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("actionMenu")
 	void showMenuButton(final ClickEvent event)
 	{

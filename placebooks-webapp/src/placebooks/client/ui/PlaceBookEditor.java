@@ -88,13 +88,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	@UiField
 	Label zoomLabel;
-	
+
 	@UiField
 	TextBox title;
 
 	@UiField
 	PlaceBookToolbarItem actionMenu;
-	
+
 	@UiField
 	DropMenu dropMenu;
 
@@ -293,25 +293,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("publish")
-	void publish(final ClickEvent event)
-	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
-		publish.addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				loadingPanel.setVisible(true);
-				publish.hide();
-			}
-		});
-
-		publish.show();
-		publish.center();
-		publish.getElement().getStyle().setTop(50, Unit.PX);
-	}
-	
 	@UiHandler("delete")
 	void delete(final ClickEvent event)
 	{
@@ -364,8 +345,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dialogBox.center();
 		dialogBox.show();
 	}
-	
-	
+
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
@@ -385,9 +365,29 @@ public class PlaceBookEditor extends PlaceBookPlace
 		setZoom(zoom - 20);
 	}
 
-	private String getKey()
+	@UiHandler("preview")
+	void preview(final ClickEvent event)
 	{
-		return placebookKey;
+		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));
+	}
+
+	@UiHandler("publish")
+	void publish(final ClickEvent event)
+	{
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		publish.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				loadingPanel.setVisible(true);
+				publish.hide();
+			}
+		});
+
+		publish.show();
+		publish.center();
+		publish.getElement().getStyle().setTop(50, Unit.PX);
 	}
 
 	@UiHandler("actionMenu")
@@ -396,13 +396,11 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
-
-	@UiHandler("preview")
-	void preview(final ClickEvent event)
+	private String getKey()
 	{
-		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));		
+		return placebookKey;
 	}
-	
+
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
@@ -425,7 +423,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			placebook.setKey(newPlacebook.getKey());
 
 			saveItem.setState(SaveState.saved);
-			
+
 			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
 		}
 		else
