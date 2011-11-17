@@ -924,7 +924,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
-	public ModelAndView serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
+	public void serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -939,7 +939,22 @@ public class PlaceBooksAdminController
 			{
 				if(i.getTimestamp() != null)
 				{
+					try
+					{
+						long lastModified = req.getDateHeader("If-Modified-Since"); 
+						if(lastModified >= i.getTimestamp().getTime())
+						{
+							res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+							return;
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage(), e);
+					}
+					
 					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
+					
 				}
 
 				if (i.getPath() == null)
@@ -992,8 +1007,6 @@ public class PlaceBooksAdminController
 		{
 			em.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/serve/{type}item/{key}", method = RequestMethod.GET)
