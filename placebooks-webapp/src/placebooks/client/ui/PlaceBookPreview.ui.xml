@@ -47,8 +47,6 @@
 		
 		.dropMenu {
 			position: absolute;
-			opacity: 0;
-			visibility: hidden;
 			z-index: 30;
 			padding: 0px;
 			-moz-transition: opacity .5s linear, visibility .5s linear;
