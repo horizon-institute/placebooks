@@ -35,9 +35,9 @@ public class PlaceBookPage extends FlowPanel
 	
 	private static final Bundle STYLES = GWT.create(Bundle.class);
 	
-	public static final int A4Length = 297;
-	public static final int A4Width = 210;
-	public static final int Margin = 20;
+	private static final int A4Length = 297;
+	//private static final int A4Width = 210;
+	private static final int Margin = 20;
 	private int pageIndex;
 
 	private static final int DEFAULT_COLUMNS = 3;

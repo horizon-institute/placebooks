@@ -43,6 +43,11 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
 	}
 
+	public static void getServerInfo(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
+	}
+
 	public static void getShelf(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
@@ -57,8 +62,8 @@ public class PlaceBookService
 
 	public static void login(final String email, final String password, final RequestCallback callback)
 	{
-		serverRequest(	getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password + "&_spring_security_remember_me=true",
-						callback);
+		serverRequest(getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password
+				+ "&_spring_security_remember_me=true", callback);
 	}
 
 	public static void logout(final RequestCallback callback)
@@ -94,7 +99,12 @@ public class PlaceBookService
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebook/" + geometry, callback);
 	}
-	
+
+	public static void sync(final String service, final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
+	}
+
 	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
 			final RequestCallback callback)
 	{
@@ -123,15 +133,5 @@ public class PlaceBookService
 	private static void serverRequest(final String url, final String data, final RequestCallback callback)
 	{
 		serverRequest(url, RequestBuilder.POST, data, callback);
-	}
-
-	public static void sync(final String service, final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
-	}
-
-	public static void getServerInfo(final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
 	}
 }

@@ -133,7 +133,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			public void success(final Request request, final Response response)
 			{
 				final PlaceBook placebook = PlaceBook.parse(response.getText());
-				place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), placebook));
+				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), placebook));
 			}
 		});
 	}

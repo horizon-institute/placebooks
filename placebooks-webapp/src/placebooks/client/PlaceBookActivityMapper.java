@@ -20,11 +20,11 @@ public class PlaceBookActivityMapper implements ActivityMapper
 	@Override
 	public Activity getActivity(final Place place)
 	{
-		if(place instanceof PlaceBookPlace)
+		if (place instanceof PlaceBookPlace)
 		{
-			PlaceBookPlace placebookPlace = (PlaceBookPlace)place;
+			final PlaceBookPlace placebookPlace = (PlaceBookPlace) place;
 			placebookPlace.setPlaceController(controller);
-			return (PlaceBookPlace)place;
+			return (PlaceBookPlace) place;
 		}
 		return null;
 	}

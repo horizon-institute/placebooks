@@ -32,6 +32,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -45,6 +46,20 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookShelf extends Composite
 {
+	public static abstract class ShelfControl implements Comparator<PlaceBookEntry>
+	{
+		private final PlaceBookPlace place;
+
+		public ShelfControl(final PlaceBookPlace place)
+		{
+			this.place = place;
+		}
+
+		public abstract void getShelf(final RequestCallback callback);
+
+		public abstract boolean include(PlaceBookEntry entry);
+	}
+
 	interface PlaceBookShelfUiBinder extends UiBinder<Widget, PlaceBookShelf>
 	{
 	}
@@ -83,6 +98,8 @@ public class PlaceBookShelf extends Composite
 	public PlaceBookShelf()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+
+		setMapVisible(false);
 
 		createMap();
 
@@ -191,100 +208,91 @@ public class PlaceBookShelf extends Composite
 		}
 	}
 
-	public void setShelf(final PlaceBookPlace place, final Shelf shelf, final boolean includeZero)
+	public void setShelfControl(final ShelfControl shelfControl)
 	{
-		if (shelf == null) { return; }
-		progress.setVisible(false);
-		mapPanel.setVisible(true);
-		mapToggle.setVisible(true);
-		placebooks.clear();
-		widgets.clear();
-		if (shelf != null)
+		shelfControl.getShelf(new AbstractCallback()
 		{
-			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-			for (final PlaceBookEntry entry : shelf.getEntries())
+			@Override
+			public void success(final Request request, final Response response)
 			{
-				if (entry.getScore() > 0 || includeZero)
-				{
-					entries.add(entry);
-				}
-			}
+				final Shelf shelf = Shelf.parse(response.getText());
+				if (shelf == null) { return; }
+				progress.setVisible(false);
+				mapToggle.setVisible(true);
+				placebooks.clear();
+				widgets.clear();
 
-			Collections.sort(entries, new Comparator<PlaceBookEntry>()
-			{
-				@Override
-				public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
+				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+				for (final PlaceBookEntry entry : shelf.getEntries())
 				{
-					if (o2.getScore() != o1.getScore())
+					if (shelfControl.include(entry))
 					{
-						return o2.getScore() - o1.getScore();
-					}
-					else
-					{
-						return o1.getTitle().compareTo(o2.getTitle());
+						entries.add(entry);
 					}
 				}
-			});
 
-			int index = 0;
-			int markerIndex = 1;
-			for (final PlaceBookEntry entry : entries)
-			{
-				final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(place, entry);
-				if (index % 5 == 0)
-				{
-					widget.getElement().getStyle().setProperty("clear", "left");
-				}
-				index++;
+				Collections.sort(entries, shelfControl);
 
-				if (entry.getCenter() != null)
+				int index = 0;
+				int markerIndex = 1;
+				for (final PlaceBookEntry entry : entries)
 				{
-					final String geometry = entry.getCenter();
-					if (geometry.startsWith(MapItem.POINT_PREFIX))
+					final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(shelfControl.place, entry);
+					if (index % 5 == 0)
 					{
-						try
+						widget.getElement().getStyle().setProperty("clear", "left");
+					}
+					index++;
+
+					if (entry.getCenter() != null)
+					{
+						final String geometry = entry.getCenter();
+						if (geometry.startsWith(MapItem.POINT_PREFIX) && map != null)
 						{
-							final LonLat lonlat = LonLat
-									.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
-																			geometry.length() - 1)).cloneLonLat()
-									.transform(map.getDisplayProjection(), map.getProjection());
-							final ImageResource markerImage = getMarker(markerIndex);
-							markerIndex++;
-							final Marker marker = Marker.create(markerImage, lonlat);
-							widget.setMarker(marker, markerImage);
-							markerLayer.addMarker(marker);
-						}
-						catch(Exception e)
-						{
-							GWT.log(e.getMessage());
+							try
+							{
+								final LonLat lonlat = LonLat
+										.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
+																				geometry.length() - 1)).cloneLonLat()
+										.transform(map.getDisplayProjection(), map.getProjection());
+								final ImageResource markerImage = getMarker(markerIndex);
+								markerIndex++;
+								final Marker marker = Marker.create(markerImage, lonlat);
+								widget.setMarker(marker, markerImage);
+								markerLayer.addMarker(marker);
+							}
+							catch (final Exception e)
+							{
+								GWT.log(e.getMessage());
+							}
 						}
 					}
+
+					widget.addMouseOverHandler(new MouseOverHandler()
+					{
+						@Override
+						public void onMouseOver(final MouseOverEvent event)
+						{
+							highlight(entry);
+						}
+					});
+					widget.addMouseOutHandler(new MouseOutHandler()
+					{
+						@Override
+						public void onMouseOut(final MouseOutEvent event)
+						{
+							highlight(null);
+						}
+					});
+
+					widgets.add(widget);
+					placebooks.add(widget);
 				}
 
-				widget.addMouseOverHandler(new MouseOverHandler()
-				{
-					@Override
-					public void onMouseOver(final MouseOverEvent event)
-					{
-						highlight(entry);
-					}
-				});
-				widget.addMouseOutHandler(new MouseOutHandler()
-				{
-					@Override
-					public void onMouseOut(final MouseOutEvent event)
-					{
-						highlight(null);
-					}
-				});
-
-				widgets.add(widget);
-				placebooks.add(widget);
+				setMapVisible(mapVisible);
+				recenter();
 			}
-		}
-
-		setMapVisible(mapVisible);
-		recenter();
+		});
 	}
 
 	public void showProgress(final String string)

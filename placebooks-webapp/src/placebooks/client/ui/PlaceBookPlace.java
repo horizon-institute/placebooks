@@ -1,6 +1,5 @@
 package placebooks.client.ui;
 
-import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookToolbar;
 
@@ -14,18 +13,12 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	@UiField
 	PlaceBookToolbar toolbar;
 
-	private Shelf shelf;
+	private User user;
 	private PlaceController placeController;
 
-	protected PlaceBookPlace(final Shelf shelf)
+	protected PlaceBookPlace(final User user)
 	{
-		this.shelf = shelf;
-	}
-
-	public User getCurrentUser()
-	{
-		if (shelf != null) { return shelf.getUser(); }
-		return null;
+		this.user = user;
 	}
 
 	public PlaceController getPlaceController()
@@ -33,9 +26,9 @@ public abstract class PlaceBookPlace extends Place implements Activity
 		return placeController;
 	}
 
-	public Shelf getShelf()
+	public User getUser()
 	{
-		return shelf;
+		return user;
 	}
 
 	@Override
@@ -59,20 +52,9 @@ public abstract class PlaceBookPlace extends Place implements Activity
 		this.placeController = controller;
 	}
 
-	public final void setShelf(final Shelf shelf)
+	public void setUser(final User user)
 	{
-		if (this.shelf != shelf)
-		{
-			this.shelf = shelf;
-			shelfUpdated();
-			if (toolbar != null)
-			{
-				toolbar.refresh();
-			}
-		}
-	}
-
-	protected void shelfUpdated()
-	{
+		this.user = user;
+		toolbar.setPlace(this);
 	}
 }

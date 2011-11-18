@@ -1,10 +1,14 @@
 package placebooks.client.ui;
 
-import placebooks.client.model.Shelf;
+import placebooks.client.PlaceBookService;
+import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookShelf;
+import placebooks.client.ui.elements.PlaceBookShelf.ShelfControl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -45,9 +49,9 @@ public class PlaceBookLibrary extends PlaceBookPlace
 		super(null);
 	}
 
-	public PlaceBookLibrary(final Shelf shelf)
+	public PlaceBookLibrary(final User user)
 	{
-		super(shelf);
+		super(user);
 	}
 
 	@Override
@@ -61,12 +65,26 @@ public class PlaceBookLibrary extends PlaceBookPlace
 
 		panel.setWidget(library);
 		
-		shelfUpdated();		
-	}
-
-	@Override
-	protected void shelfUpdated()
-	{
-		shelf.setShelf(this, getShelf(), true);
+		shelf.setShelfControl(new ShelfControl(this)
+		{
+			@Override
+			public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
+			{
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public boolean include(PlaceBookEntry entry)
+			{
+				return true;
+			}
+			
+			@Override
+			public void getShelf(RequestCallback callback)
+			{
+				PlaceBookService.getShelf(callback);			
+			}
+		});
 	}
 }

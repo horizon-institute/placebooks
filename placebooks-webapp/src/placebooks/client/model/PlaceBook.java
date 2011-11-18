@@ -42,7 +42,7 @@ public class PlaceBook extends JavaScriptObject
 			}
 		};
 	}
-
+	
 	private final native JsArray<PlaceBookItem> getItemsInternal()
 	/*-{
 		if(!('items' in this))

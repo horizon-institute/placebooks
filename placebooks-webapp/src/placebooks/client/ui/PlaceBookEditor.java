@@ -5,7 +5,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
@@ -53,7 +53,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		public PlaceBookEditor getPlace(final String token)
 		{
-			return new PlaceBookEditor(token, null);
+			return new PlaceBookEditor(null, token);
 		}
 
 		@Override
@@ -110,16 +110,16 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookKey;
 
-	public PlaceBookEditor(final PlaceBook placebook, final Shelf shelf)
+	public PlaceBookEditor(final User user, final PlaceBook placebook)
 	{
-		super(shelf);
+		super(user);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookEditor(final String placebookKey, final Shelf shelf)
+	public PlaceBookEditor(final User user, final String placebookKey)
 	{
-		super(shelf);
+		super(user);
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}
@@ -368,7 +368,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("preview")
 	void preview(final ClickEvent event)
 	{
-		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));
+		getPlaceController().goTo(new PlaceBookPreview(getUser(), getCanvas().getPlaceBook()));
 	}
 
 	@UiHandler("publish")
@@ -424,7 +424,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 			saveItem.setState(SaveState.saved);
 
-			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
+			getPlaceController().goTo(new PlaceBookEditor(getUser(), placebook));
 		}
 		else
 		{

@@ -1,9 +1,10 @@
 package placebooks.client.ui;
 
-import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.model.Shelf;
+import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookShelf;
+import placebooks.client.ui.elements.PlaceBookShelf.ShelfControl;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
 
@@ -16,8 +17,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.geolocation.client.Geolocation;
 import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.PositionError;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.resources.client.ImageResource;
@@ -38,7 +38,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 		@Override
 		public PlaceBookSearch getPlace(final String token)
 		{
-			return new PlaceBookSearch(token);
+			return new PlaceBookSearch(null, token);
 		}
 
 		@Override
@@ -65,15 +65,9 @@ public class PlaceBookSearch extends PlaceBookPlace
 		
 	private String searchString;
 
-	public PlaceBookSearch(final String search)
+	public PlaceBookSearch(final User user, final String search)
 	{
-		super(null);
-		this.searchString = search;
-	}
-
-	public PlaceBookSearch(final String search, final Shelf shelf)
-	{
-		super(shelf);
+		super(user);
 		this.searchString = search;
 	}
 
@@ -137,7 +131,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 	@UiHandler("nearbyLink")
 	void handleSearchNearby(final ClickEvent event)
 	{
-		getPlaceController().goTo(new PlaceBookSearch("location:current"));
+		getPlaceController().goTo(new PlaceBookSearch(getUser(), "location:current"));
 	}
 
 	@UiHandler("searchButton")
@@ -168,15 +162,33 @@ public class PlaceBookSearch extends PlaceBookPlace
 				@Override
 				public void onSuccess(Position result)
 				{
-					String geometry = MapItem.POINT_PREFIX + result.getCoordinates().getLatitude() + " " + result.getCoordinates().getLongitude() + ")";
+					final String geometry = MapItem.POINT_PREFIX + result.getCoordinates().getLatitude() + " " + result.getCoordinates().getLongitude() + ")";
 					
-					PlaceBookService.searchLocation(geometry, new AbstractCallback()
+					shelf.setShelfControl(new ShelfControl(PlaceBookSearch.this)
 					{
 						@Override
-						public void success(final Request request, final Response response)
+						public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
 						{
-							shelf.setShelf(PlaceBookSearch.this, Shelf.parse(response.getText()), true);
-							shelf.setMapVisible(true);							
+							if (o2.getScore() != o1.getScore())
+							{
+								return o2.getScore() - o1.getScore();
+							}
+							else
+							{
+								return o1.getTitle().compareTo(o2.getTitle());
+							}
+						}
+						
+						@Override
+						public boolean include(PlaceBookEntry entry)
+						{
+							return true;
+						}
+						
+						@Override
+						public void getShelf(RequestCallback callback)
+						{
+							PlaceBookService.searchLocation(geometry, callback);
 						}
 					});
 				}
@@ -192,12 +204,36 @@ public class PlaceBookSearch extends PlaceBookPlace
 		else
 		{
 			nearbyLink.setVisible(true);
-			PlaceBookService.search(searchString, new AbstractCallback()
+			shelf.setShelfControl(new ShelfControl(this)
 			{
+				
 				@Override
-				public void success(final Request request, final Response response)
+				public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
 				{
-					shelf.setShelf(PlaceBookSearch.this, Shelf.parse(response.getText()), searchString.equals(""));
+					if (o2.getScore() != o1.getScore())
+					{
+						return o2.getScore() - o1.getScore();
+					}
+					else
+					{
+						return o1.getTitle().compareTo(o2.getTitle());
+					}
+				}
+				
+				@Override
+				public boolean include(PlaceBookEntry entry)
+				{
+					if(searchString.equals(""))
+					{
+						return true;
+					}
+					return entry.getScore() > 0;
+				}
+				
+				@Override
+				public void getShelf(RequestCallback callback)
+				{
+					PlaceBookService.search(searchString, callback);	
 				}
 			});
 		}

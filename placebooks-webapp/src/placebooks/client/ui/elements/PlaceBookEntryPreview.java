@@ -46,7 +46,6 @@ public class PlaceBookEntryPreview extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		container.getElement().getStyle().setBackgroundImage("url(" + Resources.IMAGES.placebook_open().getSafeUri().asString() + ")");
-		GWT.log(Resources.IMAGES.placebook_open().getSafeUri().asString());
 		
 		title.setText(entry.getTitle());
 		description.setText(entry.getDescription());
@@ -59,7 +58,7 @@ public class PlaceBookEntryPreview extends Composite
 			@Override
 			public void onClick(ClickEvent event)
 			{
-				place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), entry.getKey()));
+				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
 			}
 		}, ClickEvent.getType());
 		
