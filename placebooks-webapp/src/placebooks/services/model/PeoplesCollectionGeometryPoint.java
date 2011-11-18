@@ -5,9 +5,6 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.mortbay.log.Log;
-
-import placebooks.services.PeoplesCollectionService;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;

@@ -226,7 +226,7 @@ public class PeoplesCollectionService extends Service
 
 	@Override
 	protected void sync(EntityManager manager, User user, LoginDetails details) {
-		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUserID(), details.getPassword());
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUsername(), details.getPassword());
 		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
 		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
 		
