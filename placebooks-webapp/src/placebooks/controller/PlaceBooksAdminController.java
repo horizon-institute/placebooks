@@ -203,20 +203,6 @@ public class PlaceBooksAdminController
 			user.add(loginDetails);
 			manager.getTransaction().commit();
 
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final EntityManager manager = EMFSingleton.getEntityManager();
-					Service serviceImpl = ServiceRegistry.getService(service);
-					if(serviceImpl != null)
-					{
-						serviceImpl.sync(manager, user, true);
-					}
-				}
-			}).start();
-			
 			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
 																PlaceBook.class);
 			q.setParameter("owner", user);
@@ -248,6 +234,31 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
+		
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final EntityManager manager = EMFSingleton.getEntityManager();
+				Service serviceImpl = ServiceRegistry.getService(service);
+				try
+				{
+				if(serviceImpl != null)
+				{
+					serviceImpl.sync(manager, user, true);
+				}
+				}
+				catch(Exception e)
+				{
+					log.warn(e.getMessage(), e);
+				}
+				finally
+				{
+					manager.close();
+				}
+			}
+		}).start();
 	}
 
 	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
@@ -291,10 +302,19 @@ public class PlaceBooksAdminController
 			final User user = UserManager.getCurrentUser(entityManager);
 			if (user == null)
 			{
-
+				try
+				{
+					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					jsonMapper.writeValue(res.getWriter(), req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
+					res.flushBuffer();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
 			}
 			else
-			{
+			{				
 				try
 				{
 					jsonMapper.writeValue(res.getWriter(), user);
@@ -306,13 +326,19 @@ public class PlaceBooksAdminController
 					log.error(e.getMessage(), e);
 				}
 			}
+			
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					final EntityManager manager = EMFSingleton.getEntityManager();
+					ServiceRegistry.updateServices(manager, user);
+				}
+			}).start();
 		}
 		finally
 		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
 			entityManager.close();
 		}
 	}

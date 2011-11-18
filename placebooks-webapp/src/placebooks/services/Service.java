@@ -58,14 +58,18 @@ public abstract class Service
 			}		
 		}
 
-		sync(manager, user, details);
-		
-		manager.getTransaction().begin();
-		details.setSyncInProgress(false);
-		manager.merge(details);
-		manager.getTransaction().commit();
-		log.info("Synced " + getName() +": " + details.getLastSync());			
-		manager.close();
+		try
+		{
+			sync(manager, user, details);
+		}
+		finally
+		{
+			manager.getTransaction().begin();
+			details.setSyncInProgress(false);
+			manager.merge(details);
+			manager.getTransaction().commit();
+			log.info("Synced " + getName() +": " + details.getLastSync());			
+		}
 	}
 	
 	public abstract String getName();

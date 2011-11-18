@@ -270,15 +270,15 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	
 	private void updateUser()
 	{
-		PlaceBookService.getShelf(new AbstractCallback()
+		PlaceBookService.getCurrentUser(new AbstractCallback()
 		{
 			@Override
 			public void success(Request request, Response response)
 			{
-				Shelf shelf = Shelf.parse(response.getText());
-				if(shelf != null)
+				User user = PlaceBookService.parse(User.class, response.getText());
+				if(user != null)
 				{
-					setUser(shelf.getUser());
+					setUser(user);
 				}
 			}
 		});
