@@ -30,19 +30,13 @@ public abstract class Service
 			log.error("Service for " + this.getName() + " import failed, login details null");
 			return;
 		}
-		if(details.isSyncInProgress())
+		
+		if(!force && details.isSyncInProgress())
 		{
 			log.info(details.getService() +  " sync already in progress");
 			return;			
 		}
-		else
-		{
-			log.info(details.getService() +  " sync starting");
-			manager.getTransaction().begin();
-			details.setSyncInProgress(true);
-			manager.merge(details);
-			manager.getTransaction().commit();			
-		}
+		
 		if(!force && details.getLastSync() != null)
 		{
 			log.info("Last sync of " + getName()  + ": " + details.getLastSync());
@@ -58,14 +52,25 @@ public abstract class Service
 			}		
 		}
 
-		sync(manager, user, details);
-		
+		log.info(details.getService() +  " sync starting");
 		manager.getTransaction().begin();
-		details.setSyncInProgress(false);
+		details.setSyncInProgress(true);
+		details.setLastSync();
 		manager.merge(details);
-		manager.getTransaction().commit();
-		log.info("Synced " + getName() +": " + details.getLastSync());			
-		manager.close();
+		manager.getTransaction().commit();			
+
+		try
+		{
+			sync(manager, user, details);
+		}
+		finally
+		{
+			manager.getTransaction().begin();
+			details.setSyncInProgress(false);
+			manager.merge(details);
+			manager.getTransaction().commit();
+			log.info("Synced " + getName() +": " + details.getLastSync());			
+		}
 	}
 	
 	public abstract String getName();

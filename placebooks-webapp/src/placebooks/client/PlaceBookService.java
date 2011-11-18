@@ -3,6 +3,7 @@ package placebooks.client;
 import placebooks.client.model.PlaceBook;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.URL;
@@ -10,6 +11,8 @@ import com.google.gwt.json.client.JSONObject;
 
 public class PlaceBookService
 {
+	public static final native  <T extends JavaScriptObject> T parse(Class<T> clazz, String json) /*-{ return eval('(' + json + ')'); }-*/;
+	
 	public static void deletePlaceBook(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
@@ -48,6 +51,11 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
 	}
 
+	public static void getCurrentUser(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/currentUser", callback);
+	}
+	
 	public static void getShelf(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
