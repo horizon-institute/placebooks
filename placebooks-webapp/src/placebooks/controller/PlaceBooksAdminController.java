@@ -959,10 +959,10 @@ public class PlaceBooksAdminController
 		try
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
-			log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
 
 			if (i != null)
 			{
+				log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
 				if(i.getTimestamp() != null)
 				{
 					try
@@ -1023,6 +1023,10 @@ public class PlaceBooksAdminController
 						res.setStatus(404);
 					}
 				}
+			}
+			else
+			{
+				log.info("Image Item " + key + " not found in db");
 			}
 		}
 		catch (final Throwable e)
