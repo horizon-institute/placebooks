@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManager;
@@ -17,20 +18,19 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import placebooks.controller.CommunicationHelper;
+import placebooks.controller.ItemFactory;
+import placebooks.model.GPSTraceItem;
+import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBookItem;
+import placebooks.model.TextItem;
 import placebooks.model.User;
+import placebooks.services.model.PeoplesCollectionItemFeature;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
+import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
-
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * @author pszmp
@@ -155,7 +155,6 @@ public class PeoplesCollectionService extends Service
 		PeoplesCollectionTrailsResponse returnResult = null;
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		mapper.enableDefaultTyping();
-		mapper.registerSubtypes(Point.class, MultiPoint.class, LineString.class, MultiLineString.class, Polygon.class, MultiPolygon.class, GeometryCollection.class);
 		
 		try
 		{
@@ -213,8 +212,9 @@ public class PeoplesCollectionService extends Service
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		try
 		{
+			//log.debug(response);
 			result = mapper.readValue(response.toString(), PeoplesCollectionItemResponse.class);
-			log.debug("PeoplesCollection response decoded: Total objects" + result.GetTotalObjects());
+			log.debug("PeoplesCollection response decoded: Total objects: " + result.GetTotalObjects());
 		}
 		catch(Exception ex)
 		{
@@ -226,7 +226,71 @@ public class PeoplesCollectionService extends Service
 
 	@Override
 	protected void sync(EntityManager manager, User user, LoginDetails details) {
-		// TODO Auto-generated method stub
+		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUsername(), details.getPassword());
+		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
+		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
 		
+		ArrayList<String> itemsSeen = new ArrayList<String>();
+		
+		ArrayList<PeoplesCollectionTrailListItem> allTrailListItems = new ArrayList<PeoplesCollectionTrailListItem>();
+		
+		allTrailListItems.addAll( trailsResponse.GetMyTrails());
+		allTrailListItems.addAll( trailsResponse.GetMyFavouriteTrails());
+		
+		for(PeoplesCollectionTrailListItem trailListItem : allTrailListItems)
+		{
+			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
+			GPSTraceItem traceItem = new GPSTraceItem(user);
+			try
+			{
+				ItemFactory.toGPSTraceItem(user, trail, traceItem);
+				itemsSeen.add(traceItem.getExternalID());
+				log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
+				traceItem.saveUpdatedItem();
+				
+				for(int trailItemId : trail.GetProperties().GetItems())
+				{
+					PeoplesCollectionItemResponse trailItem = Item(trailItemId);
+					PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
+					for(PeoplesCollectionItemFeature feature : features)
+					{
+						String featureType = feature.GetProperties().GetIcontype();
+						PlaceBookItem addedItem = null;
+						if(featureType.equals("image"))
+						{
+							ImageItem newItem = new ImageItem();
+							ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
+							addedItem = newItem;
+						}
+						if(featureType.equals("story"))
+						{
+							TextItem newItem = new TextItem();
+							ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
+							addedItem = newItem;
+						}
+
+						if(addedItem==null)
+						{
+								log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
+						}
+						else
+						{
+							log.debug("Saved item: " + addedItem.getExternalID());
+							itemsSeen.add(addedItem.getExternalID());
+						}
+					}
+				}
+				
+			}
+			catch (Exception e)
+			{
+				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
+			}
+		}
+		
+		int itemsDeleted = cleanupItems(manager, itemsSeen, user);
+		log.info("Finished PeoplesCollection import, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");			
 	}
 }

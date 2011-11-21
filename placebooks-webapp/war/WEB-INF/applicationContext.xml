@@ -9,9 +9,9 @@
 	   xmlns:security="http://www.springframework.org/schema/security" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security
-	   http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
+	   http://www.springframework.org/schema/security/spring-security.xsd">
 	   
 	<bean id="userDetailsService" 
 		  class="placebooks.controller.PlaceBooksUserDetailsService" />
@@ -29,7 +29,7 @@
 							    access="isAuthenticated()" />
 		<security:intercept-url pattern="/editor.html" 
 							    access="isAuthenticated()" />		
-        <security:intercept-url pattern="/**" access="permitAll" />	
+        <security:intercept-url pattern="/**" access="permitAll" />
         <security:remember-me key="placebooks" />
 	</security:http>
 

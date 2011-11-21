@@ -203,20 +203,6 @@ public class PlaceBooksAdminController
 			user.add(loginDetails);
 			manager.getTransaction().commit();
 
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final EntityManager manager = EMFSingleton.getEntityManager();
-					Service serviceImpl = ServiceRegistry.getService(service);
-					if(serviceImpl != null)
-					{
-						serviceImpl.sync(manager, user, true);
-					}
-				}
-			}).start();
-			
 			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
 																PlaceBook.class);
 			q.setParameter("owner", user);
@@ -248,6 +234,31 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
+		
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final EntityManager manager = EMFSingleton.getEntityManager();
+				Service serviceImpl = ServiceRegistry.getService(service);
+				try
+				{
+				if(serviceImpl != null)
+				{
+					serviceImpl.sync(manager, user, true);
+				}
+				}
+				catch(Exception e)
+				{
+					log.warn(e.getMessage(), e);
+				}
+				finally
+				{
+					manager.close();
+				}
+			}
+		}).start();
 	}
 
 	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
@@ -291,10 +302,19 @@ public class PlaceBooksAdminController
 			final User user = UserManager.getCurrentUser(entityManager);
 			if (user == null)
 			{
-
+				try
+				{
+					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					jsonMapper.writeValue(res.getWriter(), req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
+					res.flushBuffer();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
 			}
 			else
-			{
+			{				
 				try
 				{
 					jsonMapper.writeValue(res.getWriter(), user);
@@ -306,13 +326,19 @@ public class PlaceBooksAdminController
 					log.error(e.getMessage(), e);
 				}
 			}
+			
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					final EntityManager manager = EMFSingleton.getEntityManager();
+					ServiceRegistry.updateServices(manager, user);
+				}
+			}).start();
 		}
 		finally
 		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
 			entityManager.close();
 		}
 	}
@@ -924,7 +950,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
-	public ModelAndView serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
+	public void serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -933,12 +959,29 @@ public class PlaceBooksAdminController
 		try
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
-			log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
 
 			if (i != null)
 			{
-				em.getTransaction().begin();
-				em.getTransaction().commit();
+				log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
+				if(i.getTimestamp() != null)
+				{
+					try
+					{
+						long lastModified = req.getDateHeader("If-Modified-Since"); 
+						if(lastModified >= i.getTimestamp().getTime())
+						{
+							res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+							return;
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage(), e);
+					}
+					
+					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
+					
+				}
 
 				if (i.getPath() == null)
 				{
@@ -966,11 +1009,13 @@ public class PlaceBooksAdminController
 						{
 							final ImageReader read = readers.next();
 							fmt = read.getFormatName();
+							read.dispose();
 						}
 
 						final OutputStream out = res.getOutputStream();
 						ImageIO.write(ImageIO.read(image), fmt, out);
 						out.close();
+						iis.close();
 					}
 					catch (final IOException e)
 					{
@@ -978,6 +1023,10 @@ public class PlaceBooksAdminController
 						res.setStatus(404);
 					}
 				}
+			}
+			else
+			{
+				log.info("Image Item " + key + " not found in db");
 			}
 		}
 		catch (final Throwable e)
@@ -988,8 +1037,6 @@ public class PlaceBooksAdminController
 		{
 			em.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/serve/{type}item/{key}", method = RequestMethod.GET)

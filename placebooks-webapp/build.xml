@@ -76,8 +76,8 @@
 		<classpath refid="classpath" />
 	</taskdef>
 	
-	<target name="git.revision" description="Store git revision in ${repository.version}">
-	    <exec executable="${git.file}" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+ 	<target name="git.revision" description="Store git revision in ${repository.version}">
+ 	    <exec executable="${git.file}" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
 	        <arg value="rev-parse"/>
 	        <arg value="HEAD"/>	        
 	    </exec>
@@ -136,7 +136,7 @@
 		<condition property="proxy.enabled">
 		 	<and>
 				<isset property="proxy.host"/>
-				<isreachable host="${proxy.host}"/>
+				<!-- <isreachable host="${proxy.host}"/>-->
 		  	</and>
 		</condition>
 	</target>

@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import placebooks.client.AbstractCallback;
+import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.ServerInfo;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.images.markers.Markers;
@@ -28,6 +31,9 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,6 +46,20 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookShelf extends Composite
 {
+	public static abstract class ShelfControl implements Comparator<PlaceBookEntry>
+	{
+		private final PlaceBookPlace place;
+
+		public ShelfControl(final PlaceBookPlace place)
+		{
+			this.place = place;
+		}
+
+		public abstract void getShelf(final RequestCallback callback);
+
+		public abstract boolean include(PlaceBookEntry entry);
+	}
+
 	interface PlaceBookShelfUiBinder extends UiBinder<Widget, PlaceBookShelf>
 	{
 	}
@@ -54,7 +74,7 @@ public class PlaceBookShelf extends Composite
 
 	@UiField
 	Label progressLabel;
-	
+
 	@UiField
 	Panel mapPanel;
 
@@ -63,41 +83,38 @@ public class PlaceBookShelf extends Composite
 	private final Collection<PlaceBookEntryWidget> widgets = new ArrayList<PlaceBookEntryWidget>();
 
 	private MarkerLayer markerLayer;
-	
+
 	@UiField
 	Label mapToggleText;
-	
+
 	@UiField
 	Image mapToggleImage;
-	
+
 	@UiField
 	Panel mapToggle;
-	
+
 	boolean mapVisible = false;
 
 	public PlaceBookShelf()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		map = Map.create(mapPanel.getElement(), true);
-		map.addLayer(OSLayer.create("glayer"));
-		markerLayer = MarkerLayer.create("markerLayer");
-		map.addLayer(markerLayer);
-		mapPanel.setVisible(false);
-		mapToggle.setVisible(false);
+		setMapVisible(false);
+
+		createMap();
 
 		addDomHandler(new LoadHandler()
 		{
 
 			@Override
-			public void onLoad(LoadEvent event)
+			public void onLoad(final LoadEvent event)
 			{
 				recenter();
 			}
 		}, LoadEvent.getType());
 	}
 
-	public ImageResource getMarker(int index)
+	public ImageResource getMarker(final int index)
 	{
 		switch (index)
 		{
@@ -158,101 +175,191 @@ public class PlaceBookShelf extends Composite
 		}
 	}
 
-	public void setShelf(final PlaceBookPlace place, final Shelf shelf, final boolean includeZero)
+	public void setMapVisible(final boolean visible)
 	{
-		if(shelf == null)
+		mapVisible = visible;
+		mapPanel.setVisible(mapVisible);
+		for (final PlaceBookEntryWidget widget : widgets)
 		{
-			return;
+			widget.setMarkerVisible(mapVisible);
 		}
-		progress.setVisible(false);
-		mapPanel.setVisible(true);
-		mapToggle.setVisible(true);
+
+		if (mapVisible)
+		{
+			mapToggleText.setText("Hide Map");
+			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
+			placebooks.getElement().getStyle().clearRight();
+			placebooks.getElement().getStyle().clearTop();
+			placebooks.getElement().getStyle().clearPaddingLeft();
+			placebooks.getElement().getStyle().clearPaddingRight();
+			placebooks.setWidth("190px");
+
+			recenter();
+		}
+		else
+		{
+			mapToggleText.setText("Show Map");
+			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
+			placebooks.getElement().getStyle().setRight(0, Unit.PX);
+			placebooks.getElement().getStyle().setTop(20, Unit.PX);
+			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
+			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);
+			placebooks.getElement().getStyle().clearWidth();
+		}
+	}
+
+	public void setShelfControl(final ShelfControl shelfControl)
+	{
+		shelfControl.getShelf(new AbstractCallback()
+		{
+			@Override
+			public void success(final Request request, final Response response)
+			{
+				final Shelf shelf = Shelf.parse(response.getText());
+				if (shelf == null) { return; }
+				progress.setVisible(false);
+				mapToggle.setVisible(true);
+				placebooks.clear();
+				widgets.clear();
+
+				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+				for (final PlaceBookEntry entry : shelf.getEntries())
+				{
+					if (shelfControl.include(entry))
+					{
+						entries.add(entry);
+					}
+				}
+
+				Collections.sort(entries, shelfControl);
+
+				int index = 0;
+				int markerIndex = 1;
+				for (final PlaceBookEntry entry : entries)
+				{
+					final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(shelfControl.place, entry);
+					if (index % 5 == 0)
+					{
+						widget.getElement().getStyle().setProperty("clear", "left");
+					}
+					index++;
+
+					if (entry.getCenter() != null)
+					{
+						final String geometry = entry.getCenter();
+						if (geometry.startsWith(MapItem.POINT_PREFIX) && map != null)
+						{
+							try
+							{
+								final LonLat lonlat = LonLat
+										.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
+																				geometry.length() - 1)).cloneLonLat()
+										.transform(map.getDisplayProjection(), map.getProjection());
+								final ImageResource markerImage = getMarker(markerIndex);
+								markerIndex++;
+								final Marker marker = Marker.create(markerImage, lonlat);
+								widget.setMarker(marker, markerImage);
+								markerLayer.addMarker(marker);
+							}
+							catch (final Exception e)
+							{
+								GWT.log(e.getMessage());
+							}
+						}
+					}
+
+					widget.addMouseOverHandler(new MouseOverHandler()
+					{
+						@Override
+						public void onMouseOver(final MouseOverEvent event)
+						{
+							highlight(entry);
+						}
+					});
+					widget.addMouseOutHandler(new MouseOutHandler()
+					{
+						@Override
+						public void onMouseOut(final MouseOutEvent event)
+						{
+							highlight(null);
+						}
+					});
+
+					widgets.add(widget);
+					placebooks.add(widget);
+				}
+
+				setMapVisible(mapVisible);
+				recenter();
+			}
+		});
+	}
+
+	public void showProgress(final String string)
+	{
 		placebooks.clear();
 		widgets.clear();
-		if (shelf != null)
+		if (markerLayer != null)
 		{
-			final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-			for (final PlaceBookEntry entry : shelf.getEntries())
-			{
-				if (entry.getScore() > 0 || includeZero)
-				{
-					entries.add(entry);
-				}
-			}
+			markerLayer.clearMarkers();
+		}
 
-			Collections.sort(entries, new Comparator<PlaceBookEntry>()
+		progress.setVisible(true);
+		progressLabel.setText(string);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);
+
+	}
+
+	@UiHandler("mapToggle")
+	void toggleMapVisible(final ClickEvent event)
+	{
+		setMapVisible(!mapVisible);
+	}
+
+	private void createMap()
+	{
+		if (MapItem.serverInfo != null)
+		{
+			createMap(MapItem.serverInfo);
+		}
+		else
+		{
+			PlaceBookService.getServerInfo(new AbstractCallback()
 			{
 				@Override
-				public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
+				public void success(final Request request, final Response response)
 				{
-					if (o2.getScore() != o1.getScore())
+					try
 					{
-						return o2.getScore() - o1.getScore();
+						MapItem.serverInfo = ServerInfo.parse(response.getText());
+						if (MapItem.serverInfo != null)
+						{
+							createMap(MapItem.serverInfo);
+						}
 					}
-					else
+					catch (final Exception e)
 					{
-						return o1.getTitle().compareTo(o2.getTitle());
+
 					}
 				}
 			});
-
-			int index = 0;
-			int markerIndex = 1;
-			for (final PlaceBookEntry entry : entries)
-			{
-				final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(place, entry);
-				if (index % 5 == 0)
-				{
-					widget.getElement().getStyle().setProperty("clear", "left");
-				}
-				index++;
-
-				if (entry.getCenter() != null)
-				{
-					String geometry = entry.getCenter();
-					if (geometry.startsWith(MapItem.POINT_PREFIX))
-					{
-						final LonLat lonlat = LonLat
-								.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
-																		geometry.length() - 1)).cloneLonLat()
-								.transform(map.getDisplayProjection(), map.getProjection());
-						final ImageResource markerImage = getMarker(markerIndex);
-						markerIndex++;
-						final Marker marker = Marker.create(markerImage, lonlat);
-						widget.setMarker(marker, markerImage);
-						markerLayer.addMarker(marker);
-					}
-				}
-
-				widget.addMouseOverHandler(new MouseOverHandler()
-				{
-					@Override
-					public void onMouseOver(MouseOverEvent event)
-					{
-						highlight(entry);
-					}
-				});
-				widget.addMouseOutHandler(new MouseOutHandler()
-				{
-					@Override
-					public void onMouseOut(MouseOutEvent event)
-					{
-						highlight(null);
-					}
-				});
-
-				widgets.add(widget);
-				placebooks.add(widget);
-			}
 		}
-
-		setMapVisible(mapVisible);
-		recenter();
 	}
 
-	private void highlight(PlaceBookEntry highlight)
+	private void createMap(final ServerInfo serverInfo)
 	{
-		for (PlaceBookEntryWidget widget : widgets)
+		map = Map.create(mapPanel.getElement(), true);
+		map.addLayer(OSLayer.create("glayer", serverInfo));
+		markerLayer = MarkerLayer.create("markerLayer");
+		map.addLayer(markerLayer);
+		mapPanel.setVisible(false);
+		mapToggle.setVisible(false);
+	}
+
+	private void highlight(final PlaceBookEntry highlight)
+	{
+		for (final PlaceBookEntryWidget widget : widgets)
 		{
 			if (highlight == null || widget.getEntry().getKey().equals(highlight.getKey()))
 			{
@@ -265,7 +372,7 @@ public class PlaceBookShelf extends Composite
 			{
 				if (widget.getMarker() != null)
 				{
-					widget.getMarker().getIcon().getImageDiv().getStyle().setOpacity(0.5);
+					widget.getMarker().getIcon().getImageDiv().getStyle().setOpacity(0.3);
 				}
 			}
 		}
@@ -289,57 +396,5 @@ public class PlaceBookShelf extends Composite
 		{
 			GWT.log(e.getMessage(), e);
 		}
-	}
-	
-	public void setMapVisible(boolean visible)
-	{
-		mapVisible = visible;
-		mapPanel.setVisible(mapVisible);
-		for (PlaceBookEntryWidget widget : widgets)
-		{
-			widget.setMarkerVisible(mapVisible);
-		}
-		
-		if(mapVisible)
-		{
-			mapToggleText.setText("Hide Map");
-			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
-			placebooks.getElement().getStyle().clearRight();
-			placebooks.getElement().getStyle().clearTop();
-			placebooks.getElement().getStyle().clearPaddingLeft();
-			placebooks.getElement().getStyle().clearPaddingRight();					
-			placebooks.setWidth("190px");
-			
-			recenter();
-		}
-		else
-		{
-			mapToggleText.setText("Show Map");
-			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
-			placebooks.getElement().getStyle().setRight(0, Unit.PX);
-			placebooks.getElement().getStyle().setTop(20, Unit.PX);
-			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
-			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);			
-			placebooks.getElement().getStyle().clearWidth();
-		}		
-	}
-
-	@UiHandler("mapToggle")
-	void toggleMapVisible(ClickEvent event)
-	{
-		setMapVisible(!mapVisible);
-	}
-
-	public void showProgress(String string)
-	{
-		placebooks.clear();
-		widgets.clear();
-		markerLayer.clearMarkers();
-
-		progress.setVisible(true);
-		progressLabel.setText(string);
-		mapPanel.setVisible(false);
-		mapToggle.setVisible(false);
-		
 	}
 }

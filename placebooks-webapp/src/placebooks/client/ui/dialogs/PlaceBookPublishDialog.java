@@ -23,6 +23,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,7 +43,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	TextArea description;
 
 	@UiField
-	Image leftButton;
+	Panel leftButton;
 
 	@UiField
 	TextBox location;
@@ -54,7 +55,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	Button publish;
 
 	@UiField
-	Image rightButton;
+	Panel rightButton;
 
 	@UiField
 	TextBox title;
@@ -132,7 +133,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			public void success(final Request request, final Response response)
 			{
 				final PlaceBook placebook = PlaceBook.parse(response.getText());
-				place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), placebook));
+				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), placebook));
 			}
 		});
 	}

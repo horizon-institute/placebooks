@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -207,6 +208,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public void setPath(final String filepath)
 	{
+		log.debug("Setting path for item " + this.getExternalID() + " as " + filepath);
 		this.path = filepath;
 	}
 
@@ -290,5 +292,6 @@ public abstract class MediaItem extends PlaceBookItem
 
 		log.info("Wrote " + saveName + " file " + filePath.getAbsolutePath());
 		setPath(filePath.getAbsolutePath());
+		setTimestamp(new Date());
 	}
 }

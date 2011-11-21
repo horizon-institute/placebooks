@@ -1,6 +1,6 @@
 package placebooks.client.ui;
 
-import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
@@ -35,9 +35,9 @@ public class PlaceBookAppInstall extends PlaceBookPlace
 
 	private static PlaceBookAppInstallUiBinder uiBinder = GWT.create(PlaceBookAppInstallUiBinder.class);
 
-	public PlaceBookAppInstall(final Shelf shelf)
+	public PlaceBookAppInstall(final User user)
 	{
-		super(shelf);
+		super(user);
 	}
 
 	@Override

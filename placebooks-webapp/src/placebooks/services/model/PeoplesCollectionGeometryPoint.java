@@ -2,6 +2,7 @@ package placebooks.services.model;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
@@ -12,6 +13,8 @@ import com.vividsolutions.jts.io.WKTReader;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionGeometryPoint
 {
+	private static final Logger log = Logger.getLogger(PeoplesCollectionGeometryPoint.class);
+	
 	private String type;
 	private float[] coordinates;
 
@@ -44,7 +47,9 @@ public class PeoplesCollectionGeometryPoint
 	public Geometry GetGeometry() throws IOException {
 		try
 		{
-			return new WKTReader().read(type + " " + coordinates.toString());
+			String wkt = type.toUpperCase() + " ( " + coordinates[0] + " " + coordinates[1] + " )";
+			log.debug("Generated WKT: "+ wkt);
+			return new WKTReader().read(wkt);
 		}
 		catch (ParseException e)
 		{

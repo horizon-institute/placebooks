@@ -106,13 +106,18 @@ public class PeoplesCollectionTrailProperties
 	{
 		return userid;
 	}
+	
+	public int GetTrailId()
+	{
+		return trailid;
+	}
 
 	public String GetTags()
 	{
 		return tags;
 	}
 
-	public String Gettagscym()
+	public String GetTagsCym()
 	{
 		return tagscym;
 	}

@@ -15,8 +15,6 @@ import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
@@ -71,7 +69,10 @@ public class PlaceBookToolbar extends Composite
 			try
 			{
 				final Shelf shelf = Shelf.parse(response.getText());
-				place.setShelf(shelf);
+				if(shelf != null)
+				{
+					place.setUser(shelf.getUser());
+				}
 			}
 			catch (final Exception e)
 			{
@@ -93,12 +94,12 @@ public class PlaceBookToolbar extends Composite
 	
 	public void refresh()
 	{
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getShelf() != null);
-		createItem.setEnabled(place.getShelf() != null);
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
+		createItem.setEnabled(place.getUser() != null);
 		
-		if (place != null && place.getShelf() != null)
+		if (place != null && place.getUser() != null)
 		{
-			setUser(place.getShelf().getUser());
+			setUser(place.getUser());
 		}
 		else
 		{
@@ -111,7 +112,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (homeItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookHome(place.getShelf()));
+			place.getPlaceController().goTo(new PlaceBookHome(place.getUser()));
 		}
 	}
 
@@ -120,7 +121,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (libraryItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookLibrary(place.getShelf()));
+			place.getPlaceController().goTo(new PlaceBookLibrary(place.getUser()));
 		}
 	}
 
@@ -129,14 +130,8 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (createItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookEditor("new", place.getShelf()));
+			place.getPlaceController().goTo(new PlaceBookEditor(place.getUser(), "new"));
 		}
-	}
-
-	@UiHandler(value={"dropMenu", "accountItem"})
-	void hideMenuTimerStart(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
 	}
 
 	@UiHandler("loginLabel")
@@ -163,7 +158,6 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		dropMenu.hideMenu();
 		PlaceBookService.logout(new AbstractCallback()
 		{
 			@Override
@@ -178,13 +172,13 @@ public class PlaceBookToolbar extends Composite
 	{
 		this.place = place;
 		homeItem.setEnabled(!(place instanceof PlaceBookHome));
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getShelf() != null);
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
 
-		createItem.setEnabled(place.getShelf() != null);
+		createItem.setEnabled(place.getUser() != null);
 
-		if (place != null && place.getShelf() != null)
+		if (place != null && place.getUser() != null)
 		{
-			setUser(place.getShelf().getUser());
+			setUser(place.getUser());
 		}
 		else
 		{
@@ -202,7 +196,6 @@ public class PlaceBookToolbar extends Composite
 			loginPanel.setVisible(false);
 			accountItem.setVisible(true);
 			accountItem.setHTML(user.getName());
-
 		}
 		else
 		{
@@ -214,25 +207,18 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("linkedAccounts")
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
-		dropMenu.hideMenu();
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
 		account.setWidth("500px");
 		account.center();
 		account.show();
 	}
 
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("accountItem")
-	void showMenuLogin(final MouseOverEvent event)
+	void showMenuLogin(final ClickEvent event)
 	{
 		if (user != null)
 		{
-			dropMenu.showMenu(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
+			dropMenu.show(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
 		}
 	}
 

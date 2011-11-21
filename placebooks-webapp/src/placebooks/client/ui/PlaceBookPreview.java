@@ -3,7 +3,7 @@ package placebooks.client.ui;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
-import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
@@ -13,8 +13,6 @@ import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -86,16 +84,16 @@ public class PlaceBookPreview extends PlaceBookPlace
 	private PlaceBook placebook;
 	private final String placebookKey;
 
-	public PlaceBookPreview(final Shelf shelf, final PlaceBook placebook)
+	public PlaceBookPreview(final User user, final PlaceBook placebook)
 	{
-		super(shelf);
+		super(user);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookPreview(final Shelf shelf, final String placebookKey)
+	public PlaceBookPreview(final User user, final String placebookKey)
 	{
-		super(shelf);
+		super(user);
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}
@@ -170,7 +168,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	@UiHandler("delete")
 	void delete(final ClickEvent event)
 	{
-		if (getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()))
+		if (getUser().getEmail().equals(placebook.getOwner().getEmail()))
 		{
 			PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
 			{
@@ -189,36 +187,18 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "actionMenu" })
-	void hideMenu(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
-	}
-
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
 	@UiHandler("actionMenu")
-	void showMenuButton(final MouseOverEvent event)
+	void showMenu(final ClickEvent event)
 	{
-		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
-	}
-
-	@Override
-	protected void shelfUpdated()
-	{
-		refresh();
+		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
 	private void refresh()
 	{
-		if (getCurrentUser() != null)
+		if (getUser() != null)
 		{
-			delete.setVisible(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));
-			setEnabledDropMenu(getCurrentUser().getEmail().equals(placebook.getOwner().getEmail()));
+			delete.setVisible(getUser().getEmail().equals(placebook.getOwner().getEmail()));
+			setEnabledDropMenu(getUser().getEmail().equals(placebook.getOwner().getEmail()));
 		}
 		else
 		{

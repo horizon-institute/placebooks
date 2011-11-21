@@ -17,6 +17,14 @@ public class JavaScriptInjector
 		head.appendChild(element);
 	}
 
+	public static void inject(final String javascript)
+	{
+		final HeadElement head = getHead();
+		final ScriptElement element = createScriptElement();
+		element.setText(javascript);
+		head.appendChild(element);
+	}
+
 	private static ScriptElement createScriptElement()
 	{
 		final ScriptElement script = Document.get().createScriptElement();
@@ -34,13 +42,5 @@ public class JavaScriptInjector
 			JavaScriptInjector.head = head;
 		}
 		return JavaScriptInjector.head;
-	}
-
-	public static void inject(final String javascript)
-	{
-		final HeadElement head = getHead();
-		final ScriptElement element = createScriptElement();
-		element.setText(javascript);
-		head.appendChild(element);
 	}
 }

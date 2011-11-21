@@ -13,8 +13,8 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 							new Array
 								(
 									"OpenSpace",
-									"http://openspacepro.ordnancesurvey.co.uk/osmapapi/ts",												
-									{ format:'image/png', key:"85DBC43A176CF323G2014A2BF8658124", url:"http://www.placebooks.org" },
+									options.tileURL,
+									{ format:'image/png', key:options.key, url:options.hostURL },
 									OpenLayers.Util.extend
 										(
 											options,
@@ -24,7 +24,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 																"<a href=\"http://openspace.ordnancesurvey.co.uk/openspace/developeragreement.html#enduserlicense\" target=\"_blank\">End User License Agreement</a>",
 												projection:		EPSG27700,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
-												resolutions:	new Array( 2500, 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
+												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
 												tile200:		new OpenLayers.Size( 200, 200 ),
 												//tile250:		new OpenLayers.Size( 250, 250 )
 											}
@@ -55,7 +55,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 						}
 						else
 						{
-							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":""}) );							
+							delete this.params.product;
 						}
 					}
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );

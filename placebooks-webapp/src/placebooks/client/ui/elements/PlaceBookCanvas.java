@@ -45,7 +45,7 @@ public class PlaceBookCanvas extends FlowPanel
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
-	private final List<PlaceBookPanel> panels = new ArrayList<PlaceBookPanel>();
+	private final List<PlaceBookColumn> panels = new ArrayList<PlaceBookColumn>();
 	private final List<Panel> pages = new ArrayList<Panel>();
 
 	private PlaceBook placebook;
@@ -98,7 +98,7 @@ public class PlaceBookCanvas extends FlowPanel
 		return items;
 	}
 
-	public Iterable<PlaceBookPanel> getPanels()
+	public Iterable<PlaceBookColumn> getPanels()
 	{
 		return panels;
 	}
@@ -116,7 +116,7 @@ public class PlaceBookCanvas extends FlowPanel
 			page.setHeight(panelHeight + "px");
 		}
 
-		for (final PlaceBookPanel panel : panels)
+		for (final PlaceBookColumn panel : panels)
 		{
 			panel.reflow();
 		}
@@ -158,10 +158,10 @@ public class PlaceBookCanvas extends FlowPanel
 		{
 		}
 
-		final int columns = DEFAULT_COLUMNS;
+		int columns = DEFAULT_COLUMNS;
 		try
 		{
-			pageCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
+			columns = Integer.parseInt(newPlaceBook.getMetadata("columns"));
 		}
 		catch (final Exception e)
 		{
@@ -193,7 +193,7 @@ public class PlaceBookCanvas extends FlowPanel
 					widthPCT = shortPanelWidth / usableWidth * 100;
 				}
 				final int panelIndex = (pageIndex * columns) + index;
-				final PlaceBookPanel panel = new PlaceBookPanel(panelIndex, columns, left, widthPCT, panelsVisible);
+				final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columns, left, widthPCT, panelsVisible);
 				panels.add(panel);
 				page.add(panel);
 

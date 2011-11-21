@@ -6,6 +6,7 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookEntryPreview;
 
 import com.google.gwt.core.client.GWT;
@@ -63,12 +64,12 @@ public class PlaceBookHome extends PlaceBookPlace
 
 	public PlaceBookHome()
 	{
-		super(null);
+		this(null);
 	}
 
-	public PlaceBookHome(final Shelf shelf)
+	public PlaceBookHome(final User user)
 	{
-		super(shelf);
+		super(user);
 	}
 
 	@Override
@@ -132,11 +133,11 @@ public class PlaceBookHome extends PlaceBookPlace
 	{
 		if (search.getText().equals("Search PlaceBooks"))
 		{
-			getPlaceController().goTo(new PlaceBookSearch("", getShelf()));
+			getPlaceController().goTo(new PlaceBookSearch(getUser(), ""));
 		}
 		else
 		{
-			getPlaceController().goTo(new PlaceBookSearch(search.getText(), getShelf()));
+			getPlaceController().goTo(new PlaceBookSearch(getUser(), search.getText()));
 		}
 	}
 }

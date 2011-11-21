@@ -49,9 +49,15 @@ public class PeoplesCollectionTrailResponse {
 	{
 		return properties;
 	}
+
+	public int GetPropertiesId()
+	{
+		return properties.GetTrailId();
+	}
 	
 	public PeoplesCollectionTrailCRS GetCrs()
 	{
 		return crs;
 	}
+	
 }

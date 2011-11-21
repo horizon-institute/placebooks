@@ -5,15 +5,15 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
-import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookSaveItem;
+import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
-import placebooks.client.ui.items.MapItem;
-import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
 import placebooks.client.ui.palette.Palette;
 
@@ -24,8 +24,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
@@ -49,111 +47,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends PlaceBookPlace
 {
-	public class SaveContext extends Timer
-	{
-		private SaveState state = SaveState.saved;
-		private static final int saveDelay = 2000;
-
-		public SaveState getState()
-		{
-			return state;
-		}
-
-		public void markChanged()
-		{
-			cancel();
-			schedule(saveDelay);
-			setState(SaveState.not_saved);
-			// changed = true;
-		}
-
-		public void refreshMap()
-		{
-			for (final PlaceBookItemFrame itemFrame : canvas.getItems())
-			{
-				if (itemFrame.getItemWidget() instanceof MapItem)
-				{
-					((MapItem) itemFrame.getItemWidget()).refreshMarkers();
-				}
-			}
-		}
-
-		@Override
-		public void run()
-		{
-			setState(SaveState.saving);
-			PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
-			{
-				@Override
-				public void failure(final Request request, final Response response)
-				{
-					markChanged();
-					setState(SaveState.save_error);
-				}
-
-				@Override
-				public void success(final Request request, final Response response)
-				{
-					try
-					{
-						updatePlaceBook(PlaceBook.parse(response.getText()));
-						setState(SaveState.saved);
-					}
-					catch (final Exception e)
-					{
-						failure(request, response);
-					}
-				}
-			});
-		}
-
-		private void setState(final SaveState state)
-		{
-			this.state = state;
-			switch (state)
-			{
-				case saved:
-					saveStatusPanel.setText("Saved");
-					saveStatusPanel.hideImage();
-					saveStatusPanel.setEnabled(false);
-					break;
-
-				case not_saved:
-					saveStatusPanel.setText("Save");
-					saveStatusPanel.hideImage();
-					saveStatusPanel.setEnabled(true);					
-					break;
-
-				case saving:
-					saveStatusPanel.setText("Saving");
-					saveStatusPanel.setImage(Resources.IMAGES.progress2());
-					saveStatusPanel.setEnabled(false);					
-					break;
-
-				case save_error:
-					saveStatusPanel.setText("Error Saving");
-					saveStatusPanel.setImage(Resources.IMAGES.error());
-					saveStatusPanel.setEnabled(true);					
-					break;
-
-				default:
-					break;
-			}
-		}
-	}
-
-	public enum SaveState
-	{
-		not_saved, save_error, saved, saving
-	}
-
 	@Prefix("edit")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
 	{
 		@Override
 		public PlaceBookEditor getPlace(final String token)
 		{
-			return new PlaceBookEditor(token, null);
+			return new PlaceBookEditor(null, token);
 		}
 
 		@Override
@@ -184,17 +84,17 @@ public class PlaceBookEditor extends PlaceBookPlace
 	Palette palette;
 
 	@UiField
-	PlaceBookToolbarItem saveStatusPanel;
+	PlaceBookSaveItem saveItem;
 
 	@UiField
 	Label zoomLabel;
-	
+
 	@UiField
 	TextBox title;
 
 	@UiField
 	PlaceBookToolbarItem actionMenu;
-	
+
 	@UiField
 	DropMenu dropMenu;
 
@@ -206,22 +106,20 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private PlaceBook placebook;
 
-	private SaveContext saveContext = new SaveContext();
-
 	private int zoom = 100;
 
 	private final String placebookKey;
 
-	public PlaceBookEditor(final PlaceBook placebook, final Shelf shelf)
+	public PlaceBookEditor(final User user, final PlaceBook placebook)
 	{
-		super(shelf);
+		super(user);
 		this.placebook = placebook;
 		this.placebookKey = placebook.getKey();
 	}
 
-	public PlaceBookEditor(final String placebookKey, final Shelf shelf)
+	public PlaceBookEditor(final User user, final String placebookKey)
 	{
-		super(shelf);
+		super(user);
 		this.placebookKey = placebookKey;
 		this.placebook = null;
 	}
@@ -237,20 +135,20 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	}
 
-	public SaveContext getSaveContext()
+	public PlaceBookSaveItem getSaveContext()
 	{
-		return saveContext;
+		return saveItem;
 	}
 
 	public void markChanged()
 	{
-		saveContext.markChanged();
+		saveItem.markChanged();
 	}
 
 	@Override
 	public String mayStop()
 	{
-		if (saveContext.getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
+		if (saveItem.getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
 		return super.mayStop();
 	}
 
@@ -296,12 +194,41 @@ public class PlaceBookEditor extends PlaceBookPlace
 			}
 		});
 
-		interactionHandler = new PlaceBookInteractionHandler(canvas, factory, saveContext);
+		interactionHandler = new PlaceBookInteractionHandler(canvas, factory, saveItem);
 		interactionHandler.setupUIElements(backPanel);
 
 		factory.setInteractionHandler(interactionHandler);
 
-		saveContext.setState(SaveState.saved);
+		saveItem.setState(SaveState.saved);
+		saveItem.setRunnable(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
+				{
+					@Override
+					public void failure(final Request request, final Response response)
+					{
+						saveItem.setState(SaveState.save_error);
+					}
+
+					@Override
+					public void success(final Request request, final Response response)
+					{
+						try
+						{
+							updatePlaceBook(PlaceBook.parse(response.getText()));
+							saveItem.setState(SaveState.saved);
+						}
+						catch (final Exception e)
+						{
+							failure(request, response);
+						}
+					}
+				});
+			}
+		});
 
 		Window.setTitle("PlaceBooks Editor");
 
@@ -366,25 +293,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("publish")
-	void publish(final ClickEvent event)
-	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
-		publish.addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				loadingPanel.setVisible(true);
-				publish.hide();
-			}
-		});
-
-		publish.show();
-		publish.center();
-		publish.getElement().getStyle().setTop(50, Unit.PX);
-	}
-	
 	@UiHandler("delete")
 	void delete(final ClickEvent event)
 	{
@@ -437,13 +345,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dialogBox.center();
 		dialogBox.show();
 	}
-	
-	
+
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
 		canvas.getPlaceBook().setMetadata("title", title.getText());
-		saveContext.markChanged();
+		saveItem.markChanged();
 	}
 
 	@UiHandler("zoomIn")
@@ -458,43 +365,49 @@ public class PlaceBookEditor extends PlaceBookPlace
 		setZoom(zoom - 20);
 	}
 
+	@UiHandler("preview")
+	void preview(final ClickEvent event)
+	{
+		getPlaceController().goTo(new PlaceBookPreview(getUser(), getCanvas().getPlaceBook()));
+	}
+
+	@UiHandler("publish")
+	void publish(final ClickEvent event)
+	{
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		publish.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				loadingPanel.setVisible(true);
+				publish.hide();
+			}
+		});
+
+		publish.show();
+		publish.center();
+		publish.getElement().getStyle().setTop(50, Unit.PX);
+	}
+
+	@UiHandler("actionMenu")
+	void showMenu(final ClickEvent event)
+	{
+		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
+	}
+
 	private String getKey()
 	{
 		return placebookKey;
 	}
 
-	@UiHandler(value = { "dropMenu", "actionMenu" })
-	void hideMenu(final MouseOutEvent event)
-	{
-		dropMenu.startHideMenu();
-	}
-
-	@UiHandler("dropMenu")
-	void showMenu(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(dropMenu.getAbsoluteLeft(), dropMenu.getAbsoluteTop());
-	}
-
-	@UiHandler("actionMenu")
-	void showMenuButton(final MouseOverEvent event)
-	{
-		dropMenu.showMenu(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
-	}
-
-
-	@UiHandler("preview")
-	void preview(final ClickEvent event)
-	{
-		getPlaceController().goTo(new PlaceBookPreview(getShelf(), getCanvas().getPlaceBook()));		
-	}
-	
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
 		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
 		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
 		zoomLabel.setText(zoom + "%");
-		for (final PlaceBookPanel panel : canvas.getPanels())
+		for (final PlaceBookColumn panel : canvas.getPanels())
 		{
 			panel.reflow();
 		}
@@ -509,7 +422,9 @@ public class PlaceBookEditor extends PlaceBookPlace
 			final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
-			getPlaceController().goTo(new PlaceBookEditor(placebook, getShelf()));
+			saveItem.setState(SaveState.saved);
+
+			getPlaceController().goTo(new PlaceBookEditor(getUser(), placebook));
 		}
 		else
 		{

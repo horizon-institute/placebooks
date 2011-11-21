@@ -126,11 +126,11 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	{
 		if (entry.getState().equals("PUBLISHED"))
 		{
-			place.getPlaceController().goTo(new PlaceBookPreview(place.getShelf(), entry.getKey()));
+			place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
 		}
 		else
 		{
-			place.getPlaceController().goTo(new PlaceBookEditor(entry.getKey(), place.getShelf()));
+			place.getPlaceController().goTo(new PlaceBookEditor(place.getUser(), entry.getKey()));
 		}
 	}
 

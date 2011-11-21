@@ -1,18 +1,18 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class RemoveMapMenuItem extends MenuItem
 {
-	private final SaveContext context;
+	private final PlaceBookInteractionHandler handler;
 	private final PlaceBookItemFrame item;
 
-	public RemoveMapMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public RemoveMapMenuItem(final PlaceBookInteractionHandler handler, final PlaceBookItemFrame item)
 	{
 		super("Remove from Map");
 		this.item = item;
-		this.context = context;
+		this.handler = handler;
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class RemoveMapMenuItem extends MenuItem
 	{
 		item.getItem().removeMetadata("mapItemID");
 		item.getItemWidget().refresh();
-		context.refreshMap();
-		context.markChanged();
+		handler.refreshMap();
+		handler.getContext().markChanged();
 	}
 }

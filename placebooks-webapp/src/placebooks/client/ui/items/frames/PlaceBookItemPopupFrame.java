@@ -6,7 +6,7 @@ import java.util.Collection;
 import placebooks.client.Resources;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler.DragState;
-import placebooks.client.ui.elements.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
@@ -153,13 +153,13 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			}
 		}, MouseDownEvent.getType());
 
-		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems.add(new AddMapMenuItem(interactionHandler, this));
 		menuItems.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
 		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new MoveMapMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new RemoveMapMenuItem(interactionHandler.getContext(), this));
+		menuItems.add(new MoveMapMenuItem(interactionHandler, this));
+		menuItems.add(new RemoveMapMenuItem(interactionHandler, this));
 		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new UploadMenuItem(this));
@@ -206,7 +206,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
-	public void setPanel(final PlaceBookPanel newPanel)
+	public void setPanel(final PlaceBookColumn newPanel)
 	{
 		if (panel == newPanel) { return; }
 		if (panel != null)
