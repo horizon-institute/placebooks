@@ -37,10 +37,29 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
+
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PlaceBook
 {
+	
+	public enum Permission
+	{
+		R("r"), W("w"), R_W("r+w"); 
+		
+		private String perms;
+		
+		private Permission(final String perms)
+		{
+			this.perms = perms;
+		}
+
+		public final String toString()
+		{
+			return perms;
+		}
+	}
+
 	public enum State
 	{
 		UNPUBLISHED(0),
@@ -105,9 +124,10 @@ public class PlaceBook
 
 	private State state = State.UNPUBLISHED;
 	
-	//@JsonIgnore
-	//private Permissions readPermissions;
+	@JsonIgnore
+	private Map<User, Permission> perms = new HashMap<User, Permission>();
 	
+
 	public PlaceBook()
 	{
 		index.setPlaceBook(this);		
@@ -119,6 +139,8 @@ public class PlaceBook
 		this.owner = p.getOwner();
 		if (this.owner != null)
 			this.owner.add(this);
+
+		perms.putAll(p.getPermissions());
 
 		if(p.getGeometry() != null)
 		{
@@ -152,6 +174,7 @@ public class PlaceBook
 		if (owner != null)
 		{
 			this.owner.add(this);
+			perms.put(owner, Permission.R_W);		
 		}
 		this.geom = geom;
 		this.timestamp = new Date();
@@ -314,6 +337,24 @@ public class PlaceBook
 
 		return root;
 	}
+
+	public void setPermission(final User user, final Permission p)
+	{
+		if (perms.get(user) != null)
+			perms.remove(user);
+		perms.put(user, p);
+	}
+
+	public final Permission getPermission(final User user)
+	{
+		return perms.get(user);
+	}
+
+	public final Map<User, Permission> getPermissions()
+	{
+		return Collections.unmodifiableMap(perms);
+	}
+
 
 	public Geometry getGeometry()
 	{
