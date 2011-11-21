@@ -489,9 +489,11 @@ public class PlaceBooksAdminController
 					}
 				}).start();
 				
-				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
+				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner = :user OR p.permsUsers LIKE :email",
 																	PlaceBook.class);
 				q.setParameter("owner", user);
+				q.setParameter("email", 
+							   "'%" + user.getOwner().getEmail() + "%'");
 
 				final Collection<PlaceBook> pbs = q.getResultList();
 				log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
@@ -540,10 +542,14 @@ public class PlaceBooksAdminController
 		{
 			final User user = uq.getSingleResult();
 
-			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-															PlaceBook.class);
+			final TypedQuery<PlaceBook> q = 
+				pm.createQuery("SELECT p FROM PlaceBook p "
+					+ "WHERE p.owner = :user OR p.permsUsers LIKE :email",
+					PlaceBook.class
+				);
 
 			q.setParameter("user", user);
+			q.setParameter("email", "'%" + owner.trim() + "%'");
 			final Collection<PlaceBook> pbs = q.getResultList();
 
 			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");

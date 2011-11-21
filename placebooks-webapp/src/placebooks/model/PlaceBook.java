@@ -10,6 +10,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -126,6 +127,9 @@ public class PlaceBook
 	
 	@JsonIgnore
 	private Map<User, Permission> perms = new HashMap<User, Permission>();
+
+	@JsonIgnore
+	private String permsUsers;
 	
 
 	public PlaceBook()
@@ -141,6 +145,7 @@ public class PlaceBook
 			this.owner.add(this);
 
 		perms.putAll(p.getPermissions());
+		permsUsers = permsUsersToString();
 
 		if(p.getGeometry() != null)
 		{
@@ -174,7 +179,8 @@ public class PlaceBook
 		if (owner != null)
 		{
 			this.owner.add(this);
-			perms.put(owner, Permission.R_W);		
+			perms.put(owner, Permission.R_W);
+			permsUsers = permsUsersToString();			
 		}
 		this.geom = geom;
 		this.timestamp = new Date();
@@ -338,16 +344,32 @@ public class PlaceBook
 		return root;
 	}
 
+	private final String permsUsersToString()
+	{
+		final StringBuffer l = new StringBuffer();
+		final Iterator<User> i = getPermissions().keySet().iterator();
+		while (i.hasNext())
+		{
+			l.append("'" + i.next().getEmail() + "'");
+			if (i.hasNext())
+				l.append(",");
+		}
+		return l.toString();
+	}
+
 	public void setPermission(final User user, final Permission p)
 	{
 		if (perms.get(user) != null)
 			perms.remove(user);
+
 		perms.put(user, p);
+		permsUsers = permsUsersToString();		
 	}
 
 	public void removePermission(final User user)
 	{
 		perms.remove(user);
+		permsUsers = permsUsersToString();		
 	}
 
 	public final Permission getPermission(final User user)
