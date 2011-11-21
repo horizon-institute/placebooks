@@ -1020,18 +1020,36 @@ public class PlaceBooksAdminController
 					catch (final IOException e)
 					{
 						log.error(e.toString());
-						res.setStatus(404);
+						res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						try
+						{
+							e.printStackTrace(res.getWriter());
+						}
+						catch (IOException e1)
+						{
+							e1.printStackTrace();
+						}						
 					}
 				}
 			}
 			else
 			{
 				log.info("Image Item " + key + " not found in db");
+				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			}
 		}
 		catch (final Throwable e)
 		{
 			log.error(e.getMessage(), e);
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try
+			{
+				e.printStackTrace(res.getWriter());
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 		finally
 		{
