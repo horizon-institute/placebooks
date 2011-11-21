@@ -345,6 +345,11 @@ public class PlaceBook
 		perms.put(user, p);
 	}
 
+	public void removePermission(final User user)
+	{
+		perms.remove(user);
+	}
+
 	public final Permission getPermission(final User user)
 	{
 		return perms.get(user);
