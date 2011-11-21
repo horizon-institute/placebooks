@@ -37,10 +37,29 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
+
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PlaceBook
 {
+	
+	public enum Permission
+	{
+		R("r"), W("w"), R_W("r+w"); 
+		
+		private String perms;
+		
+		private Permission(final String perms)
+		{
+			this.perms = perms;
+		}
+
+		public final String toString()
+		{
+			return perms;
+		}
+	}
+
 	public enum State
 	{
 		UNPUBLISHED(0),
@@ -105,9 +124,10 @@ public class PlaceBook
 
 	private State state = State.UNPUBLISHED;
 	
-	//@JsonIgnore
-	//private Permissions readPermissions;
+	@JsonIgnore
+	private Map<User, Permission> perms = HashMap.create();
 	
+
 	public PlaceBook()
 	{
 		index.setPlaceBook(this);		
@@ -314,6 +334,12 @@ public class PlaceBook
 
 		return root;
 	}
+
+	public final Permission getPermission(final User user)
+	{
+		return perms.get(user);
+	}
+
 
 	public Geometry getGeometry()
 	{
