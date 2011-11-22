@@ -11,11 +11,8 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -34,7 +31,7 @@ public class PlaceBookPage extends Composite
 	private static final int Margin = 20;
 	private int pageIndex;
 
-	private static final int DEFAULT_COLUMNS = 2;
+	private static final int DEFAULT_COLUMNS = 3;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
@@ -44,24 +41,14 @@ public class PlaceBookPage extends Composite
 	// TODO PlaceBookPage page;
 	
 	@UiField
-	Panel columnsPanel;
+	Label pageNumber;
 	
 	@UiField
-	Label pageNumber;
-
+	Panel columnPanel;
 
 	public PlaceBookPage()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		Window.addResizeHandler(new ResizeHandler()
-		{
-			@Override
-			public void onResize(final ResizeEvent event)
-			{
-				reflow();
-			}
-		});
 	}
 
 	public void add(final PlaceBookItemFrame item)
@@ -134,25 +121,14 @@ public class PlaceBookPage extends Composite
 		refreshItemPlaceBook();
 	}
 
-	public void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory,
-			final boolean panelsVisible)
+	public void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory, final int columnCount)
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-		//clear();
 		
 		this.pageIndex = pageIndex;
-		pageNumber.setText(""+ (pageIndex + 1));
+		pageNumber.setText("" + (pageIndex + 1));
 		
-		int columnCount = DEFAULT_COLUMNS;
-		try
-		{
-			columnCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
-		}
-		catch (final Exception e)
-		{
-		}
-
 		final double usableWidth = A4Length - (2 * Margin);
 		final double panelWidth = A4Length / columnCount;
 		final double shortPanelWidth = panelWidth - Margin;
@@ -166,7 +142,7 @@ public class PlaceBookPage extends Composite
 				widthPCT = shortPanelWidth / usableWidth * 100;
 			}
 			final int panelIndex = (pageIndex * columnCount) + index;
-			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT, panelsVisible);
+			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT, factory.isEditable());
 			columns.add(panel);
 
 			left += widthPCT;
@@ -196,12 +172,6 @@ public class PlaceBookPage extends Composite
 			{
 				frame.getItemWidget().update(item);
 			}
-		}
-
-		placebook.clearItems();
-		for (final PlaceBookItemFrame item : items)
-		{
-			placebook.add(item.getItem());
 		}
 
 		refreshItemPlaceBook();

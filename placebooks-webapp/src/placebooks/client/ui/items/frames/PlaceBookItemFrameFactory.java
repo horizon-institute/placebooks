@@ -12,7 +12,7 @@ public abstract class PlaceBookItemFrameFactory
 
 	public PlaceBookItemFrame createFrame(final PlaceBookItem item)
 	{
-		final PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, getEditable());
+		final PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, isEditable());
 		if (widget == null)
 		{
 			GWT.log("No widget for " + item.getKey() + ": type=" + item.getShortClassName());
@@ -24,6 +24,6 @@ public abstract class PlaceBookItemFrameFactory
 
 		return frame;
 	}
-
-	public abstract boolean getEditable();
+	
+	public abstract boolean isEditable();
 }

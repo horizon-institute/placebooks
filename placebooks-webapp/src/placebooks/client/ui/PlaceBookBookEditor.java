@@ -104,8 +104,6 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	@UiField
 	DropMenu dropMenu;
 
-	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
-
 	private final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
 	
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
@@ -180,8 +178,6 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		final Widget editor = uiBinder.createAndBindUi(this);
-
-		canvasPanel.add(canvas);
 
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{

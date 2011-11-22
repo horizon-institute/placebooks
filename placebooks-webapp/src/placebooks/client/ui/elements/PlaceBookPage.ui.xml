@@ -2,24 +2,35 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-		.pagePanel {
-			position: relative;
+		.outerPanel {
 		}
-	
-		.columnsPanel {
+		
+		.innerPanel {
 			position: absolute;
 			left: 0px;
 			top: 0px;
+
+		}
+		
+		.columnPanel {
+			position: absolute;
+			left: 30px;
+			top: 30px;	
+			right: 30px;
+			bottom: 30px;
 		}
 		
 		.pageNumber {
-			color: #384A6B;
-			font-weight: bold;
-			font-size: 18px;
+			position: absolute;
+			left: 30px;
+			right: 30px;
+			bottom: 0px;	
 		}
-	</ui:style>	
-	<g:FlowPanel>
-		<g:FlowPanel ui:field="columnsPanel" styleName="columnsPanel" />
-		<g:Label ui:field="pageNumber" styleName="pageNumber" />
+	</ui:style>
+	<g:FlowPanel ui:field="outerPanel" styleName="{style.outerPanel}">
+		<g:FlowPanel ui:field="innerPanel" styleName="{style.innerPanel}">
+			<g:FlowPanel ui:field="columnPanel"/>
+			<g:Label ui:field="pageNumber"/>
+		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

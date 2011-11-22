@@ -49,7 +49,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 
 		@Override
-		public boolean getEditable()
+		public boolean isEditable()
 		{
 			return true;
 		}
