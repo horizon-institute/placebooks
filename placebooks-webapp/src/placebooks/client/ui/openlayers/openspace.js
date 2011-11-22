@@ -55,7 +55,8 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 						}
 						else
 						{
-							delete this.params.product;
+							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":""}) );
+							delete this.params["PRODUCT"];
 						}
 					}
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );
