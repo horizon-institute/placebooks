@@ -493,7 +493,7 @@ public class PlaceBooksAdminController
 																	PlaceBook.class);
 				q.setParameter("owner", user);
 				q.setParameter("email", 
-							   "'%" + user.getOwner().getEmail() + "%'");
+							   "'%" + user.getEmail() + "%'");
 
 				final Collection<PlaceBook> pbs = q.getResultList();
 				log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
