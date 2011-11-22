@@ -61,11 +61,15 @@ public abstract class Service
 
 		try
 		{
-			manager.getTransaction().begin();
 			sync(manager, user, details);
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage(), e);
 		}
 		finally
 		{
+			manager.getTransaction().begin();			
 			details.setSyncInProgress(false);
 			manager.merge(details);
 			manager.getTransaction().commit();

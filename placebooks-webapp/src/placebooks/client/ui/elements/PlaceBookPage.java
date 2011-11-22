@@ -13,34 +13,28 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookPage extends FlowPanel
+public class PlaceBookPage extends Composite
 {
-	interface Style extends CssResource
+	interface PlaceBookPageUiBinder extends UiBinder<Widget, PlaceBookPage>
 	{
-		String canvas();
-	    String page();
-	    String pageInvisible();
 	}
 
-	interface Bundle extends ClientBundle
-	{
-		@Source("PlaceBookCanvas.css")
-		Style style();
-	}
-	
-	private static final Bundle STYLES = GWT.create(Bundle.class);
+	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 	
 	private static final int A4Length = 297;
 	//private static final int A4Width = 210;
 	private static final int Margin = 20;
 	private int pageIndex;
 
-	private static final int DEFAULT_COLUMNS = 3;
+	private static final int DEFAULT_COLUMNS = 2;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
@@ -48,12 +42,18 @@ public class PlaceBookPage extends FlowPanel
 
 	private PlaceBook placebook;
 	// TODO PlaceBookPage page;
+	
+	@UiField
+	Panel columnsPanel;
+	
+	@UiField
+	Label pageNumber;
+
 
 	public PlaceBookPage()
 	{
-		STYLES.style().ensureInjected();
-		setStyleName(STYLES.style().canvas());
-
+		initWidget(uiBinder.createAndBindUi(this));
+		
 		Window.addResizeHandler(new ResizeHandler()
 		{
 			@Override
@@ -139,9 +139,10 @@ public class PlaceBookPage extends FlowPanel
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-		clear();
+		//clear();
 		
 		this.pageIndex = pageIndex;
+		pageNumber.setText(""+ (pageIndex + 1));
 		
 		int columnCount = DEFAULT_COLUMNS;
 		try
