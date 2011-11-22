@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.pagePanel {
+			position: relative;
+		}
+	
+		.columnsPanel {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+		}
+		
+		.pageNumber {
+			color: #384A6B;
+			font-weight: bold;
+			font-size: 18px;
+		}
+	</ui:style>	
+	<g:FlowPanel>
+		<g:FlowPanel ui:field="columnsPanel" styleName="columnsPanel" />
+		<g:Label ui:field="pageNumber" styleName="pageNumber" />
+	</g:FlowPanel>
+</ui:UiBinder> 
