@@ -157,7 +157,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	{
 		placebook = newPlacebook;
 
-		canvas.setPlaceBook(newPlacebook, factory, true);
+		//canvas.setPlaceBook(newPlacebook, factory, true);
 
 		if (newPlacebook.hasMetadata("title"))
 		{
@@ -171,7 +171,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 		}
 
 		loadingPanel.setVisible(false);
-		canvas.reflow();
+		//canvas.reflow();
 	}
 
 	@Override
@@ -193,7 +193,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 			}
 		});
 
-		interactionHandler = new PlaceBookInteractionHandler(canvas, factory, saveItem);
+		interactionHandler = new PlaceBookInteractionHandler(null, factory, saveItem);
 		interactionHandler.setupUIElements(backPanel);
 
 		factory.setInteractionHandler(interactionHandler);
@@ -295,7 +295,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	@UiHandler("publish")
 	void publish(final ClickEvent event)
 	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookBookEditor.this, canvas);
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookBookEditor.this, null);
 		publish.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -368,7 +368,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
-		canvas.getPlaceBook().setMetadata("title", title.getText());
+		//canvas.getPlaceBook().setMetadata("title", title.getText());
 		saveItem.markChanged();
 	}
 
@@ -405,22 +405,22 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
-		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
-		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
+		//canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
+		//canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
 		zoomLabel.setText(zoom + "%");
-		for (final PlaceBookColumn panel : canvas.getPanels())
-		{
-			panel.reflow();
-		}
+//		for (final PlaceBookColumn panel : canvas.getPanels())
+//		{
+//			panel.reflow();
+//		}
 	}
 
 	private void updatePlaceBook(final PlaceBook newPlacebook)
 	{
 		if (placebook != null && (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
 		{
-			canvas.updatePlaceBook(newPlacebook);
+			//canvas.updatePlaceBook(newPlacebook);
 
-			final PlaceBook placebook = canvas.getPlaceBook();
+			//final PlaceBook placebook = canvas.getPlaceBook();
 			placebook.setKey(newPlacebook.getKey());
 
 			saveItem.setState(SaveState.saved);
@@ -430,9 +430,9 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 		else
 		{
 			placebook = newPlacebook;
-			canvas.updatePlaceBook(newPlacebook);
+			//canvas.updatePlaceBook(newPlacebook);
 
-			canvas.reflow();
+			//canvas.reflow();
 		}
 	}
 }
