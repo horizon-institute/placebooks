@@ -63,8 +63,9 @@ public class ItemFactory
 	{
 		IUpdateableExternal item = null;
 		log.debug("Querying externalID " +  itemToSave.getExternalID());
-		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
-		q.setParameter(1, itemToSave.getExternalID());
+		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = :externalid) AND (placebookitem.placebook is null) AND (placebookitem.owner= :owner)", PlaceBookItem.class);
+		q.setParameter("externalid", itemToSave.getExternalID());
+		q.setParameter("owner", itemToSave.getOwner());
 		try
 		{
 			Collection<PlaceBookItem> l = q.getResultList();

@@ -1,8 +1,14 @@
 package placebooks.model;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.persistence.Entity;
+
+import placebooks.controller.FileHelper;
+import placebooks.controller.PropertiesSingleton;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -24,6 +30,16 @@ public class ImageItem extends MediaItem
 		super(owner, geom, sourceURL, image);
 	}
 
+	@Override
+	public void writeDataToDisk(final String name, final InputStream is) throws IOException
+	{
+		String thumbPath = FileHelper.GetSavePath(PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_THUMBS, ""));
+		String path = FileHelper.GetSavePath(PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
+		FileHelper.SaveFile(is, thumbPath);
+		is.reset();
+		super.writeDataToDisk(name, is);
+	}
+	
 	@Override
 	public ImageItem deepCopy()
 	{
