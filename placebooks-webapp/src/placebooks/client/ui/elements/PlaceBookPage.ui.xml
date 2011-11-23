@@ -3,13 +3,21 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.outerPanel {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			right: 0px;
+			bottom: 0px;			
+			overflow: hidden;
 		}
 		
 		.innerPanel {
 			position: absolute;
 			left: 0px;
 			top: 0px;
-
+			width: 100%;
+			height: 100%;
+			background-color: white;
 		}
 		
 		.columnPanel {
@@ -22,15 +30,19 @@
 		
 		.pageNumber {
 			position: absolute;
-			left: 30px;
-			right: 30px;
+			left: 0px;
+			right: 0px;
 			bottom: 0px;	
+			height: 25px;
+			text-align: right;
+			margin: 0 15px;
+			color: #777;
 		}
 	</ui:style>
 	<g:FlowPanel ui:field="outerPanel" styleName="{style.outerPanel}">
 		<g:FlowPanel ui:field="innerPanel" styleName="{style.innerPanel}">
-			<g:FlowPanel ui:field="columnPanel"/>
-			<g:Label ui:field="pageNumber"/>
+			<g:FlowPanel ui:field="columnPanel" styleName="{style.columnPanel}"/>
+			<g:Label ui:field="pageNumber" styleName="{style.pageNumber}"/>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

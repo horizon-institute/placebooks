@@ -8,6 +8,7 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -34,6 +35,9 @@ public class PlaceBookBookPanel extends Composite
 	
 	@UiField 
 	Panel rootPanel;
+	
+	@UiField
+	Panel pagesPanel;
 
 	private Canvas canvas;
 	
@@ -54,10 +58,38 @@ public class PlaceBookBookPanel extends Composite
 			@Override
 			public void onResize(ResizeEvent arg0)
 			{
-				// TODO Auto-generated method stub
-				
+				resize();
 			}
 		});
+	}
+	
+	public void resize()
+	{
+		int margin = 40;
+		double height = getOffsetHeight() - margin;
+		double width = getOffsetWidth() - margin;
+		double bookWidth = height * 3 / 2;		
+		if(bookWidth < width)
+		{
+			// Height is constraint
+			double left = (width - bookWidth) / 2;
+
+			pagesPanel.getElement().getStyle().setTop(0, Unit.PX);
+			pagesPanel.getElement().getStyle().setLeft(left, Unit.PX);			
+			pagesPanel.setWidth(bookWidth + "px");
+			pagesPanel.setHeight(height + "px");
+		}
+		else
+		{
+			// Width is constraint
+			double bookHeight = (width * 2 / 3);
+			double top = (height - bookHeight) / 2;
+
+			pagesPanel.getElement().getStyle().setTop(top, Unit.PX);
+			pagesPanel.getElement().getStyle().setLeft(0, Unit.PX);			
+			pagesPanel.setHeight(bookHeight + "px");
+			pagesPanel.setWidth(width + "px");			
+		}
 	}
 
 	public void setPlaceBook(final PlaceBook placebook, final PlaceBookItemFrameFactory factory)
@@ -86,13 +118,14 @@ public class PlaceBookBookPanel extends Composite
 			page.setPage(placebook, index, factory, columns);
 			
 			pages.add(page);
-			rootPanel.add(page);
+			pagesPanel.add(page);
 			
 			if(index != currentPage)
 			{
 				page.setVisible(false);
 			}
 		}
+		resize();
 	}
 	
 	public void setPage(int index)

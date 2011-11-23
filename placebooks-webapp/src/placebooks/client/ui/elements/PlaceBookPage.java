@@ -25,13 +25,10 @@ public class PlaceBookPage extends Composite
 	}
 
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
-	
-	private static final int A4Length = 297;
-	//private static final int A4Width = 210;
-	private static final int Margin = 20;
+
 	private int pageIndex;
 
-	private static final int DEFAULT_COLUMNS = 3;
+	private int columnOffset;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
@@ -39,10 +36,10 @@ public class PlaceBookPage extends Composite
 
 	private PlaceBook placebook;
 	// TODO PlaceBookPage page;
-	
+
 	@UiField
 	Label pageNumber;
-	
+
 	@UiField
 	Panel columnPanel;
 
@@ -58,35 +55,14 @@ public class PlaceBookPage extends Composite
 		item.getItemWidget().setPlaceBook(placebook);
 	}
 
-	private void addImpl(final PlaceBookItemFrame item)
+	public Iterable<PlaceBookColumn> getColumns()
 	{
-		if (item == null) { return; }
-		items.add(item);
-		item.setPanel(columns.get(item.getItem().getParameter("panel", 0)));
-	}
-
-	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
-	{
-		for (final PlaceBookItemFrame frame : items)
-		{
-			if (frame.getItem().getKey() != null)
-			{
-				if (frame.getItem().getKey().equals(item.getKey())) { return frame; }
-			}
-			else if (item.hasMetadata("tempID")
-					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
-		}
-		return null;
+		return columns;
 	}
 
 	public Iterable<PlaceBookItemFrame> getItems()
 	{
 		return items;
-	}
-
-	public Iterable<PlaceBookColumn> getColumns()
-	{
-		return columns;
 	}
 
 	public PlaceBook getPlaceBook()
@@ -97,19 +73,11 @@ public class PlaceBookPage extends Composite
 	public void reflow()
 	{
 		final double panelHeight = getOffsetWidth() * 2 / 3;
-		setHeight(panelHeight + "px");
+		// setHeight(panelHeight + "px");
 
 		for (final PlaceBookColumn column : columns)
 		{
 			column.reflow();
-		}
-	}
-
-	private final void refreshItemPlaceBook()
-	{
-		for (final PlaceBookItemFrame item : items)
-		{
-			item.getItemWidget().setPlaceBook(placebook);
 		}
 	}
 
@@ -121,37 +89,34 @@ public class PlaceBookPage extends Composite
 		refreshItemPlaceBook();
 	}
 
-	public void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory, final int columnCount)
+	public void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory,
+			final int columnCount)
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-		
+
 		this.pageIndex = pageIndex;
 		pageNumber.setText("" + (pageIndex + 1));
-		
-		final double usableWidth = A4Length - (2 * Margin);
-		final double panelWidth = A4Length / columnCount;
-		final double shortPanelWidth = panelWidth - Margin;
 
 		double left = 0;
 		for (int index = 0; index < columnCount; index++)
 		{
-			double widthPCT = panelWidth / usableWidth * 100;
-			if (index == 0 || index == columnCount - 1)
-			{
-				widthPCT = shortPanelWidth / usableWidth * 100;
-			}
+			final double widthPCT = 100 / columnCount;
 			final int panelIndex = (pageIndex * columnCount) + index;
-			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT, factory.isEditable());
+			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT,
+					factory.isEditable());
 			columns.add(panel);
+			columnPanel.add(panel);
 
 			left += widthPCT;
 		}
 
+		columnOffset = pageIndex * columnCount;
+
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
-			int page = item.getParameter("panel") / columnCount;
-			if(page == pageIndex)
+			final int panelIndex = item.getParameter("panel");
+			if (panelIndex >= columnOffset && (panelIndex < columnCount + columnOffset))
 			{
 				addImpl(factory.createFrame(item));
 			}
@@ -176,5 +141,34 @@ public class PlaceBookPage extends Composite
 
 		refreshItemPlaceBook();
 		reflow();
+	}
+
+	private void addImpl(final PlaceBookItemFrame item)
+	{
+		if (item == null) { return; }
+		items.add(item);
+		item.setPanel(columns.get(item.getItem().getParameter("panel", 0) - columnOffset));
+	}
+
+	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
+	{
+		for (final PlaceBookItemFrame frame : items)
+		{
+			if (frame.getItem().getKey() != null)
+			{
+				if (frame.getItem().getKey().equals(item.getKey())) { return frame; }
+			}
+			else if (item.hasMetadata("tempID")
+					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
+		}
+		return null;
+	}
+
+	private final void refreshItemPlaceBook()
+	{
+		for (final PlaceBookItemFrame item : items)
+		{
+			item.getItemWidget().setPlaceBook(placebook);
+		}
 	}
 }

@@ -1,21 +1,15 @@
 package placebooks.client.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
-import placebooks.client.ui.elements.PlaceBookCanvas;
-import placebooks.client.ui.elements.PlaceBookColumn;
+import placebooks.client.ui.elements.PlaceBookBookPanel;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
-import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
@@ -81,7 +75,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	Panel backPanel;
 
 	@UiField
-	Panel canvasPanel;
+	PlaceBookBookPanel bookPanel;
 
 	@UiField
 	Panel loadingPanel;
@@ -104,8 +98,6 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	@UiField
 	DropMenu dropMenu;
 
-	private final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
-	
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
 
 	private PlaceBookInteractionHandler interactionHandler;
@@ -157,7 +149,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	{
 		placebook = newPlacebook;
 
-		//canvas.setPlaceBook(newPlacebook, factory, true);
+		bookPanel.setPlaceBook(newPlacebook, factory);
 
 		if (newPlacebook.hasMetadata("title"))
 		{
@@ -418,10 +410,10 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	{
 		if (placebook != null && (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
 		{
-			//canvas.updatePlaceBook(newPlacebook);
+			bookPanel.updatePlaceBook(newPlacebook);
 
-			//final PlaceBook placebook = canvas.getPlaceBook();
-			placebook.setKey(newPlacebook.getKey());
+//			//final PlaceBook placebook = canvas.getPlaceBook();
+//			placebook.setKey(newPlacebook.getKey());
 
 			saveItem.setState(SaveState.saved);
 			

@@ -2,10 +2,18 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-		.important {
-			font-weight: bold;
+		.pagesPanel {
+			position: absolute;
+			left: 0px;
+			border: 4px solid black;
+			margin: 20px;
+			width: 800px;
+			height: 500px;
 		}
 	</ui:style>
 	<g:FlowPanel ui:field="rootPanel">
+		<g:FlowPanel ui:field="pagesPanel" styleName="{style.pagesPanel}" />
+		<g:Image />
+		<g:Image />		
 	</g:FlowPanel>
 </ui:UiBinder> 
