@@ -79,7 +79,7 @@ public class PeoplesCollectionGeometryLineString
 					wktStringBuilder.append(")");
 				}
 			}
-			log.debug("Created WKT string:" + wktStringBuilder.toString());
+			//log.debug("Created WKT string:" + wktStringBuilder.toString());
 			return new WKTReader().read(wktStringBuilder.toString());
 		}
 		catch (ParseException e)
