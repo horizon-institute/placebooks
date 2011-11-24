@@ -78,7 +78,7 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 		if (path != null && new File(path).exists()) { return path; }
 		if (getHash() == null) { return null; }
-		log.info("Attempting to fix media path " + path + "for item " + getKey() + " hash " + getHash());
+		log.info("Attempting to fix media path " + path + " for item " + getKey() + " hash " + getHash());
 		try
 		{
 			final File path = getSavePath();
@@ -89,6 +89,7 @@ public abstract class MediaItem extends PlaceBookItem
 				{
 					final int index = name.indexOf('.');
 					if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
+					if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
 					return false;
 				}
 			});

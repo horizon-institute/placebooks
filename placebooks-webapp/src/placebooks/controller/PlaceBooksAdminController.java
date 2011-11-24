@@ -1017,7 +1017,8 @@ public class PlaceBooksAdminController
 			final ImageItem i = em.find(ImageItem.class, key);
 			if (i != null)
 			{
-				log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
+				String imagePath = i.getPath();
+				log.info("ImageItem path: " + (imagePath != null ? imagePath : "null"));
 				if(i.getTimestamp() != null)
 				{
 					try
@@ -1038,13 +1039,9 @@ public class PlaceBooksAdminController
 
 				}
 
-				if (i.getPath() == null)
+				if (imagePath != null)
 				{
-					i.RedownloadItem();
-				}
-				if (i.getPath() != null)
-				{
-					ServeImage(i.getPath(), res);
+					ServeImage(imagePath, res);
 				}
 				else
 				{
