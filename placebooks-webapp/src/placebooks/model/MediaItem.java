@@ -76,41 +76,61 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public String attemptPathFix()
 	{
+		String pathToReturn = null;
 		if (path != null && new File(path).exists()) { return path; }
-		if (getHash() == null) { return null; }
-		log.info("Attempting to fix media path " + path + " for item " + getKey() + " hash " + getHash());
-		try
+		if ((getHash() != null) || (getKey()!=null))
 		{
-			final File path = getSavePath();
-			final File[] files = path.listFiles(new FilenameFilter()
+			log.info("Attempting to fix media path " + path + " for item " + getKey() + " hash " + getHash());
+			try
 			{
-				@Override
-				public boolean accept(final File dir, final String name)
+				final File path = getSavePath();
+				File[] files = path.listFiles(new FilenameFilter()
 				{
-					final int index = name.indexOf('.');
-					if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
-					if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
-					return false;
-				}
-			});
+					@Override
+					public boolean accept(final File dir, final String name)
+					{
+						final int index = name.indexOf('.');
+						if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
+						return false;
+					}
+				});
 
-			if (files.length == 1)
-			{
-				setPath(files[0].getPath());
-				log.info("Fixed media to " + this.path);
-				return this.path;
+				if (files.length == 1)
+				{
+					pathToReturn = files[0].getPath();
+				}
+				else
+				{
+					files = path.listFiles(new FilenameFilter()
+					{
+						@Override
+						public boolean accept(final File dir, final String name)
+						{
+							final int index = name.indexOf('.');
+							if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
+							return false;
+						}
+					});
+					if (files.length == 1)
+					{
+						pathToReturn = files[0].getPath();
+					}
+				}
 			}
-			log.debug("Can't fix path for: " + this.path);
+			catch (final Exception e)
+			{
+				log.warn(e.getMessage(), e);
+			}
 		}
-		catch (final Exception e)
+		if(pathToReturn==null)
 		{
-			log.warn(e.getMessage(), e);
+			log.debug("Can't fix path for:" + this.path + " for item " + getKey() + " hash " + getHash());
 		}
-		return null;
+		setPath(pathToReturn);
+		log.info("Set media path to " + this.path);
+		return this.path;
 	}
-	
-	
-	
+
 
 	protected void copyDataToPackage() throws IOException
 	{
