@@ -28,6 +28,8 @@ public class PlaceBookPage extends Composite
 
 	private int pageIndex;
 
+	private double progress;
+	
 	private int columnOffset;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
@@ -43,6 +45,16 @@ public class PlaceBookPage extends Composite
 	@UiField
 	Panel columnPanel;
 
+	double getProgress()
+	{
+		return progress;
+	}
+	
+	void setFlip(double flipX)
+	{
+		setWidth(flipX + "px");		
+	}
+	
 	public PlaceBookPage()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
@@ -69,12 +81,17 @@ public class PlaceBookPage extends Composite
 	{
 		return placebook;
 	}
+	
+	public void setSize(final double width, final double height)
+	{
+//		columnPanel.setHeight(height - 60 + "px");
+//		columnPanel.setWidth(width - 60 + "px");
+		
+		reflow();
+	}
 
 	public void reflow()
 	{
-		final double panelHeight = getOffsetWidth() * 2 / 3;
-		// setHeight(panelHeight + "px");
-
 		for (final PlaceBookColumn column : columns)
 		{
 			column.reflow();
