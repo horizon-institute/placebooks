@@ -191,13 +191,8 @@ public class GPSTraceItem extends PlaceBookItem
 			// GPX 1.1 spec
 
 			GpxType gpx = null;
-			Unmarshaller u = 
-				JAXBContext.newInstance("placebooks.model.jaxb.GPX11")
-						   .createUnmarshaller();
-			JAXBElement<GpxType> root = 
-				(JAXBElement<GpxType>)u.unmarshal(new StreamSource(
-												  new StringReader(this.trace))
-				);
+			Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX11").createUnmarshaller();
+			JAXBElement<GpxType> root = (JAXBElement<GpxType>)u.unmarshal(new StreamSource(new StringReader(this.trace)));
 			gpx = root.getValue();
 			for (TrkType track : gpx.getTrk()) 
 			{
@@ -240,12 +235,9 @@ public class GPSTraceItem extends PlaceBookItem
 
 			try 
 			{
-				Unmarshaller u = 
-					JAXBContext.newInstance("placebooks.model.jaxb.GPX10")
-							   .createUnmarshaller();
+				Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX10").createUnmarshaller();
 				// GPX 1.0 is anonymous
-				Object root =
-					u.unmarshal(new StreamSource(new StringReader(this.trace)));
+				Object root = u.unmarshal(new StreamSource(new StringReader(this.trace)));
 				log.info(root.getClass());
 				Gpx gpx = (Gpx)root;
 
@@ -286,24 +278,24 @@ public class GPSTraceItem extends PlaceBookItem
 			} 
 			catch (final Exception e_) 
 			{
-				log.error(e_.toString(), e);
-			}
-
-			try
-			{
-				bounds = wktReader.read("POLYGON ((" 
-										+ minLat + " " + minLon + ", "
-										+ minLat + " " + maxLon + ", "
-										+ maxLat + " " + maxLon + ", "
-										+ maxLat + " " + minLon + ", "
-										+ minLat + " " + minLon + "))");
-			}
-			catch (final Throwable e_)
-			{
-				log.error(e_.toString(), e);
+				log.error(e_.toString(), e_);
 			}
 
 
+
+		}
+		try
+		{
+			bounds = wktReader.read("POLYGON ((" 
+					+ minLat + " " + minLon + ", "
+					+ minLat + " " + maxLon + ", "
+					+ maxLat + " " + maxLon + ", "
+					+ maxLat + " " + minLon + ", "
+					+ minLat + " " + minLon + "))");
+		}
+		catch (final Throwable e_)
+		{
+			log.error(e_.toString(), e_);
 		}
 		if (bounds != null)
 			setGeometry(bounds.getBoundary());
