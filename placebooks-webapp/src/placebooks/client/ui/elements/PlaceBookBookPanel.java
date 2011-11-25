@@ -6,17 +6,17 @@ import java.util.List;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
-import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
@@ -42,10 +42,13 @@ public class PlaceBookBookPanel extends Composite
 	@UiField
 	Panel pagesPanel;
 
-	private Canvas canvas;
+	@UiField
+	Canvas canvas;
 
 	private double pageWidth;
 	private double pageHeight;
+	
+	private double margin = 20;
 
 	private HandlerRegistration resizeRegistration;
 
@@ -55,9 +58,6 @@ public class PlaceBookBookPanel extends Composite
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		canvas = Canvas.createIfSupported();
-		canvas.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		
 		rootPanel.add(canvas);
 
 		resizeRegistration = Window.addResizeHandler(new ResizeHandler()
@@ -118,6 +118,30 @@ public class PlaceBookBookPanel extends Composite
 	public void updatePlaceBook(final PlaceBook placebook)
 	{
 
+	}
+
+	@UiHandler("rootPanel")
+	void startFlip(final MouseDownEvent event)
+	{
+		final int mouseX = event.getRelativeX(pagesPanel.getElement());
+		// Make sure the mouse pointer is inside of the book
+		if (mouseX < pageWidth)
+		{		
+			if (mouseX < margin && currentPage - 1 >= 0)
+			{
+				// We are on the left side, drag the previous page
+				// flips[page - 1].dragging = true;
+				GWT.log("Left: mouseX = " + mouseX + ", pageWidth = " + pageWidth + ", currentPage = " + currentPage);
+				event.preventDefault();				
+			}
+			else if (mouseX > (pageWidth - margin) && currentPage + 1 < pages.size())
+			{
+				// We are on the right side, drag the current page
+				// flips[page].dragging = true;
+				GWT.log("Right: mouseX = " + mouseX + ", pageWidth = " + pageWidth + ", currentPage = " + currentPage);
+				event.preventDefault();				
+			}
+		}
 	}
 
 	private void drawFlip(final PlaceBookPage page)
@@ -231,18 +255,18 @@ public class PlaceBookBookPanel extends Composite
 
 	private void setPosition(final double left, final double top, final double width, final double height)
 	{
-		this.pageHeight = height;
-		this.pageWidth = width;
+		this.pageHeight = height - (margin * 2);
+		this.pageWidth = width - (margin * 2);
 
 		canvas.getElement().getStyle().setTop(top, Unit.PX);
 		canvas.getElement().getStyle().setLeft(left - width, Unit.PX);
 		canvas.setWidth(width * 2 + "px");
 		canvas.setHeight(height + "px");
-		
+
 		pagesPanel.getElement().getStyle().setTop(top, Unit.PX);
 		pagesPanel.getElement().getStyle().setLeft(left, Unit.PX);
-		pagesPanel.setWidth(width - 40 + "px");
-		pagesPanel.setHeight(height - 40 + "px");
+		pagesPanel.setWidth(width - (margin * 2) + "px");
+		pagesPanel.setHeight(height - (margin * 2) + "px");
 
 		for (final PlaceBookPage page : pages)
 		{

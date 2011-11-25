@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
 	<ui:style>
 		.pagesPanel {
 			position: absolute;
@@ -10,10 +10,14 @@
 			width: 800px;
 			height: 500px;
 		}
+		
+		.canvas {
+			position: absolute;
+			pointer-events: none;
+		}
 	</ui:style>
-	<g:FlowPanel ui:field="rootPanel">
+	<p:MousePanel ui:field="rootPanel">
+		<p:Canvas ui:field="canvas" styleName="{style.canvas}"/>
 		<g:FlowPanel ui:field="pagesPanel" styleName="{style.pagesPanel}" />
-		<g:Image />
-		<g:Image />		
-	</g:FlowPanel>
+	</p:MousePanel>
 </ui:UiBinder> 
