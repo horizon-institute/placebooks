@@ -65,7 +65,14 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			newItem.setKey(null);
 		}
-		newItem.setMetadata("originalItemID", item.getKey());
+		if( item.getKey()!=null)
+		{
+			newItem.setMetadata("originalItemID", item.getKey());
+		}
+		if(newItem.getMetadata("originalItemID")==null)
+		{
+			newItem.removeMetadata("originalItemID");
+		}
 		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
 		return PlaceBookItemWidgetFactory.createItemWidget(newItem, true);
 	}

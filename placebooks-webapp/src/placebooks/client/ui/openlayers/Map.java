@@ -139,4 +139,9 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.zoomToExtent(extent);
 	}-*/;
+	
+	public final native void zoomToMaxExtent()
+	/*-{
+		this.zoomToMaxExtent();
+	}-*/;
 }
