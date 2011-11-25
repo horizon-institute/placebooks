@@ -188,4 +188,9 @@ public class PlaceBookPage extends Composite
 			item.getItemWidget().setPlaceBook(placebook);
 		}
 	}
+
+	public void setProgress(double max)
+	{
+		this.progress = max;		
+	}
 }
