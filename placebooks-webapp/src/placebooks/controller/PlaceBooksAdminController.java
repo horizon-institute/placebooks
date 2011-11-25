@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -87,7 +86,7 @@ public class PlaceBooksAdminController
 		jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);	
 		jsonMapper.setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.ANY));
 	}
-	
+
 	// Helper class for passing around general PlaceBookItem data
 	public static class ItemData
 	{
@@ -168,7 +167,7 @@ public class PlaceBooksAdminController
 	private static final Logger log = Logger.getLogger(PlaceBooksAdminController.class.getName());
 
 	private final ObjectMapper jsonMapper = new ObjectMapper();
-	
+
 	private static final int MEGABYTE = 1048576;
 
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
@@ -204,7 +203,7 @@ public class PlaceBooksAdminController
 			manager.getTransaction().commit();
 
 			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-																PlaceBook.class);
+					PlaceBook.class);
 			q.setParameter("owner", user);
 
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -234,7 +233,7 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
-		
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -244,10 +243,10 @@ public class PlaceBooksAdminController
 				Service serviceImpl = ServiceRegistry.getService(service);
 				try
 				{
-				if(serviceImpl != null)
-				{
-					serviceImpl.sync(manager, user, true);
-				}
+					if(serviceImpl != null)
+					{
+						serviceImpl.sync(manager, user, true);
+					}
 				}
 				catch(Exception e)
 				{
@@ -326,7 +325,7 @@ public class PlaceBooksAdminController
 					log.error(e.getMessage(), e);
 				}
 			}
-			
+
 			new Thread(new Runnable()
 			{
 				@Override
@@ -365,7 +364,7 @@ public class PlaceBooksAdminController
 		}
 		final TypedQuery<PlaceBookItem> q = manager
 				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
-								PlaceBookItem.class);
+						PlaceBookItem.class);
 		q.setParameter("owner", user);
 
 		final Collection<PlaceBookItem> pbs = q.getResultList();
@@ -488,9 +487,9 @@ public class PlaceBooksAdminController
 						ServiceRegistry.updateServices(manager, user);
 					}
 				}).start();
-				
+
 				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-																	PlaceBook.class);
+						PlaceBook.class);
 				q.setParameter("owner", user);
 
 				final Collection<PlaceBook> pbs = q.getResultList();
@@ -541,7 +540,7 @@ public class PlaceBooksAdminController
 			final User user = uq.getSingleResult();
 
 			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-															PlaceBook.class);
+					PlaceBook.class);
 
 			q.setParameter("user", user);
 			final Collection<PlaceBook> pbs = q.getResultList();
@@ -581,7 +580,7 @@ public class PlaceBooksAdminController
 		try
 		{
 			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.state= :state",
-																PlaceBook.class);
+					PlaceBook.class);
 			q.setParameter("state", State.PUBLISHED);
 
 			final List<PlaceBook> pbs = q.getResultList();
@@ -612,7 +611,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-	
+
 	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
 	public ModelAndView getServerInfoJSON(final HttpServletRequest req, final HttpServletResponse res)
 	{
@@ -949,20 +948,17 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
-	public void serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	@RequestMapping(value = "/admin/serve/imageitem/thumb/{key}", method = RequestMethod.GET)
+	public void serveImageItemThumb(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving Image Item: " + key);
-
+		log.info("Serving ImageItem thumbnail: " + key);
 		try
 		{
 			final ImageItem i = em.find(ImageItem.class, key);
-
 			if (i != null)
 			{
-				log.info("ImageItem path:" + (i.getPath() != null ? i.getPath() : "null"));
+				log.info("ImageItem thumnail path:" + (i.getThumbPath() != null ? i.getThumbPath() : "null"));
 				if(i.getTimestamp() != null)
 				{
 					try
@@ -978,59 +974,10 @@ public class PlaceBooksAdminController
 					{
 						log.warn(e.getMessage(), e);
 					}
-					
+
 					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
-					
 				}
-
-				if (i.getPath() == null)
-				{
-					log.error("No image path for " + i.getKey() + " attempting to redownload from " + i.getSourceURL());
-					final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
-					i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
-				}
-				if (i.getPath() != null)
-				{
-					try
-					{
-						File image = new File(i.getPath());
-						if (!image.exists())
-						{
-							log.error("Image '" + i.getPath() + "' does not exist for " + i.getKey()
-									+ " attempting to redownload from " + i.getSourceURL());
-							final URLConnection conn = CommunicationHelper.getConnection(i.getSourceURL());
-							i.writeDataToDisk(i.getKey() + ".jpg", conn.getInputStream());
-							image = new File(i.getPath());
-						}
-						final ImageInputStream iis = ImageIO.createImageInputStream(image);
-						final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-						String fmt = "png";
-						while (readers.hasNext())
-						{
-							final ImageReader read = readers.next();
-							fmt = read.getFormatName();
-							read.dispose();
-						}
-
-						final OutputStream out = res.getOutputStream();
-						ImageIO.write(ImageIO.read(image), fmt, out);
-						out.close();
-						iis.close();
-					}
-					catch (final IOException e)
-					{
-						log.error(e.toString());
-						res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-						try
-						{
-							e.printStackTrace(res.getWriter());
-						}
-						catch (IOException e1)
-						{
-							e1.printStackTrace();
-						}						
-					}
-				}
+				ServeImage(i.getThumbPath(), res);
 			}
 			else
 			{
@@ -1055,6 +1002,96 @@ public class PlaceBooksAdminController
 		{
 			em.close();
 		}
+	}
+
+
+	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
+	public void serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		log.info("Serving Image Item: " + key);
+
+		try
+		{
+			final ImageItem i = em.find(ImageItem.class, key);
+			if (i != null)
+			{
+				String imagePath = i.getPath();
+				log.info("ImageItem path: " + (imagePath != null ? imagePath : "null"));
+				if(i.getTimestamp() != null)
+				{
+					try
+					{
+						long lastModified = req.getDateHeader("If-Modified-Since"); 
+						if(lastModified >= i.getTimestamp().getTime())
+						{
+							res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+							return;
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage(), e);
+					}
+
+					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
+
+				}
+
+				if (imagePath != null)
+				{
+					ServeImage(imagePath, res);
+				}
+				else
+				{
+					log.error("Image for ImageItem " + i.getKey() + " does not exist");
+					res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				}
+			}
+			else
+			{
+				log.info("ImageItem " + key + " not found in db");
+				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try
+			{
+				e.printStackTrace(res.getWriter());
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		finally
+		{
+			em.close();
+		}
+	}
+
+	private void ServeImage(String path, final HttpServletResponse res) throws IOException
+	{
+		log.debug("Serve image: " + path);
+		File image = new File(path);
+		final ImageInputStream iis = ImageIO.createImageInputStream(image);
+		final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+		String fmt = "png";
+		while (readers.hasNext())
+		{
+			final ImageReader read = readers.next();
+			fmt = read.getFormatName();
+			read.dispose();
+		}
+
+		final OutputStream out = res.getOutputStream();
+		ImageIO.write(ImageIO.read(new File(path)), fmt, out);
+		out.close();
+		iis.close();
 	}
 
 	@RequestMapping(value = "/admin/serve/{type}item/{key}", method = RequestMethod.GET)
@@ -1254,7 +1291,7 @@ public class PlaceBooksAdminController
 					if (dLimit != null && iden != null)
 					{
 						final int maxSize = Integer.parseInt(PropertiesSingleton.get(	PlaceBooksAdminHelper.class
-																								.getClassLoader())
+								.getClassLoader())
 								.getProperty(iden, dLimit));
 						if ((item.getSize() / MEGABYTE) > maxSize) { throw new Exception("File too big, limit = "
 								+ Integer.toString(maxSize) + "Mb"); }

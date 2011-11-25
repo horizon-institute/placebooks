@@ -14,6 +14,8 @@ public interface IUpdateableExternal
 {
 	public  String getExternalID();
 	
+	public User getOwner();
+	
 	/**
 	 * Implement this to allow the items to be updated and saved properly
 	 */

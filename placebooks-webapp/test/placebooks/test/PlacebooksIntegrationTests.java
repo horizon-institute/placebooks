@@ -207,7 +207,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		//Now try replacing the data with some other items
 		final LoginDetails oldLoginDetails = user.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
 		user.remove(oldLoginDetails);
-		User otherUser = UserManager.getUser(em,  "everytrail_test@live.co.uk");
+		User otherUser = UserManager.getUser(em,  "azc@Cs.Nott.AC.UK");
 		final LoginDetails newLoginDetails = otherUser.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
 		user.add(newLoginDetails);
 		service.sync(em, user, true);

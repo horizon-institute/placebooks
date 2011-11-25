@@ -38,6 +38,8 @@ public class PaletteItem
 		return name;
 	}
 	
+
+	
 	public Widget createWidget()
 	{
 		Widget result = uiBinder.createAndBindUi(this);		

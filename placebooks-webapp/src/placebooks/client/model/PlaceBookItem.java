@@ -144,6 +144,26 @@ public class PlaceBookItem extends JavaScriptObject
 		return getSourceURL();
 	}
 
+	public final String getThumbURL()
+	{
+		final String shortClass = getShortClassName();
+		String key = getKey();
+		if (key == null)
+		{
+			key = getMetadata("originalItemID", null);
+		}
+		if (key != null && isMedia(shortClass))
+		{
+			if (getHash() != null)
+			{
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/thumb/" + key
+						+ "?" + getHash();
+			}
+		}
+
+		return getURL();
+	}
+	
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
 															}-*/;

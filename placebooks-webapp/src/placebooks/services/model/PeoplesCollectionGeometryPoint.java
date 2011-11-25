@@ -47,7 +47,7 @@ public class PeoplesCollectionGeometryPoint
 	public Geometry GetGeometry() throws IOException {
 		try
 		{
-			String wkt = type.toUpperCase() + " ( " + coordinates[0] + " " + coordinates[1] + " )";
+			String wkt = type.toUpperCase() + " ( " + coordinates[1] + " " + coordinates[0] + " )";
 			log.debug("Generated WKT: "+ wkt);
 			return new WKTReader().read(wkt);
 		}
