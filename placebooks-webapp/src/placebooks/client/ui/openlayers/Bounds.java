@@ -15,7 +15,7 @@ public class Bounds extends JavaScriptObject
 
 	public final native boolean contains(final Bounds bounds)
 	/*-{
-		this.contains(bounds);
+		return this.containsBounds(bounds);
 	}-*/;
 	
 	public final native void extend(final Bounds bounds)

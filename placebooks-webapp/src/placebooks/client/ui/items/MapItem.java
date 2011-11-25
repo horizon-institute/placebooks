@@ -301,6 +301,8 @@ public class MapItem extends PlaceBookItemWidget
 			final Bounds bounds = getLayerBounds();
 			if (bounds != null)
 			{
+				GWT.log("" + bounds);
+				GWT.log("" + map.getMaxExtent());
 				if(map.getMaxExtent().contains(bounds))
 				{
 					map.zoomToExtent(bounds);
