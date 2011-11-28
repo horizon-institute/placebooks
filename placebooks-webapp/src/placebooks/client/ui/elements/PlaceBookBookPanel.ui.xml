@@ -12,6 +12,7 @@
 		.canvas {
 			position: absolute;
 			pointer-events: none;
+			z-index: 1500;
 		}
 	</ui:style>
 	<p:MousePanel ui:field="rootPanel">

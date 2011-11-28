@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -213,26 +214,15 @@ public class PlaceBookBookPanel extends Composite
 		final double rightShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 		final double leftShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 
-		GWT.log("Fold width = " + foldWidth + ", x = " + foldX + ", verticalOutdent = " + verticalOutdent);
-		
 		// Mask the page by setting its width to match the foldX
 		//page.setFlip(Math.max(foldX, 0));
 
 		final Context2d context = canvas.getContext2d();
 		context.clearRect(0, 0, canvas.getOffsetWidth(), canvas.getOffsetHeight());
 		context.save();
-		context.translate( pageWidth, margin );
+		context.translate( (bookWidth / 2) + margin, margin );
 
-		context.setStrokeStyle("rgb(0,0,0)");
-		context.setLineWidth(2);
 
-		// Draw the folded piece of paper
-		context.beginPath();
-		context.moveTo(0, 0);
-		context.lineTo(0, pageHeight);
-
-		context.stroke();
-		
 		// Draw a sharp shadow on the left side of the page
 		context.setStrokeStyle("rgba(0,0,0," + (0.05 * strength) + ")");
 		context.setLineWidth(30 * strength);
@@ -243,7 +233,8 @@ public class PlaceBookBookPanel extends Composite
 
 		// Right side drop shadow
 		final CanvasGradient rightShadowGradient = context.createLinearGradient(foldX, 0, foldX + rightShadowWidth, 0);
-		rightShadowGradient.addColorStop(0, "rgba(0,0,0," + (strength * 0.2) + ")");
+		final String rightShadowAlpha = NumberFormat.getFormat("#.################").format(strength * 0.2);
+		rightShadowGradient.addColorStop(0, "rgba(0,0,0," + rightShadowAlpha + ")");
 		rightShadowGradient.addColorStop(0.8, "rgba(0,0,0,0.0)");
 
 		context.setFillStyle(rightShadowGradient);
@@ -258,7 +249,8 @@ public class PlaceBookBookPanel extends Composite
 		final CanvasGradient leftShadowGradient = context.createLinearGradient(	foldX - foldWidth - leftShadowWidth, 0,
 																				foldX - foldWidth, 0);
 		leftShadowGradient.addColorStop(0, "rgba(0,0,0,0.0)");
-		leftShadowGradient.addColorStop(1, "rgba(0,0,0," + (strength * 0.15) + ")");
+		final String leftShadowAlpha = NumberFormat.getFormat("#.################").format(strength * 0.15);	
+		leftShadowGradient.addColorStop(1, "rgba(0,0,0," + leftShadowAlpha + ")");
 
 		context.setFillStyle(leftShadowGradient);
 		context.beginPath();
@@ -327,6 +319,9 @@ public class PlaceBookBookPanel extends Composite
 		canvas.setWidth(bookWidth + "px");
 		canvas.setHeight(height + "px");
 
+		canvas.getCanvasElement().setWidth((int) bookWidth);
+		canvas.getCanvasElement().setHeight((int) height);
+		
 		pagesPanel.getElement().getStyle().setTop(top + margin, Unit.PX);
 		pagesPanel.getElement().getStyle().setLeft(left + margin, Unit.PX);
 		pagesPanel.setWidth(pageWidth + "px");
