@@ -179,13 +179,12 @@ public class GPSTraceItem extends PlaceBookItem
 		this.trace = trace;
 
 		Geometry bounds = null;
-		float minLat = Float.POSITIVE_INFINITY;
-		float maxLat = Float.NEGATIVE_INFINITY;
-		float minLon = Float.POSITIVE_INFINITY;
-		float maxLon = Float.NEGATIVE_INFINITY;
+		float minLat = 0;
+		float maxLat = 0;
+		float minLon = 0;
+		float maxLon = 0;
 
 		final WKTReader wktReader = new WKTReader();
-
 		try 
 		{
 			// GPX 1.1 spec
@@ -226,13 +225,12 @@ public class GPSTraceItem extends PlaceBookItem
 					maxLon = Math.max(maxLon, wpt.getLon().floatValue());
 				}
 			}
-
+			log.info("Read track as GPX 1.1");
 		} 
 		catch (final Throwable e) 
 		{
 			// GPX 1.0 spec
 			log.info("Failed to read GPX as GPX1.1, trying 1.0");
-
 			try 
 			{
 				Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX10").createUnmarshaller();
@@ -274,18 +272,16 @@ public class GPSTraceItem extends PlaceBookItem
 						maxLon = Math.max(maxLon, rpt.getLon().floatValue());
 					}
 				}
-
+				log.info("Read track as GPX 1.0");
 			} 
 			catch (final Exception e_) 
 			{
 				log.error(e_.toString(), e_);
 			}
-
-
-
 		}
 		try
 		{
+			log.info("Creating bounds: " + minLat  + ", " + minLon + ",  "  + maxLat + ",  " + maxLon);
 			bounds = wktReader.read("POLYGON ((" 
 					+ minLat + " " + minLon + ", "
 					+ minLat + " " + maxLon + ", "
