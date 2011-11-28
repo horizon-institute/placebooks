@@ -179,10 +179,10 @@ public class GPSTraceItem extends PlaceBookItem
 		this.trace = trace;
 
 		Geometry bounds = null;
-		float minLat = 0;
-		float maxLat = 0;
-		float minLon = 0;
-		float maxLon = 0;
+		float minLat = Float.POSITIVE_INFINITY;
+		float maxLat = Float.NEGATIVE_INFINITY;
+		float minLon =  Float.POSITIVE_INFINITY;
+		float maxLon = Float.NEGATIVE_INFINITY;
 
 		final WKTReader wktReader = new WKTReader();
 		try 
@@ -281,6 +281,24 @@ public class GPSTraceItem extends PlaceBookItem
 		}
 		try
 		{
+			if(minLat == Float.POSITIVE_INFINITY)
+			{
+				minLat = 0;
+			}
+			if(minLon == Float.POSITIVE_INFINITY)
+			{
+				minLat = 0;
+			}
+			if(maxLat == Float.NEGATIVE_INFINITY)
+			{
+				maxLat = 0;
+			}
+			if(maxLon == Float.NEGATIVE_INFINITY)
+			{
+				maxLon = 0;
+			}
+
+			
 			log.info("Creating bounds: " + minLat  + ", " + minLon + ",  "  + maxLat + ",  " + maxLon);
 			bounds = wktReader.read("POLYGON ((" 
 					+ minLat + " " + minLon + ", "
