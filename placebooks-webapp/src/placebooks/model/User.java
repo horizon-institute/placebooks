@@ -42,7 +42,8 @@ public class User
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "owner", cascade = ALL)
-	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
+	private Collection<PlaceBookBinder> placebookBinders = 
+		new HashSet<PlaceBookBinder>();
 
 	User()
 	{
@@ -61,9 +62,9 @@ public class User
 		loginDetails.add(loginDetail);
 	}
 
-	public void add(final PlaceBook placebook)
+	public void add(final PlaceBookBinder placebookBinder)
 	{
-		placebooks.add(placebook);
+		placebookBinders.add(placebookBinder);
 	}
 
 	public void add(final User friend)
@@ -115,9 +116,9 @@ public class User
 		return placebooks;
 	}
 
-	public void remove(final PlaceBook placebook)
+	public void remove(final PlaceBookBinder placebookBinder)
 	{
-		placebooks.remove(placebook);
+		placebookBinders.remove(placebookBinder);
 	}
 
 	public void remove(final User friend)

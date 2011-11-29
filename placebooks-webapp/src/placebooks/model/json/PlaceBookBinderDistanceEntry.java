@@ -1,14 +1,15 @@
 package placebooks.model.json;
 
-import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookBinder;
 
-public class PlaceBookDistanceEntry extends PlaceBookEntry
+public class PlaceBookBinderDistanceEntry extends PlaceBookBinderEntry
 {
 	private final double distance;
 	
 	private final String ownerName;
 
-	public PlaceBookDistanceEntry(final PlaceBook p, final double distance)
+	public PlaceBookBinderDistanceEntry(final PlaceBookBinder p, 
+										final double distance)
 	{
 		super(p);
 		this.distance = distance;
