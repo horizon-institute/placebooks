@@ -78,7 +78,7 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	PlaceBookBookPanel bookPanel;
 
 	@UiField
-	Panel loadingPanel;
+	Widget loadingPanel;
 
 	@UiField
 	Palette palette;
@@ -170,7 +170,8 @@ public class PlaceBookBookEditor extends PlaceBookPlace
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		final Widget editor = uiBinder.createAndBindUi(this);
-
+		loadingPanel.setVisible(true);
+		
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
 			@Override

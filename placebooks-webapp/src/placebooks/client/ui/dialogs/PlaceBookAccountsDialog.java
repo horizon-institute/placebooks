@@ -15,7 +15,6 @@ import placebooks.client.ui.elements.EnabledButtonCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -232,8 +231,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 						@Override
 						public void onClick(final ClickEvent event)
 						{
-							account.getElement().getStyle().setCursor(Cursor.WAIT);
-							account.setDisabled();
+							account.setProgress(true);
 							PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), service,
 															new AbstractCallback()
 															{
@@ -241,9 +239,8 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 																public void failure(final Request request,
 																		final Response response)
 																{
-																	account.setErrorText(service + " Login Failed");
-																	account.getElement().getStyle().clearCursor();																	
-																	account.setEnabled();																	
+																	account.setErrorText(service + " Login Failed");																	
+																	account.setProgress(false);																	
 																}
 
 																@Override

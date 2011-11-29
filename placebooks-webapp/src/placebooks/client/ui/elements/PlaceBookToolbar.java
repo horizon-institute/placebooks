@@ -145,8 +145,47 @@ public class PlaceBookToolbar extends Composite
 				@Override
 				public void onClick(final ClickEvent event)
 				{
-					account.hide();
-					PlaceBookService.login(account.getUsername(), account.getPassword(), shelfCallback);
+					account.setProgress(true);
+					PlaceBookService.login(account.getUsername(), account.getPassword(), new AbstractCallback()
+					{
+						@Override
+						public void failure(Request request, Response response)
+						{
+							account.setProgress(false);
+							if(response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
+							{
+								account.setErrorText("Login not recognised. Check username and password.");								
+							}
+							else if(response.getText().startsWith("{\"detailMessage\":"))
+							{
+								account.setErrorText(response.getText().substring(18, response.getText().length() - 2));
+							}
+							else
+							{
+								account.setErrorText("Error logging in");
+							}
+							account.center();
+						}
+
+						@Override
+						public void success(Request request, Response response)
+						{
+							account.hide();
+							try
+							{
+								final Shelf shelf = Shelf.parse(response.getText());
+								if(shelf != null)
+								{
+									place.setUser(shelf.getUser());
+								}
+							}
+							catch (final Exception e)
+							{
+								failure(request, response);
+							}
+							
+						}
+					});
 				}
 			});
 			account.center();

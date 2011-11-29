@@ -42,6 +42,9 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 	@UiField
 	Label usernameLabel;
 
+	@UiField
+	Widget progress;
+	
 	public PlaceBookLoginDialog(final String title, final String submitText, final String usernameText)
 	{
 		super(true);
@@ -75,18 +78,19 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 		submit.setEnabled(true);
 	}
 	
-	public void setDisabled()
+	public void setProgress(boolean showProgress)
 	{
-		username.setEnabled(false);
-		password.setEnabled(false);
-		submit.setEnabled(false);
-	}
-	
-	public void setEnabled()
-	{
-		username.setEnabled(false);
-		password.setEnabled(false);		
-		checkValid(null);
+		username.setEnabled(!showProgress);
+		password.setEnabled(!showProgress);
+		if(!showProgress)
+		{
+			checkValid(null);
+		}
+		else
+		{
+			submit.setEnabled(false);
+		}
+		progress.setVisible(showProgress);
 	}
 	
 	public void focus()

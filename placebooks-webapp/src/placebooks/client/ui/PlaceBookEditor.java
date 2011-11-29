@@ -78,7 +78,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	Panel canvasPanel;
 
 	@UiField
-	Panel loadingPanel;
+	Widget loadingPanel;
 
 	@UiField
 	Palette palette;
@@ -178,6 +178,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		final Widget editor = uiBinder.createAndBindUi(this);
 
+		loadingPanel.setVisible(true);
+		
 		canvasPanel.add(canvas);
 
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()

@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
 	<ui:style>
 		.title {
 			background-color: #222;
@@ -11,11 +11,16 @@
 		
 		.content {
 			padding: 10px;
+			position: relative;
 		}
 		
 		.button {
-			float: right;
-			margin: 10px 0;
+			margin: 10px 0 0 0;
+		}
+		
+		.buttonPanel {
+			display: -webkit-box;
+			-webkit-box-pack: end;
 		}
 		
 		.error {
@@ -24,8 +29,9 @@
 			font-weight: bold;
 			color: #FFF;			
 			display: none;
-		}
+		}	
 	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
 	<g:FlowPanel>
 		<g:Label ui:field="titleLabel" styleName="{style.title}">Link Everytrail Account</g:Label>
 		<g:Label ui:field="errorLabel" styleName="{style.error}"></g:Label>
@@ -34,7 +40,8 @@
 			<g:TextBox ui:field="username"  name="pb_username" />
 			<g:Label>Password:</g:Label>
 			<g:PasswordTextBox ui:field="password" name="pb_password" />
-			<g:SimplePanel><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
+			<g:SimplePanel styleName="{style.buttonPanel}"><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
+			<p:ProgressPanel ui:field="progress" text="Logging In..."/>	
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 
