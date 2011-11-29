@@ -39,7 +39,8 @@ import placebooks.model.GPSTraceItem;
 import placebooks.model.MapImageItem;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBook.State;
+import placebooks.model.PlaceBookBinder.State;
+import placebooks.model.PlaceBookBinder;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.PlaceBookItemSearchIndex;
 import placebooks.model.PlaceBookSearchIndex;
@@ -373,7 +374,7 @@ public final class PlaceBooksAdminHelper
 
 	public static final PlaceBookBinder 
 		savePlaceBookBinder(final EntityManager manager,
-							final PlaceBookBinder placeBookBinder)
+							PlaceBookBinder placeBookBinder)
 	{
 		final User currentUser = UserManager.getCurrentUser(manager);
 	
@@ -465,7 +466,7 @@ public final class PlaceBooksAdminHelper
 					for (final Entry<String, String> entry : 
 						 placeBookBinder.getMetadata().entrySet())
 					{
-						dbPlaceBookBinder.addMetadataEntryIndexed(
+						dbPlaceBookBinder.addMetadataEntry(
 							entry.getKey(), 
 							entry.getValue()
 						);
@@ -488,7 +489,7 @@ public final class PlaceBooksAdminHelper
 			}
 
 
-			for (final PlaceBook placeBook : placeBookBinder.getPlaceBooks())
+			for (PlaceBook placeBook : placeBookBinder.getPlaceBooks())
 			{
 				final Collection<PlaceBookItem> updateMedia = 
 					new ArrayList<PlaceBookItem>();
@@ -664,7 +665,7 @@ public final class PlaceBooksAdminHelper
 
 
 	private static final PlaceBook savePlaceBook(final EntityManager manager,
-												 final PlaceBook placebook)
+												 PlaceBook placebook)
 	{
 		final User currentUser = UserManager.getCurrentUser(manager);
 	
@@ -1002,10 +1003,11 @@ public final class PlaceBooksAdminHelper
 		searchLocationForPlaceBookItems(final EntityManager em, 
 										final Geometry geometry)
 	{
+		// TODO: need to look up PlaceBookBinder state; not sure how
 		final List<PlaceBookItem> ps = 
-			em.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook.state = :state", 
+			em.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook.placebookbinder.state = :state", 
 						   PlaceBookItem.class)
-				.setParameter("state", PlaceBook.State.PUBLISHED)
+				.setParameter("state", PlaceBookBinder.State.PUBLISHED)
 				.getResultList();
 
 		final Map<PlaceBookItem, Double> hits = 

@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public abstract class BoundaryGenerator
 {
 	protected static final Logger log = 
@@ -19,6 +21,7 @@ public abstract class BoundaryGenerator
 
 	protected final Geometry calcBoundary(final Set<Geometry> geoms)
 	{
+		Geometry geom = null;
 
 		Geometry bounds = null;
 		float minLat = Float.POSITIVE_INFINITY;

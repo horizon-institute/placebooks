@@ -1,5 +1,8 @@
 package placebooks.model;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.TemporalType.TIMESTAMP;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.EnumSet;
@@ -9,6 +12,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
 
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
@@ -16,12 +20,24 @@ import javax.persistence.ElementCollection;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import org.apache.log4j.Logger;
+
+import com.vividsolutions.jts.geom.Geometry;
+
+import placebooks.controller.PropertiesSingleton;
+
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, 
@@ -43,6 +59,8 @@ public class PlaceBookBinder extends BoundaryGenerator
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBookBinder.class.getName());
 
+	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
+	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
 	private Geometry geom; // Super-geometry of all PlaceBooks in this binder
 
 	// We are relying on ArrayList to preserve PlaceBook ordering
@@ -57,6 +75,8 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	@JsonIgnore
 	private String permsUsers;
+
+	private State state;
 
 	public enum Permission
 	{
@@ -106,9 +126,9 @@ public class PlaceBookBinder extends BoundaryGenerator
 			return lu.get(value);
 		}
 
-		public final toString()
+		public final String toString()
 		{
-			String.valueOf(value);
+			return String.valueOf(value);
 		}
 
 	}
@@ -155,7 +175,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		this.metadata = new HashMap<String, String>(p.getMetadata());
 
         for (final PlaceBook page : p.getPlaceBooks())
-			this.addPlaceBook(page.deepCopy());
+			this.addPlaceBook(new PlaceBook(page));
 
         log.info("Created copy of PlaceBookBinder; old key = " + p.getKey());
 
@@ -190,7 +210,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 			log.info("Setting perms=" + this.getPermissionsAsString());
 			final Element permissions = config.createElement("permissions");
 			permissions.appendChild(
-				config.createTextNode(this.getPermissionsAsString());
+				config.createTextNode(this.getPermissionsAsString())
 			);
 			root.appendChild(permissions);
 		}
@@ -246,7 +266,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 																   + getKey();
 	}
 
-	private final String getPermissionsAsString()
+	public final String getPermissionsAsString()
 	{
 		final StringBuffer l = new StringBuffer();
 		final Iterator<User> i = getPermissions().keySet().iterator();
@@ -288,7 +308,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	public void addPlaceBook(final PlaceBook page)
 	{
 		pages.add(page);
-		p.setPlaceBookBinder(this);
+		page.setPlaceBookBinder(this);
 	}
 
 	public List<PlaceBook> getPlaceBooks()
@@ -311,6 +331,18 @@ public class PlaceBookBinder extends BoundaryGenerator
 	public Map<String, String> getMetadata()
 	{
 		return Collections.unmodifiableMap(metadata);
+	}
+
+	public void addMetadataEntry(final String key, final String value)
+	{
+		if (value == null)
+		{
+			metadata.remove(key);
+		}
+		else
+		{
+			metadata.put(key, value);
+		}
 	}
 
 	public String getMetadataValue(final String key)

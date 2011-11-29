@@ -214,20 +214,6 @@ public class PlaceBook extends BoundaryGenerator
 		return root;
 	}
 
-
-	private final String permsUsersToString()
-	{
-		final StringBuffer l = new StringBuffer();
-		final Iterator<User> i = getPermissions().keySet().iterator();
-		while (i.hasNext())
-		{
-			l.append("'" + i.next().getEmail() + "'");
-			if (i.hasNext())
-				l.append(",");
-		}
-		return l.toString();
-	}
-
 	public Geometry getGeometry()
 	{
 		return geom;
@@ -256,11 +242,6 @@ public class PlaceBook extends BoundaryGenerator
 	public User getOwner()
 	{
 		return owner;
-	}
-
-	public State getState()
-	{
-		return state;
 	}
 
 	public Date getTimestamp()

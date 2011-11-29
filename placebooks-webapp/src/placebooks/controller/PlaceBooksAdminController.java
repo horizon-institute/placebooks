@@ -53,13 +53,14 @@ import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBook.State;
+import placebooks.model.PlaceBookBinder;
+import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.model.json.PlaceBookDistanceEntry;
+import placebooks.model.json.PlaceBookBinderDistanceEntry;
 import placebooks.model.json.PlaceBookItemDistanceEntry;
-import placebooks.model.json.PlaceBookSearchEntry;
+import placebooks.model.json.PlaceBookBinderSearchEntry;
 import placebooks.model.json.ServerInfo;
 import placebooks.model.json.Shelf;
 import placebooks.model.json.ShelfEntry;
@@ -205,7 +206,7 @@ public class PlaceBooksAdminController
 
 			final TypedQuery<PlaceBookBinder> q = 
 				manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner= :owner",
-																PlaceBook.class);
+																PlaceBookBinder.class);
 			q.setParameter("owner", user);
 
 			final Collection<PlaceBookBinder> pbs = q.getResultList();
@@ -588,7 +589,7 @@ public class PlaceBooksAdminController
 			final TypedQuery<PlaceBookBinder> q = 
 				pm.createQuery("SELECT p FROM PlaceBookBinder p "
 					+ "WHERE p.owner = :user OR p.permsUsers LIKE :email",
-					PlaceBook.class
+					PlaceBookBinder.class
 				);
 
 			q.setParameter("user", user);
@@ -1389,6 +1390,7 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Failed");
 	}
 
+ 	// TODO: needs to be viewPlaceBookBinder
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
 	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
@@ -1401,7 +1403,7 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					if (placebook.getState() != State.PUBLISHED) { return; }
+					//if (placebook.getState() != State.PUBLISHED) { return; }
 
 					String urlbase;
 					if (req.getServerPort() != 80)

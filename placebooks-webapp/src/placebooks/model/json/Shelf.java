@@ -25,7 +25,7 @@ public class Shelf
 	{
 		log.info("Creating JSON Shelf for PlaceBookBinders...");
 		
-		for (final PlaceBook pb : placebooks)
+		for (final PlaceBookBinder pb : placebookBinders)
 		{
 //			for (final Map.Entry<String, String> e : 
 //				 pb.getMetadata().entrySet())
@@ -33,7 +33,7 @@ public class Shelf
 //				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
 //			}
 
-			final ShelfEntry entry = new PlaceBookEntry(pb);
+			final ShelfEntry entry = new PlaceBookBinderEntry(pb);
 			entries.add(entry);
 		}
 	}
@@ -64,8 +64,6 @@ public class Shelf
 			final ShelfEntry entry = new PlaceBookEntry(p);
 			entries.add(entry);
 		}
-	}
-
 	}
 
 	public Shelf(final PlaceBookItem ps[])

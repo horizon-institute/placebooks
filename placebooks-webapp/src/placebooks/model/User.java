@@ -111,9 +111,9 @@ public class User
 		return passwordHash;
 	}
 
-	public Iterable<PlaceBook> getPlacebooks()
+	public Iterable<PlaceBookBinder> getPlacebookBinders()
 	{
-		return placebooks;
+		return placebookBinders;
 	}
 
 	public void remove(final PlaceBookBinder placebookBinder)
