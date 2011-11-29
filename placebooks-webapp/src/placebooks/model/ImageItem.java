@@ -97,6 +97,7 @@ public class ImageItem extends MediaItem
 		BufferedImage originalImage = ImageIO.read(imageFile);
 
 		String thumbPath = FileHelper.GetSavePath(PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_THUMBS, ""));
+		log.debug("Thumbnail path is:" + thumbPath);
 		File thumbFile = new File(thumbPath + File.separator + this.getHash());
 
 		if(!thumbFile.exists() || (thumbFile.length()==0))
