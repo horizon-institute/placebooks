@@ -50,9 +50,16 @@ public class PlaceBookPage extends Composite
 		return progress;
 	}
 	
-	void setFlip(double flipX)
+	void clearFlip()
+	{
+		getElement().getStyle().clearWidth();
+		columnPanel.getElement().getStyle().clearWidth();
+	}
+	
+	void setFlip(double flipX, double pageWidth)
 	{
 		setWidth(flipX + "px");		
+		columnPanel.setWidth(pageWidth + "px");
 	}
 	
 	public PlaceBookPage()
