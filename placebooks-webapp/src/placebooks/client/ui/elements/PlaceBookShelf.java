@@ -215,7 +215,7 @@ public class PlaceBookShelf extends Composite
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				final Shelf shelf = Shelf.parse(response.getText());
+				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 				if (shelf == null) { return; }
 				progress.setVisible(false);
 				mapToggle.setVisible(true);
@@ -332,7 +332,7 @@ public class PlaceBookShelf extends Composite
 				{
 					try
 					{
-						MapItem.serverInfo = ServerInfo.parse(response.getText());
+						MapItem.serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
 						if (MapItem.serverInfo != null)
 						{
 							createMap(MapItem.serverInfo);

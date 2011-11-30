@@ -10,15 +10,14 @@
 			right: 120px;
 			bottom: 0px;
 			background: #DDD;
-			overflow-x: auto;
-			overflow-y: scroll;
 		}
 		
-		.innerCanvasPanel {
-			top: 20px;
+		.bookPanel {
+			position: absolute;
+			top: 50px;
+			bottom: 0px;
 			left: 0px;
 			right: 0px;
-			bottom: 0px;
 			margin: 20px;
 		}
 		
@@ -206,8 +205,7 @@
 				<p:PlaceBookSaveItem ui:field="saveItem" addStyleNames="{style.spacer}" />
 				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
-			<g:SimplePanel styleName="{style.innerCanvasPanel}"
-				ui:field="canvasPanel" />
+			<p:PlaceBookBookPanel ui:field="bookPanel" styleName="{style.bookPanel}" />
 		</g:FlowPanel>
 		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
 			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>

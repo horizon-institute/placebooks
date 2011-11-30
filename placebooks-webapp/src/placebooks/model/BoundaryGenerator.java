@@ -1,15 +1,12 @@
 package placebooks.model;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.Coordinate;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class BoundaryGenerator
 {

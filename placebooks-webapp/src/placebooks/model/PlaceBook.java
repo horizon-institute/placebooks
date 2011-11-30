@@ -6,12 +6,10 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.ElementCollection;
@@ -26,14 +24,13 @@ import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;

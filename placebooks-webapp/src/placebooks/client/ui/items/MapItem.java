@@ -218,7 +218,7 @@ public class MapItem extends PlaceBookItemWidget
 					{
 						try
 						{
-							serverInfo = ServerInfo.parse(response.getText());
+							serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
 							if(serverInfo != null)
 							{
 								createMap(serverInfo);						
@@ -301,7 +301,14 @@ public class MapItem extends PlaceBookItemWidget
 			final Bounds bounds = getLayerBounds();
 			if (bounds != null)
 			{
-				map.zoomToExtent(bounds);
+				if(map.getMaxExtent().contains(bounds))
+				{
+					map.zoomToExtent(bounds);
+				}
+				else
+				{
+					map.zoomToMaxExtent();
+				}
 			}
 		}
 		catch (final Exception e)

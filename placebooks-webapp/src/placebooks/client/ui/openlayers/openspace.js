@@ -25,8 +25,7 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 												projection:		EPSG27700,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
 												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
-												tile200:		new OpenLayers.Size( 200, 200 ),
-												//tile250:		new OpenLayers.Size( 250, 250 )
+												tileSize: 		new OpenLayers.Size(200 , 200)
 											}
 										)
 								)
@@ -35,29 +34,19 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 		
 	moveTo:		function( bounds, zoomChanged, dragging )
 				{
-					if( zoomChanged )
+					var	resolution = this.getResolution();
+					this.params = OpenLayers.Util.extend( this.params, {"LAYERS":resolution} );						
+					if(resolution == 4)
 					{
-						var	resolution = this.getResolution();
-						var	oTileSize = this.tileSize;
-						this.setTileSize( this.tile200 );//resolution < 5 ? this.tile250 : this.tile200 );
-						if( this.tileSize != oTileSize )
-						{
-							this.clearGrid();							
-						}
-						this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"layers":resolution}) );						
-						if(resolution == 4)
-						{
-							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":"25KR"}) );							
-						}
-						else if(resolution == 2.5)
-						{
-							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":"25K"}) );							
-						}
-						else
-						{
-							this.params = OpenLayers.Util.extend( this.params, OpenLayers.Util.upperCaseObject({"product":""}) );
-							delete this.params["PRODUCT"];
-						}
+						this.params = OpenLayers.Util.extend( this.params,{"PRODUCT":"25KR"} );							
+					}
+					else if(resolution == 2.5)
+					{
+						this.params = OpenLayers.Util.extend( this.params, {"PRODUCT":"25K"} );							
+					}
+					else
+					{
+						delete this.params["PRODUCT"];
 					}
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );
 				},

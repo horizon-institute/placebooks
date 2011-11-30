@@ -2,7 +2,7 @@ package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.model.PlaceBook;
+import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
@@ -81,20 +81,20 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
 
-	private PlaceBook placebook;
-	private final String placebookKey;
+	private PlaceBookBinder placebook;
+	private final String placebookID;
 
-	public PlaceBookPreview(final User user, final PlaceBook placebook)
+	public PlaceBookPreview(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
-		this.placebookKey = placebook.getKey();
+		this.placebookID = placebook.getId();
 	}
 
 	public PlaceBookPreview(final User user, final String placebookKey)
 	{
 		super(user);
-		this.placebookKey = placebookKey;
+		this.placebookID = placebookKey;
 		this.placebook = null;
 	}
 
@@ -103,10 +103,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 		return canvas;
 	}
 
-	public void setPlaceBook(final PlaceBook placebook)
+	public void setPlaceBook(final PlaceBookBinder placebook)
 	{
 		this.placebook = placebook;
-		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY, false);
+		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY);
 
 		titleLabel.setText(placebook.getMetadata("title"));
 		authorLabel.setText(placebook.getOwner().getName());
@@ -116,7 +116,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		if (placebook.getState() != null && placebook.getState().equals("PUBLISHED"))
 		{
-			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getKey();
+			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getId();
 			facebookLike.setURL(url);
 			googlePlus.setURL(url);
 		}
@@ -145,7 +145,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		toolbar.setPlace(this);
 
 		panel.setWidget(preview);
-		canvas.reflow();
+		canvas.resized();
 
 		if (placebook != null)
 		{
@@ -153,13 +153,12 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookKey, new AbstractCallback()
+			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
 			{
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					setPlaceBook(placebook);
+					setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
 				}
 			});
 		}
@@ -170,7 +169,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	{
 		if (getUser().getEmail().equals(placebook.getOwner().getEmail()))
 		{
-			PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+			PlaceBookService.deletePlaceBook(placebook.getId(), new AbstractCallback()
 			{
 				@Override
 				public void success(final Request request, final Response response)
@@ -184,7 +183,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	String getKey()
 	{
-		return placebookKey;
+		return placebookID;
 	}
 
 	@UiHandler("actionMenu")

@@ -4,8 +4,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class PlaceBookEntry extends JavaScriptObject
 {
-	public static final native PlaceBookEntry parse(final String json) /*-{ return eval('(' + json + ')'); }-*/;
-
 	protected PlaceBookEntry()
 	{
 	}

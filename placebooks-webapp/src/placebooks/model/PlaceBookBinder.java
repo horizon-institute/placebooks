@@ -64,7 +64,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	private Geometry geom; // Super-geometry of all PlaceBooks in this binder
 
 	// We are relying on ArrayList to preserve PlaceBook ordering
-	@OneToMany(mappedBy = "placebookbinder", cascade = ALL)
+	@OneToMany(mappedBy = "placeBookBinder", cascade = ALL)
 	private List<PlaceBook> pages = new ArrayList<PlaceBook>();
 
 	@ElementCollection

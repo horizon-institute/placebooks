@@ -5,11 +5,12 @@ import java.util.List;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.model.PlaceBook;
+import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
 import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -64,11 +65,11 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 	private int index = 0;
 
-	private final PlaceBook placebook;
+	private final PlaceBookBinder placebook;
 
 	private final PlaceBookPlace place;
 
-	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookCanvas canvas)
+	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookPages canvas)
 	{
 		super(true);
 		setWidget(uiBinder.createAndBindUi(this));
@@ -132,7 +133,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				final PlaceBook placebook = PlaceBook.parse(response.getText());
+				final PlaceBookBinder placebook = PlaceBookService.parse(PlaceBookBinder.class, response.getText());
 				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), placebook));
 			}
 		});

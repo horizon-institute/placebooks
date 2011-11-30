@@ -13,7 +13,7 @@ public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 		}
 
 		@Override
-		public boolean getEditable()
+		public boolean isEditable()
 		{
 			return false;
 		}

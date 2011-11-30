@@ -55,7 +55,7 @@ public class PlaceBookInteractionHandler
 	private final static int DRAG_DISTANCE = 20;
 	private final static int RESIZE_DISTANCE = 5;
 
-	private final PlaceBookCanvas canvas;
+	private final PlaceBookPages pages;
 
 	private final PlaceBookItemDragFrame dragFrame = new PlaceBookItemDragFrame();
 
@@ -80,11 +80,11 @@ public class PlaceBookInteractionHandler
 
 	private PlaceBookItemFrame selected;
 
-	public PlaceBookInteractionHandler(final PlaceBookCanvas canvas, final PlaceBookItemFrameFactory factory,
+	public PlaceBookInteractionHandler(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
 			final PlaceBookSaveItem saveContext)
 	{
 		STYLES.style().ensureInjected();
-		this.canvas = canvas;
+		this.pages = pages;
 		this.saveContext = saveContext;
 		this.factory = factory;
 
@@ -100,7 +100,7 @@ public class PlaceBookInteractionHandler
 	{
 		if (addItem.is(ItemType.GPS))
 		{
-			for (final PlaceBookItemFrame item : canvas.getItems())
+			for (final PlaceBookItemFrame item : pages.getItems())
 			{
 				if (item.getItem().is(ItemType.GPS)) { return false; }
 			}
@@ -108,9 +108,9 @@ public class PlaceBookInteractionHandler
 		return true;
 	}
 
-	public PlaceBookCanvas getCanvas()
+	public PlaceBookPages getPages()
 	{
-		return canvas;
+		return pages;
 	}
 
 	public PlaceBookSaveItem getContext()
@@ -118,22 +118,22 @@ public class PlaceBookInteractionHandler
 		return saveContext;
 	}
 	
-	public void refreshMap()
-	{
-		for (final PlaceBookItemFrame itemFrame : canvas.getItems())
-		{
-			if (itemFrame.getItemWidget() instanceof MapItem)
-			{
-				((MapItem) itemFrame.getItemWidget()).refreshMarkers();
-			}
-		}
-	}
+//	public void refreshMap()
+//	{
+//		for (final PlaceBookItemFrame itemFrame : pages.getItems())
+//		{
+//			if (itemFrame.getItemWidget() instanceof MapItem)
+//			{
+//				((MapItem) itemFrame.getItemWidget()).refreshMarkers();
+//			}
+//		}
+//	}
 
 	private PlaceBookColumn getPanel(final MouseEvent<?> event)
 	{
 		final int canvasx = event.getX();// RelativeX(canvas.getElement());
 		final int canvasy = event.getY();// RelativeY(canvas.getElement());
-		for (final PlaceBookColumn panel : canvas.getPanels())
+		for (final PlaceBookColumn panel : pages.getPanels())
 		{
 			if (panel.isIn(canvasx, canvasy)) { return panel; }
 		}
@@ -160,7 +160,7 @@ public class PlaceBookInteractionHandler
 				GWT.log("Drag Start");
 				if (dragItemFrame != null)
 				{
-					canvas.remove(dragItemFrame);
+					pages.remove(dragItemFrame);
 				}
 				dragFrame.setItemWidget(dragItem);
 				if (dragItem.getOffsetHeight() == 0)
@@ -168,7 +168,7 @@ public class PlaceBookInteractionHandler
 					if (dragItem.getItem().hasParameter("height"))
 					{
 						final int heightPX = (int) (dragItem.getItem().getParameter("height")
-								* canvas.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
+								* pages.getPanels().iterator().next().getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
 						dragItem.setHeight(heightPX + "px");
 					}
 					else
@@ -178,7 +178,7 @@ public class PlaceBookInteractionHandler
 				}
 				dragState = DragState.dragging;
 				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
-				dragFrame.getRootPanel().setWidth(canvas.getPanels().iterator().next().getOffsetWidth() + "px");
+				dragFrame.getRootPanel().setWidth(pages.getPanels().iterator().next().getOffsetWidth() + "px");
 
 				offsetx = dragFrame.getRootPanel().getOffsetWidth() / 2;
 				offsety = 10;
@@ -221,7 +221,7 @@ public class PlaceBookInteractionHandler
 		{
 			final int y = event.getClientY();
 			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 13;
-			final int canvasHeight = canvas.getPanels().iterator().next().getOffsetHeight();
+			final int canvasHeight = pages.getPanels().iterator().next().getOffsetHeight();
 			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
 
 			dragItemFrame.getItem().setParameter("height", heightPCT);
@@ -250,11 +250,11 @@ public class PlaceBookInteractionHandler
 			if (newPanel != null)
 			{
 				GWT.log("Dropped into panel " + newPanel.getIndex());
-				newPanel.reflow(dragItem, event.getRelativeY(canvas.getElement()), dragFrame.getItemWidget()
+				newPanel.reflow(dragItem, event.getRelativeY(pages.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight());
 				final PlaceBookItemFrame frame = factory.createFrame();
 				frame.setItemWidget(dragItem);
-				canvas.add(frame);
+				pages.add(frame);
 				newPanel.reflow();
 				saveContext.markChanged();
 			}
@@ -296,7 +296,7 @@ public class PlaceBookInteractionHandler
 		if (item == null) { return; }
 		if (dragState == DragState.waiting)
 		{
-			// canvas.add(insert);
+			// pages.add(insert);
 			dragState = DragState.dragInit;
 			this.dragItem = item;
 			originx = event.getClientX();

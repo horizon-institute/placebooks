@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Image;
 public class ImageItem extends PlaceBookItemWidget
 {
 	private final Image image = new Image();
-
+	
 	private final Timer loadTimer = new Timer()
 	{
 		@Override
@@ -26,6 +26,7 @@ public class ImageItem extends PlaceBookItemWidget
 	ImageItem(final PlaceBookItem item)
 	{
 		super(item);
+		image.setUrl(item.getURL());
 		initWidget(image);
 		image.getElement().getStyle().setProperty("margin", "0 auto");
 		image.getElement().getStyle().setDisplay(Display.BLOCK);

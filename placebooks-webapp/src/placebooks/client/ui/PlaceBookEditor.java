@@ -3,14 +3,14 @@ package placebooks.client.ui;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
-import placebooks.client.model.PlaceBook;
+import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookCanvas;
-import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
@@ -75,10 +75,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 	Panel backPanel;
 
 	@UiField
-	Panel canvasPanel;
+	PlaceBookPages bookPanel;
 
 	@UiField
-	Panel loadingPanel;
+	Widget loadingPanel;
 
 	@UiField
 	Palette palette;
@@ -98,35 +98,28 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiField
 	DropMenu dropMenu;
 
-	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
-
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
 
 	private PlaceBookInteractionHandler interactionHandler;
 
-	private PlaceBook placebook;
+	private PlaceBookBinder placebook;
 
 	private int zoom = 100;
 
-	private final String placebookKey;
+	private final String placebookID;
 
-	public PlaceBookEditor(final User user, final PlaceBook placebook)
+	public PlaceBookEditor(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
-		this.placebookKey = placebook.getKey();
+		this.placebookID = placebook.getId();
 	}
 
 	public PlaceBookEditor(final User user, final String placebookKey)
 	{
 		super(user);
-		this.placebookKey = placebookKey;
+		this.placebookID = placebookKey;
 		this.placebook = null;
-	}
-
-	public PlaceBookCanvas getCanvas()
-	{
-		return canvas;
 	}
 
 	public PlaceBookInteractionHandler getDragHandler()
@@ -152,11 +145,11 @@ public class PlaceBookEditor extends PlaceBookPlace
 		return super.mayStop();
 	}
 
-	public void setPlaceBook(final PlaceBook newPlacebook)
+	public void setPlaceBook(final PlaceBookBinder newPlacebook)
 	{
 		placebook = newPlacebook;
 
-		canvas.setPlaceBook(newPlacebook, factory, true);
+		bookPanel.setPlaceBook(newPlacebook, factory);
 
 		if (newPlacebook.hasMetadata("title"))
 		{
@@ -170,7 +163,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 
 		loadingPanel.setVisible(false);
-		canvas.reflow();
+		bookPanel.resized();
 	}
 
 	@Override
@@ -178,8 +171,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		final Widget editor = uiBinder.createAndBindUi(this);
 
-		canvasPanel.add(canvas);
-
+		loadingPanel.setVisible(true);
+		
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
 			@Override
@@ -194,7 +187,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			}
 		});
 
-		interactionHandler = new PlaceBookInteractionHandler(canvas, factory, saveItem);
+		interactionHandler = new PlaceBookInteractionHandler(bookPanel, factory, saveItem);
 		interactionHandler.setupUIElements(backPanel);
 
 		factory.setInteractionHandler(interactionHandler);
@@ -218,7 +211,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 					{
 						try
 						{
-							updatePlaceBook(PlaceBook.parse(response.getText()));
+							updatePlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
 							saveItem.setState(SaveState.saved);
 						}
 						catch (final Exception e)
@@ -253,19 +246,18 @@ public class PlaceBookEditor extends PlaceBookPlace
 		{
 			setPlaceBook(placebook);
 		}
-		else if (placebookKey.equals("new"))
+		else if (placebookID.equals("new"))
 		{
-			setPlaceBook(PlaceBook.parse(newPlaceBook));
+			setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, newPlaceBook));
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookKey, new AbstractCallback()
+			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
 			{
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					setPlaceBook(placebook);
+					setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
 				}
 			});
 		}
@@ -307,7 +299,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+				PlaceBookService.deletePlaceBook(placebook.getId(), new AbstractCallback()
 				{
 					@Override
 					public void failure(final Request request, final Response response)
@@ -349,7 +341,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
-		canvas.getPlaceBook().setMetadata("title", title.getText());
+		bookPanel.getPlaceBook().setMetadata("title", title.getText());
 		saveItem.markChanged();
 	}
 
@@ -368,13 +360,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("preview")
 	void preview(final ClickEvent event)
 	{
-		getPlaceController().goTo(new PlaceBookPreview(getUser(), getCanvas().getPlaceBook()));
+		getPlaceController().goTo(new PlaceBookPreview(getUser(), placebook));
 	}
 
 	@UiHandler("publish")
 	void publish(final ClickEvent event)
 	{
-		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, canvas);
+		final PlaceBookPublishDialog publish = new PlaceBookPublishDialog(PlaceBookEditor.this, bookPanel);
 		publish.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -398,29 +390,26 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private String getKey()
 	{
-		return placebookKey;
+		return placebookID;
 	}
 
 	private void setZoom(final int zoom)
 	{
 		this.zoom = zoom;
-		canvas.getElement().getStyle().setWidth(zoom, Unit.PCT);
-		canvas.getElement().getStyle().setFontSize(zoom, Unit.PCT);
+		bookPanel.getElement().getStyle().setWidth(zoom, Unit.PCT);
+		bookPanel.getElement().getStyle().setFontSize(zoom, Unit.PCT);
 		zoomLabel.setText(zoom + "%");
-		for (final PlaceBookColumn panel : canvas.getPanels())
-		{
-			panel.reflow();
-		}
+		bookPanel.resized();
 	}
 
-	private void updatePlaceBook(final PlaceBook newPlacebook)
+	private void updatePlaceBook(final PlaceBookBinder newPlacebook)
 	{
-		if (placebook != null && (placebook.getKey() == null || !placebook.getKey().equals(newPlacebook.getKey())))
+		if (placebook != null && (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId())))
 		{
-			canvas.updatePlaceBook(newPlacebook);
+			bookPanel.updatePlaceBook(newPlacebook);
 
-			final PlaceBook placebook = canvas.getPlaceBook();
-			placebook.setKey(newPlacebook.getKey());
+			final PlaceBookBinder placebook = bookPanel.getPlaceBook();
+			placebook.setId(newPlacebook.getId());
 
 			saveItem.setState(SaveState.saved);
 
@@ -429,9 +418,9 @@ public class PlaceBookEditor extends PlaceBookPlace
 		else
 		{
 			placebook = newPlacebook;
-			canvas.updatePlaceBook(newPlacebook);
+			bookPanel.updatePlaceBook(newPlacebook);
 
-			canvas.reflow();
+			bookPanel.resized();
 		}
 	}
 }

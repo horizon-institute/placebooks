@@ -113,7 +113,7 @@ public class UploadMenuItem extends MenuItem
 					public void failure(final Request request, final Response response)
 					{
 						status.setText("Upload Failed");
-						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
 						item.getRootPanel().getElement().getStyle().clearOpacity();
 						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
 						item.getItemWidget().update(placebookItem);
@@ -122,7 +122,7 @@ public class UploadMenuItem extends MenuItem
 					@Override
 					public void success(final Request request, final Response response)
 					{
-						final PlaceBookItem placebookItem = PlaceBookItem.parse(response.getText());
+						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
 						item.getRootPanel().getElement().getStyle().clearOpacity();
 						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
 						item.getItemWidget().update(placebookItem);
