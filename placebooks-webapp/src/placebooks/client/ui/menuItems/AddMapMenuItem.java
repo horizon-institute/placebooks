@@ -29,20 +29,20 @@ public class AddMapMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
-		for (final PlaceBookItemFrame itemFrame : handler.getCanvas().getItems())
-		{
-			if (itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
-			{
-				mapItems.add(itemFrame.getItem());
-			}
-		}
-
-		if (mapItems.size() == 1)
-		{
-			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
-			handler.refreshMap();
-			handler.getContext().markChanged();
-		}
+//		final Collection<PlaceBookItem> mapItems = new ArrayList<PlaceBookItem>();
+//		for (final PlaceBookItemFrame itemFrame : handler.getCanvas().getItems())
+//		{
+//			if (itemFrame.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
+//			{
+//				mapItems.add(itemFrame.getItem());
+//			}
+//		}
+//
+//		if (mapItems.size() == 1)
+//		{
+//			item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
+//			handler.refreshMap();
+//			handler.getContext().markChanged();
+//		}
 	}
 }

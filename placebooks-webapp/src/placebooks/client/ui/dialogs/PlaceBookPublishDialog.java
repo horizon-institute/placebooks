@@ -82,13 +82,13 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		this.placebook = canvas.getPlaceBook();
 		this.place = place;
 
-		for (final PlaceBookItemFrame frame : canvas.getItems())
-		{
-			if (frame.getItem().is(ItemType.IMAGE))
-			{
-				imageItems.add(frame);
-			}
-		}
+//		for (final PlaceBookItemFrame frame : canvas.getItems())
+//		{
+//			if (frame.getItem().is(ItemType.IMAGE))
+//			{
+//				imageItems.add(frame);
+//			}
+//		}
 
 		refresh();
 	}

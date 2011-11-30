@@ -8,7 +8,6 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
-import placebooks.client.ui.elements.PlaceBookCanvas;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
@@ -32,6 +31,7 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
@@ -59,14 +59,27 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		public String getToken(final PlaceBookEditor place)
 		{
+			if(place.book)
+			{
+				return "book:" + place.getKey();
+			}
 			return place.getKey();
 		}
 	}
+
 
 	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
 	{
 	}
 
+	@UiTemplate("PlaceBookBookEditor.ui.xml")
+	interface PlaceBookBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
+	{
+	}
+
+	private static final PlaceBookEditorUiBinder bookuiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
+
+	
 	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
 
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
@@ -108,17 +121,29 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookID;
 
+	private final boolean book;
+	
 	public PlaceBookEditor(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
 		this.placebookID = placebook.getId();
+		book = false;
 	}
 
-	public PlaceBookEditor(final User user, final String placebookKey)
+	public PlaceBookEditor(final User user, final String placebookID)
 	{
 		super(user);
-		this.placebookID = placebookKey;
+		if(placebookID.startsWith("book:"))
+		{
+			book = true;
+			this.placebookID = placebookID.substring(5);			
+		}
+		else
+		{
+			book = false;
+			this.placebookID = placebookID;			
+		}
 		this.placebook = null;
 	}
 
@@ -128,7 +153,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	}
 
-	public PlaceBookSaveItem getSaveContext()
+	public PlaceBookSaveItem getSaveItem()
 	{
 		return saveItem;
 	}
@@ -169,7 +194,15 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
-		final Widget editor = uiBinder.createAndBindUi(this);
+		Widget editor;
+		if(book)
+		{
+			editor = bookuiBinder.createAndBindUi(this);
+		}
+		else
+		{
+			editor = uiBinder.createAndBindUi(this);
+		}
 
 		loadingPanel.setVisible(true);
 		

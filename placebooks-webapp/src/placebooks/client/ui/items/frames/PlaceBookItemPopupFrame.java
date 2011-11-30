@@ -154,7 +154,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}, MouseDownEvent.getType());
 
 		menuItems.add(new AddMapMenuItem(interactionHandler, this));
-		menuItems.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
+		menuItems.add(new DeleteItemMenuItem(interactionHandler.getContext(), /*interactionHandler.getCanvas(),*/ this));
 		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
 		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));

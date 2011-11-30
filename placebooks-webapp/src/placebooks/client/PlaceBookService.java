@@ -1,6 +1,5 @@
 package placebooks.client;
 
-import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 
 import com.google.gwt.core.client.GWT;
@@ -13,15 +12,14 @@ import com.google.gwt.json.client.JSONParser;
 
 public class PlaceBookService
 {
-	//public static final native  <T extends JavaScriptObject> T parse(Class<T> clazz, String json) /*-{ return eval('(' + json + ')'); }-*/;
-	public static final <T extends JavaScriptObject> T parse(Class<T> clazz, String json)
-	{
-		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().cast();
-	}	
-	
 	public static void deletePlaceBook(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
+	}
+
+	public static void getCurrentUser(final RequestCallback callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/currentUser", callback);
 	}
 
 	public static String getHostURL()
@@ -57,11 +55,6 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
 	}
 
-	public static void getCurrentUser(final RequestCallback callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/currentUser", callback);
-	}
-	
 	public static void getShelf(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
@@ -83,6 +76,13 @@ public class PlaceBookService
 	public static void logout(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "j_spring_security_logout", callback);
+	}
+
+	// public static final native <T extends JavaScriptObject> T parse(Class<T> clazz, String json)
+	// /*-{ return eval('(' + json + ')'); }-*/;
+	public static final <T extends JavaScriptObject> T parse(final Class<T> clazz, final String json)
+	{
+		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().cast();
 	}
 
 	public static void publishPlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)

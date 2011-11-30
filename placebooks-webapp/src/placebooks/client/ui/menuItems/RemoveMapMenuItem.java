@@ -26,7 +26,7 @@ public class RemoveMapMenuItem extends MenuItem
 	{
 		item.getItem().removeMetadata("mapItemID");
 		item.getItemWidget().refresh();
-		handler.refreshMap();
+// TODO		handler.refreshMap();
 		handler.getContext().markChanged();
 	}
 }

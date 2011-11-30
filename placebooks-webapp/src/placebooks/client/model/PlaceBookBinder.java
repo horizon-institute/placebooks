@@ -7,6 +7,11 @@ import com.google.gwt.core.client.JsArray;
 
 public class PlaceBookBinder extends JavaScriptObject
 {
+	protected PlaceBookBinder()
+	{
+		
+	}
+	
 	private final native JsArray<PlaceBook> getPagesInternal()
 	/*-{
 		if(!('pages' in this))

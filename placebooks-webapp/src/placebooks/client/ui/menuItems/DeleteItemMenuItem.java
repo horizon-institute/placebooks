@@ -7,14 +7,14 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class DeleteItemMenuItem extends MenuItem
 {
-	private final PlaceBookCanvas canvas;
+	//private final PlaceBookCanvas canvas;
 	private final PlaceBookSaveItem context;
 	private final PlaceBookItemFrame item;
 
-	public DeleteItemMenuItem(final PlaceBookSaveItem context, final PlaceBookCanvas canvas, final PlaceBookItemFrame item)
+	public DeleteItemMenuItem(final PlaceBookSaveItem context, /*final PlaceBookCanvas canvas,*/ final PlaceBookItemFrame item)
 	{
 		super("Delete");
-		this.canvas = canvas;
+		//this.canvas = canvas;
 		this.item = item;
 		this.context = context;
 	}
@@ -23,7 +23,7 @@ public class DeleteItemMenuItem extends MenuItem
 	public void run()
 	{
 		final PlaceBookColumn panel = item.getPanel();
-		canvas.remove(item);
+		// TODO canvas.remove(item);
 		if (panel != null)
 		{
 			panel.reflow();
