@@ -496,6 +496,7 @@ public final class PlaceBooksAdminHelper
 				final Collection<PlaceBookItem> newItems = 
 					new ArrayList<PlaceBookItem>(placeBook.getItems());
 				placeBook.setItems(new ArrayList<PlaceBookItem>());
+				placeBook.setPlaceBookBinder(placeBookBinder);
 				for (final PlaceBookItem newItem : newItems)
 				{
 					// Update existing item if possible

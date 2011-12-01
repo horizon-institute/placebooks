@@ -83,8 +83,7 @@ public class PlaceBooksAdminController
 	{
 		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_FIELDS, true);
 		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_GETTERS, false);
-		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
-		jsonMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);		
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);	
 		jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);	
 		jsonMapper.setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.ANY));
 	}
