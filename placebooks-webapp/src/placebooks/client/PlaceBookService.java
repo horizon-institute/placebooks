@@ -37,7 +37,7 @@ public class PlaceBookService
 
 	public static void getPlaceBook(final String key, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/placebook/" + key, callback);
+		serverRequest(getHostURL() + "placebooks/a/placebookbinder/" + key, callback);
 	}
 
 	public static void getPlaceBookItem(final String key, final RequestCallback callback)
