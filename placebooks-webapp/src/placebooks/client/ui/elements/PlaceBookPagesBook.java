@@ -20,7 +20,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 {
 	interface PageStyle extends CssResource
 	{
-		String pages();
+		String page();
 	}
 	
 	interface PlaceBookBookPanelUiBinder extends UiBinder<Widget, PlaceBookPagesBook>
@@ -117,7 +117,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	protected void add(PlaceBookPage page)
 	{
 		super.add(page);
-		page.setStyleName(style.pages());
+		page.setStyleName(style.page());
 	}
 
 	@UiHandler("rootPanel")

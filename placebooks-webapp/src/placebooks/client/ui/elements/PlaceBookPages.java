@@ -7,6 +7,7 @@ import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -46,6 +47,7 @@ public abstract class PlaceBookPages extends Composite
 	
 	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookItemFrameFactory factory)
 	{
+		GWT.log("SetPlaceBook");
 		assert placebook == null;
 		this.placebook = newPlaceBook;
 		getPagePanel().clear();
