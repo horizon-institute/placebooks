@@ -530,7 +530,7 @@ public class PlaceBooksAdminController
 				final TypedQuery<PlaceBookBinder> q = 
 					manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
 																	PlaceBookBinder.class);
-				q.setParameter("owner", user);
+				q.setParameter("user", user);
 				q.setParameter("email", 
 							   "'%" + user.getEmail() + "%'");
 
@@ -638,17 +638,19 @@ public class PlaceBooksAdminController
 			q.setParameter("state", State.PUBLISHED);
 
 			final List<PlaceBookBinder> pbs = q.getResultList();
-			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();
-			final Random random = new Random();
-			for (int index = 0; index < count; index++)
+			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();			
+			if(!pbs.isEmpty())
 			{
-				final int rindex = random.nextInt(pbs.size());
-				final PlaceBookBinderSearchEntry entry = 
-					new PlaceBookBinderSearchEntry(pbs.get(rindex), 0);
-				result.add(entry);
-				pbs.remove(rindex);
+				final Random random = new Random();
+				for (int index = 0; index < count; index++)
+				{
+					final int rindex = random.nextInt(pbs.size());
+					final PlaceBookBinderSearchEntry entry = 
+						new PlaceBookBinderSearchEntry(pbs.get(rindex), 0);
+					result.add(entry);
+					pbs.remove(rindex);
+				}
 			}
-
 			log.info("Converting " + result.size() + " PlaceBooks to JSON");
 			try
 			{
