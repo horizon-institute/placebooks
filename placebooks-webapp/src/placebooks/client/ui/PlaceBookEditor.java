@@ -67,7 +67,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 	}
 
-
 	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
 	{
 	}
@@ -77,10 +76,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 	}
 
-	private static final PlaceBookEditorUiBinder bookuiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
+	private static final PlaceBookBookEditorUiBinder bookuiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
 
 	
-	private final static String newPlaceBook = "{\"items\":[], \"metadata\":{} }";
+	private final static String newPlaceBook = "{\"pages\":[{\"items\":[], \"metadata\":{} },{\"items\":[], \"metadata\":{} }]}";
 
 	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 

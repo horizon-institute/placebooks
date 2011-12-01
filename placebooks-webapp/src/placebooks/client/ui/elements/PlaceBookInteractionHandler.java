@@ -281,7 +281,7 @@ public class PlaceBookInteractionHandler
 				}
 				dragState = DragState.dragging;
 				dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.VISIBLE);
-				dragFrame.getRootPanel().setWidth(pages.getOffsetWidth() + "px");
+				dragFrame.getRootPanel().setWidth((pages.getOffsetWidth() / 3) + "px");
 
 				offsetx = dragFrame.getRootPanel().getOffsetWidth() / 2;
 				offsety = 10;
@@ -355,9 +355,11 @@ public class PlaceBookInteractionHandler
 				GWT.log("Dropped into panel " + newPanel.getIndex());
 				newPanel.reflow(dragItem, event.getRelativeY(pages.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight());
+				newPanel.getPlaceBook().add(dragItem.getItem());
+				dragItem.getItem().setParameter("panel", newPanel.getIndex());
 				final PlaceBookItemFrame frame = factory.createFrame();
 				frame.setItemWidget(dragItem);
-				// TODO pages.add(frame);
+				frame.setPanel(newPanel);
 				newPanel.reflow();
 				saveContext.markChanged();
 			}

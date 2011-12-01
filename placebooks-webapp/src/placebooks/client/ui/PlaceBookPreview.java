@@ -7,7 +7,7 @@ import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
-import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookPagesList;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
@@ -79,7 +79,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	@UiField
 	Anchor authorLabel;
 
-	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
+	private final PlaceBookPagesList canvas = new PlaceBookPagesList();
 
 	private PlaceBookBinder placebook;
 	private final String placebookID;
@@ -98,7 +98,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		this.placebook = null;
 	}
 
-	public PlaceBookCanvas getCanvas()
+	public PlaceBookPagesList getCanvas()
 	{
 		return canvas;
 	}

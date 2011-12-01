@@ -70,12 +70,12 @@ public class PlaceBookPage extends Composite
 		setPage(page, pageIndex, factory);
 	}
 
-	public void add(final PlaceBookItemFrame item)
-	{
-		addImpl(item);
-		placebook.add(item.getItem());
-		item.getItemWidget().setPlaceBook(placebook);
-	}
+//	public void add(final PlaceBookItemFrame item)
+//	{
+//		addImpl(item);
+//		placebook.add(item.getItem());
+//		item.getItemWidget().setPlaceBook(placebook);
+//	}
 
 	public Iterable<PlaceBookColumn> getColumns()
 	{
@@ -138,7 +138,7 @@ public class PlaceBookPage extends Composite
 		{
 			final double widthPCT = 100 / columnCount;
 			final int panelIndex = (pageIndex * columnCount) + index;
-			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT,
+			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, panelIndex, columnCount, left, widthPCT,
 					factory.isEditable());
 			columns.add(panel);
 			columnPanel.add(panel);

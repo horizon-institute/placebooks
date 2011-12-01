@@ -34,7 +34,6 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
@@ -82,9 +81,10 @@ public class PlaceBooksAdminController
 {
 	public PlaceBooksAdminController()
 	{
-		jsonMapper.configure(Feature.AUTO_DETECT_FIELDS, true);
-		jsonMapper.configure(Feature.AUTO_DETECT_GETTERS, false);
-		jsonMapper.configure(Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_FIELDS, true);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_GETTERS, false);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
+		jsonMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);		
 		jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);	
 		jsonMapper.setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.ANY));
 	}
@@ -807,9 +807,7 @@ public class PlaceBooksAdminController
 
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-			final PlaceBookBinder placebookBinder = mapper.readValue(json, PlaceBookBinder.class);
+			final PlaceBookBinder placebookBinder = jsonMapper.readValue(json, PlaceBookBinder.class);
 			final PlaceBookBinder result = 
 				PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 

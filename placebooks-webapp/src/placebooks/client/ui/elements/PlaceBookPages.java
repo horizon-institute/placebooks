@@ -86,7 +86,7 @@ public abstract class PlaceBookPages extends Composite
 //		}
 //
 //		//refreshItemPlaceBook();
-//		reflow();
+		resized();
 	}
 
 	public Iterable<PlaceBookPage> getPages()

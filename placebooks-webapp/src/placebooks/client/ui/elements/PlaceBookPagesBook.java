@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -15,10 +16,14 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookBookPanel extends PlaceBookPages
+public class PlaceBookPagesBook extends PlaceBookPages
 {
-
-	interface PlaceBookBookPanelUiBinder extends UiBinder<Widget, PlaceBookBookPanel>
+	interface PageStyle extends CssResource
+	{
+		String pages();
+	}
+	
+	interface PlaceBookBookPanelUiBinder extends UiBinder<Widget, PlaceBookPagesBook>
 	{
 	}
 
@@ -34,6 +39,9 @@ public class PlaceBookBookPanel extends PlaceBookPages
 
 	@UiField
 	Canvas canvas;
+	
+	@UiField
+	PageStyle style;
 
 	private PlaceBookPage dragging = null;
 	
@@ -55,7 +63,7 @@ public class PlaceBookBookPanel extends PlaceBookPages
 		}
 	};
 	
-	public PlaceBookBookPanel()
+	public PlaceBookPagesBook()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
@@ -103,6 +111,13 @@ public class PlaceBookBookPanel extends PlaceBookPages
 			//drawFlip(dragging);
 			event.preventDefault();
 		}
+	}
+
+	@Override
+	protected void add(PlaceBookPage page)
+	{
+		super.add(page);
+		page.setStyleName(style.pages());
 	}
 
 	@UiHandler("rootPanel")

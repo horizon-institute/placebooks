@@ -40,8 +40,7 @@ import placebooks.controller.PropertiesSingleton;
 
 
 @Entity
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, 
-				getterVisibility = Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PlaceBookBinder extends BoundaryGenerator
 {
 
@@ -71,7 +70,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@ElementCollection
-	private Map<User, Permission> perms = new HashMap<User, Permission>();
+	private Map<String, Permission> perms = new HashMap<String, Permission>();
 
 	@JsonIgnore
 	private String permsUsers;
@@ -147,7 +146,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		if (owner != null)
 		{
 			this.owner.add(this);
-			perms.put(owner, Permission.R_W);
+			perms.put(owner.getEmail(), Permission.R_W);
 			permsUsers = getPermissionsAsString();			
 		}
 
@@ -269,11 +268,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	public final String getPermissionsAsString()
 	{
 		final StringBuffer l = new StringBuffer();
-		final Iterator<User> i = getPermissions().keySet().iterator();
+		final Iterator<String> i = getPermissions().keySet().iterator();
 		while (i.hasNext())
 		{
-			final User u = i.next();
-			l.append("'" + u.getEmail() + "'=" + getPermission(u).toString());
+			final String u = i.next();
+			l.append("'" + u + "'=" + getPermission(u).toString());
 			if (i.hasNext())
 				l.append(",");
 		}
@@ -282,25 +281,30 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	public void setPermission(final User user, final Permission p)
 	{
-		if (perms.get(user) != null)
-			perms.remove(user);
+		if (perms.get(user.getEmail()) != null)
+			perms.remove(user.getEmail());
 
-		perms.put(user, p);
+		perms.put(user.getEmail(), p);
 		permsUsers = getPermissionsAsString();		
 	}
 
 	public void removePermission(final User user)
 	{
-		perms.remove(user);
+		perms.remove(user.getEmail());
 		permsUsers = getPermissionsAsString();		
 	}
 
+	public final Permission getPermission(final String email)
+	{
+		return perms.get(email);
+	}
+	
 	public final Permission getPermission(final User user)
 	{
-		return perms.get(user);
+		return perms.get(user.getEmail());
 	}
 
-	public final Map<User, Permission> getPermissions()
+	public final Map<String, Permission> getPermissions()
 	{
 		return Collections.unmodifiableMap(perms);
 	}

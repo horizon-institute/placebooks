@@ -3,11 +3,9 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.outerPanel {
-			position: absolute;
-			left: 0px;
-			top: 0px;
-			right: 0px;
-			bottom: 0px;			
+			position: relative;
+			border: 1px solid black;
+			margin-bottom: 20px;
 			overflow: hidden;
 		}
 		

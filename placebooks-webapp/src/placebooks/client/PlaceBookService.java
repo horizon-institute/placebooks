@@ -100,8 +100,8 @@ public class PlaceBookService
 
 	public static void savePlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)
 	{
-		serverRequest(	getHostURL() + "placebooks/a/saveplacebook",
-						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
+		serverRequest(	getHostURL() + "placebooks/a/saveplacebookbinder",
+						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
 	public static void search(final String search, final RequestCallback callback)
