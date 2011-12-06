@@ -1,9 +1,13 @@
 package placebooks.client.ui.elements;
 
+import placebooks.client.model.PlaceBookBinder;
+import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
+
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -49,17 +53,37 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	private double pageWidth;
 	private double pageHeight;
 	
-	private double margin = 20;
+	private double margin = 30;
+
+	private double target;
+	private int targetPage;
+	private float progress;
+	
+	@Override
+	public void setPlaceBook(PlaceBookBinder newPlaceBook, PlaceBookItemFrameFactory factory)
+	{
+		super.setPlaceBook(newPlaceBook, factory);
+		setPage(0);
+	}
 
 	private Timer timer = new Timer()
 	{
 		@Override
 		public void run()
 		{
-			if(dragging!= null)
+			double oldProgress = progress;
+			progress += (target - progress) * 0.2;
+			if(progress != oldProgress)
 			{
-				drawFlip(dragging);
-			}			
+				drawFlip(pages.get(currentPage), progress);				
+			}
+			else
+			{
+				progress = (float) target;
+				drawFlip(pages.get(currentPage), progress);			
+				setPage(targetPage);
+				timer.cancel();				
+			}
 		}
 	};
 	
@@ -70,11 +94,14 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 	public void setPage(final int index)
 	{
+		GWT.log("Current Page: " + index);
 		final PlaceBookPage page = pages.get(currentPage);
 		final PlaceBookPage newPage = pages.get(index);
-		newPage.setVisible(true);
 		page.setVisible(false);
+		newPage.setVisible(true);
 		currentPage = index;
+		page.getElement().getStyle().setZIndex(1);
+		page.clearFlip();
 	}
 
 	@UiHandler("rootPanel")
@@ -87,16 +114,14 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			if (mouseX < margin && currentPage - 1 >= 0)
 			{
 				// We are on the left side, drag the previous page
-				dragging = pages.get(currentPage);
-				GWT.log("Start drag");				
-				event.preventDefault();				
+				dragging = pages.get(currentPage - 1);			
+			//	event.preventDefault();				
 			}
 			else if (mouseX > (pageWidth - margin) && currentPage + 1 < pages.size())
 			{
 				// We are on the right side, drag the current page
 				dragging = pages.get(currentPage);
-				GWT.log("Start drag");				
-				event.preventDefault();				
+			//	event.preventDefault();				
 			}
 		}
 	}
@@ -107,9 +132,37 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		final int mouseX = event.getRelativeX(pagesPanel.getElement());
 		if(dragging != null)
 		{
-			dragging.setProgress(Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
-			//drawFlip(dragging);
+			drawFlip(dragging, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
 			event.preventDefault();
+		}
+		else if(mouseX > (pageWidth - margin) && currentPage + 1 < pages.size())
+		{
+			PlaceBookPage page = pages.get(currentPage);
+			drawFlip(page, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
+		}
+	}
+	
+	void clickFlip(final ClickEvent event)
+	{
+		GWT.log("Click event");
+		final int mouseX = event.getRelativeX(pagesPanel.getElement());
+		// Make sure the mouse pointer is inside of the book
+		if (mouseX < pageWidth)
+		{		
+			if (mouseX < margin && currentPage - 1 >= 0)
+			{
+				target = 1;
+				progress = -1;
+				timer.scheduleRepeating(1000/60);
+				targetPage = currentPage - 1;			
+			}
+			else if (mouseX > (pageWidth - margin) && currentPage + 1 < pages.size())
+			{
+				target = -1;
+				progress = 1;
+				timer.scheduleRepeating(1000/60);
+				targetPage = currentPage + 1;			
+			}
 		}
 	}
 
@@ -125,33 +178,47 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	{
 		if(dragging != null)
 		{
-			GWT.log("End drag");
 			dragging = null;
 			// TODO Finish flipping page
+			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			final double progress = Math.max( Math.min( mouseX / pageWidth, 1 ), -1 );
+			this.progress = (float) progress;			
+			if(progress < 0.5)
+			{
+				target = -1;
+				timer.scheduleRepeating(1000/60);
+				targetPage = currentPage + 1;
+			}
+			else
+			{
+				target = 1;
+				timer.scheduleRepeating(1000/60);
+				targetPage = currentPage;
+			}
 		}
 	}
 	
-	private void drawFlip(final PlaceBookPage page)
-	{
+	private void drawFlip(final PlaceBookPage page, final double progress)
+	{	
 		// Determines the strength of the fold/bend on a 0-1 range
-		final double strength = 1 - Math.abs(page.getProgress());
+		final double strength = 1 - Math.abs(progress);
 
 		// Width of the folded paper
-		final double foldWidth = (pageWidth * 0.5) * (1 - page.getProgress());
+		final double foldWidth = (pageWidth * 0.5) * (1 - progress);
 
 		// X position of the folded paper
-		final double foldX = pageWidth * page.getProgress() + foldWidth;
+		final double foldX = pageWidth * progress + foldWidth;
 
 		// How far outside of the book the paper is bent due to perspective
-		final double verticalOutdent = 20 * strength;
+		final double verticalOutdent = margin * strength;
 
 		// The maximum widths of the three shadows used
-		final double paperShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(1 - page.getProgress(), 0.5), 0);
+		final double paperShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(1 - progress, 0.5), 0);
 		final double rightShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 		final double leftShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 
 		// Mask the page by setting its width to match the foldX
-		//page.setFlip(Math.max(foldX, 0));
+		page.setFlip(Math.max(foldX, 0), pageWidth);
 
 		final Context2d context = canvas.getContext2d();
 		context.clearRect(0, 0, canvas.getOffsetWidth(), canvas.getOffsetHeight());
@@ -160,7 +227,8 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 
 		// Draw a sharp shadow on the left side of the page
-		context.setStrokeStyle("rgba(0,0,0," + (0.05 * strength) + ")");
+		final String strokeAlpha = NumberFormat.getFormat("#.################").format(strength * 0.05);		
+		context.setStrokeStyle("rgba(0,0,0," + strokeAlpha + ")");
 		context.setLineWidth(30 * strength);
 		context.beginPath();
 		context.moveTo(foldX - foldWidth, -verticalOutdent * 0.5);
@@ -252,9 +320,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 		canvas.getElement().getStyle().setTop(top, Unit.PX);
 		canvas.getElement().getStyle().setLeft(left - width, Unit.PX);
-		canvas.setWidth(bookWidth + "px");
-		canvas.setHeight(height + "px");
-
 		canvas.getCanvasElement().setWidth((int) bookWidth);
 		canvas.getCanvasElement().setHeight((int) height);
 		

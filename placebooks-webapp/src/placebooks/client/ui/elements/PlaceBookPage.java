@@ -27,12 +27,6 @@ public class PlaceBookPage extends Composite
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 
 	private static final int DEFAULT_COLUMNS = 3;
-	
-	private int pageIndex;
-
-	private double progress;
-	
-	private int columnOffset;
 
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
@@ -47,21 +41,18 @@ public class PlaceBookPage extends Composite
 	@UiField
 	Panel columnPanel;
 
-	double getProgress()
-	{
-		return progress;
-	}
-	
 	void clearFlip()
 	{
 		getElement().getStyle().clearWidth();
+		pageNumber.getElement().getStyle().clearWidth();
 		columnPanel.getElement().getStyle().clearWidth();
 	}
 	
 	void setFlip(double flipX, double pageWidth)
 	{
-		setWidth(flipX + "px");		
-		columnPanel.setWidth(pageWidth + "px");
+		setWidth(flipX + "px");
+		pageNumber.setWidth(pageWidth - 30 + "px");
+		columnPanel.setWidth(pageWidth - 60 + "px");
 	}
 	
 	public PlaceBookPage(final PlaceBook page, final int pageIndex, final PlaceBookItemFrameFactory factory)
@@ -120,8 +111,6 @@ public class PlaceBookPage extends Composite
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-
-		this.pageIndex = pageIndex;
 		pageNumber.setText("" + (pageIndex + 1));
 
 		int columnCount = DEFAULT_COLUMNS;
@@ -137,8 +126,7 @@ public class PlaceBookPage extends Composite
 		for (int index = 0; index < columnCount; index++)
 		{
 			final double widthPCT = 100 / columnCount;
-			final int panelIndex = (pageIndex * columnCount) + index;
-			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, panelIndex, columnCount, left, widthPCT,
+			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, index, columnCount, left, widthPCT,
 					factory.isEditable());
 			columns.add(panel);
 			columnPanel.add(panel);
@@ -176,7 +164,13 @@ public class PlaceBookPage extends Composite
 	{
 		if (item == null) { return; }
 		items.add(item);
-		item.setPanel(columns.get(item.getItem().getParameter("panel", 0) - columnOffset));
+		int columnIndex = item.getItem().getParameter("panel", 0);
+		if(columnIndex >= columns.size())
+		{
+			columnIndex = columnIndex % columns.size();
+			item.getItem().setParameter("panel", columnIndex);
+		}
+		item.setPanel(columns.get(columnIndex));
 	}
 
 	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
@@ -199,10 +193,5 @@ public class PlaceBookPage extends Composite
 		{
 			item.getItemWidget().setPlaceBook(placebook);
 		}
-	}
-
-	public void setProgress(double max)
-	{
-		this.progress = max;		
 	}
 }
