@@ -35,6 +35,8 @@ public class PlaceBookPage extends Composite
 	private PlaceBook placebook;
 	// TODO PlaceBookPage page;
 
+	private int index;
+	
 	@UiField
 	Label pageNumber;
 
@@ -53,6 +55,11 @@ public class PlaceBookPage extends Composite
 		setWidth(flipX + "px");
 		pageNumber.setWidth(pageWidth - 30 + "px");
 		columnPanel.setWidth(pageWidth - 60 + "px");
+	}
+	
+	public int getIndex()
+	{
+		return index;
 	}
 	
 	public PlaceBookPage(final PlaceBook page, final int pageIndex, final PlaceBookItemFrameFactory factory)
@@ -111,6 +118,7 @@ public class PlaceBookPage extends Composite
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
+		this.index = pageIndex;
 		pageNumber.setText("" + (pageIndex + 1));
 
 		int columnCount = DEFAULT_COLUMNS;

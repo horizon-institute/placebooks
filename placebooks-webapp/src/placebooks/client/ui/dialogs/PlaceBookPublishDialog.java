@@ -6,10 +6,8 @@ import java.util.List;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
-import placebooks.client.ui.elements.PlaceBookPagesList;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 

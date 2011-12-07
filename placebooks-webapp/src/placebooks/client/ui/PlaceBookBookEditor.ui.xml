@@ -18,7 +18,7 @@
 			bottom: 0px;
 			left: 0px;
 			right: 0px;
-			margin: 20px;
+			padding: 20px;
 		}
 		
 		.palette {
@@ -33,26 +33,6 @@
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 			-webkit-box-align: center;
-		}
-		
-		.loadingPanel {
-			position: absolute;
-			top: 40px;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			z-index: 20;
-			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
-			display: -webkit-box;
-			-webkit-box-pack: center;
-			-webkit-box-align: center;
-		}
-		
-		.loading {
-			background: #555;
-			border: 1px solid #333;
-			border-radius: 5px;
-			padding: 10px 20px;
 		}
 		
 		.savingLabel {
@@ -81,14 +61,6 @@
 			font: 18px/40px verdana, arial, sans-serif;
 			width: 300px;
 			margin-right: 20px;
-		}
-		
-		.loadingLabel {
-			color: white;
-			font-family: Verdana, Arial, sans-serif;
-			font-size: 25px;
-			padding-left: 15px;
-			vertical-align: top;
 		}
 		
 		.account {
@@ -191,13 +163,6 @@
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
-		<g:SimplePanel styleName="{style.loadingPanel}"
-			ui:field="loadingPanel">
-			<g:FlowPanel styleName="{style.loading}">
-				<g:Image resource='{images.progress}' />
-				<g:InlineLabel styleName="{style.loadingLabel}">LOADING</g:InlineLabel>
-			</g:FlowPanel>
-		</g:SimplePanel>
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
@@ -219,5 +184,6 @@
 			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
 	</p:MousePanel>
 </ui:UiBinder>
