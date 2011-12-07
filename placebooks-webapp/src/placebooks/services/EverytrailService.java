@@ -206,7 +206,7 @@ public class EverytrailService extends Service
 	 */
 	public EverytrailPicturesResponse pictures(final String userId)
 	{
-		return Pictures(userId, null, null);
+		return pictures(userId, null, null);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class EverytrailService extends Service
 	 *            A user's password
 	 * @return EverytrailPicturesResponse
 	 */
-	private EverytrailPicturesResponse Pictures(final String userId, final String username, final String password)
+	public EverytrailPicturesResponse pictures(final String userId, final String username, final String password)
 	{
 		// The pictures API doesn't work well, so get pictures via trips...
 		final EverytrailTripsResponse tripsData = trips(username, password, userId);
@@ -340,7 +340,7 @@ public class EverytrailService extends Service
 		tripData.put(tripId, tripName);
 		final HashMap<String, String> pictureTrips = new HashMap<String, String>();
 		
-		
+		log.debug("Pictures username: " + username + " " + password);
 		final String postResponse = getPostResponseWithParams("trip/pictures", params);
 		final Document doc = parseResponseToXml(postResponse);
 		resultStatus = parseResponseStatus("etTripPicturesResponse", doc);
@@ -709,22 +709,26 @@ public class EverytrailService extends Service
 				}
 	
 	
-				final EverytrailPicturesResponse picturesResponse = TripPictures(	tripId,
-						details.getUsername(),
-						details.getPassword(),
-						tripName);
-	
-				final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
-				int i = 0;
-				for (final Node picture : pictures.values())
+				final EverytrailPicturesResponse picturesResponse = TripPictures(tripId, details.getUsername(), details.getPassword(), tripName);
+
+				if(picturesResponse.getStatus().equals("success"))
 				{
-					log.info("Processing picture " + i++);
-					ImageItem imageItem = new ImageItem(user, null, null, null);
-					ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
-					imageItem = (ImageItem) imageItem.saveUpdatedItem();
-					imported_ids.add(imageItem.getExternalID());
-					available_ids.add(imageItem.getExternalID());
-				}			 
+					final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+					int i = 0;
+					for (final Node picture : pictures.values())
+					{
+						log.info("Processing picture " + i++);
+						ImageItem imageItem = new ImageItem(user, null, null, null);
+						ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
+						imageItem = (ImageItem) imageItem.saveUpdatedItem();
+						imported_ids.add(imageItem.getExternalID());
+						available_ids.add(imageItem.getExternalID());
+					}			 
+				}
+				else
+				{
+					log.error("Can't get trip pictures: " + picturesResponse.getStatus());
+				}
 			}
 	
 			int itemsDeleted = cleanupItems(manager, imported_ids, user);

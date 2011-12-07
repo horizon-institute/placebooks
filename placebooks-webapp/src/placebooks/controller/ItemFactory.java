@@ -24,6 +24,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.IUpdateableExternal;
 import placebooks.model.ImageItem;
@@ -549,6 +550,90 @@ public class ItemFactory
 		imageItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
 	}
 
+	
+	/**
+	 * Convert an Peoples Collection Video to an Video item for the given user
+	 * @param testUser
+	 * @param everytrailPicture
+	 * @param videoItem
+	 * @param tripName 
+	 */
+	public static void toVideoItem(final User testUser, PeoplesCollectionItemFeature item, int trailId, String trailName, VideoItem videoItem)
+	{
+		URL sourceUrl = null;
+		int video_id = item.GetPropertiesId();
+		String itemTitle =  "";
+		String videoItemTitle = "";
+		String itemDescription = "";
+		Geometry geom = null;
+		videoItem.addMetadataEntry("trip", Integer.toString(trailId));	
+
+		if(trailName!=null)
+		{
+			videoItem.addMetadataEntryIndexed("trip_name", trailName)	;	
+		}
+
+		log.debug("Video id is: " + video_id);
+
+		itemTitle = item.GetProperties().GetTitle();
+		itemDescription = item.GetProperties().GetMarkup();
+		try
+		{
+			sourceUrl = new URL(item.GetProperties().GetMediaURL());
+		}
+		catch (MalformedURLException ex)
+		{
+			log.error("Couldn't get URL for peoples collection video.");
+			log.debug(ex.getMessage());
+		}
+
+		try
+		{
+			final Geometry newGeom = item.GetGeometry(); 
+			log.debug("Detected coordinates geometry: " + newGeom.toText());
+			geom = newGeom;
+		}
+		catch (final Exception ex)
+		{
+			log.error("Couldn't get lat/lon data from peoples collection video.", ex);
+			log.debug(ex.getMessage());
+		}
+
+		if(sourceUrl != null)
+		{
+			if(!itemTitle.equals(""))
+			{
+				videoItemTitle = itemTitle;
+			}
+			else
+			{
+				videoItemTitle = Integer.toString(video_id);
+			}
+			try
+			{
+				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
+				videoItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());				
+			}
+			catch (final IOException ex)
+			{
+				log.error("Can't download Peoples Collection video: " + sourceUrl.toExternalForm());
+				log.debug(ex.getMessage());
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
+		videoItem.setOwner(testUser);
+		videoItem.setGeometry(geom);
+		videoItem.setSourceURL(sourceUrl);
+		//= new ImageItem(testUser, geom, sourceUrl, image);
+		videoItem.setExternalID("peoplescollection-" + video_id);
+		videoItem.addMetadataEntryIndexed("title", videoItemTitle);
+		videoItem.addMetadataEntryIndexed("description", itemDescription);
+		videoItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+	}
+
 
 	public static void toTextItem(User user, PeoplesCollectionItemFeature feature, int trailId, String trailName, TextItem textItem)
 	{
@@ -585,5 +670,91 @@ public class ItemFactory
 		textItem.addMetadataEntryIndexed("description", feature.GetProperties().GetMarkup());
 		textItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
 	}
+	
+	
+	/**
+	 * Convert an Peoples Collection Audio to an Audio item for the given user
+	 * @param testUser
+	 * @param everytrailPicture
+	 * @param audioItem
+	 * @param tripName 
+	 */
+	public static void toAudioItem(final User testUser, PeoplesCollectionItemFeature item, int trailId, String trailName, AudioItem audioItem)
+	{
+		URL sourceUrl = null;
+		int audio_id = item.GetPropertiesId();
+		String itemTitle =  "";
+		String audioItemTitle = "";
+		String itemDescription = "";
+		Geometry geom = null;
+		audioItem.addMetadataEntry("trip", Integer.toString(trailId));	
+
+		if(trailName!=null)
+		{
+			audioItem.addMetadataEntryIndexed("trip_name", trailName)	;	
+		}
+
+		log.debug("audio id is: " + audio_id);
+
+		itemTitle = item.GetProperties().GetTitle();
+		itemDescription = item.GetProperties().GetMarkup();
+		try
+		{
+			sourceUrl = new URL(item.GetProperties().GetMediaURL());
+		}
+		catch (MalformedURLException ex)
+		{
+			log.error("Couldn't get URL for peoples collection audio.");
+			log.debug(ex.getMessage());
+		}
+
+		try
+		{
+			final Geometry newGeom = item.GetGeometry(); 
+			log.debug("Detected coordinates geometry: " + newGeom.toText());
+			geom = newGeom;
+		}
+		catch (final Exception ex)
+		{
+			log.error("Couldn't get lat/lon data from peoples collection audio.", ex);
+			log.debug(ex.getMessage());
+		}
+
+		if(sourceUrl != null)
+		{
+			if(!itemTitle.equals(""))
+			{
+				audioItemTitle = itemTitle;
+			}
+			else
+			{
+				audioItemTitle = Integer.toString(audio_id);
+			}
+			try
+			{
+				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
+				audioItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());				
+			}
+			catch (final IOException ex)
+			{
+				log.error("Can't download Peoples Collection audio: " + sourceUrl.toExternalForm());
+				log.debug(ex.getMessage());
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
+		audioItem.setOwner(testUser);
+		audioItem.setGeometry(geom);
+		audioItem.setSourceURL(sourceUrl);
+		//= new ImageItem(testUser, geom, sourceUrl, image);
+		audioItem.setExternalID("peoplescollection-" + audio_id);
+		audioItem.addMetadataEntryIndexed("title", audioItemTitle);
+		audioItem.addMetadataEntryIndexed("description", itemDescription);
+		audioItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+	}
+
+
 	
 }

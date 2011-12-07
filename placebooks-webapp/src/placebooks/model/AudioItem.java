@@ -9,8 +9,9 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class AudioItem extends MediaItem
 {
-	AudioItem()
+	public AudioItem()
 	{
+		super();
 	}
 
 	public AudioItem(final AudioItem a)

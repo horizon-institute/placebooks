@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -1104,13 +1105,7 @@ public class PlaceBooksAdminController
 		try
 		{
 			final MediaItem m = em.find(MediaItem.class, key);
-			if (m != null)
-			{
-				em.getTransaction().begin();
-				m.attemptPathFix();
-				em.getTransaction().commit();
-			}
-			else
+			if (m == null)
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
@@ -1126,6 +1121,7 @@ public class PlaceBooksAdminController
 		}
 
 		if (path == null) { return; }
+		log.debug("Serving media: " + path);
 
 		try
 		{
@@ -1183,10 +1179,12 @@ public class PlaceBooksAdminController
 			final byte data[] = new byte[bufferLen];
 			int length;
 			bis.skip(startByte);
+			log.debug("Starting to send data...");
 			try
 			{
 				while ((length = bis.read(data, 0, bufferLen)) != -1)
 				{
+					//log.debug(length);
 					sos.write(data, 0, length);
 				}
 				sos.flush();
@@ -1206,6 +1204,7 @@ public class PlaceBooksAdminController
 			// log.info(header + ": " + req.getHeader(header));
 			// }
 			log.error("Error serving " + type + " " + key);
+			e.printStackTrace(System.out);
 		}
 	}
 

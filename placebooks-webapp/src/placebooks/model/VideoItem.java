@@ -9,9 +9,9 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class VideoItem extends MediaItem
 {
-	VideoItem()
+	public VideoItem()
 	{
-
+		super();
 	}
 
 	public VideoItem(final User owner, final Geometry geom, final URL sourceURL,
