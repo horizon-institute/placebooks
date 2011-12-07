@@ -224,7 +224,7 @@ public class EverytrailService extends Service
 	private EverytrailPicturesResponse Pictures(final String userId, final String username, final String password)
 	{
 		// The pictures API doesn't work well, so get pictures via trips...
-		final EverytrailTripsResponse tripsData = Trips(username, password, userId);
+		final EverytrailTripsResponse tripsData = trips(username, password, userId);
 
 		HashMap<String, Node> picturesToReturn = new HashMap<String, Node>();
 		HashMap<String, String> pictureTrips = new HashMap<String, String>();
@@ -421,9 +421,9 @@ public class EverytrailService extends Service
 	 * @return
 	 * @return EverytrailTripsResponse
 	 */
-	private EverytrailTripsResponse Trips(final String username, final String password, final String userId)
+	private EverytrailTripsResponse trips(final String username, final String password, final String userId)
 	{
-		final EverytrailTripsResponse result = Trips(	username, password, userId, null, null, null, null, null, null,
+		final EverytrailTripsResponse result = Trips(username, password, userId, null, null, null, null, null, null,
 				null, null);
 		return result;
 	}
@@ -648,7 +648,7 @@ public class EverytrailService extends Service
 			ArrayList<String> imported_ids = new ArrayList<String>(); 
 			ArrayList<String> available_ids = new ArrayList<String>(); 
 	
-			final EverytrailTripsResponse trips = trips(loginResponse.getValue());
+			final EverytrailTripsResponse trips = trips(details.getUsername(), details.getPassword(), loginResponse.getValue());
 	
 			for (Node trip : trips.getTrips())
 			{
