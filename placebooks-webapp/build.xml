@@ -24,6 +24,8 @@
 			  value="${src.dir}/server-placebooks.properties" />
 	<property name="placebooks.props.personal" 
 			  value="${src.dir}/personal-placebooks.properties" />
+	<property name="placebooks.props.pcw" 
+			  value="${src.dir}/pcw-placebooks.properties" />
 
 	<property name="placebooks.props.target"
 			  value="${classes.dir}/placebooks.properties" />
@@ -116,6 +118,10 @@
 		<copy file="${placebooks.props.server}" 
 			  tofile="${placebooks.props.target}" overwrite="true" />
 	</target>
+	<target name="properties.pcw" if="pfile.pcw">
+		<copy file="${placebooks.props.pcw}" 
+			  tofile="${placebooks.props.target}" overwrite="true" />
+	</target>
 
 
 	<target name="staging" depends="makedirs"
@@ -126,6 +132,7 @@
 		<antcall target="properties.server" />
 		<antcall target="properties.personal" />
 		<antcall target="properties.dev-server" />
+		<antcall target="properties.pcw" />
 
 		<copy todir="${classes.dir}/META-INF">
 			<fileset dir="${src.dir}/META-INF" />
