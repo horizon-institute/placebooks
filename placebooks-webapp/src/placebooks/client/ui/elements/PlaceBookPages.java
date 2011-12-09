@@ -45,6 +45,11 @@ public abstract class PlaceBookPages extends Composite
 		getPagePanel().add(page);
 	}
 	
+	protected int getDefaultColumnCount()
+	{
+		return 3;
+	}
+	
 	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookItemFrameFactory factory)
 	{
 		GWT.log("SetPlaceBook");
@@ -55,7 +60,7 @@ public abstract class PlaceBookPages extends Composite
 		int pageIndex = 0;
 		for (PlaceBook page: newPlaceBook.getPages())
 		{
-			final PlaceBookPage pagePanel = new PlaceBookPage(page, pageIndex, factory);
+			final PlaceBookPage pagePanel = new PlaceBookPage(page, pageIndex, getDefaultColumnCount(), factory);
 
 			pageIndex ++;
 			

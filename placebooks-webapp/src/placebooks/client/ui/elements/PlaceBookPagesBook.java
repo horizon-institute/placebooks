@@ -94,6 +94,9 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	Panel pagesPanel;
 
 	@UiField
+	Panel leftPanel;
+	
+	@UiField
 	Canvas canvas;
 	
 	@UiField
@@ -364,6 +367,12 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		}
 	}
 
+	@Override
+	protected int getDefaultColumnCount()
+	{
+		return 2;
+	}
+
 	private void setPosition(final double left, final double top, final double width, final double height)
 	{
 		this.pageHeight = height - (margin * 2);
@@ -380,6 +389,11 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		pagesPanel.setWidth(pageWidth + "px");
 		pagesPanel.setHeight(pageHeight + "px");
 
+		leftPanel.getElement().getStyle().setTop(top + margin, Unit.PX);
+		leftPanel.getElement().getStyle().setLeft(left + margin - pageWidth, Unit.PX);
+		leftPanel.setWidth(pageWidth + "px");
+		leftPanel.setHeight(pageHeight + "px");
+		
 		for (final PlaceBookPage page : pages)
 		{
 			page.setSize(width, height);

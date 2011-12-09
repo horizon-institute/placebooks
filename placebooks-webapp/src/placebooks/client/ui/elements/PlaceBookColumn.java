@@ -55,6 +55,11 @@ public class PlaceBookColumn extends FlowPanel
 
 	private final PlaceBook placebook;
 	
+	public PlaceBook getPage()
+	{
+		return placebook;
+	}
+	
 	public PlaceBookColumn(final PlaceBook placebook, final int index, final int columns, final double left, final double width,
 			final boolean visible)
 	{

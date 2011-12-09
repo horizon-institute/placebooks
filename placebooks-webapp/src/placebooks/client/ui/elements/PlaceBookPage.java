@@ -26,8 +26,6 @@ public class PlaceBookPage extends Composite
 
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 
-	private static final int DEFAULT_COLUMNS = 3;
-
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
@@ -62,18 +60,11 @@ public class PlaceBookPage extends Composite
 		return index;
 	}
 	
-	public PlaceBookPage(final PlaceBook page, final int pageIndex, final PlaceBookItemFrameFactory factory)
+	public PlaceBookPage(final PlaceBook page, final int pageIndex, int defaultColumnCount, final PlaceBookItemFrameFactory factory)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		setPage(page, pageIndex, factory);
+		setPage(page, pageIndex, defaultColumnCount, factory);
 	}
-
-//	public void add(final PlaceBookItemFrame item)
-//	{
-//		addImpl(item);
-//		placebook.add(item.getItem());
-//		item.getItemWidget().setPlaceBook(placebook);
-//	}
 
 	public Iterable<PlaceBookColumn> getColumns()
 	{
@@ -114,14 +105,14 @@ public class PlaceBookPage extends Composite
 		refreshItemPlaceBook();
 	}
 
-	private void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory)
+	private void setPage(final PlaceBook newPlaceBook, final int pageIndex, final int defaultColumnCount, final PlaceBookItemFrameFactory factory)
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
 		this.index = pageIndex;
 		pageNumber.setText("" + (pageIndex + 1));
 
-		int columnCount = DEFAULT_COLUMNS;
+		int columnCount = defaultColumnCount;
 		try
 		{
 			columnCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
@@ -144,7 +135,7 @@ public class PlaceBookPage extends Composite
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
-			addImpl(factory.createFrame(item));
+			add(factory.createFrame(item));
 		}
 
 		refreshItemPlaceBook();
@@ -168,7 +159,7 @@ public class PlaceBookPage extends Composite
 		reflow();
 	}
 
-	private void addImpl(final PlaceBookItemFrame item)
+	private void add(final PlaceBookItemFrame item)
 	{
 		if (item == null) { return; }
 		items.add(item);
