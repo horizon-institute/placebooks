@@ -70,7 +70,8 @@ public class WebBundleItem extends PlaceBookItem
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(getWebBundle()));
+			filename.appendChild(config.createTextNode(getPlaceBook().getPlaceBookBinder().getPackagePath() 
+									 + "/" + getKey() + "/" + getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)

@@ -199,7 +199,9 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		log.info("PlaceBookBinder.createConfigurationRoot(), key=" 
 				 + this.getKey());
-		final Element root = config.createElement(PlaceBook.class.getName());
+		final Element root = config.createElement(
+			PlaceBookBinder.class.getName()
+		);
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
 		root.setAttribute("state", this.getState().toString());
