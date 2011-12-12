@@ -50,7 +50,7 @@ public class InitializeDatabase
 					"placebooksTest", "testPass1!");
 			userTest.add(pcwLoginDetails);
 	
-			final User userYTTest = new User("Youtube Test User", "placebooks.test@gmail.com",
+			final User userYTTest = new User("Test User", "placebooks.test@gmail.com",
 					encoder.encodePassword("testPass!", null));
 			final LoginDetails ytLoginDetails = new LoginDetails(userYTTest, "YouTube", "", "placebooksTest", "testPass1!");
 			userYTTest.add(ytLoginDetails);

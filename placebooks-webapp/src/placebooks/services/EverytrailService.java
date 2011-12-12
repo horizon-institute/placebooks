@@ -206,7 +206,7 @@ public class EverytrailService extends Service
 	 */
 	public EverytrailPicturesResponse pictures(final String userId)
 	{
-		return Pictures(userId, null, null);
+		return pictures(userId, null, null);
 	}
 
 	/**
@@ -221,10 +221,10 @@ public class EverytrailService extends Service
 	 *            A user's password
 	 * @return EverytrailPicturesResponse
 	 */
-	private EverytrailPicturesResponse Pictures(final String userId, final String username, final String password)
+	public EverytrailPicturesResponse pictures(final String userId, final String username, final String password)
 	{
 		// The pictures API doesn't work well, so get pictures via trips...
-		final EverytrailTripsResponse tripsData = Trips(username, password, userId);
+		final EverytrailTripsResponse tripsData = trips(username, password, userId);
 
 		HashMap<String, Node> picturesToReturn = new HashMap<String, Node>();
 		HashMap<String, String> pictureTrips = new HashMap<String, String>();
@@ -340,7 +340,7 @@ public class EverytrailService extends Service
 		tripData.put(tripId, tripName);
 		final HashMap<String, String> pictureTrips = new HashMap<String, String>();
 		
-		
+		log.debug("Pictures username: " + username + " " + password);
 		final String postResponse = getPostResponseWithParams("trip/pictures", params);
 		final Document doc = parseResponseToXml(postResponse);
 		resultStatus = parseResponseStatus("etTripPicturesResponse", doc);
@@ -421,9 +421,9 @@ public class EverytrailService extends Service
 	 * @return
 	 * @return EverytrailTripsResponse
 	 */
-	private EverytrailTripsResponse Trips(final String username, final String password, final String userId)
+	private EverytrailTripsResponse trips(final String username, final String password, final String userId)
 	{
-		final EverytrailTripsResponse result = Trips(	username, password, userId, null, null, null, null, null, null,
+		final EverytrailTripsResponse result = Trips(username, password, userId, null, null, null, null, null, null,
 				null, null);
 		return result;
 	}
@@ -648,7 +648,7 @@ public class EverytrailService extends Service
 			ArrayList<String> imported_ids = new ArrayList<String>(); 
 			ArrayList<String> available_ids = new ArrayList<String>(); 
 	
-			final EverytrailTripsResponse trips = trips(loginResponse.getValue());
+			final EverytrailTripsResponse trips = trips(details.getUsername(), details.getPassword(), loginResponse.getValue());
 	
 			for (Node trip : trips.getTrips())
 			{
@@ -709,22 +709,26 @@ public class EverytrailService extends Service
 				}
 	
 	
-				final EverytrailPicturesResponse picturesResponse = TripPictures(	tripId,
-						details.getUsername(),
-						details.getPassword(),
-						tripName);
-	
-				final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
-				int i = 0;
-				for (final Node picture : pictures.values())
+				final EverytrailPicturesResponse picturesResponse = TripPictures(tripId, details.getUsername(), details.getPassword(), tripName);
+
+				if(picturesResponse.getStatus().equals("success"))
 				{
-					log.info("Processing picture " + i++);
-					ImageItem imageItem = new ImageItem(user, null, null, null);
-					ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
-					imageItem = (ImageItem) imageItem.saveUpdatedItem();
-					imported_ids.add(imageItem.getExternalID());
-					available_ids.add(imageItem.getExternalID());
-				}			 
+					final HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
+					int i = 0;
+					for (final Node picture : pictures.values())
+					{
+						log.info("Processing picture " + i++);
+						ImageItem imageItem = new ImageItem(user, null, null, null);
+						ItemFactory.toImageItem(user, picture, imageItem, tripId, tripName);
+						imageItem = (ImageItem) imageItem.saveUpdatedItem();
+						imported_ids.add(imageItem.getExternalID());
+						available_ids.add(imageItem.getExternalID());
+					}			 
+				}
+				else
+				{
+					log.error("Can't get trip pictures: " + picturesResponse.getStatus());
+				}
 			}
 	
 			int itemsDeleted = cleanupItems(manager, imported_ids, user);

@@ -26,6 +26,13 @@ public class PlaceBookPage extends Composite
 
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 
+	private int pageIndex;
+
+	private double progress;
+	
+	private int columnOffset;
+
+
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
@@ -126,12 +133,15 @@ public class PlaceBookPage extends Composite
 		{
 			final double widthPCT = 100 / columnCount;
 			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, index, columnCount, left, widthPCT,
+
 					factory.isEditable());
 			columns.add(panel);
 			columnPanel.add(panel);
 
 			left += widthPCT;
 		}
+
+		columnOffset = pageIndex * columnCount;
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{

@@ -17,6 +17,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_CONFIG = "config.name";
 	public static final String IDEN_IMAGE_MAX_SIZE = "imageitem.size_limit";
 	public static final String IDEN_MEDIA = "media.dir";
+	public static final String IDEN_THUMBS = "thumbs.dir";
 
 	public static final String IDEN_OPENSPACE_APIKEY = "openspace.apikey";
 	public static final String IDEN_OPENSPACE_BASEURL = "openspace.baseurl";

@@ -1,0 +1,22 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	<ui:style>
+		.pagesPanel {
+			position: absolute;
+			left: 0px;
+			width: 800px;
+			height: 500px;
+		}
+		
+		.canvas {
+			position: absolute;
+			pointer-events: none;
+			z-index: 1500;
+		}
+	</ui:style>
+	<p:MousePanel ui:field="rootPanel">
+		<p:Canvas ui:field="canvas" styleName="{style.canvas}"/>
+		<g:FlowPanel ui:field="pagesPanel" styleName="{style.pagesPanel}" />
+	</p:MousePanel>
+</ui:UiBinder> 
