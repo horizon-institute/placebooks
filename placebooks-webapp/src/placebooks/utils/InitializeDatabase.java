@@ -50,18 +50,21 @@ public class InitializeDatabase
 					"placebooksTest", "testPass1!");
 			userTest.add(pcwLoginDetails);
 	
-			final User userYTTest = new User("Test User", "placebooks.test@gmail.com",
-					encoder.encodePassword("testPass!", null));
-			final LoginDetails ytLoginDetails = new LoginDetails(userYTTest, "YouTube", "", "placebooksTest", "testPass1!");
-			userYTTest.add(ytLoginDetails);
-	
+			final User userTest2 = new User("Test User", "placebooks.test@gmail.com", encoder.encodePassword("testPass!", null));
+			final LoginDetails ytLoginDetails = new LoginDetails(userTest2, "YouTube", "", "placebooksTest", "testPass1!");
+			final LoginDetails user2etLoginDetails = new LoginDetails(userTest2, EverytrailService.SERVICE_NAME, "", "Placebooks", "testPass1!");
+			final LoginDetails user2pcwLoginDetails = new LoginDetails(userTest2, PeoplesCollectionService.SERVICE_NAME, "", "PlacebooksTest", "testPass1!");
+			userTest2.add(ytLoginDetails);
+			userTest2.add(user2etLoginDetails);
+			userTest2.add(user2pcwLoginDetails);
+			
 			manager.persist(userk);
 			manager.persist(users);
 			manager.persist(userm);
 			manager.persist(userd);
 			manager.persist(alan);
 			manager.persist(userTest);
-			manager.persist(userYTTest);
+			manager.persist(userTest2);
 	
 			manager.getTransaction().commit();
 		}
