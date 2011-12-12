@@ -249,7 +249,120 @@ public final class PlaceBooksAdminHelper
 		}
 		return pb_;
 	}
+	
+	private static final PlaceBookBinder updatePlaceBookBinder(final EntityManager manager, final PlaceBookBinder binder, final User currentUser)
+	{
+		PlaceBookBinder result = binder;
+		if (binder.getKey() != null)
+		{
+			final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, binder.getKey());
+			// Get the DB version of this Binder and remove PlaceBooks that
+			// are no longer part of the new Binder
+			if (dbBinder != null)
+			{
+				for (final PlaceBook dbPlaceBook : dbBinder.getPlaceBooks())
+				{
+					final PlaceBook mPlaceBook = matchPlaceBook(dbPlaceBook, binder.getPlaceBooks());
 
+					// Delete unmatched PlaceBooks
+					if (mPlaceBook == null)
+					{
+						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
+						{
+							dbItem.deleteItemData();
+							manager.remove(dbItem);
+						}
+
+						manager.remove(dbPlaceBook);
+					}
+					else
+					{
+						// Remove any items that are no longer used
+						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
+						{
+							if (!containsItem(dbItem, mPlaceBook.getItems()))
+							{
+								if (dbItem instanceof GPSTraceItem)
+								{
+									// Remove any MapImageItem if removing a
+									// GPSTraceItem
+									for (final PlaceBookItem mapItem : dbPlaceBook.getItems())
+									{
+										if (mapItem instanceof MapImageItem)
+										{
+											mapItem.deleteItemData();
+											manager.remove(mapItem);
+										}
+									}
+
+									for (final PlaceBookItem mapItem : mPlaceBook.getItems())
+									{
+										if (mapItem instanceof MapImageItem)
+										{
+											mPlaceBook.removeItem(mapItem);
+										}
+									}
+								}
+								dbItem.deleteItemData();
+								manager.remove(dbItem);
+							}
+						}
+					}
+				}
+				
+				final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
+				for(PlaceBook placebook: binder.getPlaceBooks())
+				{
+					placebooks.add(updatePlaceBook(manager, placebook, currentUser));
+				}
+				dbBinder.setPlaceBooks(placebooks);
+				
+				for (final Entry<String, String> entry : binder.getMetadata().entrySet())
+				{
+					dbBinder.addMetadataEntry(entry.getKey(), entry.getValue());
+				}
+				
+				dbBinder.setGeometry(binder.getGeometry());
+				
+				result = dbBinder;
+			}
+		}
+		
+		if (result.getOwner() == null)
+		{
+			result.setOwner(currentUser);
+		}
+
+		if (result.getTimestamp() == null)
+		{
+			result.setTimestamp(new Date());
+		}		
+		
+		return result;
+	}
+
+	private static final PlaceBook updatePlaceBook(final EntityManager manager, final PlaceBook placebook, final User currentUser)
+	{
+		PlaceBook result = placebook;
+		
+		if (result.getOwner() == null)
+		{
+			result.setOwner(currentUser);
+		}
+
+		if (result.getTimestamp() == null)
+		{
+			result.setTimestamp(new Date());
+		}
+		
+		return result;
+	}
+
+	private static final PlaceBookItem updatePlaceBookItem(final EntityManager manager, final PlaceBookItem item, final User currentUser)
+	{
+		return item;
+	}
+	
 	public static final PlaceBookBinder savePlaceBookBinder(final EntityManager manager, PlaceBookBinder placeBookBinder)
 	{
 		final User currentUser = UserManager.getCurrentUser(manager);
@@ -258,90 +371,14 @@ public final class PlaceBooksAdminHelper
 		{
 			manager.getTransaction().begin();
 
-			if (placeBookBinder.getKey() != null)
-			{
+			PlaceBookBinder binder = updatePlaceBookBinder(manager, placeBookBinder, currentUser);			
 
-				final PlaceBookBinder dbPlaceBookBinder = manager.find(PlaceBookBinder.class, placeBookBinder.getKey());
-				// Get the DB version of this Binder and remove PlaceBooks that
-				// are no longer part of the new Binder
-				if (dbPlaceBookBinder != null)
-				{
-					for (final PlaceBook dbPlaceBook : dbPlaceBookBinder.getPlaceBooks())
-					{
-						final PlaceBook mPlaceBook = matchPlaceBook(dbPlaceBook, placeBookBinder.getPlaceBooks());
-
-						// Delete unmatched PlaceBooks
-						if (mPlaceBook == null)
-						{
-							for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
-							{
-								dbItem.deleteItemData();
-								manager.remove(dbItem);
-							}
-
-							manager.remove(dbPlaceBook);
-						}
-						else
-						{
-							// Remove any items that are no longer used
-							for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
-							{
-								if (!containsItem(dbItem, mPlaceBook.getItems()))
-								{
-									if (dbItem instanceof GPSTraceItem)
-									{
-										// Remove any MapImageItem if removing a
-										// GPSTraceItem
-										for (final PlaceBookItem mapItem : dbPlaceBook.getItems())
-										{
-											if (mapItem instanceof MapImageItem)
-											{
-												mapItem.deleteItemData();
-												manager.remove(mapItem);
-											}
-										}
-
-										for (final PlaceBookItem mapItem : mPlaceBook.getItems())
-										{
-											if (mapItem instanceof MapImageItem)
-											{
-												mPlaceBook.removeItem(mapItem);
-											}
-										}
-									}
-									dbItem.deleteItemData();
-									manager.remove(dbItem);
-								}
-							}
-							for (final Entry<String, String> entry : mPlaceBook.getMetadata().entrySet())
-							{
-								dbPlaceBook.addMetadataEntryIndexed(entry.getKey(), entry.getValue());
-							}
-							dbPlaceBook.setItems(mPlaceBook.getItems());
-							dbPlaceBook.setGeometry(mPlaceBook.getGeometry());
-
-						}
-
-					}
-					for (final Entry<String, String> entry : placeBookBinder.getMetadata().entrySet())
-					{
-						dbPlaceBookBinder.addMetadataEntry(entry.getKey(), entry.getValue());
-					}
-					dbPlaceBookBinder.setPlaceBooks(placeBookBinder.getPlaceBooks());
-
-					dbPlaceBookBinder.setGeometry(placeBookBinder.getGeometry());
-
-					dbPlaceBookBinder.setGeometry(placeBookBinder.getGeometry());
-					placeBookBinder = dbPlaceBookBinder;
-				}
-			}
-
-			for (PlaceBook placeBook : placeBookBinder.getPlaceBooks())
+			for (PlaceBook placeBook : binder.getPlaceBooks())
 			{
 				final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
 				final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placeBook.getItems());
 				placeBook.setItems(new ArrayList<PlaceBookItem>());
-				placeBook.setPlaceBookBinder(placeBookBinder);
+				placeBook.setPlaceBookBinder(binder);
 				for (final PlaceBookItem newItem : newItems)
 				{
 					// Update existing item if possible
@@ -396,16 +433,6 @@ public final class PlaceBooksAdminHelper
 					placeBook.addItem(item);
 				}
 
-				if (placeBook.getOwner() == null)
-				{
-					placeBook.setOwner(currentUser);
-				}
-
-				if (placeBook.getTimestamp() == null)
-				{
-					placeBook.setTimestamp(new Date());
-				}
-
 				placeBook = manager.merge(placeBook);
 				try
 				{
@@ -448,20 +475,10 @@ public final class PlaceBooksAdminHelper
 				}
 			}
 
-			if (placeBookBinder.getOwner() == null)
-			{
-				placeBookBinder.setOwner(currentUser);
-			}
-
-			if (placeBookBinder.getTimestamp() == null)
-			{
-				placeBookBinder.setTimestamp(new Date());
-			}
-
-			placeBookBinder = manager.merge(placeBookBinder);
+			binder = manager.merge(binder);
 			try
 			{
-				placeBookBinder.calcBoundary();
+				binder.calcBoundary();
 			}
 			catch (final Exception e)
 			{
@@ -470,7 +487,7 @@ public final class PlaceBooksAdminHelper
 
 			manager.getTransaction().commit();
 
-			return manager.find(PlaceBookBinder.class, placeBookBinder.getKey());
+			return manager.find(PlaceBookBinder.class, binder.getKey());
 		}
 		catch (final Throwable e)
 		{

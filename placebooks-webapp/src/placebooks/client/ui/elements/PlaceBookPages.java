@@ -45,6 +45,12 @@ public abstract class PlaceBookPages extends Composite
 		getPagePanel().add(page);
 	}
 	
+	protected void remove(PlaceBookPage page)
+	{
+		pages.remove(page);
+		getPagePanel().remove(page);
+	}
+	
 	protected int getDefaultColumnCount()
 	{
 		return 3;
@@ -99,5 +105,9 @@ public abstract class PlaceBookPages extends Composite
 	public Iterable<PlaceBookPage> getPages()
 	{
 		return pages;
+	}
+
+	public void deleteCurrentPage()
+	{
 	}
 }

@@ -420,6 +420,19 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
+	@UiHandler("newPage")
+	void newPage(final ClickEvent event)
+	{
+		
+	}
+	
+	@UiHandler("deletePage")
+	void deleteCurrentPage(final ClickEvent event)
+	{
+		bookPanel.deleteCurrentPage();
+		saveItem.markChanged();
+	}
+	
 	private String getKey()
 	{
 		return placebookID;

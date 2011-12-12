@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import placebooks.controller.SearchHelper;
 
 import com.vividsolutions.jts.geom.Geometry;
+import static javax.persistence.FetchType.LAZY;
 
 
 @Entity
@@ -53,7 +54,7 @@ public class PlaceBook extends BoundaryGenerator
 	private String id;
 
 	@JsonIgnore
-	@OneToOne(cascade = ALL, mappedBy = "placebook")
+	@OneToOne(cascade = ALL, mappedBy = "placebook", orphanRemoval = true, fetch = LAZY)
 	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
 	// TODO: Cascading deletes: not sure about this

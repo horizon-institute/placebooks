@@ -372,6 +372,18 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	{
 		return 2;
 	}
+	
+	
+
+	@Override
+	public void deleteCurrentPage()
+	{
+		int index = currentPage.getIndex();
+		getPlaceBook().remove(currentPage.getPlaceBook());
+		remove(currentPage);
+		setPage(pages.get(Math.min(index, pages.size() - 1)));
+		// TODO Update page numbers
+	}
 
 	private void setPosition(final double left, final double top, final double width, final double height)
 	{

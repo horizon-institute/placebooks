@@ -65,6 +65,19 @@ public class PlaceBookBinder extends JavaScriptObject
 		};
 	}	
 	
+	public final native void setPages(final JsArray<PlaceBook> pages)
+	/*-{
+		this.pages = pages;
+	}-*/;
+	
+	public final native void remove(final PlaceBook page)
+	/*-{
+		var idx = this.pages.indexOf(page);
+		if (idx != -1) {
+			this.pages.splice(idx, 1);
+		}
+	}-*/;
+	
 	public final native void setMetadata(String name, String value)
 	/*-{
 		if(!('metadata' in this))
