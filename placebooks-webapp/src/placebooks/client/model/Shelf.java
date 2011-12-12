@@ -7,8 +7,6 @@ import com.google.gwt.core.client.JsArray;
 
 public class Shelf extends JavaScriptObject
 {
-	public static final native Shelf parse(final String json) /*-{ return eval('(' + json + ')'); }-*/;
-
 	protected Shelf()
 	{
 	}

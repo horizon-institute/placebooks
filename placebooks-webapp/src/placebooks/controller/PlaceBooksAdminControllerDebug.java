@@ -530,22 +530,22 @@ public class PlaceBooksAdminControllerDebug
 
 	}
 
-
-	@RequestMapping(value = "/admin/publish_placebook/{key}",
-			method = RequestMethod.GET)
-			public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-		final PlaceBook p = em.find(PlaceBook.class, key);
-		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
-		em.close();
-
-		log.info("Published PlaceBook, old key = " + key + ", new key = " 
-				+ p_.getKey());
-
-		return new ModelAndView("message", "text", 
-				"Published PlaceBook, new key = " + key);
-	}
+//
+//	@RequestMapping(value = "/admin/publish_placebook/{key}",
+//			method = RequestMethod.GET)
+//			public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+//	{
+//		final EntityManager em = EMFSingleton.getEntityManager();
+//		final PlaceBook p = em.find(PlaceBook.class, key);
+//		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
+//		em.close();
+//
+//		log.info("Published PlaceBook, old key = " + key + ", new key = " 
+//				+ p_.getKey());
+//
+//		return new ModelAndView("message", "text", 
+//				"Published PlaceBook, new key = " + key);
+//	}
 
 	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
 	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)

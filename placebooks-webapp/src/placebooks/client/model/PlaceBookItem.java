@@ -28,10 +28,6 @@ public class PlaceBookItem extends JavaScriptObject
 		}
 	}
 
-	public static final native PlaceBookItem parse(final String json) /*-{
-																		return eval('(' + json + ')');
-																		}-*/;
-
 	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{
 																					return eval('(' + json + ')');
 																					}-*/;

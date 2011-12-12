@@ -6,10 +6,11 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -23,57 +24,23 @@ import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
+
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PlaceBook
+public class PlaceBook extends BoundaryGenerator
 {
-	public enum State
-	{
-		UNPUBLISHED(0),
-		PUBLISHED(1);
-		
-		private int value;
-		
-		private static final Map<Integer, State> lu = 
-			new HashMap<Integer, State>();
-
-		static
-		{
-			for (State s : EnumSet.allOf(State.class))
-				lu.put(s.getValue(), s);
-		}
-
-		private State(int value)
-		{
-			this.value = value;
-		}
-
-		public int getValue()
-		{
-			return value;
-		}
-
-		public static State get(int value)
-		{
-			return lu.get(value);
-		}
-
-	}
-
+	
 	protected static final Logger log = 
 		Logger.getLogger(PlaceBook.class.getName());
 
@@ -103,11 +70,11 @@ public class PlaceBook
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
-	private State state = State.UNPUBLISHED;
-	
-	//@JsonIgnore
-	//private Permissions readPermissions;
-	
+	@JsonIgnore
+	@ManyToOne
+	private PlaceBookBinder placeBookBinder; // PlaceBookBinder that owns this
+
+
 	public PlaceBook()
 	{
 		index.setPlaceBook(this);		
@@ -117,17 +84,11 @@ public class PlaceBook
 	public PlaceBook(final PlaceBook p)
 	{
 		this.owner = p.getOwner();
-		if (this.owner != null)
-			this.owner.add(this);
 
-		if(p.getGeometry() != null)
-		{
+		if (p.getGeometry() != null)
 			this.geom = (Geometry)p.getGeometry().clone();
-		}
 		else
-		{
 			this.geom = null;
-		}
 		this.timestamp = (Date)p.getTimestamp().clone();
 
 		this.metadata = new HashMap<String, String>(p.getMetadata());
@@ -147,12 +108,7 @@ public class PlaceBook
 	public PlaceBook(final User owner, final Geometry geom)
 	{
 		this();
-		this.state = State.UNPUBLISHED;
 		this.owner = owner;
-		if (owner != null)
-		{
-			this.owner.add(this);
-		}
 		this.geom = geom;
 		this.timestamp = new Date();
 
@@ -195,79 +151,19 @@ public class PlaceBook
 
 	public void calcBoundary()
 	{
-		Geometry bounds = null;
-		float minLat = Float.POSITIVE_INFINITY;
-		float maxLat = Float.NEGATIVE_INFINITY;
-		float minLon = Float.POSITIVE_INFINITY;
-		float maxLon = Float.NEGATIVE_INFINITY;
-		boolean emptySet = false;
+		final Set<Geometry> geoms = new HashSet<Geometry>();
+		for (final PlaceBookItem p : getItems())
+			geoms.add(p.getGeometry());
 
-		for (PlaceBookItem item : getItems())
-		{
-			final Geometry g = item.getGeometry();
-			if (g != null)
-			{
-				// A Geometry with no dimensions has to be handled
-				System.out.println("Inclunding item " + item.getClass().getSimpleName() + ":"+ item.getKey() + " = " + g.toText());
-				if (g.getBoundary().isEmpty()) 
-				{
-					Coordinate[] cs = g.getCoordinates();
-					for (Coordinate c : cs)
-					{
-						minLat = Math.min(minLat, (float)c.x);
-						maxLat = Math.max(maxLat, (float)c.x);
-						minLon = Math.min(minLon, (float)c.y);
-						maxLon = Math.max(maxLon, (float)c.y);
-						emptySet = true;
-					}
-				}
-				else
-				{
-					if (bounds != null)
-						bounds = g.union(bounds);
-					else
-						bounds = g;
-				}
-			}
-		}
-
-		if (emptySet)
-		{
-			try
-			{
-				Geometry empty = new WKTReader().read(
-								"POLYGON ((" + minLat + " " + minLon + ", "
-											 + minLat + " " + maxLon + ", "
-											 + maxLat + " " + maxLon + ", "
-											 + maxLat + " " + minLon + ", "
-											 + minLat + " " + minLon + "))");
-				log.info("empty=" + empty);
-				if (bounds != null)
-					bounds = empty.union(bounds);
-				else
-					bounds = empty;
-			}
-			catch (final Throwable e)
-			{
-				log.error(e.toString());
-			}
-
-		}
-
-		if (bounds != null)
-		{
-			geom = bounds.getBoundary();
-		}
-		else
-		{
-			geom = null;
-		}
-		log.info("calcBoundary()= " + geom);
+		final Geometry geom = calcBoundary(geoms);
+		this.geom = geom;
+		log.info("calcBoundary()= " + this.geom);
 	}
 
 	public Element createConfigurationRoot(final Document config)
 	{
-		log.info("PlaceBook.appendConfiguration(), key=" + this.getKey());
+		log.info("PlaceBook.createConfigurationRoot(), key=" 
+				 + this.getKey());
 		final Element root = config.createElement(PlaceBook.class.getName());
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
@@ -345,18 +241,6 @@ public class PlaceBook
 		return owner;
 	}
 
-	public String getPackagePath()
-	{
-		return PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getKey();
-	}
-
-	public State getState()
-	{
-		return state;
-	}
-
 	public Date getTimestamp()
 	{
 		return timestamp;
@@ -401,11 +285,6 @@ public class PlaceBook
 		this.owner = owner;
 	}
 
-	public void setState(State state)
-	{
-		this.state = state;
-	}
-
 	public void setTimestamp(final Date timestamp)
 	{
 		this.timestamp = timestamp;
@@ -414,5 +293,15 @@ public class PlaceBook
 	public final PlaceBookSearchIndex getSearchIndex()
 	{
 		return index;
+	}
+
+	public void setPlaceBookBinder(final PlaceBookBinder p)
+	{
+		this.placeBookBinder = p;
+	}
+
+	public final PlaceBookBinder getPlaceBookBinder()
+	{
+		return placeBookBinder;
 	}
 }

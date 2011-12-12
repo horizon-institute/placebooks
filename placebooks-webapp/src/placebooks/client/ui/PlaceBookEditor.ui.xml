@@ -156,6 +156,11 @@
 			border-top: 1px solid #BBB;
 			border-bottom: 1px solid #BBB;
 		}
+		
+		.canvas {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
@@ -167,7 +172,7 @@
 				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<g:SimplePanel styleName="{style.innerCanvasPanel}"
-				ui:field="canvasPanel" />
+				ui:field="canvasPanel"><p:PlaceBookPagesList ui:field="bookPanel" styleName="{style.canvas}"/></g:SimplePanel>
 		</g:FlowPanel>
 		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
 			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>
@@ -178,7 +183,7 @@
 				<g:Label ui:field="zoomLabel">100%</g:Label>
 				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
 			</g:FlowPanel>			
-			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>		
+			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>

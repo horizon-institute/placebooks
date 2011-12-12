@@ -64,7 +64,7 @@ public class WebBundleItem extends PlaceBookItem
 		try
 		{
 			final File from = new File(getWebBundlePath());
-			final File to = new File(getPlaceBook().getPackagePath() 
+			final File to = new File(getPlaceBook().getPlaceBookBinder().getPackagePath() 
 									 + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);

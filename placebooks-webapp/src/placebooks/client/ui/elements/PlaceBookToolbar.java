@@ -68,7 +68,7 @@ public class PlaceBookToolbar extends Composite
 		{
 			try
 			{
-				final Shelf shelf = Shelf.parse(response.getText());
+				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 				if(shelf != null)
 				{
 					place.setUser(shelf.getUser());
@@ -173,7 +173,7 @@ public class PlaceBookToolbar extends Composite
 							account.hide();
 							try
 							{
-								final Shelf shelf = Shelf.parse(response.getText());
+								final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 								if(shelf != null)
 								{
 									place.setUser(shelf.getUser());

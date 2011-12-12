@@ -1,5 +1,6 @@
 package placebooks.client.ui.palette;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
@@ -60,7 +61,7 @@ public class PalettePlaceBookItem extends PaletteItem
 
 	private PlaceBookItemWidget createItem()
 	{
-		final PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
+		final PlaceBookItem newItem = PlaceBookService.parse(PlaceBookItem.class, new JSONObject(item).toString());
 		if (newItem.getKey() != null)
 		{
 			newItem.setKey(null);

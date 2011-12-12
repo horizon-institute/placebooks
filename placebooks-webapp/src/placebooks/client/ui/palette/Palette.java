@@ -68,14 +68,14 @@ public class Palette extends FlowPanel
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_HEADER_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_TEXT_LIST_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_IMAGE_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_VIDEO_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_WEB_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_GPS_ITEM), dragHandler));
-		root.add(new PalettePlaceBookItem(PlaceBookItem.parse(NEW_AUDIO_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_HEADER_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_LIST_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_IMAGE_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_VIDEO_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_WEB_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_GPS_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_AUDIO_ITEM), dragHandler));
 
 		for (int index = 0; index < items.length(); index++)
 		{

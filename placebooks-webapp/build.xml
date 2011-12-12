@@ -18,12 +18,15 @@
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
 	<property name="git.url" value="https://github.com/horizon-institute/Bridging-the-Rural-Divide--Placebooks/commit/" />
 
-	<property name="placebooks.props.dev-server" 
+	<!--property name="placebooks.props.dev-server" 
 			  value="${src.dir}/dev-server-placebooks.properties" />
 	<property name="placebooks.props.server" 
 			  value="${src.dir}/server-placebooks.properties" />
 	<property name="placebooks.props.personal" 
-			  value="${src.dir}/personal-placebooks.properties" />
+			  value="${src.dir}/personal-placebooks.properties" /-->
+
+	<property name="placebooks.props.source"
+			  value="${src.dir}/placebooks.properties" />
 
 	<property name="placebooks.props.target"
 			  value="${classes.dir}/placebooks.properties" />
@@ -104,7 +107,7 @@
 		<mkdir dir="${javadoc.dir}" />
 	</target>
 
-	<target name="properties.dev-server" if="pfile.dev">
+	<!--target name="properties.dev-server" if="pfile.dev">
 		<copy file="${placebooks.props.dev-server}" 
 			  tofile="${placebooks.props.target}" overwrite="true" />
 	</target>
@@ -115,7 +118,7 @@
 	<target name="properties.server" if="pfile.server">
 		<copy file="${placebooks.props.server}" 
 			  tofile="${placebooks.props.target}" overwrite="true" />
-	</target>
+	</target-->
 
 
 	<target name="staging" depends="makedirs"
@@ -123,9 +126,11 @@
 
 		<copy file="${log4j.props}" todir="${classes.dir}" />
 
-		<antcall target="properties.server" />
+		<!--antcall target="properties.server" />
 		<antcall target="properties.personal" />
-		<antcall target="properties.dev-server" />
+		<antcall target="properties.dev-server" /-->
+
+		<copy file="${placebooks.props.source}" todir="${classes.dir}" />
 
 		<copy todir="${classes.dir}/META-INF">
 			<fileset dir="${src.dir}/META-INF" />

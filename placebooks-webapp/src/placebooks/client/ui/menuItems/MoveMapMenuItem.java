@@ -26,7 +26,7 @@ public class MoveMapMenuItem extends MenuItem
 	{
 		item.getItem().setGeometry(null);
 		item.getItemWidget().refresh();
-		handler.refreshMap();
+// TODO		handler.refreshMap();
 		handler.getContext().markChanged();
 	}
 }

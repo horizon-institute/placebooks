@@ -26,12 +26,6 @@ public class PlaceBookPage extends Composite
 
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 
-	private int pageIndex;
-
-	private double progress;
-	
-	private int columnOffset;
-
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
@@ -39,39 +33,37 @@ public class PlaceBookPage extends Composite
 	private PlaceBook placebook;
 	// TODO PlaceBookPage page;
 
+	private int index;
+	
 	@UiField
 	Label pageNumber;
 
 	@UiField
 	Panel columnPanel;
 
-	double getProgress()
-	{
-		return progress;
-	}
-	
 	void clearFlip()
 	{
 		getElement().getStyle().clearWidth();
+		pageNumber.getElement().getStyle().clearWidth();
 		columnPanel.getElement().getStyle().clearWidth();
 	}
 	
 	void setFlip(double flipX, double pageWidth)
 	{
-		setWidth(flipX + "px");		
-		columnPanel.setWidth(pageWidth + "px");
+		setWidth(flipX + "px");
+		pageNumber.setWidth(pageWidth - 30 + "px");
+		columnPanel.setWidth(pageWidth - 60 + "px");
 	}
 	
-	public PlaceBookPage()
+	public int getIndex()
+	{
+		return index;
+	}
+	
+	public PlaceBookPage(final PlaceBook page, final int pageIndex, int defaultColumnCount, final PlaceBookItemFrameFactory factory)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-	}
-
-	public void add(final PlaceBookItemFrame item)
-	{
-		addImpl(item);
-		placebook.add(item.getItem());
-		item.getItemWidget().setPlaceBook(placebook);
+		setPage(page, pageIndex, defaultColumnCount, factory);
 	}
 
 	public Iterable<PlaceBookColumn> getColumns()
@@ -113,21 +105,27 @@ public class PlaceBookPage extends Composite
 		refreshItemPlaceBook();
 	}
 
-	public void setPage(final PlaceBook newPlaceBook, final int pageIndex, final PlaceBookItemFrameFactory factory,
-			final int columnCount)
+	private void setPage(final PlaceBook newPlaceBook, final int pageIndex, final int defaultColumnCount, final PlaceBookItemFrameFactory factory)
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-
-		this.pageIndex = pageIndex;
+		this.index = pageIndex;
 		pageNumber.setText("" + (pageIndex + 1));
 
+		int columnCount = defaultColumnCount;
+		try
+		{
+			columnCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
+		}
+		catch (final Exception e)
+		{
+		}
+		
 		double left = 0;
 		for (int index = 0; index < columnCount; index++)
 		{
 			final double widthPCT = 100 / columnCount;
-			final int panelIndex = (pageIndex * columnCount) + index;
-			final PlaceBookColumn panel = new PlaceBookColumn(panelIndex, columnCount, left, widthPCT,
+			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, index, columnCount, left, widthPCT,
 					factory.isEditable());
 			columns.add(panel);
 			columnPanel.add(panel);
@@ -139,11 +137,7 @@ public class PlaceBookPage extends Composite
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
-			final int panelIndex = item.getParameter("panel");
-			if (panelIndex >= columnOffset && (panelIndex < columnCount + columnOffset))
-			{
-				addImpl(factory.createFrame(item));
-			}
+			add(factory.createFrame(item));
 		}
 
 		refreshItemPlaceBook();
@@ -167,11 +161,17 @@ public class PlaceBookPage extends Composite
 		reflow();
 	}
 
-	private void addImpl(final PlaceBookItemFrame item)
+	private void add(final PlaceBookItemFrame item)
 	{
 		if (item == null) { return; }
 		items.add(item);
-		item.setPanel(columns.get(item.getItem().getParameter("panel", 0) - columnOffset));
+		int columnIndex = item.getItem().getParameter("panel", 0);
+		if(columnIndex >= columns.size())
+		{
+			columnIndex = columnIndex % columns.size();
+			item.getItem().setParameter("panel", columnIndex);
+		}
+		item.setPanel(columns.get(columnIndex));
 	}
 
 	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
@@ -194,10 +194,5 @@ public class PlaceBookPage extends Composite
 		{
 			item.getItemWidget().setPlaceBook(placebook);
 		}
-	}
-
-	public void setProgress(double max)
-	{
-		this.progress = max;		
 	}
 }

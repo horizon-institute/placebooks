@@ -248,7 +248,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 																		final Response response)
 																{
 																	account.hide();
-																	Shelf shelf = Shelf.parse(response.getText());
+																	Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 																	if(shelf != null)
 																	{
 																		setUser(shelf.getUser());

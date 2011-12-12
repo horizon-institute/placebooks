@@ -218,7 +218,7 @@ public class MapItem extends PlaceBookItemWidget
 					{
 						try
 						{
-							serverInfo = ServerInfo.parse(response.getText());
+							serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
 							if(serverInfo != null)
 							{
 								createMap(serverInfo);						

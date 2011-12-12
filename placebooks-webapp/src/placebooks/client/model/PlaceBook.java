@@ -7,11 +7,6 @@ import com.google.gwt.core.client.JsArray;
 
 public class PlaceBook extends JavaScriptObject
 {
-	public static final native PlaceBook parse(final String json)
-	/*-{
-		return eval('(' + json + ')');
-	}-*/;
-
 	protected PlaceBook()
 	{
 	}
@@ -52,7 +47,7 @@ public class PlaceBook extends JavaScriptObject
 		return this.items;
 	}-*/;
 
-	public final native String getKey()
+	public final native String getId()
 	/*-{
 		return this.id;
 	}-*/;
@@ -74,10 +69,6 @@ public class PlaceBook extends JavaScriptObject
 	public final native User getOwner() /*-{
 										return this.owner;
 										}-*/;
-
-	public final native String getState() /*-{
-											return this.state;
-											}-*/;
 
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
@@ -104,10 +95,4 @@ public class PlaceBook extends JavaScriptObject
 	}-*/;
 
 	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
-
-	// @Persistent
-	// private Date timestamp;
-
-	// @Persistent(dependent="true")
-	// private PlaceBookIndex index;
 }

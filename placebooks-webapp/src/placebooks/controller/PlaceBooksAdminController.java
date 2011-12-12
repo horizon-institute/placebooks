@@ -34,7 +34,6 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
@@ -53,13 +52,14 @@ import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
-import placebooks.model.PlaceBook.State;
+import placebooks.model.PlaceBookBinder;
+import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.model.json.PlaceBookDistanceEntry;
+import placebooks.model.json.PlaceBookBinderDistanceEntry;
 import placebooks.model.json.PlaceBookItemDistanceEntry;
-import placebooks.model.json.PlaceBookSearchEntry;
+import placebooks.model.json.PlaceBookBinderSearchEntry;
 import placebooks.model.json.ServerInfo;
 import placebooks.model.json.Shelf;
 import placebooks.model.json.ShelfEntry;
@@ -81,9 +81,9 @@ public class PlaceBooksAdminController
 {
 	public PlaceBooksAdminController()
 	{
-		jsonMapper.configure(Feature.AUTO_DETECT_FIELDS, true);
-		jsonMapper.configure(Feature.AUTO_DETECT_GETTERS, false);
-		jsonMapper.configure(Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_FIELDS, true);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_GETTERS, false);
+		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);	
 		jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);	
 		jsonMapper.setVisibilityChecker(new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.NONE, JsonAutoDetect.Visibility.ANY));
 	}
@@ -203,12 +203,13 @@ public class PlaceBooksAdminController
 			user.add(loginDetails);
 			manager.getTransaction().commit();
 
-			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-					PlaceBook.class);
+			final TypedQuery<PlaceBookBinder> q = 
+				manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner= :owner",
+																PlaceBookBinder.class);
 			q.setParameter("owner", user);
 
-			final Collection<PlaceBook> pbs = q.getResultList();
-			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+			final Collection<PlaceBookBinder> pbs = q.getResultList();
+			log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
 			log.info("User " + user.getName());
 			try
 			{
@@ -374,7 +375,7 @@ public class PlaceBooksAdminController
 		final ArrayList<PlaceBookItem> presetItems = PresetItemsHelper.getPresetItems(user);
 		pbs.addAll(presetItems);
 
-		log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+		log.info("Converting " + pbs.size() + " PlaceBookItems to JSON");
 		log.info("User " + user.getName());
 		try
 		{
@@ -469,8 +470,43 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	@RequestMapping(value = "/placebookbinder/{key}", 
+					method = RequestMethod.GET)
+	public void getPlaceBookBinderJSON(final HttpServletResponse res, 
+									   @PathVariable("key") final String key)
+	{
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		try
+		{
+			final PlaceBookBinder pb = manager.find(PlaceBookBinder.class, key);
+			if (pb != null)
+			{
+				try
+				{
+					jsonMapper.writeValue(res.getWriter(), pb);
+					res.setContentType("application/json");				
+					res.flushBuffer();
+				}
+				catch (final IOException e)
+				{
+					log.error(e.toString());
+				}
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			manager.close();
+		}
+	}
+
+
 	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
-	public void getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getPlaceBookBindersJSON(final HttpServletRequest req, 
+										final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
@@ -484,21 +520,27 @@ public class PlaceBooksAdminController
 					@Override
 					public void run()
 					{
-						final EntityManager manager = EMFSingleton.getEntityManager();
+						final EntityManager manager = 
+							EMFSingleton.getEntityManager();
 						ServiceRegistry.updateServices(manager, user);
 					}
 				}).start();
+				
+				final TypedQuery<PlaceBookBinder> q = 
+					manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
+																	PlaceBookBinder.class);
+				q.setParameter("user", user);
+				q.setParameter("email", 
+							   "'%" + user.getEmail() + "%'");
 
-				final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.owner= :owner",
-						PlaceBook.class);
-				q.setParameter("owner", user);
-
-				final Collection<PlaceBook> pbs = q.getResultList();
-				log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+				final Collection<PlaceBookBinder> pbs = q.getResultList();
+				log.info("Converting " + pbs.size() + 
+						 " PlaceBookBinders to JSON");
 				log.info("User " + user.getName());
 				try
 				{
-					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
+					jsonMapper.writeValue(res.getWriter(), 
+										  new UserShelf(pbs, user));
 					res.setContentType("application/json");				
 					res.flushBuffer();
 				}
@@ -512,7 +554,8 @@ public class PlaceBooksAdminController
 				try
 				{
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					jsonMapper.writeValue(res.getWriter(), req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
+					jsonMapper.writeValue(res.getWriter(), 
+						req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
 					res.flushBuffer();
 				}
 				catch (final IOException e)
@@ -528,30 +571,37 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBooksJSON(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("owner") final String owner)
+	public ModelAndView getPlaceBookBindersJSON(final HttpServletRequest req, 
+												final HttpServletResponse res,
+									@PathVariable("owner") final String owner)
 	{
 		if (owner.trim().isEmpty()) { return null; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		final TypedQuery<User> uq = pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
+		final TypedQuery<User> uq = 
+			pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
 		uq.setParameter("email", owner.trim());
 		try
 		{
 			final User user = uq.getSingleResult();
 
-			final TypedQuery<PlaceBook> q = pm.createQuery(	"SELECT p FROM PlaceBook p WHERE p.owner = :user",
-					PlaceBook.class);
+			final TypedQuery<PlaceBookBinder> q = 
+				pm.createQuery("SELECT p FROM PlaceBookBinder p "
+					+ "WHERE p.owner = :user OR p.permsUsers LIKE :email",
+					PlaceBookBinder.class
+				);
 
 			q.setParameter("user", user);
-			final Collection<PlaceBook> pbs = q.getResultList();
+			q.setParameter("email", "'%" + owner.trim() + "%'");
+			final Collection<PlaceBookBinder> pbs = q.getResultList();
 
-			log.info("Converting " + pbs.size() + " PlaceBooks to JSON");
+			log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
 			if (!pbs.isEmpty())
 			{
 				try
 				{
-					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
+					jsonMapper.writeValue(res.getWriter(), 
+										  new UserShelf(pbs, user));
 					res.setContentType("application/json");				
 					res.flushBuffer();
 				}
@@ -575,26 +625,31 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/randomized/{count}", method = RequestMethod.GET)
-	public void getRandomPlaceBooksJSON(final HttpServletResponse res, @PathVariable("count") final int count)
+	public void getRandomPlaceBookBindersJSON(final HttpServletResponse res, 
+										@PathVariable("count") final int count)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
-			final TypedQuery<PlaceBook> q = manager.createQuery("SELECT p FROM PlaceBook p WHERE p.state= :state",
-					PlaceBook.class);
+			final TypedQuery<PlaceBookBinder> q = 
+				manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.state= :state",
+																PlaceBookBinder.class);
 			q.setParameter("state", State.PUBLISHED);
 
-			final List<PlaceBook> pbs = q.getResultList();
-			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();
-			final Random random = new Random();
-			for (int index = 0; index < count; index++)
+			final List<PlaceBookBinder> pbs = q.getResultList();
+			final Collection<ShelfEntry> result = new ArrayList<ShelfEntry>();			
+			if(!pbs.isEmpty())
 			{
-				final int rindex = random.nextInt(pbs.size());
-				final PlaceBookSearchEntry entry = new PlaceBookSearchEntry(pbs.get(rindex), 0);
-				result.add(entry);
-				pbs.remove(rindex);
+				final Random random = new Random();
+				for (int index = 0; index < count; index++)
+				{
+					final int rindex = random.nextInt(pbs.size());
+					final PlaceBookBinderSearchEntry entry = 
+						new PlaceBookBinderSearchEntry(pbs.get(rindex), 0);
+					result.add(entry);
+					pbs.remove(rindex);
+				}
 			}
-
 			log.info("Converting " + result.size() + " PlaceBooks to JSON");
 			try
 			{
@@ -636,7 +691,7 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
-		final PlaceBook p = pm.find(PlaceBook.class, key);
+		final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
 		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
 		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
 
@@ -676,10 +731,12 @@ public class PlaceBooksAdminController
 		return null;
 	}
 
-	@RequestMapping(value = "/publishplacebook", method = RequestMethod.POST)
-	public void publishPlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
+	@RequestMapping(value = "/publishplacebookbinder", 
+					method = RequestMethod.POST)
+	public void publishPlaceBookBinderJSON(final HttpServletResponse res, 
+										   @RequestParam("placebookbinder") final String json)
 	{
-		log.info("Publish Placebook: " + json);
+		log.info("Publish PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -700,12 +757,13 @@ public class PlaceBooksAdminController
 		{
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
-			log.debug("Saved Placebook:" + mapper.writeValueAsString(result));
-			log.info("Published Placebook:" + mapper.writeValueAsString(result));
+			final PlaceBookBinder placebookBinder = mapper.readValue(json, PlaceBookBinder.class);
+			final PlaceBookBinder result = 
+				PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
+			log.debug("Saved PlacebookBinder:" + mapper.writeValueAsString(result));
+			log.info("Published PlacebookBinder:" + mapper.writeValueAsString(result));
 
-			final PlaceBook published = PlaceBooksAdminHelper.publishPlaceBook(manager, result);
+			final PlaceBookBinder published = PlaceBooksAdminHelper.publishPlaceBookBinder(manager, result);
 
 			jsonMapper.writeValue(res.getWriter(), published);
 			res.setContentType("application/json");				
@@ -725,10 +783,11 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/saveplacebook", method = RequestMethod.POST)
-	public void savePlaceBookJSON(final HttpServletResponse res, @RequestParam("placebook") final String json)
+	@RequestMapping(value = "/saveplacebookbinder", method = RequestMethod.POST)
+	public void savePlaceBookBinderJSON(final HttpServletResponse res, 
+										@RequestParam("placebookbinder") final String json)
 	{
-		log.info("Save Placebook: " + json);
+		log.info("Save PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User currentUser = UserManager.getCurrentUser(manager);
 		if (currentUser == null)
@@ -747,10 +806,9 @@ public class PlaceBooksAdminController
 
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-			final PlaceBook placebook = mapper.readValue(json, PlaceBook.class);
-			final PlaceBook result = PlaceBooksAdminHelper.savePlaceBook(manager, placebook);
+			final PlaceBookBinder placebookBinder = jsonMapper.readValue(json, PlaceBookBinder.class);
+			final PlaceBookBinder result = 
+				PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 
 			jsonMapper.writeValue(res.getWriter(), result);
 			res.setContentType("application/json");				
@@ -780,13 +838,13 @@ public class PlaceBooksAdminController
 
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
-		for (final Map.Entry<PlaceBook, Integer> entry : PlaceBooksAdminHelper.search(em, terms))
+		for (final Map.Entry<PlaceBookBinder, Integer> entry : PlaceBooksAdminHelper.search(em, terms))
 		{
-			final PlaceBook p = entry.getKey();
-			if (p != null && p.getState() == PlaceBook.State.PUBLISHED)
+			final PlaceBookBinder p = entry.getKey();
+			if (p != null && p.getState() == PlaceBookBinder.State.PUBLISHED)
 			{
 				log.info("Search result: pb key=" + entry.getKey().getKey() + ", score=" + entry.getValue());
-				pbs.add(new PlaceBookSearchEntry(p, entry.getValue()));
+				pbs.add(new PlaceBookBinderSearchEntry(p, entry.getValue()));
 			}
 		}
 		em.close();
@@ -852,7 +910,8 @@ public class PlaceBooksAdminController
 
 	}
 
-	@RequestMapping(value = "/admin/location_search/placebook/{geometry}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/location_search/placebookbinder/{geometry}",
+					method = RequestMethod.GET)
 	public ModelAndView searchLocationPlaceBooksGET(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("geometry") final String geometry)
 	{
@@ -869,14 +928,14 @@ public class PlaceBooksAdminController
 
 		final EntityManager em = EMFSingleton.getEntityManager();
 		final Collection<ShelfEntry> pbs = new ArrayList<ShelfEntry>();
-		for (final Map.Entry<PlaceBook, Double> entry : PlaceBooksAdminHelper
-				.searchLocationForPlaceBooks(em, geometry_))
+		for (final Map.Entry<PlaceBookBinder, Double> entry : PlaceBooksAdminHelper
+				.searchLocationForPlaceBookBinders(em, geometry_))
 		{
-			final PlaceBook p = entry.getKey();
+			final PlaceBookBinder p = entry.getKey();
 			if (p != null)
 			{
-				log.info("Search result: pb key=" + entry.getKey().getKey() + ", distance=" + entry.getValue());
-				pbs.add(new PlaceBookDistanceEntry(p, entry.getValue()));
+				log.info("Search result: pbb key=" + entry.getKey().getKey() + ", distance=" + entry.getValue());
+				pbs.add(new PlaceBookBinderDistanceEntry(p, entry.getValue()));
 			}
 		}
 		em.close();
@@ -1366,6 +1425,7 @@ public class PlaceBooksAdminController
 		return new ModelAndView("message", "text", "Failed");
 	}
 
+ 	// TODO: needs to be viewPlaceBookBinder
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
 	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
@@ -1378,7 +1438,7 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					if (placebook.getState() != State.PUBLISHED) { return; }
+					//if (placebook.getState() != State.PUBLISHED) { return; }
 
 					String urlbase;
 					if (req.getServerPort() != 80)
