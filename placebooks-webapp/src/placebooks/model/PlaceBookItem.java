@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -61,7 +62,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection
+	@ElementCollection	@Column(columnDefinition="BLOB")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore

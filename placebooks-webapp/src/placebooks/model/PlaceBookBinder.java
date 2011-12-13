@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Iterator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.ElementCollection;
@@ -66,7 +67,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	@OneToMany(mappedBy = "placeBookBinder", cascade = ALL)
 	private List<PlaceBook> pages = new ArrayList<PlaceBook>();
 
-	@ElementCollection
+	@ElementCollection 	@Column(columnDefinition="BLOB")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@ElementCollection

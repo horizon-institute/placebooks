@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -62,7 +63,7 @@ public class PlaceBook extends BoundaryGenerator
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection
+	@ElementCollection @Column(columnDefinition="BLOB")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore
