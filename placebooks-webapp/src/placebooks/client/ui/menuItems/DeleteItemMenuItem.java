@@ -20,7 +20,7 @@ public class DeleteItemMenuItem extends MenuItem
 	public void run()
 	{
 		final PlaceBookColumn panel = item.getPanel();
-		panel.getPage().remove(item.getItem());
+		panel.getPage().remove(item);
 		item.setPanel(null);
 		if (panel != null)
 		{

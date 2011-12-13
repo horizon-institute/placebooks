@@ -30,7 +30,7 @@ public class PlaceBookPage extends Composite
 
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
 
-	private PlaceBook placebook;
+	private PlaceBook page;
 	// TODO PlaceBookPage page;
 
 	private int index;
@@ -78,7 +78,7 @@ public class PlaceBookPage extends Composite
 
 	public PlaceBook getPlaceBook()
 	{
-		return placebook;
+		return page;
 	}
 	
 	public void setSize(final double width, final double height)
@@ -101,14 +101,14 @@ public class PlaceBookPage extends Composite
 	{
 		items.remove(item);
 		item.setPanel(null);
-		placebook.remove(item.getItem());
+		page.remove(item.getItem());
 		refreshItemPlaceBook();
 	}
 
 	private void setPage(final PlaceBook newPlaceBook, final int pageIndex, final int defaultColumnCount, final PlaceBookItemFrameFactory factory)
 	{
-		assert placebook == null;
-		this.placebook = newPlaceBook;
+		assert page == null;
+		this.page = newPlaceBook;
 		setIndex(pageIndex);
 
 		int columnCount = defaultColumnCount;
@@ -124,9 +124,7 @@ public class PlaceBookPage extends Composite
 		for (int index = 0; index < columnCount; index++)
 		{
 			final double widthPCT = 100 / columnCount;
-			final PlaceBookColumn panel = new PlaceBookColumn(newPlaceBook, index, columnCount, left, widthPCT,
-
-					factory.isEditable());
+			final PlaceBookColumn panel = new PlaceBookColumn(this, index, columnCount, left, widthPCT,	factory.isEditable());
 			columns.add(panel);
 			columnPanel.add(panel);
 
@@ -142,12 +140,12 @@ public class PlaceBookPage extends Composite
 		reflow();
 	}
 
-	public void updatePlaceBook(final PlaceBook newPlaceBook)
+	public void update(final PlaceBook newPage)
 	{
-		this.placebook = newPlaceBook;
-		placebook.removeMetadata("tempID");		
-
-		for (final PlaceBookItem item : newPlaceBook.getItems())
+		this.page = newPage;
+		page.removeMetadata("tempID");		
+	
+		for (final PlaceBookItem item : newPage.getItems())
 		{
 			final PlaceBookItemFrame frame = getFrame(item);
 			if (frame != null)
@@ -155,18 +153,18 @@ public class PlaceBookPage extends Composite
 				frame.getItemWidget().update(item);
 			}
 		}
-
-		placebook.clearItems();
+		
+		page.clearItems();
 		for (final PlaceBookItemFrame frame : items)
 		{
-			placebook.add(frame.getItem());
+			page.add(frame.getItem());
 		}
 		
 		refreshItemPlaceBook();
 		reflow();
 	}
 
-	private void add(final PlaceBookItemFrame item)
+	void add(final PlaceBookItemFrame item)
 	{
 		if (item == null) { return; }
 		items.add(item);
@@ -197,7 +195,7 @@ public class PlaceBookPage extends Composite
 	{
 		for (final PlaceBookItemFrame item : items)
 		{
-			item.getItemWidget().setPlaceBook(placebook);
+			item.getItemWidget().setPlaceBook(page);
 		}
 	}
 

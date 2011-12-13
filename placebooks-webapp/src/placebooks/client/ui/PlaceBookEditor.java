@@ -452,7 +452,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		if (placebook != null && (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId())))
 		{
-			bookPanel.updatePlaceBook(newPlacebook);
+			bookPanel.update(newPlacebook);
 
 			final PlaceBookBinder placebook = bookPanel.getPlaceBook();
 			placebook.setId(newPlacebook.getId());
@@ -464,8 +464,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 		else
 		{
 			placebook = newPlacebook;
-			bookPanel.updatePlaceBook(newPlacebook);
-
+			bookPanel.update(newPlacebook);
+		
 			bookPanel.resized();
 		}
 	}

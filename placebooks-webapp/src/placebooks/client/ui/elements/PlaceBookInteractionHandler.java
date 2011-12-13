@@ -355,11 +355,11 @@ public class PlaceBookInteractionHandler
 				GWT.log("Dropped into panel " + newPanel.getIndex());
 				newPanel.reflow(dragItem, event.getRelativeY(pages.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight());
-				newPanel.getPlaceBook().add(dragItem.getItem());
+				newPanel.getPage().getPlaceBook().add(dragItem.getItem());				
 				dragItem.getItem().setParameter("panel", newPanel.getIndex());
 				final PlaceBookItemFrame frame = factory.createFrame();
 				frame.setItemWidget(dragItem);
-				frame.setPanel(newPanel);
+				newPanel.getPage().add(frame);				
 				newPanel.reflow();
 				saveContext.markChanged();
 			}

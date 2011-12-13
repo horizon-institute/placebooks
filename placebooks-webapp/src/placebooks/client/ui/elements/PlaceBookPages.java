@@ -97,7 +97,7 @@ public abstract class PlaceBookPages extends Composite
 		return null;
 	}
 	
-	public void updatePlaceBook(final PlaceBookBinder newPlaceBook)
+	public void update(final PlaceBookBinder newPlaceBook)
 	{
 		this.placebook = newPlaceBook;
 
@@ -106,14 +106,8 @@ public abstract class PlaceBookPages extends Composite
 			final PlaceBookPage pageUI = getPage(page);
 			if(pageUI != null)
 			{
-				pageUI.updatePlaceBook(page);
+				pageUI.update(page);
 			}
-		}
-
-		placebook.clearPages();
-		for (final PlaceBookPage page : pages)
-		{
-			placebook.add(page.getPlaceBook());
 		}
 
 		resized();

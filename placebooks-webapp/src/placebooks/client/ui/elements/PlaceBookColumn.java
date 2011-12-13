@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -53,18 +52,18 @@ public class PlaceBookColumn extends FlowPanel
 
 	private final int panelIndex;
 
-	private final PlaceBook placebook;
+	private PlaceBookPage page;
 	
-	public PlaceBook getPage()
+	public PlaceBookPage getPage()
 	{
-		return placebook;
+		return page;
 	}
 	
-	public PlaceBookColumn(final PlaceBook placebook, final int index, final int columns, final double left, final double width,
+	public PlaceBookColumn(final PlaceBookPage page, final int index, final int columns, final double left, final double width,
 			final boolean visible)
 	{
 		STYLES.style().ensureInjected();
-		this.placebook = placebook;
+		this.page = page;
 		this.panelIndex = index;
 		column = index % columns;
 		setStyleName(STYLES.style().panel());
@@ -80,11 +79,6 @@ public class PlaceBookColumn extends FlowPanel
 		add(innerPanel);
 	}
 	
-	PlaceBook getPlaceBook()
-	{
-		return placebook;
-	}	
-
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -213,5 +207,10 @@ public class PlaceBookColumn extends FlowPanel
 	public void remove(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
+	}
+
+	public void setPage(PlaceBookPage page)
+	{
+		this.page = page;		
 	}
 }
