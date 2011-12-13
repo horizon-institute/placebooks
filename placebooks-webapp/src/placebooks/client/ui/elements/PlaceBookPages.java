@@ -81,26 +81,41 @@ public abstract class PlaceBookPages extends Composite
 
 	protected abstract Panel getPagePanel();
 	
+	private PlaceBookPage getPage(final PlaceBook page)
+	{
+		for(PlaceBookPage pbPage: pages)
+		{
+			if(page.getId().equals(pbPage.getPlaceBook().getId()))
+			{
+				return pbPage;
+			}
+			else if(page.getId().equals(pbPage.getPlaceBook().getMetadata("tempID")))
+			{
+				return pbPage;
+			}
+		}
+		return null;
+	}
+	
 	public void updatePlaceBook(final PlaceBookBinder newPlaceBook)
 	{
-//		this.placebook = newPlaceBook;
-//
-//		for (final PlaceBookItem item : newPlaceBook.getItems())
-//		{
-//			final PlaceBookItemFrame frame = getFrame(item);
-//			if (frame != null)
-//			{
-//				frame.getItemWidget().update(item);
-//			}
-//		}
-//
-//		placebook.clearItems();
-//		for (final PlaceBookItemFrame item : items)
-//		{
-//			placebook.add(item.getItem());
-//		}
-//
-//		//refreshItemPlaceBook();
+		this.placebook = newPlaceBook;
+
+		for (final PlaceBook page : newPlaceBook.getPages())
+		{
+			final PlaceBookPage pageUI = getPage(page);
+			if(pageUI != null)
+			{
+				pageUI.updatePlaceBook(page);
+			}
+		}
+
+		placebook.clearPages();
+		for (final PlaceBookPage page : pages)
+		{
+			placebook.add(page.getPlaceBook());
+		}
+
 		resized();
 	}
 

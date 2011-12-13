@@ -26,6 +26,10 @@ public class PlaceBookBinder extends JavaScriptObject
 		return this.id;
 	}-*/;
 	
+	public final native void clearPages()
+	/*-{
+		this.pages = new Array();
+	}-*/;
 
 	public final native String getMetadata(String name)
 	/*-{
@@ -91,6 +95,11 @@ public class PlaceBookBinder extends JavaScriptObject
 	this.id = text;
 	}-*/;
 
+	public final native void add(PlaceBook page)
+	/*-{
+		this.pages.push(page);
+	}-*/;
+	
 	public final native void add(int index, PlaceBook page)
 	/*-{
 		this.pages.splice(index, 0, page);

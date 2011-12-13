@@ -98,12 +98,9 @@ public abstract class PlaceBookItemWidget extends Composite
 
 	public void update(final PlaceBookItem newItem)
 	{
-		if (item.getKey() == null && newItem.getKey() != null)
-		{
-			item.setKey(newItem.getKey());
-			item.removeMetadata("tempID");
-			newItem.removeMetadata("tempID");
-		}
+		item.setKey(newItem.getKey());
+		item.removeMetadata("tempID");
+		newItem.removeMetadata("tempID");
 
 		if (newItem.getHash() != null)
 		{

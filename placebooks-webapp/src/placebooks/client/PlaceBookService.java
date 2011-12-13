@@ -82,7 +82,7 @@ public class PlaceBookService
 	// /*-{ return eval('(' + json + ')'); }-*/;
 	public static final <T extends JavaScriptObject> T parse(final Class<T> clazz, final String json)
 	{
-		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().cast();
+		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().<T>cast();
 	}
 
 	public static void publishPlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)

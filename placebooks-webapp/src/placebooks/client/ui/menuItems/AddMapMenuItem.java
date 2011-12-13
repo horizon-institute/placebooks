@@ -1,9 +1,5 @@
 package placebooks.client.ui.menuItems;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 

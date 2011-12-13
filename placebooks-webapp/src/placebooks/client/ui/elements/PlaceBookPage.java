@@ -145,6 +145,7 @@ public class PlaceBookPage extends Composite
 	public void updatePlaceBook(final PlaceBook newPlaceBook)
 	{
 		this.placebook = newPlaceBook;
+		placebook.removeMetadata("tempID");		
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
@@ -155,6 +156,12 @@ public class PlaceBookPage extends Composite
 			}
 		}
 
+		placebook.clearItems();
+		for (final PlaceBookItemFrame frame : items)
+		{
+			placebook.add(frame.getItem());
+		}
+		
 		refreshItemPlaceBook();
 		reflow();
 	}

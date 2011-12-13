@@ -94,5 +94,12 @@ public class PlaceBook extends JavaScriptObject
 		this.metadata[name] = value;
 	}-*/;
 
+	public final native void removeMetadata(String name)
+	/*-{
+		if (('metadata' in this)) {
+			delete this.metadata[name];
+		}
+	}-*/;
+
 //	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
 }

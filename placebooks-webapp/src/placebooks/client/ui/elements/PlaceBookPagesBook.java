@@ -47,7 +47,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			{
 				cancel();
 			}
-			GWT.log("Target: " + target + ", progress: " + progress + ", left: " + left.getIndex());
 			if(Math.abs(target - progress) > 0.001)
 			{	
 				drawFlip(left, progress + (target - progress) * 0.2);				
@@ -69,11 +68,14 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
 		{
+			flip.cancel();
 			this.left = left;
 			this.right = right;
 			left.setVisible(true);
+			left.reflow();
 			left.getElement().getStyle().setZIndex(1);
 			right.setVisible(true);
+			right.reflow();
 			right.getElement().getStyle().setZIndex(0);
 		}
 	}
@@ -147,24 +149,26 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipStart(final MouseDownEvent event)
 	{
-		final int mouseX = event.getRelativeX(pagesPanel.getElement());
-		// Make sure the mouse pointer is inside of the book
-		if (mouseX < pageWidth)
-		{		
-			if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
-			{
-				// We are on the left side, drag the previous page
-				flip.state = FlipState.dragging;
-				flip.cancel();
-				flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);				
-				//event.preventDefault();				
-			}
-			else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
-			{
-				// We are on the right side, drag the current page
-				flip.state = FlipState.dragging;	
-				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));					
-				//event.preventDefault();				
+		if(flip.state != FlipState.flipping)
+		{
+			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			// Make sure the mouse pointer is inside of the book
+			if (mouseX < pageWidth)
+			{		
+				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
+				{
+					// We are on the left side, drag the previous page
+					flip.state = FlipState.dragging;
+					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);				
+					//event.preventDefault();				
+				}
+				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
+				{
+					// We are on the right side, drag the current page
+					flip.state = FlipState.dragging;	
+					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));					
+					//event.preventDefault();				
+				}
 			}
 		}
 	}
@@ -199,26 +203,28 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")	
 	void clickFlip(final ClickEvent event)
 	{
-		GWT.log("Click event");
-		final int mouseX = event.getRelativeX(pagesPanel.getElement());
-		// Make sure the mouse pointer is inside of the book
-		if (mouseX < pageWidth)
-		{		
-			if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
-			{
-				flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
-				flip.target = 1;
-				flip.progress = -1;
-				flip.state = FlipState.flipping;				
-				flip.scheduleRepeating(1000/60);				
-			}
-			else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
-			{
-				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
-				flip.target = -1;
-				flip.progress = 1;
-				flip.state = FlipState.flipping;
-				flip.scheduleRepeating(1000/60);			
+		if(flip.state != FlipState.flipping)
+		{
+			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			// Make sure the mouse pointer is inside of the book
+			if (mouseX < pageWidth)
+			{		
+				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
+				{
+					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
+					flip.target = 1;
+					flip.progress = -1;
+					flip.state = FlipState.flipping;				
+					flip.scheduleRepeating(1000/60);				
+				}
+				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
+				{
+					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+					flip.target = -1;
+					flip.progress = 1;
+					flip.state = FlipState.flipping;
+					flip.scheduleRepeating(1000/60);			
+				}
 			}
 		}
 	}
@@ -228,6 +234,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	{
 		super.add(page);
 		page.setStyleName(style.page());
+		page.setVisible(false);
 	}
 
 	@UiHandler("rootPanel")
@@ -236,21 +243,27 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		if(flip.state == FlipState.dragging)
 		{
 			flip.state = FlipState.flipping;
-			// TODO Finish flipping page
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
-			final double progress = Math.max( Math.min( mouseX / pageWidth, 1 ), -1 );
-			GWT.log("Progress: " + progress);
-			if(progress < 0.5)
+			
+			if (mouseX > (pageWidth - margin))
 			{
-				flip.target = -1;
-				flip.state = FlipState.flipping;				
-				flip.scheduleRepeating(1000/60);
+				flip.state = FlipState.edgeHighlight;
 			}
 			else
 			{
-				flip.target = 1;
-				flip.state = FlipState.flipping;				
-				flip.scheduleRepeating(1000/60);
+				final double progress = Math.max( Math.min( mouseX / pageWidth, 1 ), -1 );
+				if(progress < 0.5)
+				{
+					flip.target = -1;
+					flip.state = FlipState.flipping;				
+					flip.scheduleRepeating(1000/60);
+				}
+				else
+				{
+					flip.target = 1;
+					flip.state = FlipState.flipping;				
+					flip.scheduleRepeating(1000/60);
+				}
 			}
 		}
 	}
@@ -437,6 +450,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		int index = currentPage.getIndex() + 1;
 
 		PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
+		page.setMetadata("tempID", "" + System.currentTimeMillis());
 		getPlaceBook().add(index, page);
 		PlaceBookPage pageUI = new PlaceBookPage(page, index, getDefaultColumnCount(), factory);
 		
