@@ -421,13 +421,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 	}
 
 	@UiHandler("newPage")
-	void newPage(final ClickEvent event)
+	void createPage(final ClickEvent event)
 	{
-		
+		bookPanel.createPage();
+		saveItem.markChanged();
 	}
 	
 	@UiHandler("deletePage")
-	void deleteCurrentPage(final ClickEvent event)
+	void deletePage(final ClickEvent event)
 	{
 		bookPanel.deleteCurrentPage();
 		saveItem.markChanged();

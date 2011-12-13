@@ -249,121 +249,9 @@ public final class PlaceBooksAdminHelper
 		}
 		return pb_;
 	}
-	
-	private static final PlaceBookBinder updatePlaceBookBinder(final EntityManager manager, final PlaceBookBinder binder, final User currentUser)
-	{
-		PlaceBookBinder result = binder;
-		if (binder.getKey() != null)
-		{
-			final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, binder.getKey());
-			// Get the DB version of this Binder and remove PlaceBooks that
-			// are no longer part of the new Binder
-			if (dbBinder != null)
-			{
-				for (final PlaceBook dbPlaceBook : dbBinder.getPlaceBooks())
-				{
-					final PlaceBook mPlaceBook = matchPlaceBook(dbPlaceBook, binder.getPlaceBooks());
 
-					// Delete unmatched PlaceBooks
-					if (mPlaceBook == null)
-					{
-						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
-						{
-							dbItem.deleteItemData();
-							manager.remove(dbItem);
-						}
-
-						manager.remove(dbPlaceBook);
-					}
-					else
-					{
-						// Remove any items that are no longer used
-						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
-						{
-							if (!containsItem(dbItem, mPlaceBook.getItems()))
-							{
-								if (dbItem instanceof GPSTraceItem)
-								{
-									// Remove any MapImageItem if removing a
-									// GPSTraceItem
-									for (final PlaceBookItem mapItem : dbPlaceBook.getItems())
-									{
-										if (mapItem instanceof MapImageItem)
-										{
-											mapItem.deleteItemData();
-											manager.remove(mapItem);
-										}
-									}
-
-									for (final PlaceBookItem mapItem : mPlaceBook.getItems())
-									{
-										if (mapItem instanceof MapImageItem)
-										{
-											mPlaceBook.removeItem(mapItem);
-										}
-									}
-								}
-								dbItem.deleteItemData();
-								manager.remove(dbItem);
-							}
-						}
-					}
-				}
-				
-				final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
-				for(PlaceBook placebook: binder.getPlaceBooks())
-				{
-					placebooks.add(updatePlaceBook(manager, placebook, currentUser));
-				}
-				dbBinder.setPlaceBooks(placebooks);
-				
-				for (final Entry<String, String> entry : binder.getMetadata().entrySet())
-				{
-					dbBinder.addMetadataEntry(entry.getKey(), entry.getValue());
-				}
-				
-				dbBinder.setGeometry(binder.getGeometry());
-				
-				result = dbBinder;
-			}
-		}
-		
-		if (result.getOwner() == null)
-		{
-			result.setOwner(currentUser);
-		}
-
-		if (result.getTimestamp() == null)
-		{
-			result.setTimestamp(new Date());
-		}		
-		
-		return result;
-	}
-
-	private static final PlaceBook updatePlaceBook(final EntityManager manager, final PlaceBook placebook, final User currentUser)
-	{
-		PlaceBook result = placebook;
-		
-		if (result.getOwner() == null)
-		{
-			result.setOwner(currentUser);
-		}
-
-		if (result.getTimestamp() == null)
-		{
-			result.setTimestamp(new Date());
-		}
-		
-		return result;
-	}
-
-	private static final PlaceBookItem updatePlaceBookItem(final EntityManager manager, final PlaceBookItem item, final User currentUser)
-	{
-		return item;
-	}
-	
-	public static final PlaceBookBinder savePlaceBookBinder(final EntityManager manager, PlaceBookBinder placeBookBinder)
+	public static final PlaceBookBinder savePlaceBookBinder(final EntityManager manager,
+			final PlaceBookBinder placeBookBinder)
 	{
 		final User currentUser = UserManager.getCurrentUser(manager);
 
@@ -371,119 +259,45 @@ public final class PlaceBooksAdminHelper
 		{
 			manager.getTransaction().begin();
 
-			PlaceBookBinder binder = updatePlaceBookBinder(manager, placeBookBinder, currentUser);			
-
+			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
+			PlaceBookBinder binder = updatePlaceBookBinder(manager, placeBookBinder, currentUser, updateMedia);
 			for (PlaceBook placeBook : binder.getPlaceBooks())
 			{
-				final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
-				final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placeBook.getItems());
-				placeBook.setItems(new ArrayList<PlaceBookItem>());
-				placeBook.setPlaceBookBinder(binder);
-				for (final PlaceBookItem newItem : newItems)
-				{
-					// Update existing item if possible
-					PlaceBookItem item = newItem;
-					if (item.getKey() != null)
-					{
-						final PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
-						if (oldItem != null)
-						{
-							item = oldItem;
-						}
-
-						if (newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-						{
-							item.setSourceURL(newItem.getSourceURL());
-							updateMedia.add(item);
-						}
-					}
-					else
-					{
-						item.setTimestamp(new Date());
-						manager.persist(item);
-
-						if (newItem.getMetadata().get("originalItemID") != null)
-						{
-							final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, newItem.getMetadata()
-									.get("originalItemID"));
-							if (originalItem != null)
-							{
-								// We want to keep the metadata & parameters
-								// from the new item
-								final Map<String, String> meta = new HashMap<String, String>(item.getMetadata());
-								final Map<String, Integer> para = new HashMap<String, Integer>(item.getParameters());
-								item.update(originalItem);
-								item.setMedataData(meta);
-								item.setParameters(para);
-							}
-						}
-						else
-						{
-							updateMedia.add(item);
-						}
-					}
-
-					if (item.getOwner() == null)
-					{
-						item.setOwner(currentUser);
-					}
-
-					item.update(newItem);
-
-					placeBook.addItem(item);
-				}
-
 				placeBook = manager.merge(placeBook);
+			}
+
+			for (final PlaceBookItem item : updateMedia)
+			{
 				try
 				{
-					placeBook.calcBoundary();
+					if (item instanceof MediaItem)
+					{
+						final MediaItem mediaItem = (MediaItem) item;
+						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), CommunicationHelper
+								.getConnection(mediaItem.getSourceURL()).getInputStream());
+					}
+					else if (item instanceof GPSTraceItem)
+					{
+						final GPSTraceItem gpsItem = (GPSTraceItem) item;
+						if (gpsItem.getSourceURL() != null)
+						{
+							gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL())
+									.getInputStream());
+						}
+					}
+					else if (item instanceof WebBundleItem)
+					{
+						final WebBundleItem webItem = (WebBundleItem) item;
+						scrape(webItem);
+					}
 				}
 				catch (final Exception e)
 				{
-					log.warn("Error Calculating boundry", e);
-				}
-
-				for (final PlaceBookItem item : updateMedia)
-				{
-					try
-					{
-						if (item instanceof MediaItem)
-						{
-							final MediaItem mediaItem = (MediaItem) item;
-							mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), CommunicationHelper
-									.getConnection(mediaItem.getSourceURL()).getInputStream());
-						}
-						else if (item instanceof GPSTraceItem)
-						{
-							final GPSTraceItem gpsItem = (GPSTraceItem) item;
-							if (gpsItem.getSourceURL() != null)
-							{
-								gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL())
-										.getInputStream());
-							}
-						}
-						else if (item instanceof WebBundleItem)
-						{
-							final WebBundleItem webItem = (WebBundleItem) item;
-							scrape(webItem);
-						}
-					}
-					catch (final Exception e)
-					{
-						log.info(e.getMessage(), e);
-					}
+					log.info(e.getMessage(), e);
 				}
 			}
 
 			binder = manager.merge(binder);
-			try
-			{
-				binder.calcBoundary();
-			}
-			catch (final Exception e)
-			{
-				log.warn("Error Calculating boundry", e);
-			}
 
 			manager.getTransaction().commit();
 
@@ -645,15 +459,6 @@ public final class PlaceBooksAdminHelper
 		return false;
 	}
 
-	private static boolean containsPlaceBook(final PlaceBook findPlaceBook, final List<PlaceBook> pbs)
-	{
-		for (final PlaceBook p : pbs)
-		{
-			if (findPlaceBook.getKey().equals(p.getKey())) { return true; }
-		}
-		return false;
-	}
-
 	private static void getFileListRecursive(final File path, final List<File> out)
 	{
 		final List<File> files = new ArrayList<File>(Arrays.asList(path.listFiles()));
@@ -726,190 +531,212 @@ public final class PlaceBooksAdminHelper
 		return null;
 	}
 
-	private static final PlaceBook savePlaceBook(final EntityManager manager, PlaceBook placebook)
+	private static final PlaceBook updatePlaceBook(final EntityManager manager, final PlaceBook placebook,
+			final User currentUser, final Collection<PlaceBookItem> updateMedia)
 	{
-		final User currentUser = UserManager.getCurrentUser(manager);
+		PlaceBook result = placebook;
+
+		if (placebook.getKey() != null)
+		{
+			final PlaceBook dbPlaceBook = manager.find(PlaceBook.class, placebook.getKey());
+
+			if (dbPlaceBook != null)
+			{
+				final List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
+				for (final PlaceBookItem item : placebook.getItems())
+				{
+					items.add(updatePlaceBookItem(manager, item, currentUser, updateMedia));
+					item.setPlaceBook(dbPlaceBook);
+				}
+				dbPlaceBook.setItems(items);
+
+				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
+				{
+					dbPlaceBook.addMetadataEntry(entry.getKey(), entry.getValue());
+				}
+
+				dbPlaceBook.setGeometry(placebook.getGeometry());
+
+				result = dbPlaceBook;
+			}
+		}
+
+		if (result.getOwner() == null)
+		{
+			result.setOwner(currentUser);
+		}
+
+		if (result.getTimestamp() == null)
+		{
+			result.setTimestamp(new Date());
+		}
 
 		try
 		{
-			manager.getTransaction().begin();
+			result.calcBoundary();
+		}
+		catch (final Exception e)
+		{
+			log.warn("Error Calculating boundry", e);
+		}
 
-			if (placebook.getKey() != null)
+		return result;
+	}
+
+	private static final PlaceBookBinder updatePlaceBookBinder(final EntityManager manager,
+			final PlaceBookBinder binder, final User currentUser, final Collection<PlaceBookItem> updateMedia)
+	{
+		PlaceBookBinder result = binder;
+		if (binder.getKey() != null)
+		{
+			final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, binder.getKey());
+			// Get the DB version of this Binder and remove PlaceBooks that
+			// are no longer part of the new Binder
+			if (dbBinder != null)
 			{
-				final PlaceBook dbPlacebook = manager.find(PlaceBook.class, placebook.getKey());
-				if (dbPlacebook != null)
+				for (final PlaceBook dbPlaceBook : dbBinder.getPlaceBooks())
 				{
-					// Remove any items that are no longer used
-					for (final PlaceBookItem item : dbPlacebook.getItems())
+					final PlaceBook mPlaceBook = matchPlaceBook(dbPlaceBook, binder.getPlaceBooks());
+
+					// Delete unmatched PlaceBooks
+					if (mPlaceBook == null)
 					{
-						if (!containsItem(item, placebook.getItems()))
+						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
 						{
-							if (item instanceof GPSTraceItem)
-							{
-								// Remove any MapImageItem if removing a
-								// GPSTraceItem
-								for (final PlaceBookItem mapItem : dbPlacebook.getItems())
-								{
-									if (mapItem instanceof MapImageItem)
-									{
-										mapItem.deleteItemData();
-										manager.remove(mapItem);
-									}
-								}
-
-								for (final PlaceBookItem mapItem : placebook.getItems())
-								{
-									if (mapItem instanceof MapImageItem)
-									{
-										placebook.removeItem(mapItem);
-									}
-								}
-							}
-							item.deleteItemData();
-							manager.remove(item);
+							dbItem.deleteItemData();
+							manager.remove(dbItem);
 						}
-					}
 
-					dbPlacebook.setItems(placebook.getItems());
-					for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
-					{
-						dbPlacebook.addMetadataEntryIndexed(entry.getKey(), entry.getValue());
-					}
-
-					dbPlacebook.setGeometry(placebook.getGeometry());
-					placebook = dbPlacebook;
-				}
-			}
-
-			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
-			final Collection<PlaceBookItem> newItems = new ArrayList<PlaceBookItem>(placebook.getItems());
-			placebook.setItems(new ArrayList<PlaceBookItem>());
-			for (final PlaceBookItem newItem : newItems)
-			{
-				// Update existing item if possible
-				PlaceBookItem item = newItem;
-				if (item.getKey() != null)
-				{
-					final PlaceBookItem oldItem = manager.find(PlaceBookItem.class, item.getKey());
-					if (oldItem != null)
-					{
-						item = oldItem;
-					}
-
-					if (newItem.getSourceURL() != null && !newItem.getSourceURL().equals(item.getSourceURL()))
-					{
-						item.setSourceURL(newItem.getSourceURL());
-						updateMedia.add(item);
-					}
-				}
-				else
-				{
-					item.setTimestamp(new Date());
-					manager.persist(item);
-
-					if (newItem.getMetadata().get("originalItemID") != null)
-					{
-						final PlaceBookItem originalItem = manager.find(PlaceBookItem.class,
-																		newItem.getMetadata().get("originalItemID"));
-						if (originalItem != null)
-						{
-							// We want to keep the metadata & parameters from
-							// the new item
-							final Map<String, String> meta = new HashMap<String, String>(item.getMetadata());
-							final Map<String, Integer> para = new HashMap<String, Integer>(item.getParameters());
-							item.update(originalItem);
-							item.setMedataData(meta);
-							item.setParameters(para);
-						}
+						manager.remove(dbPlaceBook);
 					}
 					else
 					{
-						updateMedia.add(item);
-					}
-				}
-
-				if (item.getOwner() == null)
-				{
-					item.setOwner(currentUser);
-				}
-
-				item.update(newItem);
-
-				placebook.addItem(item);
-			}
-
-			if (placebook.getOwner() == null)
-			{
-				placebook.setOwner(currentUser);
-			}
-
-			if (placebook.getTimestamp() == null)
-			{
-				placebook.setTimestamp(new Date());
-			}
-
-			placebook = manager.merge(placebook);
-			try
-			{
-				placebook.calcBoundary();
-			}
-			catch (final Exception e)
-			{
-				log.warn("Error Calculating boundry", e);
-			}
-
-			manager.getTransaction().commit();
-
-			manager.getTransaction().begin();
-			for (final PlaceBookItem item : updateMedia)
-			{
-				try
-				{
-					if (item instanceof MediaItem)
-					{
-						final MediaItem mediaItem = (MediaItem) item;
-						mediaItem.writeDataToDisk(mediaItem.getSourceURL().toExternalForm(), CommunicationHelper
-								.getConnection(mediaItem.getSourceURL()).getInputStream());
-					}
-					else if (item instanceof GPSTraceItem)
-					{
-						final GPSTraceItem gpsItem = (GPSTraceItem) item;
-						if (gpsItem.getSourceURL() != null)
+						// Remove any items that are no longer used
+						for (final PlaceBookItem dbItem : dbPlaceBook.getItems())
 						{
-							gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL())
-									.getInputStream());
+							if (!containsItem(dbItem, mPlaceBook.getItems()))
+							{
+								if (dbItem instanceof GPSTraceItem)
+								{
+									// Remove any MapImageItem if removing a
+									// GPSTraceItem
+									for (final PlaceBookItem mapItem : dbPlaceBook.getItems())
+									{
+										if (mapItem instanceof MapImageItem)
+										{
+											mapItem.deleteItemData();
+											manager.remove(mapItem);
+										}
+									}
+
+									for (final PlaceBookItem mapItem : mPlaceBook.getItems())
+									{
+										if (mapItem instanceof MapImageItem)
+										{
+											mPlaceBook.removeItem(mapItem);
+										}
+									}
+								}
+								dbItem.deleteItemData();
+								manager.remove(dbItem);
+							}
 						}
 					}
-					else if (item instanceof WebBundleItem)
-					{
-						final WebBundleItem webItem = (WebBundleItem) item;
-						scrape(webItem);
-					}
 				}
-				catch (final Exception e)
+
+				final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
+				for (final PlaceBook placebook : binder.getPlaceBooks())
 				{
-					log.info(e.getMessage(), e);
+					placebooks.add(updatePlaceBook(manager, placebook, currentUser, updateMedia));
+					placebook.setPlaceBookBinder(dbBinder);
+				}
+				dbBinder.setPlaceBooks(placebooks);
+
+				for (final Entry<String, String> entry : binder.getMetadata().entrySet())
+				{
+					dbBinder.addMetadataEntry(entry.getKey(), entry.getValue());
+				}
+
+				dbBinder.setGeometry(binder.getGeometry());
+
+				result = dbBinder;
+			}
+		}
+
+		if (result.getOwner() == null)
+		{
+			result.setOwner(currentUser);
+		}
+
+		if (result.getTimestamp() == null)
+		{
+			result.setTimestamp(new Date());
+		}
+
+		try
+		{
+			result.calcBoundary();
+		}
+		catch (final Exception e)
+		{
+			log.warn("Error Calculating boundry", e);
+		}
+
+		return result;
+	}
+
+	private static final PlaceBookItem updatePlaceBookItem(final EntityManager manager, final PlaceBookItem item,
+			final User currentUser, final Collection<PlaceBookItem> updateMedia)
+	{
+		PlaceBookItem result = item;
+		if (result.getKey() != null)
+		{
+			final PlaceBookItem oldItem = manager.find(PlaceBookItem.class, result.getKey());
+			if (oldItem != null)
+			{
+				result = oldItem;
+			}
+
+			if (item.getSourceURL() != null && !item.getSourceURL().equals(result.getSourceURL()))
+			{
+				result.setSourceURL(item.getSourceURL());
+				updateMedia.add(result);
+			}
+		}
+		else
+		{
+			result.setTimestamp(new Date());
+			manager.persist(result);
+
+			if (item.getMetadata().get("originalItemID") != null)
+			{
+				final PlaceBookItem originalItem = manager.find(PlaceBookItem.class,
+																item.getMetadata().get("originalItemID"));
+				if (originalItem != null)
+				{
+					// We want to keep the metadata & parameters
+					// from the new item
+					final Map<String, String> meta = new HashMap<String, String>(result.getMetadata());
+					final Map<String, Integer> para = new HashMap<String, Integer>(result.getParameters());
+					result.update(originalItem);
+					result.setMedataData(meta);
+					result.setParameters(para);
 				}
 			}
-			manager.getTransaction().commit();
-
-			return manager.find(PlaceBook.class, placebook.getKey());
-
-		}
-		catch (final Throwable e)
-		{
-			log.error("Error saving PlaceBook copy", e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
+			else
 			{
-				manager.getTransaction().rollback();
-				log.error("Rolling back");
+				updateMedia.add(result);
 			}
 		}
-		return null;
 
+		if (result.getOwner() == null)
+		{
+			result.setOwner(currentUser);
+		}
+
+		result.update(item);
+
+		return result;
 	}
 
 }

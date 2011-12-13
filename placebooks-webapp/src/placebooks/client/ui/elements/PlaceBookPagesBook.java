@@ -1,5 +1,7 @@
 package placebooks.client.ui.elements;
 
+import placebooks.client.PlaceBookService;
+import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
@@ -22,6 +24,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPagesBook extends PlaceBookPages
 {
+	private final static String newPage = "{\"items\":[], \"metadata\":{} }";
+	
 	private enum FlipState
 	{
 		none, dragging, edgeHighlight, flipping 
@@ -382,7 +386,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		getPlaceBook().remove(currentPage.getPlaceBook());
 		remove(currentPage);
 		setPage(pages.get(Math.min(index, pages.size() - 1)));
-		// TODO Update page numbers
+		updateIndices();
 	}
 
 	private void setPosition(final double left, final double top, final double width, final double height)
@@ -412,9 +416,40 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		}
 	}
 
+	private void updateIndices()
+	{
+		for(int index = 0; index < pages.size(); index++)
+		{
+			final PlaceBookPage page = pages.get(index);
+			page.setIndex(index);
+		}
+	}
+	
 	@Override
 	protected Panel getPagePanel()
 	{
 		return pagesPanel;		
+	}
+
+	@Override
+	public void createPage()
+	{
+		int index = currentPage.getIndex() + 1;
+
+		PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
+		getPlaceBook().add(index, page);
+		PlaceBookPage pageUI = new PlaceBookPage(page, index, getDefaultColumnCount(), factory);
+		
+		pages.add(index, pageUI);
+		getPagePanel().add(pageUI);
+		pageUI.setStyleName(style.page());		
+		
+		flip.setup(currentPage, pageUI);
+		flip.target = -1;
+		flip.progress = 1;
+		flip.state = FlipState.flipping;
+		flip.scheduleRepeating(1000/60);
+		
+		updateIndices();
 	}
 }

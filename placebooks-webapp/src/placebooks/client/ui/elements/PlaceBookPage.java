@@ -26,13 +26,6 @@ public class PlaceBookPage extends Composite
 
 	private static PlaceBookPageUiBinder uiBinder = GWT.create(PlaceBookPageUiBinder.class);
 
-	private int pageIndex;
-
-	private double progress;
-	
-	private int columnOffset;
-
-
 	private final Collection<PlaceBookItemFrame> items = new HashSet<PlaceBookItemFrame>();
 
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
@@ -116,8 +109,7 @@ public class PlaceBookPage extends Composite
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-		this.index = pageIndex;
-		pageNumber.setText("" + (pageIndex + 1));
+		setIndex(pageIndex);
 
 		int columnCount = defaultColumnCount;
 		try
@@ -140,8 +132,6 @@ public class PlaceBookPage extends Composite
 
 			left += widthPCT;
 		}
-
-		columnOffset = pageIndex * columnCount;
 
 		for (final PlaceBookItem item : newPlaceBook.getItems())
 		{
@@ -202,5 +192,11 @@ public class PlaceBookPage extends Composite
 		{
 			item.getItemWidget().setPlaceBook(placebook);
 		}
+	}
+
+	public void setIndex(int index)
+	{
+		this.index = index;
+		pageNumber.setText("" + (index + 1));
 	}
 }

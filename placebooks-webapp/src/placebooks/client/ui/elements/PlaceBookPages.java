@@ -19,6 +19,7 @@ public abstract class PlaceBookPages extends Composite
 	protected final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
 
 	private PlaceBookBinder placebook;
+	protected PlaceBookItemFrameFactory factory;
 	
 	public PlaceBookPages()
 	{
@@ -61,6 +62,7 @@ public abstract class PlaceBookPages extends Composite
 		GWT.log("SetPlaceBook");
 		assert placebook == null;
 		this.placebook = newPlaceBook;
+		this.factory = factory;
 		getPagePanel().clear();
 
 		int pageIndex = 0;
@@ -109,5 +111,10 @@ public abstract class PlaceBookPages extends Composite
 
 	public void deleteCurrentPage()
 	{
+	}
+
+	public void createPage()
+	{
+		
 	}
 }

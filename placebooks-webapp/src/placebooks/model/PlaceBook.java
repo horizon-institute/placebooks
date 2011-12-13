@@ -65,6 +65,7 @@ public class PlaceBook extends BoundaryGenerator
 	@ElementCollection
 	private Map<String, String> metadata = new HashMap<String, String>();
 
+	@JsonIgnore
 	@ManyToOne
 	private User owner;
 

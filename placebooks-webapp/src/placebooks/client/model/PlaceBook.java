@@ -66,9 +66,9 @@ public class PlaceBook extends JavaScriptObject
 		return defaultValue;
 	}-*/;
 
-	public final native User getOwner() /*-{
-										return this.owner;
-										}-*/;
+//	public final native User getOwner() /*-{
+//										return this.owner;
+//										}-*/;
 
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
@@ -94,5 +94,5 @@ public class PlaceBook extends JavaScriptObject
 		this.metadata[name] = value;
 	}-*/;
 
-	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
+//	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
 }

@@ -90,4 +90,9 @@ public class PlaceBookBinder extends JavaScriptObject
 	public final native void setId(String text) /*-{
 	this.id = text;
 	}-*/;
+
+	public final native void add(int index, PlaceBook page)
+	/*-{
+		this.pages.splice(index, 0, page);
+	}-*/;
 }
