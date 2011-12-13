@@ -51,10 +51,10 @@ public class InitializeDatabase
 			userTest.add(pcwLoginDetails);
 	
 			final User userTest2 = new User("Test User", "placebooks.test@gmail.com", encoder.encodePassword("testPass!", null));
-			final LoginDetails ytLoginDetails = new LoginDetails(userTest2, "YouTube", "", "placebooksTest", "testPass1!");
+			//final LoginDetails ytLoginDetails = new LoginDetails(userTest2, "YouTube", "", "placebooksTest", "testPass1!");
 			final LoginDetails user2etLoginDetails = new LoginDetails(userTest2, EverytrailService.SERVICE_NAME, "", "Placebooks", "testPass1!");
 			final LoginDetails user2pcwLoginDetails = new LoginDetails(userTest2, PeoplesCollectionService.SERVICE_NAME, "", "PlacebooksTest", "testPass1!");
-			userTest2.add(ytLoginDetails);
+			//userTest2.add(ytLoginDetails);
 			userTest2.add(user2etLoginDetails);
 			userTest2.add(user2pcwLoginDetails);
 			

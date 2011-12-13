@@ -19,12 +19,14 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
+import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
 import placebooks.model.User;
+import placebooks.model.VideoItem;
 import placebooks.services.model.PeoplesCollectionItemFeature;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
@@ -263,6 +265,21 @@ public class PeoplesCollectionService extends Service
 							newItem.saveUpdatedItem();
 							addedItem = newItem;
 						}
+						if(featureType.equals("video"))
+						{
+							VideoItem newItem = new VideoItem();
+							ItemFactory.toVideoItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
+							addedItem = newItem;
+						}
+						if(featureType.equals("audio"))
+						{
+							AudioItem newItem = new AudioItem();
+							ItemFactory.toAudioItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+							newItem.saveUpdatedItem();
+							addedItem = newItem;
+						}
+						
 						if(featureType.equals("story"))
 						{
 							TextItem newItem = new TextItem();
