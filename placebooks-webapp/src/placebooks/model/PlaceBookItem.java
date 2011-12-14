@@ -62,7 +62,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection	@Column(columnDefinition="BLOB")
+	@ElementCollection	@Column(columnDefinition="LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore

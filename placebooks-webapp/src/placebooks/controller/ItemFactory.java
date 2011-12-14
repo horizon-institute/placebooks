@@ -697,7 +697,7 @@ public class ItemFactory
 		itemDescription = item.GetProperties().GetMarkup();
 		try
 		{
-			sourceUrl = new URL(item.GetProperties().GetMediaURL());
+			sourceUrl = new URL(item.GetProperties().GetMediaURL().replace(" ", "%20"));
 		}
 		catch (MalformedURLException ex)
 		{

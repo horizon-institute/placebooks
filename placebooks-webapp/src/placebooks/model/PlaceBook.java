@@ -63,7 +63,7 @@ public class PlaceBook extends BoundaryGenerator
 	private List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection @Column(columnDefinition="BLOB")
+	@ElementCollection @Column(columnDefinition="LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore

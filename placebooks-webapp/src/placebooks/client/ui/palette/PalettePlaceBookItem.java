@@ -18,19 +18,19 @@ public class PalettePlaceBookItem extends PaletteItem
 	private final PlaceBookItem item;
 	private final PlaceBookInteractionHandler handler;
 
-		public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
+	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
 	{
 		super(placeBookItem.getMetadata("title", "Unnamed"));
-		
+
 		this.item = placeBookItem;
 		this.handler = dragHandler;
 	}
-	
+
 	@Override
 	public Widget createWidget()
 	{
 		Widget result =super.createWidget();
-		
+
 		panel.getElement().getStyle().setCursor(Cursor.MOVE);
 
 		if (item.is(ItemType.IMAGE) && item.getKey() != null)

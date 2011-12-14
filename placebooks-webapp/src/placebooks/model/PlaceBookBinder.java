@@ -67,7 +67,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	@OneToMany(mappedBy = "placeBookBinder", cascade = ALL)
 	private List<PlaceBook> pages = new ArrayList<PlaceBook>();
 
-	@ElementCollection 	@Column(columnDefinition="BLOB")
+	@ElementCollection 	@Column(columnDefinition="LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@ElementCollection

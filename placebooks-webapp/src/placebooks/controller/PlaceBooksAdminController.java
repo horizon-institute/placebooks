@@ -1161,6 +1161,7 @@ public class PlaceBooksAdminController
 	public void streamMediaItem(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("key") final String key)
 	{
+		log.debug("Request for media: " + type + " " + key);
 		String path = null;
 		final EntityManager em = EMFSingleton.getEntityManager();
 
