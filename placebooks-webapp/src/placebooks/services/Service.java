@@ -17,11 +17,13 @@ public abstract class Service
 {
 	private static final Logger log = Logger.getLogger(Service.class);
 	
-	protected abstract void sync(EntityManager manager, User user, LoginDetails details);
+	protected abstract void sync(EntityManager manager, User user, LoginDetails details, double lon, double lat, double radius);
+
+	protected abstract void search(EntityManager em, User user, double lon, double lat, double radius);
 	
 	public abstract boolean checkLogin(final String username, final String password);
 	
-	public void sync(EntityManager manager, final User user, boolean force)
+	public void sync(EntityManager manager, final User user, boolean force, double lon, double lat, double radius)
 	{
 		final LoginDetails details = user.getLoginDetails(getName());
 
@@ -61,7 +63,7 @@ public abstract class Service
 
 		try
 		{
-			sync(manager, user, details);
+			sync(manager, user, details, lon, lat, radius);
 		}
 		catch(Exception e)
 		{
@@ -118,5 +120,6 @@ public abstract class Service
 		}	
 		return deletedItems;
 	}
+
 	
 }

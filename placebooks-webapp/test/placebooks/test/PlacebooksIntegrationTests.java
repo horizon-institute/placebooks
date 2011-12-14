@@ -13,7 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
+import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
+import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.UserManager;
 import placebooks.controller.YouTubeHelper;
 import placebooks.model.GPSTraceItem;
@@ -137,7 +139,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
 		EverytrailService service = new EverytrailService();
-		service.sync(em, user, true);
+		service.sync(em, user, true, -4.051070, 52.482382, 0.1);
 	}
 
 	//@Test
@@ -194,7 +196,10 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
 		final PeoplesCollectionService service = new PeoplesCollectionService();
-		service.sync(em, user, true);
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
 	}
 
 	@Test
@@ -202,7 +207,10 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
 		final PeoplesCollectionService service = new PeoplesCollectionService();
-		service.sync(em, user, true);
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
 		
 		//Now try replacing the data with some other items
 		final LoginDetails oldLoginDetails = user.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
@@ -210,7 +218,10 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		User otherUser = UserManager.getUser(em,  "azc@Cs.Nott.AC.UK");
 		final LoginDetails newLoginDetails = otherUser.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
 		user.add(newLoginDetails);
-		service.sync(em, user, true);
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
 	}
 	
 }

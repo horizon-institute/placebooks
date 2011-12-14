@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import placebooks.controller.CommunicationHelper;
+import placebooks.controller.PropertiesSingleton;
 import placebooks.model.LoginDetails;
 import placebooks.model.User;
 
@@ -35,7 +37,10 @@ public class ServiceRegistry
 			Service service = services.get(details.getService());
 			if(service != null)
 			{
-				service.sync(manager, user, false);
+				service.sync(manager, user, false, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+						Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+						Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+				);
 			}
 		}
 	}	

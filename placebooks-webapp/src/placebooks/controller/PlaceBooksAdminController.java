@@ -247,7 +247,10 @@ public class PlaceBooksAdminController
 				{
 					if(serviceImpl != null)
 					{
-						serviceImpl.sync(manager, user, true);
+						serviceImpl.sync(manager, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+								Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+								Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+						);
 					}
 				}
 				catch(Exception e)
@@ -1277,7 +1280,10 @@ public class PlaceBooksAdminController
 			final EntityManager manager = EMFSingleton.getEntityManager();
 			final User user = UserManager.getCurrentUser(manager);
 
-			service.sync(manager, user, true);
+			service.sync(manager, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+					Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+					Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+			);
 		}
 
 		res.setStatus(200);
