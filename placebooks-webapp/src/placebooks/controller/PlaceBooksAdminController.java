@@ -737,7 +737,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/publishplacebookbinder", 
 					method = RequestMethod.POST)
 	public void publishPlaceBookBinderJSON(final HttpServletResponse res, 
-										   @RequestParam("placebookbinder") final String json)
+		  @RequestParam("placebookbinder") final String json)
 	{
 		log.info("Publish PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
@@ -761,6 +761,7 @@ public class PlaceBooksAdminController
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBookBinder placebookBinder = mapper.readValue(json, PlaceBookBinder.class);
+			
 			final PlaceBookBinder result = 
 				PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 			log.debug("Saved PlacebookBinder:" + mapper.writeValueAsString(result));

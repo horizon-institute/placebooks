@@ -114,6 +114,7 @@ public class TextItem extends PlaceBookItem
 	public void setText(final String text)
 	{
 		this.text = text;
+		index.clear();
 		index.addAll(SearchHelper.getIndex(text.replaceAll("\\<.*?\\>","")));
 	}
 

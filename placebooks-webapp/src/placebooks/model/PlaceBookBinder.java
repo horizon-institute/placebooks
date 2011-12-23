@@ -23,12 +23,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import static javax.persistence.FetchType.LAZY;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,6 +41,7 @@ import org.apache.log4j.Logger;
 import com.vividsolutions.jts.geom.Geometry;
 
 import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.SearchHelper;
 
 
 @Entity
@@ -77,6 +81,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	private String permsUsers;
 
 	private State state;
+
+	@JsonIgnore
+	@OneToOne(cascade = ALL, mappedBy = "placebookBinder", 
+			  orphanRemoval = true, fetch = LAZY)
+	private PlaceBookBinderSearchIndex index = new PlaceBookBinderSearchIndex();
 
 	public enum Permission
 	{
@@ -138,6 +147,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		this.state = State.UNPUBLISHED;
 		this.timestamp = new Date();
 		geom = null;
+		index.setPlaceBookBinder(this);
 	}
 
 	public PlaceBookBinder(final User owner)
@@ -173,6 +183,9 @@ public class PlaceBookBinder extends BoundaryGenerator
 		this.timestamp = (Date)p.getTimestamp().clone();
 
 		this.metadata = new HashMap<String, String>(p.getMetadata());
+		
+		index.setPlaceBookBinder(this);
+		this.index.addAll(p.getSearchIndex().getIndex());
 
         for (final PlaceBook page : p.getPlaceBooks())
 			this.addPlaceBook(new PlaceBook(page));
@@ -352,6 +365,46 @@ public class PlaceBookBinder extends BoundaryGenerator
 		}
 	}
 
+	public void addMetadataEntryIndexed(final String key, final String value)
+	{
+		addMetadataEntry(key, value);
+		index.addAll(SearchHelper.getIndex(value));
+	}
+
+	public void addSearchIndexedData(final String value)
+	{
+		index.addAll(SearchHelper.getIndex(value));
+	}
+
+	@SuppressWarnings("unchecked")
+	public void rebuildSearchIndex()
+	{
+		log.debug("rebuildSearchIndex...");
+		index.clear();
+		final Iterator i = metadata.entrySet().iterator();
+		while (i.hasNext())
+		{
+			index.addAll(SearchHelper.getIndex(
+				((Map.Entry<String, String>)i.next()).getValue()));
+		}
+		for (final PlaceBook page : pages)
+		{
+			final Iterator j = page.getMetadata().entrySet().iterator();
+			while (j.hasNext())
+			{
+				index.addAll(SearchHelper.getIndex(
+					((Map.Entry<String,String>)j.next()).getValue()));
+			}
+		}
+		/*final Set<Map.Entry<String, String>> ss = metadata.entrySet();
+		for (final Map.Entry<String, String> s : ss)
+			log.debug("... \"" + s.getKey() + "\" => \"" + s.getValue() + "\"");
+
+		for (final String term : index.getIndex())
+			log.debug("... " + term);*/
+
+	}
+
 	public String getMetadataValue(final String key)
 	{
 		return metadata.get(key);
@@ -406,6 +459,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	public User getOwner()
 	{
 		return owner;
+	}
+	
+	public final PlaceBookBinderSearchIndex getSearchIndex()
+	{
+		return index;
 	}
 
 }

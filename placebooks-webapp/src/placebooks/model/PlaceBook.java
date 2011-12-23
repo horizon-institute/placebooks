@@ -20,7 +20,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
 import org.apache.log4j.Logger;
@@ -32,10 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import placebooks.controller.SearchHelper;
-
 import com.vividsolutions.jts.geom.Geometry;
-import static javax.persistence.FetchType.LAZY;
 
 
 @Entity
@@ -53,10 +49,6 @@ public class PlaceBook extends BoundaryGenerator
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
-
-	@JsonIgnore
-	@OneToOne(cascade = ALL, mappedBy = "placebook", orphanRemoval = true, fetch = LAZY)
-	private PlaceBookSearchIndex index = new PlaceBookSearchIndex();
 
 	// TODO: Cascading deletes: not sure about this
 	@OneToMany(mappedBy = "placebook", cascade = ALL)
@@ -80,7 +72,6 @@ public class PlaceBook extends BoundaryGenerator
 
 	public PlaceBook()
 	{
-		index.setPlaceBook(this);		
 	}
 
 	// Copy constructor
@@ -95,9 +86,6 @@ public class PlaceBook extends BoundaryGenerator
 		this.timestamp = (Date)p.getTimestamp().clone();
 
 		this.metadata = new HashMap<String, String>(p.getMetadata());
-
-		index.setPlaceBook(this);
-		this.index.addAll(p.getSearchIndex().getIndex());
 
         for (PlaceBookItem item : p.getItems())
 		{
@@ -149,7 +137,8 @@ public class PlaceBook extends BoundaryGenerator
 	public void addMetadataEntryIndexed(final String key, final String value)
 	{
 		addMetadataEntry(key, value);
-		index.addAll(SearchHelper.getIndex(value));
+		if (placeBookBinder != null)
+			placeBookBinder.addSearchIndexedData(value);
 	}
 
 	public void calcBoundary()
@@ -291,11 +280,6 @@ public class PlaceBook extends BoundaryGenerator
 	public void setTimestamp(final Date timestamp)
 	{
 		this.timestamp = timestamp;
-	}
-
-	public final PlaceBookSearchIndex getSearchIndex()
-	{
-		return index;
 	}
 
 	public void setPlaceBookBinder(final PlaceBookBinder p)

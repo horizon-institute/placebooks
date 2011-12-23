@@ -87,8 +87,8 @@ public class PlaceBookService
 
 	public static void publishPlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)
 	{
-		serverRequest(	getHostURL() + "placebooks/a/publishplacebook",
-						"placebook=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
+		serverRequest(	getHostURL() + "placebooks/a/publishplacebookbinder",
+						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
 	public static void registerAccount(final String name, final String email, final String password,
@@ -111,7 +111,7 @@ public class PlaceBookService
 
 	public static void searchLocation(final String geometry, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebook/" + geometry, callback);
+		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebookbinder/" + geometry, callback);
 	}
 
 	public static void sync(final String service, final RequestCallback callback)
