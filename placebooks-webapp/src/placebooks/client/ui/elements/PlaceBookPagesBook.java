@@ -162,6 +162,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipStart(final MouseDownEvent event)
 	{
+		if(pages.size() <= 1)
+		{
+			return;
+		}
 		if(flip.state != FlipState.flipping)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
@@ -190,6 +194,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	void flip(final MouseMoveEvent event)
 	{
 		final int mouseX = event.getRelativeX(pagesPanel.getElement());
+		if(pages.size() <= 1)
+		{
+			return;
+		}
 		if(flip.state == FlipState.dragging)
 		{
 			drawFlip(flip.left, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
@@ -216,6 +224,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")	
 	void clickFlip(final ClickEvent event)
 	{
+		if(pages.size() <= 1)
+		{
+			return;
+		}
 		if(flip.state != FlipState.flipping)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());

@@ -31,7 +31,6 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
@@ -59,29 +58,18 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		public String getToken(final PlaceBookEditor place)
 		{
-			if(place.book)
-			{
-				return "book:" + place.getKey();
-			}
 			return place.getKey();
 		}
 	}
 
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
-	{
-	}
-
-	@UiTemplate("PlaceBookBookEditor.ui.xml")
 	interface PlaceBookBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
 	{
 	}
 
-	private static final PlaceBookBookEditorUiBinder bookuiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
+	private static final PlaceBookBookEditorUiBinder uiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
 
 	
 	private final static String newPlaceBook = "{\"pages\":[{\"items\":[], \"metadata\":{} },{\"items\":[], \"metadata\":{} }]}";
-
-	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
 	Panel backPanel;
@@ -120,29 +108,17 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookID;
 
-	private final boolean book;
-	
 	public PlaceBookEditor(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
 		this.placebookID = placebook.getId();
-		book = false;
 	}
 
 	public PlaceBookEditor(final User user, final String placebookID)
 	{
 		super(user);
-		if(placebookID.startsWith("book:"))
-		{
-			book = true;
-			this.placebookID = placebookID.substring(5);			
-		}
-		else
-		{
-			book = false;
-			this.placebookID = placebookID;			
-		}
+		this.placebookID = placebookID;			
 		this.placebook = null;
 	}
 
@@ -194,14 +170,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		Widget editor;
-		if(book)
-		{
-			editor = bookuiBinder.createAndBindUi(this);
-		}
-		else
-		{
-			editor = uiBinder.createAndBindUi(this);
-		}
+		editor = uiBinder.createAndBindUi(this);
 
 		loadingPanel.setVisible(true);
 		
@@ -317,9 +286,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("delete")
-	void delete(final ClickEvent event)
+	@UiHandler("deleteBook")
+	void deletePlaceBook(final ClickEvent event)
 	{
+		GWT.log("Delete Click");
 		final Panel panel = new FlowPanel();
 		final PopupPanel dialogBox = new PopupPanel(true, true);
 		dialogBox.getElement().getStyle().setZIndex(2000);

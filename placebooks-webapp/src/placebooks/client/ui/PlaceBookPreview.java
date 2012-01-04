@@ -7,7 +7,7 @@ import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
-import placebooks.client.ui.elements.PlaceBookPagesList;
+import placebooks.client.ui.elements.PlaceBookPagesBook;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
@@ -53,7 +53,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	private static final PlaceBookPreviewUiBinder uiBinder = GWT.create(PlaceBookPreviewUiBinder.class);
 
 	@UiField
-	Panel canvasPanel;
+	PlaceBookPagesBook bookPanel;
 
 	@UiField
 	DropMenu dropMenu;
@@ -79,8 +79,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 	@UiField
 	Anchor authorLabel;
 
-	private final PlaceBookPagesList canvas = new PlaceBookPagesList();
-
 	private PlaceBookBinder placebook;
 	private final String placebookID;
 
@@ -98,15 +96,15 @@ public class PlaceBookPreview extends PlaceBookPlace
 		this.placebook = null;
 	}
 
-	public PlaceBookPagesList getCanvas()
+	public PlaceBookPagesBook getCanvas()
 	{
-		return canvas;
+		return bookPanel;
 	}
 
 	public void setPlaceBook(final PlaceBookBinder placebook)
 	{
 		this.placebook = placebook;
-		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY);
+		bookPanel.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY);
 
 		titleLabel.setText(placebook.getMetadata("title"));
 		authorLabel.setText(placebook.getOwner().getName());
@@ -140,12 +138,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		infoPanel.setVisible(false);
 
-		canvasPanel.add(canvas);
-
 		toolbar.setPlace(this);
 
 		panel.setWidget(preview);
-		canvas.resized();
+		bookPanel.resized();
 
 		if (placebook != null)
 		{

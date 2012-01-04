@@ -594,8 +594,9 @@ public final class PlaceBooksAdminHelper
 				final List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 				for (final PlaceBookItem item : placebook.getItems())
 				{
-					items.add(updatePlaceBookItem(manager, item, currentUser, updateMedia));
-					item.setPlaceBook(dbPlaceBook);
+					PlaceBookItem resultItem = updatePlaceBookItem(manager, item, currentUser, updateMedia);
+					resultItem.setPlaceBook(dbPlaceBook);
+					items.add(resultItem);
 				}
 				dbPlaceBook.setItems(items);
 
@@ -696,8 +697,9 @@ public final class PlaceBooksAdminHelper
 				final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
 				for (final PlaceBook placebook : binder.getPlaceBooks())
 				{
-					placebooks.add(updatePlaceBook(manager, placebook, currentUser, updateMedia));
-					placebook.setPlaceBookBinder(dbBinder);
+					PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
+					pbresult.setPlaceBookBinder(dbBinder);
+					placebooks.add(pbresult);
 				}
 				dbBinder.setPlaceBooks(placebooks);
 

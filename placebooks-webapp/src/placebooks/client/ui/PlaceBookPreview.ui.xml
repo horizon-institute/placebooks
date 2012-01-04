@@ -39,11 +39,12 @@
 			font: 16px verdana, arial, sans-serif;
 			padding: 5px;			
 		}
-		
-		.canvas {
-			-webkit-box-flex: 1;
-			overflow: auto;
+				
+		.bookPanel {
+			-webkit-box-flex: 1;	
+			padding: 20px;
 		}
+		
 		
 		.dropMenu {
 			position: absolute;
@@ -91,6 +92,6 @@
 				<g:Label ui:field="delete" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
 			</p:DropMenu>		
 		</g:FlowPanel>		
-		<g:FlowPanel ui:field="canvasPanel" styleName="{style.canvas}" />
+		<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
 	</g:FlowPanel>
 </ui:UiBinder>
