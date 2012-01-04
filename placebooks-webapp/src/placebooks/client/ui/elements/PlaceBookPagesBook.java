@@ -47,27 +47,40 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			{
 				cancel();
 			}
-			if(Math.abs(target - progress) > 0.001)
-			{	
-				drawFlip(left, progress + (target - progress) * 0.2);				
-			}
 			else
 			{
-				drawFlip(left, target);
-				if(target == 1)
-				{
-					setPage(left);					
+				if(Math.abs(target - progress) > 0.01)
+				{	
+					drawFlip(left, progress + (target - progress) * 0.2);				
 				}
-				else if(target == -1)
+				else
 				{
-					setPage(right);
+					drawFlip(left, target);
+					if(target == 1)
+					{
+						setPage(left);					
+					}
+					else if(target == -1)
+					{
+						setPage(right);
+					}
+					state = FlipState.none;
+					cancel();				
 				}
-				state = FlipState.none;
 			}
 		}	
 		
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
 		{
+			if(left != null)
+			{
+				left.setVisible(false);
+			}
+			if(right != null)
+			{
+				right.setVisible(false);
+			}
+			
 			flip.cancel();
 			this.left = left;
 			this.right = right;
@@ -160,14 +173,14 @@ public class PlaceBookPagesBook extends PlaceBookPages
 					// We are on the left side, drag the previous page
 					flip.state = FlipState.dragging;
 					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);				
-					//event.preventDefault();				
+					event.preventDefault();				
 				}
 				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
 				{
 					// We are on the right side, drag the current page
 					flip.state = FlipState.dragging;	
 					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));					
-					//event.preventDefault();				
+					event.preventDefault();				
 				}
 			}
 		}
