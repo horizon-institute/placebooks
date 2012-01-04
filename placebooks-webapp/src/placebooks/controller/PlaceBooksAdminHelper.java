@@ -43,7 +43,7 @@ import placebooks.model.PlaceBookBinder;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.PlaceBookItemSearchIndex;
-import placebooks.model.PlaceBookSearchIndex;
+import placebooks.model.PlaceBookBinderSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
 
@@ -124,21 +124,25 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
-		final String out = placeBookBinderToXML(pb);
+		final Map<String, String> out = placeBookBinderToXMLMap(pb);
 
-		if (out == null) { return null; }
+		if (out.size() == 0)
+			return null;
 
 		final String pkgPath = pb.getPackagePath();
 		if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 		{
 			try
 			{
-				final FileWriter fw = new FileWriter(new File(pkgPath
-						+ "/"
-						+ PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
-								.getProperty(PropertiesSingleton.IDEN_CONFIG, "")));
-				fw.write(out);
-				fw.close();
+				for (final Map.Entry<String, String> entry : out.entrySet())
+				{
+					final FileWriter fw = 
+						new FileWriter(new File(pkgPath	+ "/" 
+												+ entry.getKey())
+						);
+					fw.write(entry.getValue());
+					fw.close();
+				}
 			}
 			catch (final IOException e)
 			{
@@ -297,6 +301,9 @@ public final class PlaceBooksAdminHelper
 				}
 			}
 
+			// Rebuild search index
+			binder.rebuildSearchIndex();
+
 			binder = manager.merge(binder);
 
 			manager.getTransaction().commit();
@@ -359,34 +366,47 @@ public final class PlaceBooksAdminHelper
 		return false;
 	}
 
-	public static final Set<Map.Entry<PlaceBookBinder, Integer>> search(final EntityManager em, final String terms)
+	public static final Set<Map.Entry<PlaceBookBinder, Integer>> 
+		search(final EntityManager em, final String terms)
 	{
 
-		final Set<String> search = SearchHelper.getIndex(terms, 5);
+		final int nTerms = 
+			Integer.parseInt(
+				PropertiesSingleton.get(
+					CommunicationHelper.class.getClassLoader()
+				).getProperty(PropertiesSingleton.IDEN_SEARCH_TERMS, "5"));
 
-		final TypedQuery<PlaceBookSearchIndex> query1 = em.createQuery(	"SELECT p FROM PlaceBookSearchIndex p",
-																		PlaceBookSearchIndex.class);
-		final List<PlaceBookSearchIndex> pbIndexes = query1.getResultList();
+
+		final Set<String> search = SearchHelper.getIndex(terms, nTerms);
+
+		final TypedQuery<PlaceBookBinderSearchIndex> query1 = 
+			em.createQuery("SELECT p FROM PlaceBookBinderSearchIndex p",
+						   PlaceBookBinderSearchIndex.class);
+		final List<PlaceBookBinderSearchIndex> pbIndexes = 
+			query1.getResultList();
 
 		// Search rationale: ratings are accumulated per PlaceBookBinder for
-		// that Binder's PlaceBooks plus any PlaceBookItems
+		// that Binder plus any PlaceBookItems associated with all the Binder's
+		// PlaceBooks
 		final Map<PlaceBookBinder, Integer> hits = new HashMap<PlaceBookBinder, Integer>();
 
-		for (final PlaceBookSearchIndex index : pbIndexes)
+		for (final PlaceBookBinderSearchIndex index : pbIndexes)
 		{
 			final Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
-			Integer rating = hits.get(index.getPlaceBook().getPlaceBookBinder());
+			Integer rating = hits.get(index.getPlaceBookBinder());
 			if (rating == null)
 			{
 				rating = new Integer(0);
 			}
-			hits.put(index.getPlaceBook().getPlaceBookBinder(), new Integer(keywords.size() + rating.intValue()));
+			hits.put(index.getPlaceBookBinder(), 
+					 new Integer(keywords.size() + rating.intValue()));
 		}
 
-		final TypedQuery<PlaceBookItemSearchIndex> query2 = em.createQuery(	"SELECT p FROM PlaceBookItemSearchIndex p",
-																			PlaceBookItemSearchIndex.class);
+		final TypedQuery<PlaceBookItemSearchIndex> query2 = 
+			em.createQuery("SELECT p FROM PlaceBookItemSearchIndex p",
+						   PlaceBookItemSearchIndex.class);
 		final List<PlaceBookItemSearchIndex> pbiIndexes = query2.getResultList();
 
 		for (final PlaceBookItemSearchIndex index : pbiIndexes)
@@ -394,11 +414,13 @@ public final class PlaceBooksAdminHelper
 			final Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
-			if (index.getPlaceBookItem() == null || index.getPlaceBookItem().getPlaceBook() == null)
+			if (index.getPlaceBookItem() == null || 
+				index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder() == null)
 			{
 				continue;
 			}
-			final PlaceBookBinder p = index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder();
+			final PlaceBookBinder p = 
+				index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder();
 			Integer rating = hits.get(p);
 			if (rating == null)
 			{
@@ -486,49 +508,76 @@ public final class PlaceBooksAdminHelper
 		return null;
 	}
 
-	private static String placeBookBinderToXML(final PlaceBookBinder pb)
+	// Map returned is as follows:
+	//		filename to write to -> XML string
+	private static Map<String, String> 
+		placeBookBinderToXMLMap(final PlaceBookBinder pb)
 	{
-		StringWriter out = null;
+
+		final Map<String, String> map = new HashMap<String, String>();
 
 		try
 		{
 
-			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final DocumentBuilder builder = 
+				DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			final Document config = builder.newDocument();
+			final TransformerFactory tf = TransformerFactory.newInstance();
+			final Transformer t = tf.newTransformer();
 
 			final Element root = pb.createConfigurationRoot(config);
-			config.appendChild(root);
+
 			log.info("Writing PlaceBook config data");
+			
 			for (final PlaceBook p : pb.getPlaceBooks())
 			{
-				final Element root_ = p.createConfigurationRoot(config);
+				final Document config_ = builder.newDocument();
+				final Element root_ = p.createConfigurationRoot(config_);
 				log.info("Writing PlaceBookItem config data");
 				// Note: ImageItem, VideoItem and AudioItem write their data to
 				// a package directly as well as creating XML configuration
 				for (final PlaceBookItem item : p.getItems())
-				{
-					item.appendConfiguration(config, root_);
-				}
+					item.appendConfiguration(config_, root_);
+				config_.appendChild(root_);
 
-				root.appendChild(root_);
+				final DOMSource source_ = new DOMSource(config_);
+
+				StringWriter out_ = new StringWriter();
+				final StreamResult result_ = new StreamResult(out_);
+				t.transform(source_, result_);
+
+				map.put(p.getKey() + ".xml", out_.getBuffer().toString());
+
+				final Element pageXMLFile = config.createElement("page");
+				pageXMLFile.appendChild(
+					config.createTextNode(p.getKey() + ".xml")
+				);
+				root.appendChild(pageXMLFile);
+
+				t.reset();
 			}
 
-			final TransformerFactory tf = TransformerFactory.newInstance();
-			final Transformer t = tf.newTransformer();
+			config.appendChild(root);
+
 			final DOMSource source = new DOMSource(config);
 
-			out = new StringWriter();
+			StringWriter out = new StringWriter();
 			final StreamResult result = new StreamResult(out);
 			t.transform(source, result);
 
-			return out.getBuffer().toString();
+			map.put(
+				PropertiesSingleton.get(
+					PlaceBooksAdminHelper.class.getClassLoader()
+				).getProperty(PropertiesSingleton.IDEN_CONFIG, "config.xml"), 
+				out.getBuffer().toString()
+			);
 		}
 		catch (final Throwable e)
 		{
 			log.error(e.toString(), e);
 		}
 
-		return null;
+		return map;
 	}
 
 	private static final PlaceBook updatePlaceBook(final EntityManager manager, final PlaceBook placebook,

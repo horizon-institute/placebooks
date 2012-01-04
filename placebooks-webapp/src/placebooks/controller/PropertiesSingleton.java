@@ -22,6 +22,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_SEARCH_LAT = "search.lat";
 	public static final String IDEN_SEARCH_LON = "search.lon";
 	public static final String IDEN_SEARCH_RADIUS = "search.radius";
+	public static final String IDEN_SEARCH_TERMS = "search.terms";
 	
 	public static final String IDEN_OPENSPACE_APIKEY = "openspace.apikey";
 	public static final String IDEN_OPENSPACE_BASEURL = "openspace.baseurl";

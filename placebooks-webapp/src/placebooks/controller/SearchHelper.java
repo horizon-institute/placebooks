@@ -44,7 +44,7 @@ public final class SearchHelper
 					
 				}
 			}
-			log.debug("Search terms: " + sb.toString());
+			log.debug("getIndex() terms: " + sb.toString());
 		}
 		catch (final Exception e)
 		{
