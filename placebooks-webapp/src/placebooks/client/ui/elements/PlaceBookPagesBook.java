@@ -162,6 +162,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipStart(final MouseDownEvent event)
 	{
+		GWT.log("Flip start");		
 		if(pages.size() <= 1)
 		{
 			return;
@@ -224,6 +225,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")	
 	void clickFlip(final ClickEvent event)
 	{
+		GWT.log("Page click");
 		if(pages.size() <= 1)
 		{
 			return;
