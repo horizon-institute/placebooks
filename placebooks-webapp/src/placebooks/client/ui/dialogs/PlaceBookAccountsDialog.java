@@ -61,7 +61,6 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	public PlaceBookAccountsDialog(final User user)
 	{
-		super(true);
 		this.user = user;
 		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
@@ -223,8 +222,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				@Override
 				public void onClick(final ClickEvent arg0)
 				{
-					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service
-							+ " Username:");
+					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service + " Username:");
 					account.addClickHandler(new ClickHandler()
 					{
 
@@ -239,7 +237,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 																public void failure(final Request request,
 																		final Response response)
 																{
-																	account.setErrorText(service + " Login Failed");																	
+																	account.setError(service + " Login Failed");																	
 																	account.setProgress(false);																	
 																}
 
@@ -258,7 +256,6 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 						}
 					});
 
-					account.center();
 					account.show();
 				}
 			}));

@@ -9,15 +9,14 @@
 		.buttonPanel {
 			display: -webkit-box;
 			-webkit-box-pack: end;
-		}		
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
 	<g:FlowPanel>
-		<g:Label ui:field="usernameLabel">UserName:</g:Label>
-		<g:TextBox ui:field="username"  name="pb_username" />
-		<g:Label>Password:</g:Label>
-		<g:PasswordTextBox ui:field="password" name="pb_password" />
-		<g:SimplePanel styleName="{style.buttonPanel}"><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
-		<p:ProgressPanel ui:field="progress" text="Logging In..."/>	
+		<g:Label ui:field="textLabel" />
+		<g:FlowPanel styleName="{style.buttonPanel}">
+			<g:Button ui:field="accept">Ok</g:Button>
+			<g:Button ui:field="cancel">Cancel</g:Button>			
+		</g:FlowPanel>			
 	</g:FlowPanel>
 </ui:UiBinder> 

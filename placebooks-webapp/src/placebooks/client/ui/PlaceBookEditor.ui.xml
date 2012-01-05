@@ -134,7 +134,7 @@
 		
 		.dropMenu {
 			position: absolute;
-			z-index: 30;
+			z-index: 3000;
 			padding: 0px;
 			background: #FFF;
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
@@ -171,14 +171,14 @@
 			<g:Label ui:field="newPage" styleName="{style.menuItem}">New Page</g:Label>		
 			<g:Label ui:field="deletePage" styleName="{style.menuItem}">Delete Page</g:Label>		
 			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>		
-			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>
-			<g:Label ui:field="deleteBook" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
+			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>		
 			<g:FlowPanel styleName="{style.zoomPanel}">
 				<g:Label styleName="{style.zoomLabel}">Zoom</g:Label>
 				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
 				<g:Label ui:field="zoomLabel">100%</g:Label>
 				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
-			</g:FlowPanel>			
+			</g:FlowPanel>
+			<g:Label ui:field="deleteBook" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
