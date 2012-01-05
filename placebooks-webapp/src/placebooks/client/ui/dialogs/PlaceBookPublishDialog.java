@@ -69,7 +69,6 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookPages canvas)
 	{
-		super(true);
 		setWidget(uiBinder.createAndBindUi(this));
 		title.setMaxLength(64);
 		title.setText(canvas.getPlaceBook().getMetadata("title", "No Title"));

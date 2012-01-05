@@ -2,10 +2,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
-		.dialog {
-			padding: 10px;
-		}
-		
 		.arrowButton {
 			cursor: pointer;
 			padding: 3px 5px;
@@ -47,7 +43,7 @@
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
-	<g:FlowPanel styleName="{style.dialog}">
+	<g:FlowPanel>
 		<g:FlowPanel styleName="{style.imagePanel}">
 			<p:MousePanel ui:field="leftButton" styleName="{style.arrowButton}"><g:Image
 				resource="{images.arrow_left}" /></p:MousePanel>

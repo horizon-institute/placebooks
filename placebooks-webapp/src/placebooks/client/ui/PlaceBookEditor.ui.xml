@@ -10,16 +10,15 @@
 			right: 120px;
 			bottom: 0px;
 			background: #DDD;
-			overflow-x: auto;
-			overflow-y: scroll;
 		}
 		
-		.innerCanvasPanel {
-			top: 20px;
+		.bookPanel {
+			position: absolute;
+			top: 50px;
+			bottom: 0px;
 			left: 0px;
 			right: 0px;
-			bottom: 0px;
-			margin: 20px;
+			padding: 20px;
 		}
 		
 		.palette {
@@ -135,7 +134,7 @@
 		
 		.dropMenu {
 			position: absolute;
-			z-index: 30;
+			z-index: 3000;
 			padding: 0px;
 			background: #FFF;
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
@@ -156,11 +155,6 @@
 			border-top: 1px solid #BBB;
 			border-bottom: 1px solid #BBB;
 		}
-		
-		.canvas {
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
@@ -171,23 +165,22 @@
 				<p:PlaceBookSaveItem ui:field="saveItem" addStyleNames="{style.spacer}" />
 				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
-			<g:SimplePanel styleName="{style.innerCanvasPanel}"
-				ui:field="canvasPanel"><p:PlaceBookPagesList ui:field="bookPanel" styleName="{style.canvas}"/></g:SimplePanel>
+			<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
 		</g:FlowPanel>
 		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
 			<g:Label ui:field="newPage" styleName="{style.menuItem}">New Page</g:Label>		
-			<g:Label ui:field="deletePage" styleName="{style.menuItem}">Delete Page</g:Label>			
-			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>
-			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>
+			<g:Label ui:field="deletePage" styleName="{style.menuItem}">Delete Page</g:Label>		
+			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>		
+			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>		
 			<g:FlowPanel styleName="{style.zoomPanel}">
 				<g:Label styleName="{style.zoomLabel}">Zoom</g:Label>
 				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
 				<g:Label ui:field="zoomLabel">100%</g:Label>
 				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
-			</g:FlowPanel>			
-			<g:Label ui:field="delete" styleName="{style.menuItem}">Delete</g:Label>
+			</g:FlowPanel>
+			<g:Label ui:field="deleteBook" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
-		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
 	</p:MousePanel>
 </ui:UiBinder>

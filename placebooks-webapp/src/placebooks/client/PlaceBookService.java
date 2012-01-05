@@ -14,7 +14,7 @@ public class PlaceBookService
 {
 	public static void deletePlaceBook(final String key, final RequestCallback callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/delete_placebook/" + key, callback);
+		serverRequest(getHostURL() + "placebooks/a/admin/deletebinder/" + key, callback);
 	}
 
 	public static void getCurrentUser(final RequestCallback callback)

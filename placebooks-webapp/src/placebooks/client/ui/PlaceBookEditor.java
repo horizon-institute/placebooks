@@ -2,10 +2,10 @@ package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
+import placebooks.client.ui.dialogs.PlaceBookConfirmDialog;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookInteractionHandler;
@@ -31,17 +31,13 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -59,29 +55,18 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		public String getToken(final PlaceBookEditor place)
 		{
-			if(place.book)
-			{
-				return "book:" + place.getKey();
-			}
 			return place.getKey();
 		}
 	}
 
-	interface PlaceBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
-	{
-	}
-
-	@UiTemplate("PlaceBookBookEditor.ui.xml")
 	interface PlaceBookBookEditorUiBinder extends UiBinder<Widget, PlaceBookEditor>
 	{
 	}
 
-	private static final PlaceBookBookEditorUiBinder bookuiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
+	private static final PlaceBookBookEditorUiBinder uiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
 
 	
 	private final static String newPlaceBook = "{\"pages\":[{\"items\":[], \"metadata\":{} },{\"items\":[], \"metadata\":{} }]}";
-
-	private static final PlaceBookEditorUiBinder uiBinder = GWT.create(PlaceBookEditorUiBinder.class);
 
 	@UiField
 	Panel backPanel;
@@ -120,29 +105,17 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final String placebookID;
 
-	private final boolean book;
-	
 	public PlaceBookEditor(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
 		this.placebookID = placebook.getId();
-		book = false;
 	}
 
 	public PlaceBookEditor(final User user, final String placebookID)
 	{
 		super(user);
-		if(placebookID.startsWith("book:"))
-		{
-			book = true;
-			this.placebookID = placebookID.substring(5);			
-		}
-		else
-		{
-			book = false;
-			this.placebookID = placebookID;			
-		}
+		this.placebookID = placebookID;			
 		this.placebook = null;
 	}
 
@@ -194,14 +167,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		Widget editor;
-		if(book)
-		{
-			editor = bookuiBinder.createAndBindUi(this);
-		}
-		else
-		{
-			editor = uiBinder.createAndBindUi(this);
-		}
+		editor = uiBinder.createAndBindUi(this);
 
 		loadingPanel.setVisible(true);
 		
@@ -317,16 +283,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@UiHandler("delete")
-	void delete(final ClickEvent event)
+	@UiHandler("deleteBook")
+	void deletePlaceBook(final ClickEvent event)
 	{
-		final Panel panel = new FlowPanel();
-		final PopupPanel dialogBox = new PopupPanel(true, true);
-		dialogBox.getElement().getStyle().setZIndex(2000);
-
-		final Label warning = new Label(
-				"You will not be able to get your placebook back after deleting it. Are you sure?");
-		final Button okbutton = new Button("Delete", new ClickHandler()
+		GWT.log("Delete Click");
+		final PlaceBookConfirmDialog dialog = new PlaceBookConfirmDialog("You will not be able to get your placebook back after deleting it. Are you sure?");
+		dialog.setTitle("Confirm Delete");
+		dialog.setConfirmHandler(new ClickHandler()
 		{
 			@Override
 			public void onClick(final ClickEvent event)
@@ -336,38 +299,20 @@ public class PlaceBookEditor extends PlaceBookPlace
 					@Override
 					public void failure(final Request request, final Response response)
 					{
-						dialogBox.hide();
+						dialog.hide();
 					}
 
 					@Override
 					public void success(final Request request, final Response response)
 					{
-						dialogBox.hide();
+						dialog.hide();
 						getPlaceController().goTo(new PlaceBookHome());
 					}
 				});
 			}
 		});
-		final Button cancelButton = new Button("Cancel", new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				dialogBox.hide();
-			}
-		});
 
-		panel.add(warning);
-		panel.add(okbutton);
-		panel.add(cancelButton);
-
-		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
-		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
-		dialogBox.setGlassEnabled(true);
-		dialogBox.setAnimationEnabled(true);
-		dialogBox.setWidget(panel);
-		dialogBox.center();
-		dialogBox.show();
+		dialog.show();
 	}
 
 	@UiHandler("title")
@@ -410,8 +355,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 
 		publish.show();
-		publish.center();
-		publish.getElement().getStyle().setTop(50, Unit.PX);
+		//publish.getElement().getStyle().setTop(50, Unit.PX);
 	}
 
 	@UiHandler("actionMenu")
