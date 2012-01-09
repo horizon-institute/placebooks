@@ -10,18 +10,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.vividsolutions.jts.geom.Point;
 
 import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
@@ -33,11 +27,9 @@ import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
-import placebooks.services.model.EverytrailResponseStatusData;
-import placebooks.services.model.EverytrailTripsResponse;
 import placebooks.services.model.PeoplesCollectionItemFeature;
-import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
+import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionSearchTrailsResponse;
 import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;

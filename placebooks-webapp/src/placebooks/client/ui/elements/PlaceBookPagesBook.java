@@ -49,21 +49,31 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			}
 			else
 			{
+				if(target == 1)
+				{
+					setPage(left);					
+				}
+				else if(target == -1)
+				{
+					setPage(right);
+				}
+				
 				if(Math.abs(target - progress) > 0.01)
 				{	
 					drawFlip(left, progress + (target - progress) * 0.2);				
 				}
 				else
 				{
-					drawFlip(left, target);
 					if(target == 1)
 					{
-						setPage(left);					
+						left.clearFlip();					
 					}
 					else if(target == -1)
 					{
-						setPage(right);
+						right.clearFlip();
 					}
+					
+					drawFlip(left, target);
 					state = FlipState.none;
 					cancel();				
 				}
@@ -147,6 +157,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 	public void setPage(final PlaceBookPage page)
 	{
+		if(currentPage == page)
+		{
+			return;
+		}
 		GWT.log("Set Page: " + page.getIndex());
 		if(currentPage != null)
 		{
@@ -156,7 +170,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		currentPage = page;
 		currentPage.setVisible(true);		
 		currentPage.getElement().getStyle().setZIndex(1);
-		currentPage.clearFlip();
 	}
 
 	@UiHandler("rootPanel")

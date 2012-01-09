@@ -15,7 +15,7 @@ class PlaceBookDialogFrame extends PopupPanel
 	{
 	}
 
-	interface Style extends CssResource
+	interface DialogStyle extends CssResource
 	{
 		String dialog();
 
@@ -24,6 +24,9 @@ class PlaceBookDialogFrame extends PopupPanel
 
 	private static PlaceBookDialogUiBinder uiBinder = GWT.create(PlaceBookDialogUiBinder.class);
 
+	@UiField 
+	DialogStyle style;
+	
 	@UiField
 	Label titleLabel;
 
@@ -36,6 +39,13 @@ class PlaceBookDialogFrame extends PopupPanel
 	PlaceBookDialogFrame()
 	{	
 		setWidget(uiBinder.createAndBindUi(this));
+		
+		setGlassEnabled(true);
+		setAnimationEnabled(true);
+
+		setStyleName(style.dialog());
+		setGlassStyleName(style.dialogGlass());
+		setAutoHideEnabled(true);	
 		
 		errorLabel.setVisible(false);		
 	}

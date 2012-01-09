@@ -42,13 +42,13 @@
 				
 		.bookPanel {
 			-webkit-box-flex: 1;	
-			padding: 20px;
+			position: relative;
 		}
 		
 		
 		.dropMenu {
 			position: absolute;
-			z-index: 30;
+			z-index: 3000;
 			padding: 0px;
 			-moz-transition: opacity .5s linear, visibility .5s linear;
 			-webkit-transition: opacity .5s linear, visibility .5s linear;

@@ -1,48 +1,45 @@
 package placebooks.model;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Date;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Temporal;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Temporal;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import static javax.persistence.FetchType.LAZY;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import org.apache.log4j.Logger;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
 
+import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -60,8 +57,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	private Date timestamp;
 
 	@JsonIgnore
-	protected static final Logger log = 
-		Logger.getLogger(PlaceBookBinder.class.getName());
+	protected static final Logger log = Logger.getLogger(PlaceBookBinder.class.getName());
 
 	@JsonSerialize(using = placebooks.model.json.GeometryJSONSerializer.class)
 	@JsonDeserialize(using = placebooks.model.json.GeometryJSONDeserializer.class)
@@ -69,9 +65,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	// We are relying on ArrayList to preserve PlaceBook ordering
 	@OneToMany(mappedBy = "placeBookBinder", cascade = ALL)
+	@OrderColumn
 	private List<PlaceBook> pages = new ArrayList<PlaceBook>();
 
-	@ElementCollection 	@Column(columnDefinition="LONGTEXT")
+	@ElementCollection
+	@Column(columnDefinition = "LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@ElementCollection
@@ -83,16 +81,15 @@ public class PlaceBookBinder extends BoundaryGenerator
 	private State state;
 
 	@JsonIgnore
-	@OneToOne(cascade = ALL, mappedBy = "placebookBinder", 
-			  orphanRemoval = true, fetch = LAZY)
+	@OneToOne(cascade = ALL, mappedBy = "placebookBinder", orphanRemoval = true, fetch = LAZY)
 	private PlaceBookBinderSearchIndex index = new PlaceBookBinderSearchIndex();
 
 	public enum Permission
 	{
-		R("r"), W("w"), R_W("r+w"); 
-		
+		R("r"), W("w"), R_W("r+w");
+
 		private String perms;
-		
+
 		private Permission(final String perms)
 		{
 			this.perms = perms;
@@ -106,13 +103,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	public enum State
 	{
-		UNPUBLISHED(0),
-		PUBLISHED(1);
-		
+		UNPUBLISHED(0), PUBLISHED(1);
+
 		private int value;
-		
-		private static final Map<Integer, State> lu = 
-			new HashMap<Integer, State>();
+
+		private static final Map<Integer, State> lu = new HashMap<Integer, State>();
 
 		static
 		{
@@ -158,11 +153,10 @@ public class PlaceBookBinder extends BoundaryGenerator
 		{
 			this.owner.add(this);
 			perms.put(owner.getEmail(), Permission.R_W);
-			permsUsers = getPermissionsAsString();			
+			permsUsers = getPermissionsAsString();
 		}
 
-		log.info("Created new PlaceBookBinder: timestamp=" 
-				 + this.timestamp.toString());
+		log.info("Created new PlaceBookBinder: timestamp=" + this.timestamp.toString());
 
 	}
 
@@ -176,24 +170,23 @@ public class PlaceBookBinder extends BoundaryGenerator
 		permsUsers = getPermissionsAsString();
 
 		if (p.getGeometry() != null)
-			this.geom = (Geometry)p.getGeometry().clone();
+			this.geom = (Geometry) p.getGeometry().clone();
 		else
 			this.geom = null;
-		
-		this.timestamp = (Date)p.getTimestamp().clone();
+
+		this.timestamp = (Date) p.getTimestamp().clone();
 
 		this.metadata = new HashMap<String, String>(p.getMetadata());
-		
+
 		index.setPlaceBookBinder(this);
 		this.index.addAll(p.getSearchIndex().getIndex());
 
-        for (final PlaceBook page : p.getPlaceBooks())
+		for (final PlaceBook page : p.getPlaceBooks())
 			this.addPlaceBook(new PlaceBook(page));
 
-        log.info("Created copy of PlaceBookBinder; old key = " + p.getKey());
+		log.info("Created copy of PlaceBookBinder; old key = " + p.getKey());
 
 	}
-
 
 	public void calcBoundary()
 	{
@@ -211,11 +204,8 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	public Element createConfigurationRoot(final Document config)
 	{
-		log.info("PlaceBookBinder.createConfigurationRoot(), key=" 
-				 + this.getKey());
-		final Element root = config.createElement(
-			PlaceBookBinder.class.getName()
-		);
+		log.info("PlaceBookBinder.createConfigurationRoot(), key=" + this.getKey());
+		final Element root = config.createElement(PlaceBookBinder.class.getName());
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
 		root.setAttribute("state", this.getState().toString());
@@ -224,9 +214,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		{
 			log.info("Setting perms=" + this.getPermissionsAsString());
 			final Element permissions = config.createElement("permissions");
-			permissions.appendChild(
-				config.createTextNode(this.getPermissionsAsString())
-			);
+			permissions.appendChild(config.createTextNode(this.getPermissionsAsString()));
 			root.appendChild(permissions);
 		}
 
@@ -234,9 +222,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		{
 			log.info("Setting timestamp=" + this.getTimestamp().toString());
 			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(
-				config.createTextNode(this.getTimestamp().toString())
-			);
+			timestamp.appendChild(config.createTextNode(this.getTimestamp().toString()));
 			root.appendChild(timestamp);
 		}
 
@@ -244,9 +230,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		{
 			log.info("Setting geometry=" + this.getGeometry().toText());
 			final Element geometry = config.createElement("geometry");
-			geometry.appendChild(
-				config.createTextNode(this.getGeometry().toText())
-			);
+			geometry.appendChild(config.createTextNode(this.getGeometry().toText()));
 			root.appendChild(geometry);
 		}
 
@@ -257,13 +241,9 @@ public class PlaceBookBinder extends BoundaryGenerator
 			log.info("metadata set size = " + metadata.size());
 			for (final Map.Entry<String, String> e : metadata.entrySet())
 			{
-				log.info("Metadata element key, value=" + e.getKey().toString()
-						 + ", " + e.getValue().toString());
-				final Element elem = 	
-					config.createElement(e.getKey().toString());
-				elem.appendChild(config.createTextNode(
-					e.getValue().toString())
-				);
+				log.info("Metadata element key, value=" + e.getKey().toString() + ", " + e.getValue().toString());
+				final Element elem = config.createElement(e.getKey().toString());
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
 			}
 
@@ -273,12 +253,10 @@ public class PlaceBookBinder extends BoundaryGenerator
 		return root;
 	}
 
-	public String getPackagePath() 
+	public String getPackagePath()
 	{
-		return PropertiesSingleton
-					.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" 
-																   + getKey();
+		return PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_PKG, "")
+				+ "/" + getKey();
 	}
 
 	public final String getPermissionsAsString()
@@ -301,20 +279,20 @@ public class PlaceBookBinder extends BoundaryGenerator
 			perms.remove(user.getEmail());
 
 		perms.put(user.getEmail(), p);
-		permsUsers = getPermissionsAsString();		
+		permsUsers = getPermissionsAsString();
 	}
 
 	public void removePermission(final User user)
 	{
 		perms.remove(user.getEmail());
-		permsUsers = getPermissionsAsString();		
+		permsUsers = getPermissionsAsString();
 	}
 
 	public final Permission getPermission(final String email)
 	{
 		return perms.get(email);
 	}
-	
+
 	public final Permission getPermission(final User user)
 	{
 		return perms.get(user.getEmail());
@@ -376,32 +354,30 @@ public class PlaceBookBinder extends BoundaryGenerator
 		index.addAll(SearchHelper.getIndex(value));
 	}
 
-	@SuppressWarnings("unchecked")
 	public void rebuildSearchIndex()
 	{
 		log.debug("rebuildSearchIndex...");
 		index.clear();
-		final Iterator i = metadata.entrySet().iterator();
+		final Iterator<Map.Entry<String, String>> i = metadata.entrySet().iterator();
 		while (i.hasNext())
 		{
-			index.addAll(SearchHelper.getIndex(
-				((Map.Entry<String, String>)i.next()).getValue()));
+			index.addAll(SearchHelper.getIndex((i.next()).getValue()));
 		}
 		for (final PlaceBook page : pages)
 		{
-			final Iterator j = page.getMetadata().entrySet().iterator();
+			final Iterator<Map.Entry<String, String>> j = page.getMetadata().entrySet().iterator();
 			while (j.hasNext())
 			{
-				index.addAll(SearchHelper.getIndex(
-					((Map.Entry<String,String>)j.next()).getValue()));
+				index.addAll(SearchHelper.getIndex((j.next()).getValue()));
 			}
 		}
-		/*final Set<Map.Entry<String, String>> ss = metadata.entrySet();
-		for (final Map.Entry<String, String> s : ss)
-			log.debug("... \"" + s.getKey() + "\" => \"" + s.getValue() + "\"");
-
-		for (final String term : index.getIndex())
-			log.debug("... " + term);*/
+		/*
+		 * final Set<Map.Entry<String, String>> ss = metadata.entrySet(); for (final
+		 * Map.Entry<String, String> s : ss) log.debug("... \"" + s.getKey() + "\" => \"" +
+		 * s.getValue() + "\"");
+		 * 
+		 * for (final String term : index.getIndex()) log.debug("... " + term);
+		 */
 
 	}
 
@@ -424,12 +400,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		return (!metadata.isEmpty());
 	}
-	
+
 	public void setGeometry(final Geometry geom)
 	{
 		this.geom = geom;
 	}
-
 
 	public void setOwner(final User owner)
 	{
@@ -460,7 +435,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		return owner;
 	}
-	
+
 	public final PlaceBookBinderSearchIndex getSearchIndex()
 	{
 		return index;
