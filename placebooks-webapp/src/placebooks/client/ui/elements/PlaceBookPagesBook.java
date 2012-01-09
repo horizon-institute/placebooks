@@ -64,6 +64,15 @@ public class PlaceBookPagesBook extends PlaceBookPages
 				}
 				else
 				{
+					if(target == 1)
+					{
+						left.clearFlip();					
+					}
+					else if(target == -1)
+					{
+						right.clearFlip();
+					}
+					
 					drawFlip(left, target);
 					state = FlipState.none;
 					cancel();				
