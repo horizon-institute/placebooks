@@ -1,47 +1,45 @@
 package placebooks.model;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Date;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Temporal;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Temporal;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import static javax.persistence.FetchType.LAZY;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.apache.log4j.Logger;
-
-import com.vividsolutions.jts.geom.Geometry;
-
 import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.SearchHelper;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -67,6 +65,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	// We are relying on ArrayList to preserve PlaceBook ordering
 	@OneToMany(mappedBy = "placeBookBinder", cascade = ALL)
+	@OrderColumn
 	private List<PlaceBook> pages = new ArrayList<PlaceBook>();
 
 	@ElementCollection

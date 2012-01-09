@@ -108,7 +108,6 @@ public class PlaceBook extends BoundaryGenerator
 
 	}
 
-
 	public PlaceBook(final User owner, final Geometry geom, 
 					 final List<PlaceBookItem> items)
 	{
