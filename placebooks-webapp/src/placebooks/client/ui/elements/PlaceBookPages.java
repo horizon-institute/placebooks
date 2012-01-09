@@ -89,7 +89,7 @@ public abstract class PlaceBookPages extends Composite
 			{
 				return pbPage;
 			}
-			else if(page.getId().equals(pbPage.getPlaceBook().getMetadata("tempID")))
+			else if(page.hasMetadata("tempID") && page.getMetadata("tempID").equals(pbPage.getPlaceBook().getMetadata("tempID")))
 			{
 				return pbPage;
 			}
