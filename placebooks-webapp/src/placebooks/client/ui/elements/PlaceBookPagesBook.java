@@ -12,6 +12,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
@@ -64,6 +65,8 @@ public class PlaceBookPagesBook extends PlaceBookPages
 				}
 				else
 				{
+					drawFlip(left, target);
+					
 					if(target == 1)
 					{
 						left.clearFlip();					
@@ -73,7 +76,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 						right.clearFlip();
 					}
 					
-					drawFlip(left, target);
 					state = FlipState.none;
 					cancel();				
 				}
@@ -219,7 +221,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		}
 		else if(flip.state != FlipState.flipping)
 		{
-			if(mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
+			if(mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
 			{
 				flip.state = FlipState.edgeHighlight;
 				flip.cancel();
@@ -305,6 +307,18 @@ public class PlaceBookPagesBook extends PlaceBookPages
 					flip.scheduleRepeating(1000/60);
 				}
 			}
+		}
+	}
+	
+	@UiHandler("rootPanel")
+	void flipExit(final MouseOutEvent event)
+	{
+		GWT.log("Mouse Out");
+		if(flip.state == FlipState.edgeHighlight)
+		{
+			flip.target = 1;
+			flip.state = FlipState.flipping;				
+			flip.scheduleRepeating(1000/60);
 		}
 	}
 	
