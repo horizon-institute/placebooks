@@ -33,6 +33,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.IOUtils;
+import org.apache.james.mime4j.util.ByteArrayBuffer;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -1226,7 +1227,7 @@ public class PlaceBooksAdminController
 			res.setContentType("Content type: " + contentType);
 			res.addHeader("Accept-Ranges", "bytes");
 			String range = req.getHeader("Range");
-			log.debug(range);
+			//log.debug(range);
 			
 			if (range != null)
 			{
@@ -1234,7 +1235,7 @@ public class PlaceBooksAdminController
 				{
 					try
 					{
-						log.debug("Range string: " + range.substring(6));
+						//log.debug("Range string: " + range.substring(6));
 						final String[] rangeItems = range.substring(6).split("-");
 						switch(rangeItems.length)
 						{
@@ -1251,7 +1252,7 @@ public class PlaceBooksAdminController
 								endByte = Long.parseLong(rangeItems[1]);
 								break;
 						}
-						log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
+						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
 					}
 					catch (final Exception e)
 					{
@@ -1260,32 +1261,35 @@ public class PlaceBooksAdminController
 				}
 			}
 			bis = new BufferedInputStream(fis);
-			
 			long totalLengthToSend = file.length() - startByte;
 			long totalLengthOfFile = file.length();
-			log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
+			//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
 
-			res.setContentLength((int) totalLengthToSend);
+			res.setContentLength((int) totalLengthToSend);			
 			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
+			res.addHeader("ETag", "placebooks-video-" + key);
 
+			if(totalLengthOfFile>totalLengthToSend)
+			{
+				res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+			}
 			final int bufferLen = 4096;
 			final byte data[] = new byte[bufferLen];
 
 			int totalBytesSent = 0;
 			int length = 0;
-			log.debug("Starting to send data...");
 			try
 			{
 				// Read only the number of bytes to left to send, in case it's less than the buffer size
 				// also start at the start byte
-				log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
+				//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
 				bis.skip(startByte);
 				length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
 				while (length != -1)
 				{
 					sos.write(data, 0, length);
 					totalBytesSent += length;
-					log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
+					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
 					
 					if(totalBytesSent >= totalLengthToSend)
 					{
@@ -1293,11 +1297,12 @@ public class PlaceBooksAdminController
 					}
 					else
 					{
-						log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
+						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
 						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
 						//log.debug("Read bytes: " + length);
 					}
 				}
+			
 			}
 			finally
 			{
