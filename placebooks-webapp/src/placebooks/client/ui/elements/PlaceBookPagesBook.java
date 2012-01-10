@@ -12,6 +12,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
@@ -64,6 +65,8 @@ public class PlaceBookPagesBook extends PlaceBookPages
 				}
 				else
 				{
+					drawFlip(left, target);
+					
 					if(target == 1)
 					{
 						left.clearFlip();					
@@ -73,7 +76,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 						right.clearFlip();
 					}
 					
-					drawFlip(left, target);
 					state = FlipState.none;
 					cancel();				
 				}
@@ -82,13 +84,13 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
 		{
-			if(left != null)
+			if(this.left != null)
 			{
-				left.setVisible(false);
+				this.left.setVisible(false);
 			}
-			if(right != null)
+			if(this.right != null)
 			{
-				right.setVisible(false);
+				this.right.setVisible(false);
 			}
 			
 			flip.cancel();
@@ -134,6 +136,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	private double bookWidth;
 	private double pageWidth;
 	private double pageHeight;
+	
+	private int startX;
+	private int startY;
+	private boolean dragged = false;
 	
 	private double margin = 30;
 
@@ -191,13 +197,19 @@ public class PlaceBookPagesBook extends PlaceBookPages
 					// We are on the left side, drag the previous page
 					flip.state = FlipState.dragging;
 					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);				
+					startX = mouseX;
+					startY = event.getRelativeY(pagesPanel.getElement());
+					dragged = false;
 					event.preventDefault();				
 				}
 				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
 				{
 					// We are on the right side, drag the current page
 					flip.state = FlipState.dragging;	
-					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));					
+					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+					startX = mouseX;
+					startY = event.getRelativeY(pagesPanel.getElement());
+					dragged = false;					
 					event.preventDefault();				
 				}
 			}
@@ -215,11 +227,20 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		if(flip.state == FlipState.dragging)
 		{
 			drawFlip(flip.left, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
+			
+			int distanceX = Math.abs(startX - mouseX);
+			int distanceY = Math.abs(startY - event.getRelativeY(pagesPanel.getElement()));			
+			
+			if(!dragged && distanceX + distanceY > 10)
+			{
+				dragged = true;
+			}
+			
 			event.preventDefault();
 		}
 		else if(flip.state != FlipState.flipping)
 		{
-			if(mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
+			if(mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
 			{
 				flip.state = FlipState.edgeHighlight;
 				flip.cancel();
@@ -243,7 +264,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		{
 			return;
 		}
-		if(flip.state != FlipState.flipping)
+		if(!dragged)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
 			// Make sure the mouse pointer is inside of the book
@@ -305,6 +326,18 @@ public class PlaceBookPagesBook extends PlaceBookPages
 					flip.scheduleRepeating(1000/60);
 				}
 			}
+		}
+	}
+	
+	@UiHandler("rootPanel")
+	void flipExit(final MouseOutEvent event)
+	{
+		GWT.log("Mouse Out");
+		if(flip.state == FlipState.edgeHighlight)
+		{
+			flip.target = 1;
+			flip.state = FlipState.flipping;				
+			flip.scheduleRepeating(1000/60);
 		}
 	}
 	

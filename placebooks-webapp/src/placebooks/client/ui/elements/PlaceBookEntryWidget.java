@@ -55,7 +55,7 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		title.setText(entry.getTitle());
-		if (entry.getState().equals("PUBLISHED"))
+		if (entry.getState().equals("1"))
 		{
 			image.setResource(Resources.IMAGES.placebook_published());
 			setTitle("View " + entry.getTitle() + "(published)");

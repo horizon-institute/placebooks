@@ -58,15 +58,16 @@
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.inputPanel}">
 			<g:Label styleName="{style.flexBox}">Location:</g:Label>
-			<g:TextBox ui:field="location" styleName="{style.flexBox}"></g:TextBox>
+			<g:TextBox ui:field="location" styleName="{style.flexBox}"/>
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.inputPanel}">
 			<g:Label styleName="{style.flexBox}">Activity:</g:Label>
-			<g:TextBox ui:field="activity" styleName="{style.flexBox}"></g:TextBox>
+			<g:ListBox ui:field="activityList" styleName="{style.flexBox" />
+			<g:TextBox ui:field="activity" styleName="{style.flexBox}"/>
 		</g:FlowPanel>
 		<g:Label>Description:</g:Label>
 		<g:FlowPanel>
-			<g:TextArea ui:field="description" styleName="{style.desc}"></g:TextArea>
+			<g:TextArea ui:field="description" styleName="{style.desc}"/>
 		</g:FlowPanel>
 		<g:Button styleName="{style.publishButton}" ui:field="publish">Publish</g:Button>
 	</g:FlowPanel>
