@@ -6,8 +6,10 @@ import java.util.List;
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookBinder;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
+import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -145,13 +147,16 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		this.placebook = canvas.getPlaceBook();
 		this.place = place;
 
-//		for (final PlaceBookItemFrame frame : canvas.getItems())
-//		{
-//			if (frame.getItem().is(ItemType.IMAGE))
-//			{
-//				imageItems.add(frame);
-//			}
-//		}
+		for (final PlaceBookPage page : canvas.getPages())
+		{
+			for(final PlaceBookItemFrame frame: page.getItems())
+			{
+				if (frame.getItem().is(ItemType.IMAGE))
+				{
+					imageItems.add(frame);
+				}
+			}
+		}
 
 		refresh();
 	}
