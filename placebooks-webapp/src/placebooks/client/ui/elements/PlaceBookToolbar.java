@@ -88,6 +88,8 @@ public class PlaceBookToolbar extends Composite
 
 		loginPanel.setVisible(false);
 		
+		accountItem.setVisible(false);
+		
 		createItem.setEnabled(false);
 		libraryItem.setEnabled(false);
 	}
