@@ -39,46 +39,20 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 	private static final PlaceBookPublishUiBinder uiBinder = GWT.create(PlaceBookPublishUiBinder.class);
 
-	private static final String[] activities = new String[] {"Walking",
-	                                                         "Running",
-	                                                         "Driving",
-	                                                         "Road biking",
-	                                                         "Mountain biking",
-	                                                         "Hiking",
-	                                                         "Motorcycling",
-	                                                         "Sightseeing",
-	                                                         "Trail running",
-	                                                         "Alpine skiing",
-	                                                         "Kayaking / Canoeing",
-	                                                         "Geocaching",
-	                                                         "Cross-country skiing",
-	                                                         "Flying",
-	                                                         "Mountaineering",
-	                                                         "Sailing",
-	                                                         "Backpacking",
-	                                                         "Train",
-	                                                         "Back-country skiing",
-	                                                         "Offroading",
-	                                                         "Roller skating",
-	                                                         "Snowshoeing",
-	                                                         "ATV/Offroading",
-	                                                         "Boating",
-	                                                         "Relaxation",
-	                                                         "Horseback Riding",
-	                                                         "Photography",
-	                                                         "Snowboarding",
-	                                                         "Ice skating",
-	                                                         "Snowmobiling",
-	                                                         "Hang Gliding/Paragliding",
-	                                                         "Fly-fishing",
-	                                                         "Romantic Getaway",
-	                                                         "Skateboarding",
-	                                                         "Bird Watching",
-	                                                         "Rock Climbing",
-	                                                         "Paddleboarding",
-	                                                         "Fishing",
-	                                                         "Other:"};
-	
+	private static final String[] activities = new String[] { "Walking", "Running", "Driving", "Road biking",
+																"Mountain biking", "Hiking", "Motorcycling",
+																"Sightseeing", "Trail running", "Alpine skiing",
+																"Kayaking / Canoeing", "Geocaching",
+																"Cross-country skiing", "Flying", "Mountaineering",
+																"Sailing", "Backpacking", "Train",
+																"Back-country skiing", "Offroading", "Roller skating",
+																"Snowshoeing", "ATV/Offroading", "Boating",
+																"Relaxation", "Horseback Riding", "Photography",
+																"Snowboarding", "Ice skating", "Snowmobiling",
+																"Hang Gliding/Paragliding", "Fly-fishing",
+																"Romantic Getaway", "Skateboarding", "Bird Watching",
+																"Rock Climbing", "Paddleboarding", "Fishing", "Other:" };
+
 	@UiField
 	TextBox activity;
 
@@ -90,7 +64,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 	@UiField
 	ListBox activityList;
-	
+
 	@UiField
 	TextBox location;
 
@@ -124,32 +98,31 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		location.setText(canvas.getPlaceBook().getMetadata("location", ""));
 
 		activity.setVisible(false);
-		
+
 		boolean found = false;
-		for(String item: activities)
+		for (String item : activities)
 		{
 			activityList.addItem(item);
-			if(!found && item.equals(canvas.getPlaceBook().getMetadata("activity", "")))
+			if (!found && item.equals(canvas.getPlaceBook().getMetadata("activity", "")))
 			{
 				activityList.setSelectedIndex(activityList.getItemCount() - 1);
 				found = true;
 			}
 		}
 
-		if(!found && !"".equals(canvas.getPlaceBook().getMetadata("activity", "")))
+		if (!found && !"".equals(canvas.getPlaceBook().getMetadata("activity", "")))
 		{
 			activity.setText(canvas.getPlaceBook().getMetadata("activity", ""));
 			activityList.setSelectedIndex(activityList.getItemCount() - 1);
 			activity.setVisible(true);
 		}
 
-		
 		this.placebook = canvas.getPlaceBook();
 		this.place = place;
 
 		for (final PlaceBookPage page : canvas.getPages())
 		{
-			for(final PlaceBookItemFrame frame: page.getItems())
+			for (final PlaceBookItemFrame frame : page.getItems())
 			{
 				if (frame.getItem().is(ItemType.IMAGE))
 				{
@@ -185,9 +158,10 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	@UiHandler("activityList")
 	void activitySelect(final ChangeEvent event)
 	{
-		activity.setVisible(activityList.getItemText(activityList.getSelectedIndex()).equals("Other:"));			
+		activity.setVisible(activityList.getItemText(activityList.getSelectedIndex()).equals("Other:"));
+		refresh();
 	}
-	
+
 	@UiHandler("publish")
 	void handlePublish(final ClickEvent event)
 	{
@@ -199,13 +173,13 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 		placebook.setMetadata("title", title.getText());
 		placebook.setMetadata("location", location.getText());
-		if(activityList.getItemText(activityList.getSelectedIndex()).equals("Other:"))
+		if (activityList.getItemText(activityList.getSelectedIndex()).equals("Other:"))
 		{
 			placebook.setMetadata("activity", activity.getText());
 		}
 		else
 		{
-			placebook.setMetadata("activity", activityList.getItemText(activityList.getSelectedIndex()));			
+			placebook.setMetadata("activity", activityList.getItemText(activityList.getSelectedIndex()));
 		}
 		placebook.setMetadata("description", description.getText());
 
@@ -238,8 +212,9 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			placebookImage.setUrl(frame.getItem().getURL());
 		}
 
-		publish.setEnabled(!title.getText().trim().isEmpty() && !activity.getText().trim().isEmpty()
-				&& !location.getText().trim().isEmpty());
+		publish.setEnabled(!title.getText().trim().isEmpty()
+				&& (!activityList.getItemText(activityList.getSelectedIndex()).equals("Other:") || !activity.getText()
+						.trim().isEmpty()) && !location.getText().trim().isEmpty());
 
 		rightButton.setVisible(index < imageItems.size());
 		leftButton.setVisible(index > 0);
