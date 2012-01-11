@@ -353,7 +353,7 @@ public class PlaceBookInteractionHandler
 			if (newPanel != null)
 			{
 				GWT.log("Dropped into panel " + newPanel.getIndex());
-				newPanel.reflow(dragItem, event.getRelativeY(pages.getElement()), dragFrame.getItemWidget()
+				newPanel.reflow(dragItem, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight());
 				newPanel.getPage().getPlaceBook().add(dragItem.getItem());				
 				dragItem.getItem().setParameter("panel", newPanel.getIndex());

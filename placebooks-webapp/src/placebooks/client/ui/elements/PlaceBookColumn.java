@@ -154,6 +154,7 @@ public class PlaceBookColumn extends FlowPanel
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
 	{
+		GWT.log("Reflow");
 		Collections.sort(items, orderComparator);
 
 		newItem.getItem().setParameter("panel", panelIndex);
@@ -174,7 +175,7 @@ public class PlaceBookColumn extends FlowPanel
 			item.getItem().setParameter("order", order);
 			order++;
 		}
-
+	
 		if (!inserted)
 		{
 			newItem.getItem().setParameter("order", order);
