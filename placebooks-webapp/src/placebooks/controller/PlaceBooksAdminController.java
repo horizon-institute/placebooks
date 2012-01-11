@@ -561,7 +561,7 @@ public class PlaceBooksAdminController
 				{
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 					jsonMapper.writeValue(res.getWriter(), 
-							req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION));
+							((Exception) req.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)).getMessage());
 					res.flushBuffer();
 				}
 				catch (final IOException e)
