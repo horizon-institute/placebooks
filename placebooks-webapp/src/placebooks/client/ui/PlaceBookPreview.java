@@ -170,8 +170,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					// TODO Auto-generated method stub
-
+					getPlaceController().goTo(new PlaceBookHome(getUser()));
 				}
 			});
 		}
