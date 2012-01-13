@@ -181,7 +181,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipStart(final MouseDownEvent event)
 	{
-		GWT.log("Flip start");		
 		if(pages.size() <= 1)
 		{
 			return;
@@ -259,7 +258,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")	
 	void clickFlip(final ClickEvent event)
 	{
-		GWT.log("Page click");
 		if(pages.size() <= 1)
 		{
 			return;
@@ -332,7 +330,6 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipExit(final MouseOutEvent event)
 	{
-		GWT.log("Mouse Out");
 		if(flip.state == FlipState.edgeHighlight)
 		{
 			flip.target = 1;
@@ -438,6 +435,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	public void resized()
 	{
 		final double height = getOffsetHeight();
+		if(height == 0)
+		{
+			return;
+		}		
 		final double width = getOffsetWidth();
 		final double bookWidth = height * 3 / 2;
 		if (bookWidth < width)
@@ -461,9 +462,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	protected int getDefaultColumnCount()
 	{
 		return 2;
-	}
-	
-	
+	}	
 
 	@Override
 	public void deleteCurrentPage()

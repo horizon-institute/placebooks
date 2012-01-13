@@ -9,6 +9,7 @@ import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookPagesBook;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
+import placebooks.client.ui.elements.ProgressPanel;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -71,6 +72,9 @@ public class PlaceBookPreview extends PlaceBookPlace
 	Label titleLabel;
 
 	@UiField
+	ProgressPanel loadingPanel;
+	
+	@UiField
 	Label delete;
 
 	@UiField
@@ -106,7 +110,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		this.placebook = placebook;
 		bookPanel.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY);
 
-		titleLabel.setText(placebook.getMetadata("title"));
+		titleLabel.setText(placebook.getMetadata("title", "No Title"));
 		authorLabel.setText(placebook.getOwner().getName());
 		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 
@@ -129,6 +133,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 
 		refresh();
+		loadingPanel.setVisible(false);		
 	}
 
 	@Override
@@ -137,11 +142,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 		final Widget preview = uiBinder.createAndBindUi(this);
 
 		infoPanel.setVisible(false);
+		loadingPanel.setVisible(true);		
 
 		toolbar.setPlace(this);
 
 		panel.setWidget(preview);
-		bookPanel.resized();
 
 		if (placebook != null)
 		{
@@ -149,6 +154,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 		else
 		{
+			bookPanel.resized();
 			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
 			{
 				@Override
@@ -199,6 +205,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 			delete.setVisible(false);
 			setEnabledDropMenu(false);
 		}
+		bookPanel.resized();
 	}
 
 	private void setEnabledDropMenu(final boolean enabled)

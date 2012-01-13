@@ -25,7 +25,11 @@
 		} 
 		
 		.parent {
-			height: 100%;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 		}
@@ -93,5 +97,6 @@
 			</p:DropMenu>		
 		</g:FlowPanel>		
 		<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
 	</g:FlowPanel>
 </ui:UiBinder>
