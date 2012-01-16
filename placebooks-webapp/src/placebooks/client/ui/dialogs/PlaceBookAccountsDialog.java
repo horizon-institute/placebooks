@@ -64,6 +64,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		this.user = user;
 		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
+		center();		
 		updateUser();		
 	}
 
