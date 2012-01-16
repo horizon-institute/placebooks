@@ -163,7 +163,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	private void onInitialize()
 	{
 		cellTable = new CellTable<LoginDetails>(keyProvider);
-		cellTable.setWidth("100%", true);
+		cellTable.setWidth("100%", false);
 
 		final SelectionModel<LoginDetails> selectionModel = new NoSelectionModel<LoginDetails>(keyProvider);
 		cellTable.setSelectionModel(selectionModel);
@@ -260,6 +260,8 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				}
 			}));
 		}	
+		
+		center();
 	}
 	
 	private void updateUser()
