@@ -50,8 +50,6 @@ public class MapItem extends PlaceBookItemWidget
 	private PlaceBookItem positionItem = null;
 
 	private RouteLayer routeLayer;
-
-	private ChangeHandler changeHandler;
 	
 	private String url;
 
@@ -144,7 +142,6 @@ public class MapItem extends PlaceBookItemWidget
 	
 	public void moveMarker(final PlaceBookItem item, final ChangeHandler changeHandler)
 	{
-		this.changeHandler = changeHandler;
 		positionItem = item;
 		refreshMarkers();
 		

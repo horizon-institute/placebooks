@@ -27,12 +27,27 @@ public class EditMapMenuItem extends MenuItem
 		return !item.getItem().getClassName().equals("placebooks.model.GPSTraceItem") && !getMaps().isEmpty();
 	}
 
+	@Override
+	public void run()
+	{
+		final List<PlaceBookItemWidget> mapItems = getMaps();
+		if (mapItems.isEmpty())
+		{
+			return;
+		}
+		else
+		{
+			final PlaceBookMapsDialog mapDialog = new PlaceBookMapsDialog(item.getItem(), mapItems, controller);
+			mapDialog.show();
+		}
+	}
+
 	private List<PlaceBookItemWidget> getMaps()
 	{
 		final List<PlaceBookItemWidget> mapItems = new ArrayList<PlaceBookItemWidget>();
 		for (final PlaceBookPage page : controller.getPages().getPages())
 		{
-			for(final PlaceBookItemFrame item : page.getItems()) 		
+			for (final PlaceBookItemFrame item : page.getItems())
 			{
 				if (item.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 				{
@@ -40,22 +55,7 @@ public class EditMapMenuItem extends MenuItem
 				}
 			}
 		}
-		
+
 		return mapItems;
-	}
-	
-	@Override
-	public void run()
-	{
-		final List<PlaceBookItemWidget> mapItems = getMaps();
-		if(mapItems.isEmpty())
-		{
-			return;
-		}
-		else
-		{
-			PlaceBookMapsDialog mapDialog = new PlaceBookMapsDialog(item.getItem(), mapItems, controller);
-			mapDialog.show();
-		}
 	}
 }

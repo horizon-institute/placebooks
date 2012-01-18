@@ -2,7 +2,6 @@ package placebooks.client.ui.menuItems;
 
 import placebooks.client.Resources;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.event.dom.client.ClickEvent;

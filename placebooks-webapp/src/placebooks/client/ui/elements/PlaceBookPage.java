@@ -31,8 +31,6 @@ public class PlaceBookPage extends Composite
 
 	private PlaceBook page;
 
-	private final PlaceBookController controller;
-
 	private int index;
 
 	@UiField
@@ -45,7 +43,6 @@ public class PlaceBookPage extends Composite
 			final int defaultColumnCount)
 	{
 		this.page = page;
-		this.controller = controller;
 		initWidget(uiBinder.createAndBindUi(this));
 
 		setIndex(pageIndex);

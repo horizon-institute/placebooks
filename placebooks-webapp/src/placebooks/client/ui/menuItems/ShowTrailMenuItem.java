@@ -1,7 +1,6 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class ShowTrailMenuItem extends MenuItem
