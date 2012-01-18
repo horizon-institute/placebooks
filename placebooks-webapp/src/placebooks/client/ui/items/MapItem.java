@@ -120,7 +120,6 @@ public class MapItem extends PlaceBookItemWidget
 			{
 				if (item.hasMetadata("mapItemID"))
 				{
-					GWT.log("Geo for " + item.getKey() + ": " + item.getGeometry());
 					if (item.getGeometry() != null)
 					{
 						final String geometry = item.getGeometry();

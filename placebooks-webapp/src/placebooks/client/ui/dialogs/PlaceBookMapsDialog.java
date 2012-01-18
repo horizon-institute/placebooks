@@ -50,7 +50,20 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		this.mapItems = mapItems;
 		setTitle("Locate " + item.getMetadata("title", "Item") + " on Map");
 		onInitialize();
-		selectMap(item.getMetadata("mapItemID"));
+		
+		String mapID = item.getMetadata("mapItemID"); 
+		selectMap(mapID);
+		
+		if(mapID != null)
+		{
+			for(int index = 0; index < mapSelect.getItemCount(); index++)
+			{
+				if(mapID.equals(mapSelect.getValue(index)))
+				{
+					mapSelect.setSelectedIndex(index);
+				}
+			}
+		}
 	}
 
 	private void onInitialize()
@@ -68,7 +81,6 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	
 	private void selectMap(final String id)
 	{
-		GWT.log("ID: " + id + ", " + (id != null));
 		if(id == null)
 		{
 			item.removeMetadata("mapItemID");
