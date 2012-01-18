@@ -1,7 +1,6 @@
 package placebooks.controller;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +11,11 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import javax.activation.MimetypesFileTypeMap;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -32,8 +30,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-import org.apache.commons.io.IOUtils;
-import org.apache.james.mime4j.util.ByteArrayBuffer;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -647,7 +643,7 @@ public class PlaceBooksAdminController
 			if(!pbs.isEmpty())
 			{
 				final Random random = new Random();
-				for (int index = 0; index < count; index++)
+				for (int index = 0; index < count && !pbs.isEmpty(); index++)
 				{
 					final int rindex = random.nextInt(pbs.size());
 					final PlaceBookBinderSearchEntry entry = 
