@@ -41,9 +41,9 @@ import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
 import placebooks.model.PlaceBookBinder.State;
+import placebooks.model.PlaceBookBinderSearchIndex;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.PlaceBookItemSearchIndex;
-import placebooks.model.PlaceBookBinderSearchIndex;
 import placebooks.model.User;
 import placebooks.model.WebBundleItem;
 
@@ -414,7 +414,7 @@ public final class PlaceBooksAdminHelper
 			final Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
-			if (index.getPlaceBookItem() == null || 
+			if (index.getPlaceBookItem() == null || index.getPlaceBookItem().getPlaceBook() == null ||
 				index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder() == null)
 			{
 				continue;
