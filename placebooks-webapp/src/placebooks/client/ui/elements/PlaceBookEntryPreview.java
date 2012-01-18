@@ -51,7 +51,14 @@ public class PlaceBookEntryPreview extends Composite
 		description.setText(entry.getDescription());
 		author.setText(entry.getOwnerName());
 		
-		image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/imageitem/" + entry.getPreviewImage());
+		if(entry.getPreviewImage() != null)
+		{
+			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/imageitem/" + entry.getPreviewImage());
+		}
+		else
+		{
+			image.setVisible(false);
+		}
 		
 		container.addDomHandler(new ClickHandler()
 		{
