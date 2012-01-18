@@ -2,6 +2,7 @@ package placebooks.client.ui.items;
 
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.elements.RichTextArea;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -16,9 +17,9 @@ public class EditableTextItem extends PlaceBookItemWidget
 {
 	private RichTextArea textPanel = new RichTextArea("");
 
-	EditableTextItem(final PlaceBookItem item)
+	EditableTextItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item);
+		super(item, handler);
 		initWidget(textPanel);
 		textPanel.setStyleName(Resources.STYLES.style().textitem());
 		textPanel.addDomHandler(new ClickHandler()

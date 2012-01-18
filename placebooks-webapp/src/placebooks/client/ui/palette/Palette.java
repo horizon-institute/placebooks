@@ -5,7 +5,7 @@ import java.util.List;
 
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -64,7 +64,7 @@ public class Palette extends FlowPanel
 		return path;
 	}
 
-	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookInteractionHandler dragHandler)
+	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookController dragHandler)
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 

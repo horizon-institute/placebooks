@@ -8,7 +8,7 @@ import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookConfirmDialog;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
-import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
@@ -97,7 +97,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
 
-	private PlaceBookInteractionHandler interactionHandler;
+	private PlaceBookController controller;
 
 	private PlaceBookBinder placebook;
 
@@ -119,10 +119,9 @@ public class PlaceBookEditor extends PlaceBookPlace
 		this.placebook = null;
 	}
 
-	public PlaceBookInteractionHandler getDragHandler()
+	public PlaceBookController getController()
 	{
-		return interactionHandler;
-
+		return controller;
 	}
 
 	public PlaceBookSaveItem getSaveItem()
@@ -146,7 +145,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		placebook = newPlacebook;
 
-		bookPanel.setPlaceBook(newPlacebook, factory);
+		bookPanel.setPlaceBook(newPlacebook, controller);
 
 		if (newPlacebook.hasMetadata("title"))
 		{
@@ -185,10 +184,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 			}
 		});
 
-		interactionHandler = new PlaceBookInteractionHandler(bookPanel, factory, saveItem);
-		interactionHandler.setupUIElements(backPanel);
-
-		factory.setInteractionHandler(interactionHandler);
+		controller = new PlaceBookController(bookPanel, factory, saveItem);
+		controller.setupUIElements(backPanel);
 
 		saveItem.setState(SaveState.saved);
 		saveItem.setRunnable(new Runnable()
@@ -278,7 +275,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			public void success(final Request request, final Response response)
 			{
 				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				palette.setPalette(items, interactionHandler);
+				palette.setPalette(items, controller);
 			}
 		});
 	}

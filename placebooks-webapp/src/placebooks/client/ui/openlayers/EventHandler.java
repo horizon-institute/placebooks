@@ -4,11 +4,11 @@ public abstract class EventHandler
 {
 	public native static EventHanderFunction createHandler(EventHandler self)
 	/*-{
-		var handler = function(event)
+		var controller = function(event)
 		{
 			self.@placebooks.client.ui.openlayers.EventHandler::handleEvent(Lplacebooks/client/ui/openlayers/Event;)(event);
 		}
-		return handler;
+		return controller;
 	}-*/;
 
 	private EventHanderFunction handler;

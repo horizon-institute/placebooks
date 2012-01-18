@@ -7,6 +7,7 @@ import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.elements.PlaceBookPagesBook;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.elements.ProgressPanel;
@@ -83,6 +84,8 @@ public class PlaceBookPreview extends PlaceBookPlace
 	@UiField
 	Anchor authorLabel;
 
+	private PlaceBookController controller;
+	
 	private PlaceBookBinder placebook;
 	private final String placebookID;
 
@@ -108,7 +111,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	public void setPlaceBook(final PlaceBookBinder placebook)
 	{
 		this.placebook = placebook;
-		bookPanel.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY);
+		bookPanel.setPlaceBook(placebook, controller);
 
 		titleLabel.setText(placebook.getMetadata("title", "No Title"));
 		authorLabel.setText(placebook.getOwner().getName());
@@ -141,6 +144,8 @@ public class PlaceBookPreview extends PlaceBookPlace
 	{
 		final Widget preview = uiBinder.createAndBindUi(this);
 
+		controller = new PlaceBookController(bookPanel, PlaceBookItemBlankFrame.FACTORY);
+		
 		infoPanel.setVisible(false);
 		loadingPanel.setVisible(true);		
 

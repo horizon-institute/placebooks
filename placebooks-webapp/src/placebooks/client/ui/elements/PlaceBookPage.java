@@ -8,7 +8,6 @@ import java.util.List;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -31,44 +30,63 @@ public class PlaceBookPage extends Composite
 	private final List<PlaceBookColumn> columns = new ArrayList<PlaceBookColumn>();
 
 	private PlaceBook page;
-	// TODO PlaceBookPage page;
+
+	private final PlaceBookController controller;
 
 	private int index;
-	
+
 	@UiField
 	Label pageNumber;
 
 	@UiField
 	Panel columnPanel;
 
-	void clearFlip()
+	public PlaceBookPage(final PlaceBook page, final PlaceBookController controller, final int pageIndex,
+			final int defaultColumnCount)
 	{
-		getElement().getStyle().clearWidth();
-		pageNumber.getElement().getStyle().clearWidth();
-		columnPanel.getElement().getStyle().clearWidth();
-	}
-	
-	void setFlip(double flipX, double pageWidth)
-	{
-		setWidth(flipX + "px");
-		pageNumber.setWidth(pageWidth - 30 + "px");
-		columnPanel.setWidth(pageWidth - 60 + "px");
-	}
-	
-	public int getIndex()
-	{
-		return index;
-	}
-	
-	public PlaceBookPage(final PlaceBook page, final int pageIndex, int defaultColumnCount, final PlaceBookItemFrameFactory factory)
-	{
+		this.page = page;
+		this.controller = controller;
 		initWidget(uiBinder.createAndBindUi(this));
-		setPage(page, pageIndex, defaultColumnCount, factory);
+
+		setIndex(pageIndex);
+
+		int columnCount = defaultColumnCount;
+		try
+		{
+			columnCount = Integer.parseInt(page.getMetadata("columns"));
+		}
+		catch (final Exception e)
+		{
+		}
+
+		double left = 0;
+		for (int index = 0; index < columnCount; index++)
+		{
+			final double widthPCT = 100 / columnCount;
+			final PlaceBookColumn panel = new PlaceBookColumn(this, index, columnCount, left, widthPCT,
+					controller.canEdit());
+			columns.add(panel);
+			columnPanel.add(panel);
+
+			left += widthPCT;
+		}
+
+		for (final PlaceBookItem item : page.getItems())
+		{
+			add(controller.createFrame(item));
+		}
+
+		reflow();
 	}
 
 	public Iterable<PlaceBookColumn> getColumns()
 	{
 		return columns;
+	}
+
+	public int getIndex()
+	{
+		return index;
 	}
 
 	public Iterable<PlaceBookItemFrame> getItems()
@@ -79,14 +97,6 @@ public class PlaceBookPage extends Composite
 	public PlaceBook getPlaceBook()
 	{
 		return page;
-	}
-	
-	public void setSize(final double width, final double height)
-	{
-//		columnPanel.setHeight(height - 60 + "px");
-//		columnPanel.setWidth(width - 60 + "px");
-		
-		reflow();
 	}
 
 	public void reflow()
@@ -102,49 +112,27 @@ public class PlaceBookPage extends Composite
 		items.remove(item);
 		item.setPanel(null);
 		page.remove(item.getItem());
-		refreshItemPlaceBook();
 	}
 
-	private void setPage(final PlaceBook newPlaceBook, final int pageIndex, final int defaultColumnCount, final PlaceBookItemFrameFactory factory)
+	public void setIndex(final int index)
 	{
-		assert page == null;
-		this.page = newPlaceBook;
-		setIndex(pageIndex);
+		this.index = index;
+		pageNumber.setText("" + (index + 1));
+	}
 
-		int columnCount = defaultColumnCount;
-		try
-		{
-			columnCount = Integer.parseInt(newPlaceBook.getMetadata("columns"));
-		}
-		catch (final Exception e)
-		{
-		}
-		
-		double left = 0;
-		for (int index = 0; index < columnCount; index++)
-		{
-			final double widthPCT = 100 / columnCount;
-			final PlaceBookColumn panel = new PlaceBookColumn(this, index, columnCount, left, widthPCT,	factory.isEditable());
-			columns.add(panel);
-			columnPanel.add(panel);
+	public void setSize(final double width, final double height)
+	{
+		// columnPanel.setHeight(height - 60 + "px");
+		// columnPanel.setWidth(width - 60 + "px");
 
-			left += widthPCT;
-		}
-
-		for (final PlaceBookItem item : newPlaceBook.getItems())
-		{
-			add(factory.createFrame(item));
-		}
-
-		refreshItemPlaceBook();
 		reflow();
 	}
 
 	public void update(final PlaceBook newPage)
 	{
 		this.page = newPage;
-		page.removeMetadata("tempID");		
-	
+		page.removeMetadata("tempID");
+
 		for (final PlaceBookItem item : newPage.getItems())
 		{
 			final PlaceBookItemFrame frame = getFrame(item);
@@ -153,14 +141,13 @@ public class PlaceBookPage extends Composite
 				frame.getItemWidget().update(item);
 			}
 		}
-		
+
 		page.clearItems();
 		for (final PlaceBookItemFrame frame : items)
 		{
 			page.add(frame.getItem());
 		}
-		
-		refreshItemPlaceBook();
+
 		reflow();
 	}
 
@@ -169,13 +156,35 @@ public class PlaceBookPage extends Composite
 		if (item == null) { return; }
 		items.add(item);
 		int columnIndex = item.getItem().getParameter("panel", 0);
-		if(columnIndex >= columns.size())
+		if (columnIndex >= columns.size())
 		{
 			columnIndex = columnIndex % columns.size();
 			item.getItem().setParameter("panel", columnIndex);
 		}
 		item.setPanel(columns.get(columnIndex));
 	}
+
+	void clearFlip()
+	{
+		getElement().getStyle().clearWidth();
+		pageNumber.getElement().getStyle().clearWidth();
+		columnPanel.getElement().getStyle().clearWidth();
+	}
+
+	void setFlip(final double flipX, final double pageWidth)
+	{
+		setWidth(flipX + "px");
+		pageNumber.setWidth(pageWidth - 30 + "px");
+		columnPanel.setWidth(pageWidth - 60 + "px");
+	}
+
+	// private final void refreshItemPlaceBook()
+	// {
+	// for (final PlaceBookItemFrame item : items)
+	// {
+	// item.getItemWidget().setPlaceBook(page);
+	// }
+	// }
 
 	private PlaceBookItemFrame getFrame(final PlaceBookItem item)
 	{
@@ -189,19 +198,5 @@ public class PlaceBookPage extends Composite
 					&& item.getMetadata("tempID").equals(frame.getItem().getMetadata("tempID"))) { return frame; }
 		}
 		return null;
-	}
-
-	private final void refreshItemPlaceBook()
-	{
-		for (final PlaceBookItemFrame item : items)
-		{
-			item.getItemWidget().setPlaceBook(page);
-		}
-	}
-
-	public void setIndex(int index)
-	{
-		this.index = index;
-		pageNumber.setText("" + (index + 1));
 	}
 }

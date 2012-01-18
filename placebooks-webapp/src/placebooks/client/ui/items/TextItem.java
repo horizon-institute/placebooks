@@ -1,6 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -8,9 +9,9 @@ public class TextItem extends PlaceBookItemWidget
 {
 	private final SimplePanel textPanel = new SimplePanel();
 
-	TextItem(final PlaceBookItem item)
+	TextItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item);
+		super(item, handler);
 
 		initWidget(textPanel);
 	}

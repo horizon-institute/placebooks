@@ -1,19 +1,20 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.elements.PlaceBookColumn;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.elements.PlaceBookSaveItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class DeleteItemMenuItem extends MenuItem
 {
-	private final PlaceBookSaveItem context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public DeleteItemMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
+	public DeleteItemMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Delete");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
@@ -26,6 +27,6 @@ public class DeleteItemMenuItem extends MenuItem
 		{
 			panel.reflow();
 		}
-		context.markChanged();
+		controller.markChanged();
 	}
 }

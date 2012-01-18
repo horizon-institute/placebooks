@@ -1,17 +1,12 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.user.client.ui.Composite;
 
 public abstract class PlaceBookItemWidget extends Composite
 {
-	public static interface ChangeHandler
-	{
-		public void itemChanged();
-	}
-
 	public static interface FocusHandler
 	{
 		public void itemFocusChanged(final boolean focussed);
@@ -25,22 +20,20 @@ public abstract class PlaceBookItemWidget extends Composite
 	public static final double HEIGHT_PRECISION = 10000;
 
 	protected PlaceBookItem item;
+	protected PlaceBookController controller;
 
-	private ChangeHandler changeHandler;
 	private FocusHandler focusHandler;
 	private ResizeHandler resizeHandler;
 
-	PlaceBookItemWidget(final PlaceBookItem item)
+	PlaceBookItemWidget(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		this.item = item;
+		this.controller = handler;
 	}
 
 	protected void fireChanged()
 	{
-		if (changeHandler != null)
-		{
-			changeHandler.itemChanged();
-		}
+		controller.markChanged();
 	}
 
 	protected void fireFocusChanged(final boolean focussed)
@@ -76,19 +69,9 @@ public abstract class PlaceBookItemWidget extends Composite
 		return null;
 	}
 
-	public void setChangeHandler(final ChangeHandler changeHandler)
-	{
-		this.changeHandler = changeHandler;
-	}
-
 	public void setFocusHandler(final FocusHandler focusHandler)
 	{
 		this.focusHandler = focusHandler;
-	}
-
-	public void setPlaceBook(final PlaceBook placebook)
-	{
-
 	}
 
 	public void setResizeHandler(final ResizeHandler resizeHandler)

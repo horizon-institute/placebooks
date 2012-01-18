@@ -3,7 +3,6 @@ package placebooks.client.ui.elements;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -146,9 +145,9 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	private Flip flip = new Flip();
 		
 	@Override
-	public void setPlaceBook(PlaceBookBinder newPlaceBook, PlaceBookItemFrameFactory factory)
+	public void setPlaceBook(PlaceBookBinder newPlaceBook, PlaceBookController controller)
 	{
-		super.setPlaceBook(newPlaceBook, factory);
+		super.setPlaceBook(newPlaceBook, controller);
 		
 		if(pages.size() > 0)
 		{
@@ -524,7 +523,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
 		page.setMetadata("tempID", "" + System.currentTimeMillis());
 		getPlaceBook().add(index, page);
-		PlaceBookPage pageUI = new PlaceBookPage(page, index, getDefaultColumnCount(), factory);
+		PlaceBookPage pageUI = new PlaceBookPage(page, controller, index, getDefaultColumnCount());
 		
 		pages.add(index, pageUI);
 		getPagePanel().add(pageUI);

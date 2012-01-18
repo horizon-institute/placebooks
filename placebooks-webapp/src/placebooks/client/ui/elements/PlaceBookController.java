@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class PlaceBookInteractionHandler
+public class PlaceBookController
 {
 	public interface DragStartHandler
 	{
@@ -37,7 +37,7 @@ public class PlaceBookInteractionHandler
 
 	interface Bundle extends ClientBundle
 	{
-		@Source("PlaceBookInteractionHandler.css")
+		@Source("PlaceBookController.css")
 		Style style();
 	}
 
@@ -80,7 +80,12 @@ public class PlaceBookInteractionHandler
 
 	private PlaceBookItemFrame selected;
 
-	public PlaceBookInteractionHandler(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
+	public PlaceBookController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory)
+	{
+		this(pages, factory, null);
+	}
+	
+	public PlaceBookController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
 			final PlaceBookSaveItem saveContext)
 	{
 		STYLES.style().ensureInjected();
@@ -109,10 +114,10 @@ public class PlaceBookInteractionHandler
 		// }
 		return true;
 	}
-
-	public PlaceBookSaveItem getContext()
+	
+	public void markChanged()
 	{
-		return saveContext;
+		saveContext.markChanged();
 	}
 
 	public PlaceBookPages getPages()
@@ -136,6 +141,11 @@ public class PlaceBookInteractionHandler
 		return selected;
 	}
 
+	public boolean canEdit()
+	{
+		return saveContext != null;
+	}
+	
 	public DragState getState()
 	{
 		return dragState;
@@ -334,6 +344,11 @@ public class PlaceBookInteractionHandler
 		event.stopPropagation();
 	}
 
+	public PlaceBookItemFrame createFrame(PlaceBookItem item)
+	{
+		return factory.createFrame(item, this);
+	}
+	
 	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
@@ -357,7 +372,7 @@ public class PlaceBookInteractionHandler
 						.getOffsetHeight());
 				newPanel.getPage().getPlaceBook().add(dragItem.getItem());				
 				dragItem.getItem().setParameter("panel", newPanel.getIndex());
-				final PlaceBookItemFrame frame = factory.createFrame();
+				final PlaceBookItemFrame frame = factory.createFrame(this);
 				frame.setItemWidget(dragItem);
 				newPanel.getPage().add(frame);				
 				newPanel.reflow();

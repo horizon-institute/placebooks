@@ -3,7 +3,7 @@ package placebooks.client.ui.palette;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.elements.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 
@@ -16,14 +16,14 @@ import com.google.gwt.user.client.ui.Widget;
 public class PalettePlaceBookItem extends PaletteItem
 {
 	private final PlaceBookItem item;
-	private final PlaceBookInteractionHandler handler;
+	private final PlaceBookController controller;
 
-	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
+	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookController dragHandler)
 	{
 		super(placeBookItem.getMetadata("title", "Unnamed"));
 
 		this.item = placeBookItem;
-		this.handler = dragHandler;
+		this.controller = dragHandler;
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public class PalettePlaceBookItem extends PaletteItem
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				if (handler.canAdd(item))
+				if (controller.canAdd(item))
 				{
-					handler.setupDrag(event, createItem(), null);
+					controller.setupDrag(event, createItem(), null);
 				}
 			}
 		});		
@@ -75,6 +75,6 @@ public class PalettePlaceBookItem extends PaletteItem
 			newItem.removeMetadata("originalItemID");
 		}
 		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
-		return PlaceBookItemWidgetFactory.createItemWidget(newItem, true);
+		return PlaceBookItemWidgetFactory.createItemWidget(newItem, controller);
 	}
 }

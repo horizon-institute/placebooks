@@ -5,7 +5,6 @@ import java.util.List;
 
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -18,7 +17,7 @@ public abstract class PlaceBookPages extends Composite
 	protected final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
 
 	private PlaceBookBinder placebook;
-	protected PlaceBookItemFrameFactory factory;
+	protected PlaceBookController controller;
 	
 	public PlaceBookPages()
 	{
@@ -56,17 +55,17 @@ public abstract class PlaceBookPages extends Composite
 		return 3;
 	}
 	
-	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookItemFrameFactory factory)
+	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
 	{
 		assert placebook == null;
 		this.placebook = newPlaceBook;
-		this.factory = factory;
+		this.controller = controller;
 		getPagePanel().clear();
 
 		int pageIndex = 0;
 		for (PlaceBook page: newPlaceBook.getPages())
 		{
-			final PlaceBookPage pagePanel = new PlaceBookPage(page, pageIndex, getDefaultColumnCount(), factory);
+			final PlaceBookPage pagePanel = new PlaceBookPage(page, controller, pageIndex, getDefaultColumnCount());
 
 			pageIndex ++;
 			
