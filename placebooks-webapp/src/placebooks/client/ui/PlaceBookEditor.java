@@ -6,6 +6,7 @@ import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookConfirmDialog;
+import placebooks.client.ui.dialogs.PlaceBookPermissionsDialog;
 import placebooks.client.ui.dialogs.PlaceBookPublishDialog;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.PlaceBookController;
@@ -331,6 +332,15 @@ public class PlaceBookEditor extends PlaceBookPlace
 		setZoom(zoom - 20);
 	}
 
+	@UiHandler("permissions")
+	void handleEditPermissions(final ClickEvent event)
+	{
+		PlaceBookPermissionsDialog dialog = new PlaceBookPermissionsDialog(controller, placebook);
+		dialog.show();
+		dialog.center();
+	}
+
+	
 	@UiHandler("preview")
 	void preview(final ClickEvent event)
 	{

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.json.client.JSONObject;
 
 public class PlaceBookBinder extends JavaScriptObject
 {
@@ -80,6 +81,16 @@ public class PlaceBookBinder extends JavaScriptObject
 		if (idx != -1) {
 			this.pages.splice(idx, 1);
 		}
+	}-*/;
+	
+	public final JSONObject getPermissions()
+	{
+		return new JSONObject(getPermissionsImpl());
+	}
+	
+	private final native JavaScriptObject getPermissionsImpl()
+	/*-{
+		return this.perms;
 	}-*/;
 	
 	public final native void setMetadata(String name, String value)

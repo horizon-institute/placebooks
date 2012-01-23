@@ -86,7 +86,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	public enum Permission
 	{
-		R("r"), W("w"), R_W("r+w");
+		R("r"), R_W("r+w");
 
 		private String perms;
 
@@ -273,6 +273,12 @@ public class PlaceBookBinder extends BoundaryGenerator
 		return l.toString();
 	}
 
+	public void setPermissions(final Map<String, Permission> permissions)
+	{
+		this.perms = permissions;
+		permsUsers = getPermissionsAsString();
+	}
+	
 	public void setPermission(final User user, final Permission p)
 	{
 		if (perms.get(user.getEmail()) != null)

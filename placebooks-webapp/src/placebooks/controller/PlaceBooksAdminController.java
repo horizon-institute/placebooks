@@ -52,6 +52,7 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
+import placebooks.model.PlaceBookBinder.Permission;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -485,6 +486,9 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
+					User user = UserManager.getUser(manager, "stuart@tropic.org.uk");
+					pb.setPermission(user, Permission.R_W);
+					
 					jsonMapper.writeValue(res.getWriter(), pb);
 					res.setContentType("application/json");				
 					res.flushBuffer();
