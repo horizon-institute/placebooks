@@ -186,7 +186,6 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			serviceList.add(service);
 		}
 		
-		
 		boolean syncing = false;
 		final List<LoginDetails> list = new ArrayList<LoginDetails>();
 		for (final LoginDetails details : user.getLoginDetails())
@@ -203,10 +202,9 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		{
 			new Timer()
 			{
-				
 				@Override
 				public void run()
-				{
+				{	
 					updateUser();					
 				}
 			}.schedule(1000);
@@ -267,6 +265,10 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	
 	private void updateUser()
 	{
+		if(!isShowing())
+		{
+			return;
+		}						
 		PlaceBookService.getCurrentUser(new AbstractCallback()
 		{
 			@Override

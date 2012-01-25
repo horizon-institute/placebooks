@@ -15,6 +15,11 @@ public abstract class PlaceBookDialog
 		dialog.setContent(widget);
 	}
 	
+	public boolean isShowing()
+	{
+		return dialog.isShowing();
+	}
+	
 	public void show()
 	{
 		dialog.show();
