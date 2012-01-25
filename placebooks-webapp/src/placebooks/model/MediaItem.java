@@ -143,7 +143,7 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 		// Check package dir exists already
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey() + "/" + getPlaceBook().getKey();
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
 
 		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
 		{
