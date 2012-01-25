@@ -160,6 +160,15 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
+	public PlaceBook getCurrentPage()
+	{
+		if(currentPage == null)
+		{
+			return null;
+		}
+		return currentPage.getPlaceBook();
+	}
+	
 	public void setPage(final PlaceBookPage page)
 	{
 		if(currentPage == page)

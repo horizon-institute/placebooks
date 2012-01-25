@@ -208,6 +208,19 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 			}
 		}		
 	}
+	
+	@UiHandler("removePermission")
+	void handleRemovePermssion(final ClickEvent event)
+	{
+		if(selectionModel.getSelectedObject() != null)
+		{
+			Permission selection = selectionModel.getSelectedObject();
+
+			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
+			controller.markChanged();			
+			updatePermissionsList();
+		}
+	}
 
 	@UiHandler("emailBox")
 	void handleEditEmail(final KeyUpEvent event)

@@ -1,6 +1,8 @@
 package placebooks.client.ui.elements;
 
+import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -84,7 +86,7 @@ public class PlaceBookController
 	{
 		this(pages, factory, null);
 	}
-	
+
 	public PlaceBookController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
 			final PlaceBookSaveItem saveContext)
 	{
@@ -103,26 +105,35 @@ public class PlaceBookController
 
 	public boolean canAdd(final PlaceBookItem addItem)
 	{
-		// TODO
+		if (pages instanceof PlaceBookPagesBook)
+		{
+			final PlaceBookPagesBook bookPages = (PlaceBookPagesBook) pages;
+			final PlaceBook page = bookPages.getCurrentPage();
+			return canAdd(page, addItem);
+		}
+		return true;
+	}
 
-		// if (addItem.is(ItemType.GPS))
-		// {
-		// for (final PlaceBookItemFrame item : pages.getItems())
-		// {
-		// if (item.getItem().is(ItemType.GPS)) { return false; }
-		// }
-		// }
+	private boolean canAdd(PlaceBook page, final PlaceBookItem addItem)
+	{
+		if(addItem.is(ItemType.GPS))
+		{
+			for (final PlaceBookItem item : page.getItems())
+			{
+				if (item.is(ItemType.GPS)) { return false; }
+			}
+		}
 		return true;
 	}
 	
-	public void markChanged()
+	public boolean canEdit()
 	{
-		saveContext.markChanged();
+		return saveContext != null;
 	}
 
-	public PlaceBookPages getPages()
+	public PlaceBookItemFrame createFrame(final PlaceBookItem item)
 	{
-		return pages;
+		return factory.createFrame(item, this);
 	}
 
 	// public void refreshMap()
@@ -136,19 +147,24 @@ public class PlaceBookController
 	// }
 	// }
 
+	public PlaceBookPages getPages()
+	{
+		return pages;
+	}
+
 	public PlaceBookItemFrame getSelected()
 	{
 		return selected;
 	}
 
-	public boolean canEdit()
-	{
-		return saveContext != null;
-	}
-	
 	public DragState getState()
 	{
 		return dragState;
+	}
+
+	public void markChanged()
+	{
+		saveContext.markChanged();
 	}
 
 	public void setSelected(final PlaceBookItemFrame selectedItem)
@@ -320,7 +336,7 @@ public class PlaceBookController
 			}
 			oldPanel = newPanel;
 
-			if (newPanel != null)
+			if (newPanel != null && canAdd(newPanel.getPage().getPlaceBook(), dragItem.getItem()))
 			{
 				newPanel.reflow(insert, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
@@ -344,11 +360,6 @@ public class PlaceBookController
 		event.stopPropagation();
 	}
 
-	public PlaceBookItemFrame createFrame(PlaceBookItem item)
-	{
-		return factory.createFrame(item, this);
-	}
-	
 	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
@@ -370,11 +381,11 @@ public class PlaceBookController
 				GWT.log("Dropped into panel " + newPanel.getIndex());
 				newPanel.reflow(dragItem, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight());
-				newPanel.getPage().getPlaceBook().add(dragItem.getItem());				
+				newPanel.getPage().getPlaceBook().add(dragItem.getItem());
 				dragItem.getItem().setParameter("panel", newPanel.getIndex());
 				final PlaceBookItemFrame frame = factory.createFrame(this);
 				frame.setItemWidget(dragItem);
-				newPanel.getPage().add(frame);				
+				newPanel.getPage().add(frame);
 				newPanel.reflow();
 				saveContext.markChanged();
 			}

@@ -31,8 +31,6 @@ public class PalettePlaceBookItem extends PaletteItem
 	{
 		Widget result =super.createWidget();
 
-		panel.getElement().getStyle().setCursor(Cursor.MOVE);
-
 		if (item.is(ItemType.IMAGE) && item.getKey() != null)
 		{
 			image.setUrl(item.getThumbURL());
@@ -43,6 +41,16 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			image.setResource(item.getIcon());
 		}
+		
+		if(controller.canAdd(item))
+		{
+			panel.getElement().getStyle().setCursor(Cursor.MOVE);
+		}
+		else
+		{
+			image.getElement().getStyle().setOpacity(0.5);
+		}		
+		
 		panel.addMouseDownHandler(new MouseDownHandler()
 		{
 			@Override
