@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class Palette extends FlowPanel
 {
-	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"http://www.tonycuffe.com/mp3/tailtoddle_lo.mp3\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
+	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/danosongs.com-bookofthemonkey.mp3\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\""
 			+ PlaceBookService.getHostURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
@@ -21,7 +21,7 @@ public class Palette extends FlowPanel
 	private static final String NEW_TEXT_HEADER_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Header\"},\"parameters\":{},\"text\":\"<div style='font-size: 25px; font-weight:bold;'>Header</div>\"}";
 	private static final String NEW_TEXT_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Body Text\"},\"parameters\":{},\"text\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"}";
 	private static final String NEW_TEXT_LIST_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Bulleted List\"},\"parameters\":{},\"text\":\"<ul style='margin: 3px 0px;'><li>List Item</li><li>List Item</li><li>List Item</li></ul>\"}";
-	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "chrome.mp4\",\"hash\":\"29cf39d796cbcfd7d6807ef6bbefeb41\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
+	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/chrome.mp4\",\"hash\":\"29cf39d796cbcfd7d6807ef6bbefeb41\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 	//private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
 	private PaletteFolder currentFolder = null;
