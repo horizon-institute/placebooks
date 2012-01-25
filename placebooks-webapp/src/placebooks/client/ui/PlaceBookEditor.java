@@ -335,7 +335,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("permissions")
 	void handleEditPermissions(final ClickEvent event)
 	{
-		PlaceBookPermissionsDialog dialog = new PlaceBookPermissionsDialog(controller, placebook);
+		PlaceBookPermissionsDialog dialog = new PlaceBookPermissionsDialog(controller);
 		dialog.show();
 		dialog.center();
 	}

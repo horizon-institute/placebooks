@@ -710,6 +710,8 @@ public final class PlaceBooksAdminHelper
 
 				dbBinder.setGeometry(binder.getGeometry());
 
+				dbBinder.setPermissions(binder.getPermissions());
+				
 				result = dbBinder;
 			}
 		}
