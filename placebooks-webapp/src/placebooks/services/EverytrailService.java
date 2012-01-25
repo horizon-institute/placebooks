@@ -446,7 +446,7 @@ public class EverytrailService extends Service
 	{
 		final Hashtable<String, String> params = new Hashtable<String, String>();
 		params.put("user_id", userId);
-
+/* MCP - Ignore username and password since you can't get media for private trips from the API
 		if (username != null)
 		{
 			params.put("username", username);
@@ -455,7 +455,7 @@ public class EverytrailService extends Service
 		{
 			params.put("password", password);
 		}
-
+*/
 		if (lat != null)
 		{
 			params.put("lat", lat.toString());
