@@ -257,6 +257,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 				}
 			});
 		}
+		
+		bookPanel.resized();
 	}
 
 	public void updatePalette()
