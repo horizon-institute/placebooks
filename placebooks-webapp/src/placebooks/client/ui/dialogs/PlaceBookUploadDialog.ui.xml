@@ -7,7 +7,11 @@
 			<g:FlowPanel>
 				<g:FileUpload ui:field="upload" />
 				<g:Hidden ui:field="itemKey" name="itemKey" />
-				<g:SubmitButton ui:field="uploadButton">Upload</g:SubmitButton>
+				<g:Label>Copyright Notice:</g:Label>
+				<g:TextArea ui:field="copyright"/>
+				<g:FlowPanel>
+					<g:SubmitButton ui:field="uploadButton">Upload</g:SubmitButton>
+				</g:FlowPanel>
 			</g:FlowPanel>
 		</g:FormPanel>
 	</g:FlowPanel>

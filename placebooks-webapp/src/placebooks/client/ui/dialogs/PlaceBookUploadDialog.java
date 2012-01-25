@@ -4,6 +4,7 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -23,6 +24,8 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookUploadDialog extends PlaceBookDialog
@@ -49,8 +52,16 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiField
 	Button uploadButton;
 	
-	public PlaceBookUploadDialog(final PlaceBookItemFrame item)
+	@UiField
+	TextArea copyright;
+	
+	private final PlaceBookController controller;
+	private final PlaceBookItemFrame item;
+	
+	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
+		this.item = item;
+		this.controller = controller;
 		setWidget(uiBinder.createAndBindUi(this));
 		
 		if (item.getItem().is(ItemType.IMAGE))
@@ -132,6 +143,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiHandler("uploadButton")
 	void upload(ClickEvent event)
 	{
+		item.getItem().setMetadata("copyrightNotice", copyright.getText());
+		controller.markChanged();
 		form.submit();
 	}
 	

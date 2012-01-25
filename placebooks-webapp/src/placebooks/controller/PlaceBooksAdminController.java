@@ -52,7 +52,6 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
-import placebooks.model.PlaceBookBinder.Permission;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -486,9 +485,6 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
-					User user = UserManager.getUser(manager, "stuart@tropic.org.uk");
-					pb.setPermission(user, Permission.R_W);
-					
 					jsonMapper.writeValue(res.getWriter(), pb);
 					res.setContentType("application/json");				
 					res.flushBuffer();
@@ -514,24 +510,13 @@ public class PlaceBooksAdminController
 	public void getPlaceBookBindersJSON(final HttpServletRequest req, 
 			final HttpServletResponse res)
 	{
+		log.info("Shelf");
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
 			final User user = UserManager.getCurrentUser(manager);
 			if (user != null)
 			{
-				new Thread(new Runnable()
-				{
-
-					@Override
-					public void run()
-					{
-						final EntityManager manager = 
-								EMFSingleton.getEntityManager();
-						ServiceRegistry.updateServices(manager, user);
-					}
-				}).start();
-
 				final TypedQuery<PlaceBookBinder> q = 
 						manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
 								PlaceBookBinder.class);
@@ -554,6 +539,18 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.toString());
 				}
+				
+				new Thread(new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						final EntityManager manager = 
+								EMFSingleton.getEntityManager();
+						ServiceRegistry.updateServices(manager, user);
+					}
+				}).start();				
 			}
 			else
 			{
@@ -577,11 +574,10 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/shelf/{owner}", method = RequestMethod.GET)
-	public ModelAndView getPlaceBookBindersJSON(final HttpServletRequest req, 
-			final HttpServletResponse res,
+	public void getPlaceBookBindersJSON(final HttpServletResponse res,
 			@PathVariable("owner") final String owner)
 	{
-		if (owner.trim().isEmpty()) { return null; }
+		if (owner.trim().isEmpty()) { return; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
 		final TypedQuery<User> uq = 
@@ -626,8 +622,6 @@ public class PlaceBooksAdminController
 		{
 			pm.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/randomized/{count}", method = RequestMethod.GET)
@@ -675,7 +669,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/serverinfo", method = RequestMethod.GET)
-	public ModelAndView getServerInfoJSON(final HttpServletRequest req, final HttpServletResponse res)
+	public void getServerInfoJSON(final HttpServletResponse res)
 	{
 		final ServerInfo si = new ServerInfo();
 		try
@@ -688,11 +682,10 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletRequest req, final HttpServletResponse res,
+	public ModelAndView makePackage(final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
@@ -837,7 +830,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/search/{terms}", method = RequestMethod.GET)
-	public ModelAndView searchGET(final HttpServletRequest req, final HttpServletResponse res,
+	public void searchGET(final HttpServletResponse res,
 			@PathVariable("terms") final String terms)
 	{
 		final long timeStart = System.nanoTime();
@@ -869,12 +862,10 @@ public class PlaceBooksAdminController
 
 		timeEnd = System.nanoTime();
 		log.info("Search execution time = " + (timeEnd - timeStart) + " ns");
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/location_search/placebookitem/{geometry}", method = RequestMethod.GET)
-	public ModelAndView searchLocationPlaceBookItemsGET(final HttpServletRequest req, final HttpServletResponse res,
+	public void searchLocationPlaceBookItemsGET(final HttpServletResponse res,
 			@PathVariable("geometry") final String geometry)
 	{
 		Geometry geometry_ = null;
@@ -885,7 +876,7 @@ public class PlaceBooksAdminController
 		catch (final ParseException e)
 		{
 			log.error(e.toString(), e);
-			return null;
+			return;
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -912,14 +903,11 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-
-		return null;
-
 	}
 
 	@RequestMapping(value = "/admin/location_search/placebookbinder/{geometry}",
 			method = RequestMethod.GET)
-	public ModelAndView searchLocationPlaceBooksGET(final HttpServletRequest req, final HttpServletResponse res,
+	public void searchLocationPlaceBooksGET(final HttpServletResponse res,
 			@PathVariable("geometry") final String geometry)
 	{
 		Geometry geometry_ = null;
@@ -930,7 +918,7 @@ public class PlaceBooksAdminController
 		catch (final ParseException e)
 		{
 			log.error(e.toString(), e);
-			return null;
+			return;
 		}
 
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -957,12 +945,10 @@ public class PlaceBooksAdminController
 		{
 			log.error(e.toString());
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/search", method = RequestMethod.POST)
-	public ModelAndView searchPOST(final HttpServletRequest req, final HttpServletResponse res)
+	public void searchPOST(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final StringBuffer out = new StringBuffer();
 		final String[] terms = req.getParameter("terms").split("\\s");
@@ -975,11 +961,11 @@ public class PlaceBooksAdminController
 			}
 		}
 
-		return searchGET(req, res, out.toString());
+		searchGET(res, out.toString());
 	}
 
 	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", method = RequestMethod.GET)
-	public ModelAndView serveGPSTraceItem(final HttpServletRequest req, final HttpServletResponse res,
+	public void serveGPSTraceItem(final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -1011,8 +997,6 @@ public class PlaceBooksAdminController
 		{
 			em.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping(value = "/admin/serve/imageitem/thumb/{key}", method = RequestMethod.GET)
@@ -1211,6 +1195,7 @@ public class PlaceBooksAdminController
 			String[] split = PlaceBooksAdminHelper.getExtension(path);
 			if (split == null)
 			{
+				split = new String[2];
 				split[1] = (type=="audio" ? "mp3" : "mpeg");
 				log.warn("Couildn't get name and extension for " + path + " defaulting to " + type + " and " + split[1]);
 			}
@@ -1556,5 +1541,4 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-
 }

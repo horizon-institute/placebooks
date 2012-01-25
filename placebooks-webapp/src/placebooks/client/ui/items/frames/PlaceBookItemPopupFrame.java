@@ -131,7 +131,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		menuItems.add(new EditTitleMenuItem(controller, this));
 		menuItems.add(new SetSourceURLMenuItem(controller, this));
 		menuItems.add(new ShowTrailMenuItem(controller, this));
-		menuItems.add(new UploadMenuItem(this));
+		menuItems.add(new UploadMenuItem(controller, this));
 
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
