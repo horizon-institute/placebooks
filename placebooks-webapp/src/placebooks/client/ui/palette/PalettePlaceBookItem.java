@@ -78,6 +78,10 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			newItem.setMetadata("originalItemID", item.getKey());
 		}
+		if(!item.getHash().isEmpty())
+		{
+			newItem.setHash(item.getHash());
+		}
 		if(newItem.getMetadata("originalItemID")==null)
 		{
 			newItem.removeMetadata("originalItemID");
