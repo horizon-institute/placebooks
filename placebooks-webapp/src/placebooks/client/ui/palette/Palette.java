@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class Palette extends FlowPanel
 {
-	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/danosongs.com-bookofthemonkey.mp3\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
+	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/danosongs.com-bookofthemonkey.mp3\",\"hash\":\"1f02c22d5fc59a7f6434a40bbbb9ff82\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\""
 			+ PlaceBookService.getHostURL() + "example.gpx\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
