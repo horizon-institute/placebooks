@@ -6,6 +6,7 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -38,11 +39,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	private MapItem map;
 	
 	private final PlaceBookItem item;
-	private final List<PlaceBookItemWidget> mapItems;
+	private final List<PlaceBookItemFrame> mapItems;
 	
 	private final PlaceBookController controller;
 
-	public PlaceBookMapsDialog(final PlaceBookItem item, final List<PlaceBookItemWidget> mapItems, final PlaceBookController controller)
+	public PlaceBookMapsDialog(final PlaceBookItem item, final List<PlaceBookItemFrame> mapItems, final PlaceBookController controller)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 		this.controller = controller;
@@ -73,9 +74,9 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		
 		mapPanel.clear();
 		
-		for(PlaceBookItemWidget item: mapItems)
+		for(PlaceBookItemFrame item: mapItems)
 		{
-			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page " + (item.getItem().getParameter("page", 0) + 1) + ")", item.getItem().getKey());
+			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page " + (item.getPanel().getPage().getIndex() + 1) + ")", item.getItem().getKey());
 		}
 	}
 	
@@ -106,7 +107,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 			
 		if(id != null)
 		{
-			for(final PlaceBookItemWidget mapItem: mapItems)
+			for(final PlaceBookItemFrame mapItem: mapItems)
 			{
 				if(id.equals(mapItem.getItem().getKey()))
 				{
@@ -120,7 +121,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 						@Override
 						public void onChange(ChangeEvent event)
 						{
-							mapItem.refresh();							
+							mapItem.getItemWidget().refresh();							
 						}
 					});
 					break;
