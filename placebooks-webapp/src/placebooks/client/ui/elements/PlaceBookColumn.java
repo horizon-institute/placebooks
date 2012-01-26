@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -91,7 +92,7 @@ public class PlaceBookColumn extends FlowPanel
 			items.add(order, item);
 		}
 	}
-
+	
 	public int getIndex()
 	{
 		return panelIndex;

@@ -30,7 +30,7 @@ public class EditMapMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		final List<PlaceBookItemWidget> mapItems = getMaps();
+		final List<PlaceBookItemFrame> mapItems = getMaps();
 		if (mapItems.isEmpty())
 		{
 			return;
@@ -42,16 +42,16 @@ public class EditMapMenuItem extends MenuItem
 		}
 	}
 
-	private List<PlaceBookItemWidget> getMaps()
+	private List<PlaceBookItemFrame> getMaps()
 	{
-		final List<PlaceBookItemWidget> mapItems = new ArrayList<PlaceBookItemWidget>();
+		final List<PlaceBookItemFrame> mapItems = new ArrayList<PlaceBookItemFrame>();
 		for (final PlaceBookPage page : controller.getPages().getPages())
 		{
 			for (final PlaceBookItemFrame item : page.getItems())
 			{
 				if (item.getItem().getClassName().equals("placebooks.model.GPSTraceItem"))
 				{
-					mapItems.add(item.getItemWidget());
+					mapItems.add(item);
 				}
 			}
 		}

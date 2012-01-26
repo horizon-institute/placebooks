@@ -118,7 +118,7 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			for (final PlaceBookItem item : page.getPlaceBook().getItems())
 			{
-				if (item.hasMetadata("mapItemID"))
+				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
 				{
 					if (item.getGeometry() != null)
 					{
@@ -129,7 +129,10 @@ public class MapItem extends PlaceBookItemWidget
 									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
 									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
 							final Marker marker = Marker.create(getMarker(item), lonlat);
-							// marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
+							if(positionItem != null && !item.equals(positionItem))
+							{
+								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
+							}
 							markerLayer.addMarker(marker);
 						}
 					}
