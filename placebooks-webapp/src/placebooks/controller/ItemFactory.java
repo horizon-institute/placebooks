@@ -492,7 +492,9 @@ public class ItemFactory
 		itemDescription = item.GetProperties().GetMarkup();
 		try
 		{
-			sourceUrl = new URL(item.GetProperties().GetMediaURL());
+			//sourceUrl = new URL(item.GetProperties().GetMediaURL());
+			// Hack to get smaller images - MCP
+			sourceUrl = new URL(item.GetProperties().GetExSmallThumbPath().replace("67x37.jpg", "635x353.jpg"));
 		}
 		catch (MalformedURLException ex)
 		{
