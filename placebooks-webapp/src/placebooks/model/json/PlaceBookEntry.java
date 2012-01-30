@@ -8,15 +8,9 @@ public class PlaceBookEntry extends ShelfEntry
 
 	private final int numItems;
 
-	private final String packagePath;
-
-	private final String state;
-
 	// private String geometry;
 
 	private String center;
-
-	private final String previewImage;
 
 	public PlaceBookEntry(final PlaceBook placebook)
 	{
@@ -26,10 +20,7 @@ public class PlaceBookEntry extends ShelfEntry
 		setOwner(placebook.getOwner().getKey());
 		setTimestamp(placebook.getTimestamp());		
 		this.description = placebook.getMetadataValue("description");
-		this.previewImage = placebook.getMetadataValue("placebookImage");
 		this.numItems = placebook.getItems().size();
-		this.packagePath = placebook.getPackagePath();
-		this.state = placebook.getState().toString();
 
 		if (placebook.getGeometry() != null)
 		{
@@ -53,18 +44,4 @@ public class PlaceBookEntry extends ShelfEntry
 		return numItems;
 	}
 
-	public String getPackagePath()
-	{
-		return packagePath;
-	}
-
-	public String getPreviewImage()
-	{
-		return previewImage;
-	}
-
-	public String getState()
-	{
-		return state;
-	}
 }

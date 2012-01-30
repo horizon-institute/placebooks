@@ -25,7 +25,11 @@
 		} 
 		
 		.parent {
-			height: 100%;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 		}
@@ -39,15 +43,16 @@
 			font: 16px verdana, arial, sans-serif;
 			padding: 5px;			
 		}
-		
-		.canvas {
-			-webkit-box-flex: 1;
-			overflow: auto;
+				
+		.bookPanel {
+			-webkit-box-flex: 1;	
+			position: relative;
 		}
+		
 		
 		.dropMenu {
 			position: absolute;
-			z-index: 30;
+			z-index: 3000;
 			padding: 0px;
 			-moz-transition: opacity .5s linear, visibility .5s linear;
 			-webkit-transition: opacity .5s linear, visibility .5s linear;
@@ -91,6 +96,7 @@
 				<g:Label ui:field="delete" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
 			</p:DropMenu>		
 		</g:FlowPanel>		
-		<g:FlowPanel ui:field="canvasPanel" styleName="{style.canvas}" />
+		<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
 	</g:FlowPanel>
 </ui:UiBinder>

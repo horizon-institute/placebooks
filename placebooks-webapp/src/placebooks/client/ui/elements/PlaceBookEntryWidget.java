@@ -54,8 +54,11 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		
+		this.place = place;
+		this.entry = entry;
+		
 		title.setText(entry.getTitle());
-		if (entry.getState().equals("PUBLISHED"))
+		if (isPublished())
 		{
 			image.setResource(Resources.IMAGES.placebook_published());
 			setTitle("View " + entry.getTitle() + "(published)");
@@ -89,12 +92,12 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		}
 		
 		markerImage.setVisible(false);
-		
-		this.place = place;
-		this.entry = entry;
 	}
 	
-	
+	public boolean isPublished()
+	{
+		return entry.getState().equals("1");
+	}
 	
 	public Marker getMarker()
 	{
@@ -124,7 +127,7 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	@UiHandler("container")
 	void clicked(ClickEvent event)
 	{
-		if (entry.getState().equals("PUBLISHED"))
+		if (isPublished())
 		{
 			place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
 		}

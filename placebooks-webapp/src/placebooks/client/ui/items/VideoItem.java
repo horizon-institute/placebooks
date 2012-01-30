@@ -1,6 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.media.client.Video;
 import com.google.gwt.user.client.Timer;
@@ -17,10 +18,11 @@ public class VideoItem extends PlaceBookItemWidget
 	};
 	private String url;
 	private final Video video;
-
-	VideoItem(final PlaceBookItem item)
+	
+	VideoItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item);
+		super(item, handler);
+
 		video = Video.createIfSupported();
 		video.setControls(true);
 		video.setWidth("100%");

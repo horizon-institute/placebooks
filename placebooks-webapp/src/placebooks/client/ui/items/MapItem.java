@@ -2,11 +2,11 @@ package placebooks.client.ui.items;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.Resources;
-import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
+import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
@@ -20,10 +20,10 @@ import placebooks.client.ui.openlayers.OSLayer;
 import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
@@ -32,14 +32,11 @@ public class MapItem extends PlaceBookItemWidget
 	
 	public final static String POINT_PREFIX = "POINT (";
 
-	private final Label interactionLabel = new Label();
-
 	private final EventHandler loadHandler = new EventHandler()
 	{
 		@Override
 		protected void handleEvent(final Event event)
 		{
-			recenter();
 			recenter();
 		}
 	};
@@ -50,23 +47,16 @@ public class MapItem extends PlaceBookItemWidget
 
 	private SimplePanel panel = new SimplePanel();
 
-	private PlaceBook placebook;
-
 	private PlaceBookItem positionItem = null;
 
 	private RouteLayer routeLayer;
-
+	
 	private String url;
 
-	private final boolean controls;
-
-	MapItem(final PlaceBookItem item, final boolean controls)
+	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item);
-		this.controls = controls;
+		super(item, handler);
 		initWidget(panel);
-		interactionLabel.setStyleName(Resources.STYLES.style().mapLabel());
-		panel.add(interactionLabel);
 		panel.setWidth("100%");
 		panel.setHeight("100%");
 
@@ -74,6 +64,8 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			item.setParameter("height", 5000);
 		}
+		
+		createMap();		
 	}
 
 	@Override
@@ -85,6 +77,7 @@ public class MapItem extends PlaceBookItemWidget
 			this.url = newURL;
 			createRoute();
 		}
+		refreshMarkers();
 		recenter();
 	}
 
@@ -118,57 +111,42 @@ public class MapItem extends PlaceBookItemWidget
 	
 	public void refreshMarkers()
 	{
-		// GWT.log("Refresh Markers " + placebook);
 		if(markerLayer == null) { return; }
 		markerLayer.clearMarkers();
-		if (placebook == null) { return; }
 
-		positionItem = null;
-		interactionLabel.setVisible(false);
-		for (final PlaceBookItem item : placebook.getItems())
+		for(final PlaceBookPage page: controller.getPages().getPages())
 		{
-			if (item.hasMetadata("mapItemID"))
+			for (final PlaceBookItem item : page.getPlaceBook().getItems())
 			{
-				if (item.getGeometry() != null)
+				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
 				{
-					final String geometry = item.getGeometry();
-					if (geometry.startsWith(POINT_PREFIX))
+					if (item.getGeometry() != null)
 					{
-						final LonLat lonlat = LonLat
-								.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
-								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
-						final Marker marker = Marker.create(getMarker(item), lonlat);
-						// marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
-						markerLayer.addMarker(marker);
+						final String geometry = item.getGeometry();
+						if (geometry.startsWith(POINT_PREFIX))
+						{
+							final LonLat lonlat = LonLat
+									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
+									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
+							final Marker marker = Marker.create(getMarker(item), lonlat);
+							if(positionItem != null && !item.equals(positionItem))
+							{
+								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
+							}
+							markerLayer.addMarker(marker);
+						}
 					}
-				}
-				else
-				{
-					GWT.log("No geometry for " + item.getKey());
-					positionItem = item;
-					interactionLabel.setText("Set position of " + item.getMetadata("title", item.getKey()));
-					interactionLabel.setVisible(true);
 				}
 			}
 		}
 		recenter();
 	}
-
-	@Override
-	public void setPlaceBook(final PlaceBook placebook)
+	
+	public void moveMarker(final PlaceBookItem item, final ChangeHandler changeHandler)
 	{
-		this.placebook = placebook;
-		if (map == null)
-		{
-			createMap();
-		}
-
+		positionItem = item;
 		refreshMarkers();
-	}
-
-	private void createMap(ServerInfo serverInfo)
-	{
-		map = Map.create(panel.getElement(), controls);
+		
 		final ClickControl control = ClickControl.create(new EventHandler()
 		{
 			@Override
@@ -183,12 +161,19 @@ public class MapItem extends PlaceBookItemWidget
 
 					fireChanged();
 					fireFocusChanged(true);
+					controller.markChanged();
 					refreshMarkers();
+					changeHandler.onChange(null);					
 				}
 			}
 		}.getFunction());
 		map.addControl(control);
-		control.activate();
+		control.activate();		
+	}
+
+	private void createMap(ServerInfo serverInfo)
+	{
+		map = Map.create(panel.getElement(), controller.canEdit());
 
 		// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
 		map.addLayer(OSLayer.create("oslayer", serverInfo));
@@ -218,7 +203,7 @@ public class MapItem extends PlaceBookItemWidget
 					{
 						try
 						{
-							serverInfo = ServerInfo.parse(response.getText());
+							serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
 							if(serverInfo != null)
 							{
 								createMap(serverInfo);						

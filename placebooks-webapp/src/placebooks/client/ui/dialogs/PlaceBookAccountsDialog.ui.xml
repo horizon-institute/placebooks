@@ -1,23 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
-		.title {
-			background-color: #222;
-			padding: 10px;
-			font-weight: bold;
-			color: #FFF;
-		}
-		
-		.content {
-			padding: 10px;
-		}
-	</ui:style>
 	<g:FlowPanel>
-		<g:Label styleName="{style.title}">Linked Accounts</g:Label>
-		<g:FlowPanel styleName="{style.content}">
-			<g:FlowPanel ui:field="tablePanel"></g:FlowPanel>
-			<g:FlowPanel ui:field="buttonPanel"></g:FlowPanel>
-		</g:FlowPanel>
+		<g:FlowPanel ui:field="tablePanel"/>
+		<g:FlowPanel ui:field="buttonPanel"/>
 	</g:FlowPanel>
 </ui:UiBinder> 

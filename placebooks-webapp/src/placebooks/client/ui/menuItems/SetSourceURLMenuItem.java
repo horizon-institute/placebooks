@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.elements.PlaceBookSaveItem;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,14 +14,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class SetSourceURLMenuItem extends MenuItem
 {
-	private final PlaceBookSaveItem context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public SetSourceURLMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
+	public SetSourceURLMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Set URL");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SetSourceURLMenuItem extends MenuItem
 				{
 					item.getItem().setSourceURL(textBox.getValue());
 					item.getItemWidget().refresh();
-					context.markChanged();
+					controller.markChanged();
 				}
 			}
 		});

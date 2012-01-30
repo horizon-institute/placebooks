@@ -1,6 +1,11 @@
 package placebooks.client.ui.elements;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -18,11 +23,22 @@ import com.google.gwt.user.client.ui.PopupPanel;
 public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMouseOutHandlers
 {
 	private boolean showing = true;
-	
+
+	private HandlerRegistration nativePreviewHandlerRegistration;
+
 	public DropMenu()
 	{
 		super();
 		hide();
+		
+		addDomHandler(new ClickHandler()
+		{	
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				hide();
+			}
+		}, ClickEvent.getType());
 	}
 
 	@Override
@@ -37,21 +53,9 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 		return addDomHandler(handler, MouseOverEvent.getType());
 	}
 
-	public void show(final int x, final int y)
-	{
-		if(!showing)
-		{
-			showing = true;
-			getElement().getStyle().setProperty("clip", "rect(0px, 500px, " + (getElement().getClientHeight() + 10) + "px, 0px)");			
-			getElement().getStyle().setTop(y, Unit.PX);
-			getElement().getStyle().setLeft(x, Unit.PX);
-			updateHandlers();			
-		}
-	}
-	
 	public void hide()
 	{
-		if(showing)
+		if (showing)
 		{
 			showing = false;
 			getElement().getStyle().setProperty("clip", "rect(0px, 500px, 0px, 0px)");
@@ -59,7 +63,33 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 		}
 	}
 
-	private HandlerRegistration nativePreviewHandlerRegistration;
+	public void show(final int x, final int y)
+	{
+		if (!showing)
+		{
+			showing = true;
+			getElement().getStyle().setProperty("clip",
+												"rect(0px, 500px, " + (getElement().getClientHeight() + 10)
+														+ "px, 0px)");
+			getElement().getStyle().setTop(y, Unit.PX);
+			getElement().getStyle().setLeft(x, Unit.PX);
+			updateHandlers();
+		}
+	}
+
+	/**
+	 * Does the event target this popup?
+	 * 
+	 * @param event
+	 *            the native event
+	 * @return true if the event targets the popup
+	 */
+	private boolean eventTargetsMenu(final NativeEvent event)
+	{
+		final EventTarget target = event.getEventTarget();
+		if (Element.is(target)) { return getElement().isOrHasChild(Element.as(target)); }
+		return false;
+	}
 
 	/**
 	 * Preview the {@link NativePreviewEvent}.
@@ -67,24 +97,14 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 	 * @param event
 	 *            the {@link NativePreviewEvent}
 	 */
-	private void previewNativeEvent(NativePreviewEvent event)
+	private void previewNativeEvent(final NativePreviewEvent event)
 	{
 		// If the event has been canceled or consumed, ignore it
-		if (event.isCanceled() || event.isConsumed())
-		{
-			return;
-		}
+		if (event.isCanceled() || event.isConsumed()) { return; }
 
 		// If the event targets the popup or the partner, consume it
-		Event nativeEvent = Event.as(event.getNativeEvent());
-//		boolean eventTargetsPopupOrPartner = eventTargetsPopup(nativeEvent) || eventTargetsPartner(nativeEvent);
-//		if (eventTargetsPopupOrPartner)
-//		{
-//			event.consume();
-//		}
-
-		// Switch on the event type
-		int type = nativeEvent.getTypeInt();
+		final Event nativeEvent = Event.as(event.getNativeEvent());
+		final int type = nativeEvent.getTypeInt();
 		switch (type)
 		{
 			case Event.ONMOUSEDOWN:
@@ -97,10 +117,14 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 					return;
 				}
 
-				hide();
+				if(!eventTargetsMenu(nativeEvent))
+				{
+					hide();					
+				}
+
 				return;
 			}
-							
+
 			case Event.ONMOUSEUP:
 			case Event.ONMOUSEMOVE:
 			case Event.ONCLICK:
@@ -135,7 +159,8 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 		{
 			nativePreviewHandlerRegistration = Event.addNativePreviewHandler(new NativePreviewHandler()
 			{
-				public void onPreviewNativeEvent(NativePreviewEvent event)
+				@Override
+				public void onPreviewNativeEvent(final NativePreviewEvent event)
 				{
 					previewNativeEvent(event);
 				}

@@ -84,22 +84,8 @@ public abstract class MediaItem extends PlaceBookItem
 			try
 			{
 				final File path = getSavePath();
-				File[] files = path.listFiles(new FilenameFilter()
-				{
-					@Override
-					public boolean accept(final File dir, final String name)
-					{
-						final int index = name.indexOf('.');
-						if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
-						return false;
-					}
-				});
-
-				if (files.length == 1)
-				{
-					pathToReturn = files[0].getPath();
-				}
-				else
+				File[] files = null; 
+				if(getHash()!=null)
 				{
 					files = path.listFiles(new FilenameFilter()
 					{
@@ -107,13 +93,34 @@ public abstract class MediaItem extends PlaceBookItem
 						public boolean accept(final File dir, final String name)
 						{
 							final int index = name.indexOf('.');
-							if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
+							if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
 							return false;
 						}
 					});
+
 					if (files.length == 1)
 					{
 						pathToReturn = files[0].getPath();
+					}
+					else
+					{
+						if(getKey()!=null)
+						{
+							files = path.listFiles(new FilenameFilter()
+							{
+								@Override
+								public boolean accept(final File dir, final String name)
+								{
+									final int index = name.indexOf('.');
+									if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
+									return false;
+								}
+							});
+							if (files.length == 1)
+							{
+								pathToReturn = files[0].getPath();
+							}
+						}
 					}
 				}
 			}
@@ -136,7 +143,7 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 		// Check package dir exists already
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getKey();
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
 
 		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
 		{
@@ -269,14 +276,8 @@ public abstract class MediaItem extends PlaceBookItem
 			if (getPath() != null && mediaFile.equals(new File(getPath()).getAbsoluteFile())) { return; }
 			if (mediaFile.exists())
 			{
-				try
-				{
-					writeDataToDisk(mediaFile.getName(), new FileInputStream(mediaFile));
-				}
-				catch (final Exception e)
-				{
-					log.error(e.getMessage());
-				}
+				setPath(mediaFile.getAbsolutePath());
+				hash = mediaItem.hash;
 			}
 		}
 	}

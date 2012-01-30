@@ -229,7 +229,7 @@ public class EverytrailService extends Service
 		HashMap<String, Node> picturesToReturn = new HashMap<String, Node>();
 		HashMap<String, String> pictureTrips = new HashMap<String, String>();
 		HashMap<String, String> tripNames = new HashMap<String, String>();
-		
+
 		String status_to_return = "error";
 
 		if (tripsData.getStatus().equals("error"))
@@ -263,7 +263,7 @@ public class EverytrailService extends Service
 
 				log.debug("Getting pictures for trip: " + tripId + " " +  tripName);
 				tripNames.put(tripId, tripName);
-				
+
 				final EverytrailPicturesResponse tripPics = TripPictures(tripId, username, password, tripName);
 
 				log.debug("Pictures in trip: " + tripPics.getPicturesMap().values().size());
@@ -297,7 +297,7 @@ public class EverytrailService extends Service
 	private EverytrailPicturesResponse TripPictures(final String tripId, final String username,
 			final String password, final String tripNameParam)
 	{
-		
+
 		final Hashtable<String, String> params = new Hashtable<String, String>();
 		params.put("trip_id", tripId);
 		if (username != null)
@@ -339,7 +339,7 @@ public class EverytrailService extends Service
 		final HashMap<String, String> tripData = new HashMap<String, String>();
 		tripData.put(tripId, tripName);
 		final HashMap<String, String> pictureTrips = new HashMap<String, String>();
-		
+
 		log.debug("Pictures username: " + username + " " + password);
 		final String postResponse = getPostResponseWithParams("trip/pictures", params);
 		final Document doc = parseResponseToXml(postResponse);
@@ -352,7 +352,7 @@ public class EverytrailService extends Service
 			for (int pictureNodesIndex = 0; pictureNodesIndex < pictureNodes.getLength(); pictureNodesIndex++)
 			{
 				final Node pictureNode = pictureNodes.item(pictureNodesIndex);
-			// Get pic ID
+				// Get pic ID
 				final NamedNodeMap attr = pictureNode.getAttributes();
 				final String id = attr.getNamedItem("id").getNodeValue();
 				pictureTrips.put(id, tripId);
@@ -446,7 +446,7 @@ public class EverytrailService extends Service
 	{
 		final Hashtable<String, String> params = new Hashtable<String, String>();
 		params.put("user_id", userId);
-
+/* MCP - Ignore username and password since you can't get media for private trips from the API
 		if (username != null)
 		{
 			params.put("username", username);
@@ -455,7 +455,7 @@ public class EverytrailService extends Service
 		{
 			params.put("password", password);
 		}
-
+*/
 		if (lat != null)
 		{
 			params.put("lat", lat.toString());
@@ -497,7 +497,7 @@ public class EverytrailService extends Service
 		final Document doc = parseResponseToXml(postResponse);
 		final EverytrailResponseStatusData responseStatus = parseResponseStatus("etUserTripsResponse", doc);
 		log.info("Trips called parseResponseStatus, result="
-					 + responseStatus.getStatus());
+				+ responseStatus.getStatus());
 
 		final Vector<Node> tripsList = new Vector<Node>();
 		if (responseStatus.getStatus().equals("success"))
@@ -594,10 +594,10 @@ public class EverytrailService extends Service
 		// Parse the XML response and construct the response data to return
 		log.debug(postResponse);
 		final EverytrailResponseStatusData responseStatus = 
-			parseResponseStatus("etUserLoginResponse", doc);
+				parseResponseStatus("etUserLoginResponse", doc);
 		log.info("UserLogin called parseResponseStatus, result="
-				 + responseStatus.getStatus() + ","
-				 + responseStatus.getValue());
+				+ responseStatus.getStatus() + ","
+				+ responseStatus.getValue());
 
 		loginStatus = responseStatus.getStatus();
 		loginStatusValue = responseStatus.getValue();
@@ -624,18 +624,18 @@ public class EverytrailService extends Service
 	}
 
 	@Override
-	protected void sync(EntityManager manager, User user, LoginDetails details)
+	protected void sync(EntityManager manager, User user, LoginDetails details, double lon, double lat, double radius)
 	{
 		try
 		{
 			final EverytrailLoginResponse loginResponse =  userLogin(details.getUsername(), details.getPassword());
-	
+
 			if (loginResponse.getStatus().equals("error"))
 			{
 				log.error("Everytrail login failed");
 				return;
 			}
-	
+
 			// Save user id if needed
 			if(loginResponse.getValue()!=details.getUserID())
 			{
@@ -644,19 +644,19 @@ public class EverytrailService extends Service
 				manager.merge(details);
 				manager.getTransaction().commit();
 			}	
-			
+
 			ArrayList<String> imported_ids = new ArrayList<String>(); 
 			ArrayList<String> available_ids = new ArrayList<String>(); 
-	
+
 			final EverytrailTripsResponse trips = trips(details.getUsername(), details.getPassword(), loginResponse.getValue());
-	
+
 			for (Node trip : trips.getTrips())
 			{
 				// Get trip ID
 				final NamedNodeMap tripAttr = trip.getAttributes();
 				final String tripId = tripAttr.getNamedItem("id").getNodeValue();
 				log.debug("IMPORT: Trip ID is " + tripId + " **************");
-				
+
 				String tripName = "Unknown trip";
 				String tripDescription = ""; 
 				//Then look at the properties in the child nodes to get url, title, description, etc.
@@ -678,7 +678,7 @@ public class EverytrailService extends Service
 					}
 				}
 				available_ids.add("everytrail-" + tripId);
-				
+
 				if(tripDescription.length()>0)
 				{
 					TextItem descriptionItem = new TextItem();
@@ -694,8 +694,8 @@ public class EverytrailService extends Service
 					available_ids.add(externalId);
 					imported_ids.add(externalId);
 				}
-	
-				
+
+
 				GPSTraceItem gpsItem = new GPSTraceItem(user);
 				try
 				{
@@ -707,8 +707,8 @@ public class EverytrailService extends Service
 				{
 					log.error("Problem importing Trip " + tripId, e);
 				}
-	
-	
+
+
 				final EverytrailPicturesResponse picturesResponse = TripPictures(tripId, details.getUsername(), details.getPassword(), tripName);
 
 				if(picturesResponse.getStatus().equals("success"))
@@ -730,8 +730,12 @@ public class EverytrailService extends Service
 					log.error("Can't get trip pictures: " + picturesResponse.getStatus());
 				}
 			}
-	
+
 			int itemsDeleted = cleanupItems(manager, imported_ids, user);
+			log.info("Everytrail cleanup, " + imported_ids.size() + " items added/updated, " + itemsDeleted + " removed");			
+			// Now add search results
+			//log.info("Searching Everytrail for items near " + lat + " " + lon + " radius:" + radius);
+			//search(manager, user, lon, lat, radius);
 			details.setLastSync();			
 			log.info("Finished Everytrail import, " + imported_ids.size() + " items added/updated, " + itemsDeleted + " removed");			
 		}
@@ -761,4 +765,12 @@ public class EverytrailService extends Service
 		}
 		return true;
 	}
+
+	@Override
+	protected void search(EntityManager em, User user, double lon, double lat,
+			double radius) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

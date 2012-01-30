@@ -41,7 +41,7 @@ public class ImageItem extends MediaItem
 	}
 
 	
-	private static int THUMB_HEIGHT = 128;
+	//private static int THUMB_HEIGHT = 128;
 	private static int THUMB_WIDTH = 128;
 	
 	public String getThumbPath() throws IOException

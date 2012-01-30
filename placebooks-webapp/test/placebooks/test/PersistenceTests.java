@@ -129,7 +129,7 @@ public class PersistenceTests
 			manager.persist(placebook);
 			manager.getTransaction().commit();
 
-			assert owner.getPlacebooks().iterator().hasNext();
+			assert owner.getPlacebookBinders().iterator().hasNext();
 	
 			manager.getTransaction().begin();
 			manager.remove(placebook);		

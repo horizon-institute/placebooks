@@ -1,14 +1,14 @@
 package placebooks.model.json;
 
-import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookBinder;
 
-public class PlaceBookSearchEntry extends PlaceBookEntry
+public class PlaceBookBinderSearchEntry extends PlaceBookBinderEntry
 {
 	private int score;
 	
 	private String ownerName;
 
-	public PlaceBookSearchEntry(final PlaceBook p, final int score)
+	public PlaceBookBinderSearchEntry(final PlaceBookBinder p, final int score)
 	{
 		super(p);
 		this.score = score;

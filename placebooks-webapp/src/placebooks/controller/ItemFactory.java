@@ -64,9 +64,8 @@ public class ItemFactory
 	{
 		IUpdateableExternal item = null;
 		log.debug("Querying externalID " +  itemToSave.getExternalID());
-		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = :externalid) AND (placebookitem.placebook is null) AND (placebookitem.owner= :owner)", PlaceBookItem.class);
-		q.setParameter("externalid", itemToSave.getExternalID());
-		q.setParameter("owner", itemToSave.getOwner());
+		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
+		q.setParameter(1, itemToSave.getExternalID());
 		try
 		{
 			Collection<PlaceBookItem> l = q.getResultList();
@@ -460,7 +459,7 @@ public class ItemFactory
 		trackGPXBuilder.append("</trk>");
 		trackGPXBuilder.append("</gpx>");
 
-		//log.debug(trackGPXBuilder.toString());
+		log.debug(trackGPXBuilder.toString());
 		byte[] bytes = trackGPXBuilder.toString().getBytes("UTF-8");
 		gpsItem.readTrace(new ByteArrayInputStream(bytes));
 	}
@@ -528,7 +527,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());				
+				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());				
 			}
 			catch (final IOException ex)
 			{
@@ -700,7 +699,7 @@ public class ItemFactory
 		itemDescription = item.GetProperties().GetMarkup();
 		try
 		{
-			sourceUrl = new URL(item.GetProperties().GetMediaURL());
+			sourceUrl = new URL(item.GetProperties().GetMediaURL().replace(" ", "%20"));
 		}
 		catch (MalformedURLException ex)
 		{

@@ -64,14 +64,14 @@ public class WebBundleItem extends PlaceBookItem
 		try
 		{
 			final File from = new File(getWebBundlePath());
-			final File to = new File(getPlaceBook().getPackagePath() 
+			final File to = new File(getPlaceBook().getPlaceBookBinder().getPackagePath() 
 									 + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(getPlaceBook().getPackagePath() 
-									 + "/" + getKey() + "/" + getWebBundleName()));
+			filename.appendChild(config.createTextNode(getPlaceBook().getPlaceBookBinder().getPackagePath() 
+									 + "/" + getKey() + "/" + getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)

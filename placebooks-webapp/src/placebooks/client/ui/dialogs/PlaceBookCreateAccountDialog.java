@@ -42,7 +42,6 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 
 	public PlaceBookCreateAccountDialog()
 	{
-		super(true);
 		setWidget(uiBinder.createAndBindUi(this));
 		createAccount.setEnabled(false);
 	}

@@ -83,7 +83,7 @@ public class GPSTraceItem extends PlaceBookItem
 		{
 			// Check package dir exists already
 			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getKey();
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{

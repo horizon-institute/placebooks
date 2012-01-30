@@ -61,10 +61,10 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	public PlaceBookAccountsDialog(final User user)
 	{
-		super(true);
 		this.user = user;
 		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
+		center();		
 		updateUser();		
 	}
 
@@ -164,7 +164,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	private void onInitialize()
 	{
 		cellTable = new CellTable<LoginDetails>(keyProvider);
-		cellTable.setWidth("100%", true);
+		cellTable.setWidth("100%", false);
 
 		final SelectionModel<LoginDetails> selectionModel = new NoSelectionModel<LoginDetails>(keyProvider);
 		cellTable.setSelectionModel(selectionModel);
@@ -186,7 +186,6 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			serviceList.add(service);
 		}
 		
-		
 		boolean syncing = false;
 		final List<LoginDetails> list = new ArrayList<LoginDetails>();
 		for (final LoginDetails details : user.getLoginDetails())
@@ -203,10 +202,9 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		{
 			new Timer()
 			{
-				
 				@Override
 				public void run()
-				{
+				{	
 					updateUser();					
 				}
 			}.schedule(1000);
@@ -223,8 +221,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				@Override
 				public void onClick(final ClickEvent arg0)
 				{
-					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service
-							+ " Username:");
+					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service + " Username:");
 					account.addClickHandler(new ClickHandler()
 					{
 
@@ -239,7 +236,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 																public void failure(final Request request,
 																		final Response response)
 																{
-																	account.setErrorText(service + " Login Failed");																	
+																	account.setError(service + " Login Failed");																	
 																	account.setProgress(false);																	
 																}
 
@@ -248,7 +245,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 																		final Response response)
 																{
 																	account.hide();
-																	Shelf shelf = Shelf.parse(response.getText());
+																	Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 																	if(shelf != null)
 																	{
 																		setUser(shelf.getUser());
@@ -258,15 +255,20 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 						}
 					});
 
-					account.center();
 					account.show();
 				}
 			}));
 		}	
+		
+		center();
 	}
 	
 	private void updateUser()
 	{
+		if(!isShowing())
+		{
+			return;
+		}						
 		PlaceBookService.getCurrentUser(new AbstractCallback()
 		{
 			@Override

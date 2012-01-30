@@ -2,13 +2,15 @@ package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
-import placebooks.client.model.PlaceBook;
+import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
-import placebooks.client.ui.elements.PlaceBookCanvas;
+import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.PlaceBookPagesBook;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
+import placebooks.client.ui.elements.ProgressPanel;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -53,7 +55,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	private static final PlaceBookPreviewUiBinder uiBinder = GWT.create(PlaceBookPreviewUiBinder.class);
 
 	@UiField
-	Panel canvasPanel;
+	PlaceBookPagesBook bookPanel;
 
 	@UiField
 	DropMenu dropMenu;
@@ -71,6 +73,9 @@ public class PlaceBookPreview extends PlaceBookPlace
 	Label titleLabel;
 
 	@UiField
+	ProgressPanel loadingPanel;
+	
+	@UiField
 	Label delete;
 
 	@UiField
@@ -79,36 +84,36 @@ public class PlaceBookPreview extends PlaceBookPlace
 	@UiField
 	Anchor authorLabel;
 
-	private final PlaceBookCanvas canvas = new PlaceBookCanvas();
+	private PlaceBookController controller;
+	
+	private PlaceBookBinder placebook;
+	private final String placebookID;
 
-	private PlaceBook placebook;
-	private final String placebookKey;
-
-	public PlaceBookPreview(final User user, final PlaceBook placebook)
+	public PlaceBookPreview(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
 		this.placebook = placebook;
-		this.placebookKey = placebook.getKey();
+		this.placebookID = placebook.getId();
 	}
 
 	public PlaceBookPreview(final User user, final String placebookKey)
 	{
 		super(user);
-		this.placebookKey = placebookKey;
+		this.placebookID = placebookKey;
 		this.placebook = null;
 	}
 
-	public PlaceBookCanvas getCanvas()
+	public PlaceBookPagesBook getCanvas()
 	{
-		return canvas;
+		return bookPanel;
 	}
 
-	public void setPlaceBook(final PlaceBook placebook)
+	public void setPlaceBook(final PlaceBookBinder placebook)
 	{
 		this.placebook = placebook;
-		canvas.setPlaceBook(placebook, PlaceBookItemBlankFrame.FACTORY, false);
+		bookPanel.setPlaceBook(placebook, controller);
 
-		titleLabel.setText(placebook.getMetadata("title"));
+		titleLabel.setText(placebook.getMetadata("title", "No Title"));
 		authorLabel.setText(placebook.getOwner().getName());
 		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 
@@ -116,7 +121,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		if (placebook.getState() != null && placebook.getState().equals("PUBLISHED"))
 		{
-			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getKey();
+			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getId();
 			facebookLike.setURL(url);
 			googlePlus.setURL(url);
 		}
@@ -131,6 +136,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 
 		refresh();
+		loadingPanel.setVisible(false);		
 	}
 
 	@Override
@@ -138,14 +144,14 @@ public class PlaceBookPreview extends PlaceBookPlace
 	{
 		final Widget preview = uiBinder.createAndBindUi(this);
 
+		controller = new PlaceBookController(bookPanel, PlaceBookItemBlankFrame.FACTORY);
+		
 		infoPanel.setVisible(false);
-
-		canvasPanel.add(canvas);
+		loadingPanel.setVisible(true);		
 
 		toolbar.setPlace(this);
 
 		panel.setWidget(preview);
-		canvas.reflow();
 
 		if (placebook != null)
 		{
@@ -153,13 +159,13 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookKey, new AbstractCallback()
+			bookPanel.resized();
+			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
 			{
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					final PlaceBook placebook = PlaceBook.parse(response.getText());
-					setPlaceBook(placebook);
+					setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
 				}
 			});
 		}
@@ -170,13 +176,12 @@ public class PlaceBookPreview extends PlaceBookPlace
 	{
 		if (getUser().getEmail().equals(placebook.getOwner().getEmail()))
 		{
-			PlaceBookService.deletePlaceBook(placebook.getKey(), new AbstractCallback()
+			PlaceBookService.deletePlaceBook(placebook.getId(), new AbstractCallback()
 			{
 				@Override
 				public void success(final Request request, final Response response)
 				{
-					// TODO Auto-generated method stub
-
+					getPlaceController().goTo(new PlaceBookHome(getUser()));
 				}
 			});
 		}
@@ -184,7 +189,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	String getKey()
 	{
-		return placebookKey;
+		return placebookID;
 	}
 
 	@UiHandler("actionMenu")
@@ -205,6 +210,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 			delete.setVisible(false);
 			setEnabledDropMenu(false);
 		}
+		bookPanel.resized();
 	}
 
 	private void setEnabledDropMenu(final boolean enabled)

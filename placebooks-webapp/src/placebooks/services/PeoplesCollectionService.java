@@ -28,8 +28,9 @@ import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.services.model.PeoplesCollectionItemFeature;
-import placebooks.services.model.PeoplesCollectionLoginResponse;
 import placebooks.services.model.PeoplesCollectionItemResponse;
+import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionSearchTrailsResponse;
 import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
@@ -46,14 +47,14 @@ public class PeoplesCollectionService extends Service
 
 	protected static final ObjectMapper mapper = new ObjectMapper();
 	private static final Logger log = Logger.getLogger(PeoplesCollectionService.class);
-	
+
 
 	@Override
 	public String getName()
 	{
 		return SERVICE_NAME;
 	}
-	
+
 	/**
 	 * Perform a post to the given People's Collection api destination with the parameters specified
 	 * 
@@ -74,7 +75,7 @@ public class PeoplesCollectionService extends Service
 		{
 			data.append(mapper.writeValueAsString(params));
 			log.debug("JSON post: " + data.toString());
-			
+
 
 			final URL url = new URL(apiBaseUrl + postDestination);
 			log.debug("URL: " + apiBaseUrl +  postDestination);
@@ -99,20 +100,20 @@ public class PeoplesCollectionService extends Service
 		{
 			log.debug(ex.getMessage());
 		}
-		
+
 
 		return postResponse.toString();
 	}
 
 
-	
+
 	@Override
 	public boolean checkLogin(String username, String password)
 	{
 		PeoplesCollectionLoginResponse loginResponse = Login(username, password);
 		return loginResponse.GetIsValid();
 	}
-	
+
 	/**
 	 * Log in to the People's Collection api
 	 * @param username
@@ -125,7 +126,7 @@ public class PeoplesCollectionService extends Service
 		params.put("username", username);
 		params.put("password", password);
 		String response = getPostResponseWithParams("/authenticate", params);
-		
+
 		PeoplesCollectionLoginResponse returnResult = null;
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		try
@@ -138,10 +139,10 @@ public class PeoplesCollectionService extends Service
 			log.error("Couldn't decode response from json : " + response.toString(), ex);
 			returnResult = new PeoplesCollectionLoginResponse(false, "Unable to decode response:\n" +  ex.getMessage());			
 		}
-		
+
 		return returnResult;
 	}
-	
+
 	/**
 	 * Get the list of trails created by or favourites of a given user
 	 * @param username
@@ -157,7 +158,7 @@ public class PeoplesCollectionService extends Service
 		PeoplesCollectionTrailsResponse returnResult = null;
 		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 		mapper.enableDefaultTyping();
-		
+
 		try
 		{
 			returnResult = mapper.readValue(response.toString(), PeoplesCollectionTrailsResponse.class);
@@ -168,7 +169,7 @@ public class PeoplesCollectionService extends Service
 			log.error("Couldn't decode response from json : " + response.toString(), ex);
 			returnResult = new PeoplesCollectionTrailsResponse();
 		}
-		
+
 		return returnResult;
 	}
 
@@ -181,7 +182,7 @@ public class PeoplesCollectionService extends Service
 	public static PeoplesCollectionTrailResponse Trail(int trailId)
 	{
 		PeoplesCollectionTrailResponse result = null;
-		
+
 		Hashtable<String, String> params = new Hashtable<String, String>();
 		String response = getPostResponseWithParams("/Get/full/trail/" + trailId, params);
 
@@ -198,7 +199,7 @@ public class PeoplesCollectionService extends Service
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get a given items 
 	 * @param trailId
@@ -207,7 +208,7 @@ public class PeoplesCollectionService extends Service
 	public static PeoplesCollectionItemResponse Item(int trailId)
 	{
 		PeoplesCollectionItemResponse result = null;
-		
+
 		Hashtable<String, String> params = new Hashtable<String, String>();
 		String response = getPostResponseWithParams("/Get/Thumb/Item/" + trailId, params);
 
@@ -226,18 +227,79 @@ public class PeoplesCollectionService extends Service
 		return result;
 	}
 
+	protected GPSTraceItem importTrail(EntityManager manager, User user, PeoplesCollectionTrailResponse trail, 
+			GPSTraceItem traceItem, PeoplesCollectionTrailListItem trailListItem, ArrayList<String> itemsSeen) throws Exception
+			{
+		ItemFactory.toGPSTraceItem(user, trail, traceItem);
+		itemsSeen.add(traceItem.getExternalID());
+		log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
+		traceItem.saveUpdatedItem();
+
+		for(int trailItemId : trail.GetProperties().GetItems())
+		{
+			PeoplesCollectionItemResponse trailItem = Item(trailItemId);
+			PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
+			for(PeoplesCollectionItemFeature feature : features)
+			{
+				String featureType = feature.GetProperties().GetIcontype();
+				PlaceBookItem addedItem = null;
+				if(featureType.equals("image"))
+				{
+					ImageItem newItem = new ImageItem();
+					ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+					newItem.saveUpdatedItem();
+					addedItem = newItem;
+				}
+				if(featureType.equals("video"))
+				{
+					VideoItem newItem = new VideoItem();
+					ItemFactory.toVideoItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+					newItem.saveUpdatedItem();
+					addedItem = newItem;
+				}
+				if(featureType.equals("audio"))
+				{
+					AudioItem newItem = new AudioItem();
+					ItemFactory.toAudioItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+					newItem.saveUpdatedItem();
+					addedItem = newItem;
+				}
+
+				if(featureType.equals("story"))
+				{
+					TextItem newItem = new TextItem();
+					ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+					newItem.saveUpdatedItem();
+					addedItem = newItem;
+				}
+
+				if(addedItem==null)
+				{
+					log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
+				}
+				else
+				{
+					log.debug("Saved item: " + addedItem.getExternalID());
+					itemsSeen.add(addedItem.getExternalID());
+				}
+			}
+		}
+		return traceItem;
+			}
+
 	@Override
-	protected void sync(EntityManager manager, User user, LoginDetails details) {
+	protected void sync(EntityManager manager, User user, LoginDetails details, double lon, double lat, double radius) {
 		PeoplesCollectionTrailsResponse trailsResponse = PeoplesCollectionService.TrailsByUser(details.getUsername(), details.getPassword());
 		log.debug("Number of my trails got:" + trailsResponse.GetMyTrails().size());
 		log.debug("Number of favourite trails got:" + trailsResponse.GetMyFavouriteTrails().size());
-		
+
 		ArrayList<String> itemsSeen = new ArrayList<String>();
-		
+
 		ArrayList<PeoplesCollectionTrailListItem> allTrailListItems = new ArrayList<PeoplesCollectionTrailListItem>();
-		
+
 		allTrailListItems.addAll( trailsResponse.GetMyTrails());
 		allTrailListItems.addAll( trailsResponse.GetMyFavouriteTrails());
+
 		
 		for(PeoplesCollectionTrailListItem trailListItem : allTrailListItems)
 		{
@@ -245,69 +307,99 @@ public class PeoplesCollectionService extends Service
 			GPSTraceItem traceItem = new GPSTraceItem(user);
 			try
 			{
-				ItemFactory.toGPSTraceItem(user, trail, traceItem);
-				itemsSeen.add(traceItem.getExternalID());
-				log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
-				traceItem.saveUpdatedItem();
-				
-				for(int trailItemId : trail.GetProperties().GetItems())
-				{
-					PeoplesCollectionItemResponse trailItem = Item(trailItemId);
-					PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
-					for(PeoplesCollectionItemFeature feature : features)
-					{
-						String featureType = feature.GetProperties().GetIcontype();
-						PlaceBookItem addedItem = null;
-						if(featureType.equals("image"))
-						{
-							ImageItem newItem = new ImageItem();
-							ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-							newItem.saveUpdatedItem();
-							addedItem = newItem;
-						}
-						if(featureType.equals("video"))
-						{
-							VideoItem newItem = new VideoItem();
-							ItemFactory.toVideoItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-							newItem.saveUpdatedItem();
-							addedItem = newItem;
-						}
-						if(featureType.equals("audio"))
-						{
-							AudioItem newItem = new AudioItem();
-							ItemFactory.toAudioItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-							newItem.saveUpdatedItem();
-							addedItem = newItem;
-						}
-						
-						if(featureType.equals("story"))
-						{
-							TextItem newItem = new TextItem();
-							ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-							newItem.saveUpdatedItem();
-							addedItem = newItem;
-						}
-
-						if(addedItem==null)
-						{
-								log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
-						}
-						else
-						{
-							log.debug("Saved item: " + addedItem.getExternalID());
-							itemsSeen.add(addedItem.getExternalID());
-						}
-					}
-				}
-				
+				importTrail(manager, user, trail, traceItem, trailListItem, itemsSeen);
 			}
 			catch (Exception e)
 			{
 				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
 			}
 		}
+
+		int itemsDeleted = cleanupItems(manager, itemsSeen, user);		
+		log.info("Finished PeoplesCollection cleanup, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");
 		
-		int itemsDeleted = cleanupItems(manager, itemsSeen, user);
-		log.info("Finished PeoplesCollection import, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");			
+		PeoplesCollectionSearchTrailsResponse searchResponse = Search(54, -4, 0.1);
+		for(PeoplesCollectionTrailListItem trailListItem : searchResponse.GetTrails())
+		{
+			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
+			GPSTraceItem traceItem = new GPSTraceItem(user);
+			try
+			{
+				importTrail(manager, user, trail, traceItem, trailListItem, itemsSeen);
+			}
+			catch (Exception e)
+			{
+				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
+			}
+		}
 	}
+
+	@Override
+	public void search(EntityManager manager, User user, double lon, double lat, double radius)
+	{
+
+		PeoplesCollectionSearchTrailsResponse items = Search( lon, lat, radius);
+		ArrayList<String> itemsSeen = new ArrayList<String>();
+		for(PeoplesCollectionTrailListItem trailListItem : items.GetTrails())
+		{
+			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
+			GPSTraceItem traceItem = new GPSTraceItem(user);
+			try
+			{
+				importTrail(manager, user, trail, traceItem, trailListItem, itemsSeen);
+			}
+			catch (Exception e)
+			{
+				log.error("Couldn't convert GPS item from Peoples Collection id#  " + trailListItem.GetPropertiesId(), e);
+			}
+		}
+	}
+
+	public static PeoplesCollectionSearchTrailsResponse Search(final double lon, final double lat, double radius)
+	{
+		double left = lon - radius;
+		double right = lon + radius;
+		double bottom = lat - radius;
+		double top = lat + radius;
+
+		final Hashtable<String, String> params = new Hashtable<String, String>();
+		String bbox = Double.toString(left) + "," + Double.toString(bottom) + "," +
+				Double.toString(right) + "," + Double.toString(top);
+		params.put("types", "trails");
+
+		final String response = getPostResponseWithParams("/search?bbox=" + bbox + "&types=trails", params);
+		PeoplesCollectionItemResponse items = null;
+		mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+		mapper.enableDefaultTyping();
+
+		try
+		{
+			items = mapper.readValue(response.toString(), PeoplesCollectionItemResponse.class);
+			log.debug("PeoplesCollection response decoded: " + items.GetTotalObjects());
+		}
+		catch(Exception ex)
+		{
+			log.error("Couldn't decode response from json : " + response.toString(), ex);
+			items = new PeoplesCollectionItemResponse();
+		}
+
+		PeoplesCollectionSearchTrailsResponse returnItems = new PeoplesCollectionSearchTrailsResponse();
+
+		returnItems.SetTotalObjects(items.GetTotalObjects());
+		returnItems.SetPerPage(items.getFeatures().length);
+		for(PeoplesCollectionItemFeature item : items.getFeatures())
+		{
+			String idType = item.GetId().substring(0, item.GetId().indexOf('.')); 
+			if(idType.equals("trail"))
+			{
+				log.debug("Got a trail: " + item.GetId());
+				PeoplesCollectionTrailListItem trailItem = new PeoplesCollectionTrailListItem(item.GetId(), item.GetType(), item.GetPeoplesCollectionGeometry(), item.GetProperties());
+				returnItems.AddItem(trailItem);
+			}
+		}
+
+		return returnItems;
+	}
+
+
 }

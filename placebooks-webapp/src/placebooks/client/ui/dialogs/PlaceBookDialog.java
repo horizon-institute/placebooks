@@ -1,38 +1,48 @@
 package placebooks.client.ui.dialogs;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public abstract class PlaceBookDialog extends PopupPanel
+public abstract class PlaceBookDialog
 {
-	interface Style extends CssResource
-	{
-		String dialog();
-	    String dialogGlass();
-	}
+	private PlaceBookDialogFrame dialog = new PlaceBookDialogFrame();
 
-	interface Bundle extends ClientBundle
-	{
-		@Source("PlaceBookDialog.css")
-		Style style();
+	public PlaceBookDialog()
+	{	
 	}
 	
-	private static final Bundle STYLES = GWT.create(Bundle.class);
-	
-	public PlaceBookDialog(final boolean autoHide)
+	public void setWidget(final Widget widget)
 	{
-		STYLES.style().ensureInjected();
-		
-		setGlassEnabled(true);
-		setAnimationEnabled(true);
-		//setWidget(widget);
-
-		setStyleName(STYLES.style().dialog());
-		setGlassStyleName(STYLES.style().dialogGlass());
-		setAutoHideEnabled(autoHide);
-
-		//center();
+		dialog.setContent(widget);
+	}
+	
+	public boolean isShowing()
+	{
+		return dialog.isShowing();
+	}
+	
+	public void show()
+	{
+		dialog.show();
+		dialog.center();
+	}
+	
+	public void hide()
+	{
+		dialog.hide();
+	}
+	
+	public void setTitle(final String title)
+	{
+		dialog.setTitle(title);
+	}
+	
+	public void setError(final String error)
+	{
+		dialog.setError(error);
+	}	
+	
+	public void center()
+	{
+		dialog.center();		
 	}
 }

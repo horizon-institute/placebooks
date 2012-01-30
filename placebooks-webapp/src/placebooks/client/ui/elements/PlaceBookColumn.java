@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import placebooks.client.model.PlaceBook;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -52,10 +53,18 @@ public class PlaceBookColumn extends FlowPanel
 
 	private final int panelIndex;
 
-	public PlaceBookColumn(final int index, final int columns, final double left, final double width,
+	private PlaceBookPage page;
+	
+	public PlaceBookPage getPage()
+	{
+		return page;
+	}
+	
+	public PlaceBookColumn(final PlaceBookPage page, final int index, final int columns, final double left, final double width,
 			final boolean visible)
 	{
 		STYLES.style().ensureInjected();
+		this.page = page;
 		this.panelIndex = index;
 		column = index % columns;
 		setStyleName(STYLES.style().panel());
@@ -70,7 +79,7 @@ public class PlaceBookColumn extends FlowPanel
 
 		add(innerPanel);
 	}
-
+	
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -83,7 +92,7 @@ public class PlaceBookColumn extends FlowPanel
 			items.add(order, item);
 		}
 	}
-
+	
 	public int getIndex()
 	{
 		return panelIndex;
@@ -146,6 +155,7 @@ public class PlaceBookColumn extends FlowPanel
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
 	{
+		GWT.log("Reflow");
 		Collections.sort(items, orderComparator);
 
 		newItem.getItem().setParameter("panel", panelIndex);
@@ -166,7 +176,7 @@ public class PlaceBookColumn extends FlowPanel
 			item.getItem().setParameter("order", order);
 			order++;
 		}
-
+	
 		if (!inserted)
 		{
 			newItem.getItem().setParameter("order", order);
@@ -199,5 +209,10 @@ public class PlaceBookColumn extends FlowPanel
 	public void remove(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
+	}
+
+	public void setPage(PlaceBookPage page)
+	{
+		this.page = page;		
 	}
 }

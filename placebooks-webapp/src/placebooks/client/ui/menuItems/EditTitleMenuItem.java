@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.elements.PlaceBookSaveItem;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,14 +14,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class EditTitleMenuItem extends MenuItem
 {
-	private final PlaceBookSaveItem context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public EditTitleMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
+	public EditTitleMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Edit Title");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class EditTitleMenuItem extends MenuItem
 			public void onClick(final ClickEvent event)
 			{
 				item.getItem().setMetadata("title", title.getText());
-				context.markChanged();
+				controller.markChanged();
 				dialogBox.hide();
 			}
 		});

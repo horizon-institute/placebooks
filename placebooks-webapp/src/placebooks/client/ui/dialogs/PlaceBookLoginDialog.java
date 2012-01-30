@@ -1,7 +1,6 @@
 package placebooks.client.ui.dialogs;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -31,12 +30,6 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 	Button submit;
 
 	@UiField
-	Label titleLabel;
-
-	@UiField
-	Label errorLabel;
-
-	@UiField
 	TextBox username;
 
 	@UiField
@@ -47,11 +40,10 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 	
 	public PlaceBookLoginDialog(final String title, final String submitText, final String usernameText)
 	{
-		super(true);
 		setWidget(uiBinder.createAndBindUi(this));
 		submit.setEnabled(false);
 		submit.setText(submitText);
-		titleLabel.setText(title);
+		setTitle(title);
 		usernameLabel.setText(usernameText);
 	}
 
@@ -106,12 +98,6 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 	public String getUsername()
 	{
 		return username.getText();
-	}
-
-	public void setErrorText(final String error)
-	{
-		errorLabel.setText(error);
-		errorLabel.getElement().getStyle().setDisplay(Display.BLOCK);
 	}
 
 	public void setUsername(final String username)

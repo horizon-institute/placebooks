@@ -2,10 +2,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style>
-		.dialog {
-			padding: 10px;
-		}
-		
 		.arrowButton {
 			cursor: pointer;
 			padding: 3px 5px;
@@ -47,7 +43,7 @@
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
-	<g:FlowPanel styleName="{style.dialog}">
+	<g:FlowPanel>
 		<g:FlowPanel styleName="{style.imagePanel}">
 			<p:MousePanel ui:field="leftButton" styleName="{style.arrowButton}"><g:Image
 				resource="{images.arrow_left}" /></p:MousePanel>
@@ -62,15 +58,16 @@
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.inputPanel}">
 			<g:Label styleName="{style.flexBox}">Location:</g:Label>
-			<g:TextBox ui:field="location" styleName="{style.flexBox}"></g:TextBox>
+			<g:TextBox ui:field="location" styleName="{style.flexBox}"/>
 		</g:FlowPanel>
 		<g:FlowPanel styleName="{style.inputPanel}">
 			<g:Label styleName="{style.flexBox}">Activity:</g:Label>
-			<g:TextBox ui:field="activity" styleName="{style.flexBox}"></g:TextBox>
+			<g:ListBox ui:field="activityList" styleName="{style.flexBox" />
+			<g:TextBox ui:field="activity" styleName="{style.flexBox}"/>
 		</g:FlowPanel>
 		<g:Label>Description:</g:Label>
 		<g:FlowPanel>
-			<g:TextArea ui:field="description" styleName="{style.desc}"></g:TextArea>
+			<g:TextArea ui:field="description" styleName="{style.desc}"/>
 		</g:FlowPanel>
 		<g:Button styleName="{style.publishButton}" ui:field="publish">Publish</g:Button>
 	</g:FlowPanel>

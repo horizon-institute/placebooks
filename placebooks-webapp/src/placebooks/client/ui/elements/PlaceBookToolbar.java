@@ -68,7 +68,7 @@ public class PlaceBookToolbar extends Composite
 		{
 			try
 			{
-				final Shelf shelf = Shelf.parse(response.getText());
+				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 				if(shelf != null)
 				{
 					place.setUser(shelf.getUser());
@@ -87,6 +87,8 @@ public class PlaceBookToolbar extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 
 		loginPanel.setVisible(false);
+		
+		accountItem.setVisible(false);
 		
 		createItem.setEnabled(false);
 		libraryItem.setEnabled(false);
@@ -154,15 +156,15 @@ public class PlaceBookToolbar extends Composite
 							account.setProgress(false);
 							if(response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
 							{
-								account.setErrorText("Login not recognised. Check username and password.");								
+								account.setError("Login not recognised. Check username and password.");								
 							}
 							else if(response.getText().startsWith("{\"detailMessage\":"))
 							{
-								account.setErrorText(response.getText().substring(18, response.getText().length() - 2));
+								account.setError(response.getText().substring(18, response.getText().length() - 2));
 							}
 							else
 							{
-								account.setErrorText("Error logging in");
+								account.setError("Error logging in");
 							}
 							account.center();
 						}
@@ -173,7 +175,7 @@ public class PlaceBookToolbar extends Composite
 							account.hide();
 							try
 							{
-								final Shelf shelf = Shelf.parse(response.getText());
+								final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 								if(shelf != null)
 								{
 									place.setUser(shelf.getUser());
@@ -188,7 +190,6 @@ public class PlaceBookToolbar extends Composite
 					});
 				}
 			});
-			account.center();
 			account.show();
 			account.focus();
 		}
@@ -247,8 +248,7 @@ public class PlaceBookToolbar extends Composite
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
-		account.setWidth("500px");
-		account.center();
+		account.setTitle("Linked Accounts");
 		account.show();
 	}
 
@@ -274,7 +274,6 @@ public class PlaceBookToolbar extends Composite
 				PlaceBookService.login(account.getEmail(), account.getPassword(), shelfCallback);
 			}
 		});
-		account.center();
 		account.show();
 	}
 }

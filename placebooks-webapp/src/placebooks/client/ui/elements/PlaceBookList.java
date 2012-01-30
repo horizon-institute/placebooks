@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 
@@ -85,8 +86,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 	static
 	{
-		newPlaceBook = PlaceBookEntry
-				.parse("{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
+		newPlaceBook = PlaceBookService.parse(PlaceBookEntry.class, "{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
 	}
 
 	public PlaceBookList()

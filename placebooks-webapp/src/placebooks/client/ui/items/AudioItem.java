@@ -1,6 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.event.dom.client.CanPlayThroughEvent;
 import com.google.gwt.event.dom.client.CanPlayThroughHandler;
@@ -20,9 +21,9 @@ public class AudioItem extends PlaceBookItemWidget
 	};
 	private String url;
 
-	AudioItem(final PlaceBookItem item)
+	AudioItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item);
+		super(item, handler);
 		audio = Audio.createIfSupported();
 		audio.setControls(true);
 		audio.setWidth("100%");

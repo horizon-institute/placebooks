@@ -1,21 +1,16 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.Resources;
+import placebooks.client.ui.elements.PlaceBookController;
 
 public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 {
 	public static PlaceBookItemFrameFactory FACTORY = new PlaceBookItemFrameFactory()
 	{
 		@Override
-		public PlaceBookItemFrame createFrame()
+		public PlaceBookItemFrame createFrame(final PlaceBookController handler)
 		{
 			return new PlaceBookItemBlankFrame();
-		}
-
-		@Override
-		public boolean isEditable()
-		{
-			return false;
 		}
 	};
 

@@ -1,0 +1,22 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	<ui:style>
+		.button {
+			margin: 10px 0 0 0;
+		}
+		
+		.buttonPanel {
+			display: -webkit-box;
+			-webkit-box-pack: end;
+		}
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
+	<g:FlowPanel>
+		<g:Label ui:field="textLabel" />
+		<g:FlowPanel styleName="{style.buttonPanel}">
+			<g:Button ui:field="accept">Ok</g:Button>
+			<g:Button ui:field="cancel">Cancel</g:Button>			
+		</g:FlowPanel>			
+	</g:FlowPanel>
+</ui:UiBinder> 

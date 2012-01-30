@@ -15,6 +15,7 @@ import placebooks.services.PeoplesCollectionService;
 import placebooks.services.model.PeoplesCollectionItemFeature;
 import placebooks.services.model.PeoplesCollectionItemResponse;
 import placebooks.services.model.PeoplesCollectionLoginResponse;
+import placebooks.services.model.PeoplesCollectionSearchTrailsResponse;
 import placebooks.services.model.PeoplesCollectionTrailListItem;
 import placebooks.services.model.PeoplesCollectionTrailResponse;
 import placebooks.services.model.PeoplesCollectionTrailsResponse;
@@ -151,4 +152,15 @@ public class PeoplesCollectionServiceTest extends PlacebooksTestSuper {
 		}
 	}
 
+	
+	@Test
+	public void testSearchResponse()
+	{
+		PeoplesCollectionSearchTrailsResponse trailsResponse = PeoplesCollectionService.Search(-4.051070, 52.482382, 0.1);
+		log.debug("Number of trails:" + trailsResponse.GetTrails());
+		for(PeoplesCollectionTrailListItem trail : trailsResponse.GetTrails())
+		{
+			log.debug("Trail #:" + trail.GetProperties().GetId() + " " + trail.GetProperties().GetTitle());
+		}
+	}
 }

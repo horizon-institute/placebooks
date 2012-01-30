@@ -1,18 +1,18 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.elements.PlaceBookSaveItem;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class FitToContentMenuItem extends MenuItem
 {
-	private final PlaceBookSaveItem context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public FitToContentMenuItem(final PlaceBookSaveItem context, final PlaceBookItemFrame item)
+	public FitToContentMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Fit to Content");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
@@ -26,6 +26,6 @@ public class FitToContentMenuItem extends MenuItem
 	{
 		item.getItem().removeParameter("height");
 		item.getPanel().reflow();
-		context.markChanged();
+		controller.markChanged();
 	}
 }

@@ -85,10 +85,25 @@ public class PlaceBookHome extends PlaceBookPlace
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				final Shelf shelf = Shelf.parse(response.getText());
+				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 				final Iterator<PlaceBookEntry> entries = shelf.getEntries().iterator();
-				preview1.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));
-				preview2.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));
+				if(entries.hasNext())
+				{
+					preview1.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));
+				}
+				else
+				{
+					preview1.setVisible(false);
+				}
+				if(entries.hasNext())
+				{
+					preview2.setWidget(new PlaceBookEntryPreview(PlaceBookHome.this, entries.next()));					
+				}
+				else
+				{
+					preview2.setVisible(false);
+				}
+
 			}
 		});
 		panel.setWidget(widget);
