@@ -1,6 +1,6 @@
 package placebooks.client.ui.dialogs;
 
-import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
@@ -10,8 +10,6 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -25,7 +23,6 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookUploadDialog extends PlaceBookDialog
@@ -113,26 +110,26 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				item.getItemWidget().refresh();
 				item.getRootPanel().getElement().getStyle().setOpacity(0.5);
 				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
-				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new AbstractCallback()
+				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
 				{
 					@Override
-					public void failure(final Request request, final Response response)
+					public void handleError(Throwable throwable)
 					{
 						infoLabel.setText("Upload Failed");
-						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
-						item.getRootPanel().getElement().getStyle().clearOpacity();
-						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
-						item.getItemWidget().update(placebookItem);
+//						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
+//						item.getRootPanel().getElement().getStyle().clearOpacity();
+//						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
+//						item.getItemWidget().update(placebookItem);
 					}
 
 					@Override
-					public void success(final Request request, final Response response)
+					public void handleResponse(PlaceBookItem placebookItem)
 					{
-						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
 						item.getRootPanel().getElement().getStyle().clearOpacity();
 						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
 						item.getItemWidget().update(placebookItem);
 						hide();
+						
 					}
 				});
 			}

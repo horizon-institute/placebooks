@@ -137,6 +137,10 @@ public class PlaceBookPage extends Composite
 			{
 				frame.getItemWidget().update(item);
 			}
+			else
+			{
+				GWT.log("Item not found!");
+			}
 		}
 
 		page.clearItems();

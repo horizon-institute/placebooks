@@ -1,7 +1,9 @@
 package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
@@ -34,6 +36,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -104,7 +107,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private int zoom = 100;
 
-	private final String placebookID;
+	private String placebookID;
 
 	public PlaceBookEditor(final User user, final PlaceBookBinder placebook)
 	{
@@ -208,7 +211,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 						try
 						{
 							updatePlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
-							saveItem.setState(SaveState.saved);
+							saveItem.markSaved();
 						}
 						catch (final Exception e)
 						{
@@ -244,16 +247,21 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 		else if (placebookID.equals("new"))
 		{
-			setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, newPlaceBook));
+			PlaceBookBinder binder = PlaceBookService.parse(PlaceBookBinder.class, newPlaceBook);
+			for(PlaceBook page: binder.getPages())
+			{
+				page.setMetadata("tempID", "" + System.currentTimeMillis());
+			}
+			setPlaceBook(binder);
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
+			PlaceBookService.getPlaceBook(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
-				public void success(final Request request, final Response response)
+				public void handleResponse(PlaceBookBinder binder)
 				{
-					setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
+					setPlaceBook(binder);
 				}
 			});
 		}
@@ -403,23 +411,16 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private void updatePlaceBook(final PlaceBookBinder newPlacebook)
 	{
-		if (placebook != null && (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId())))
+		boolean changeURL = placebook != null && (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId()));
+			
+		placebook = newPlacebook;
+		bookPanel.update(newPlacebook);
+
+		if(changeURL)
 		{
-			bookPanel.update(newPlacebook);
-
-			final PlaceBookBinder placebook = bookPanel.getPlaceBook();
-			placebook.setId(newPlacebook.getId());
-
-			saveItem.setState(SaveState.saved);
-
-			getPlaceController().goTo(new PlaceBookEditor(getUser(), placebook));
-		}
-		else
-		{
-			placebook = newPlacebook;
-			bookPanel.update(newPlacebook);
-		
-			bookPanel.resized();
+			placebookID = newPlacebook.getId();
+			
+			History.newItem(placebooks.client.PlaceBookEditor.historyMapper.getToken(this), false);
 		}
 	}
 }

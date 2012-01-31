@@ -1,7 +1,10 @@
 package placebooks.client.ui.elements;
 
+import java.util.Date;
+
 import placebooks.client.Resources;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 
 public class PlaceBookSaveItem extends PlaceBookToolbarItem
@@ -15,6 +18,10 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 
 	private static final int saveDelay = 2000;
 
+	private long lastChange;
+	private long lastSave;
+	private long saveAttempt;
+	
 	private Runnable runnable;
 
 	private Timer timer = new Timer()
@@ -22,9 +29,14 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 		@Override
 		public void run()
 		{
+			if(state == SaveState.saved)
+			{
+				return;
+			}
 			setState(SaveState.saving);
 			if(runnable != null)
 			{
+				saveAttempt = lastChange;
 				runnable.run();
 			}
 		}
@@ -39,12 +51,29 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 	{
 		timer.cancel();
 	}
-
+	
+	public void markSaved()
+	{
+		lastSave = saveAttempt;
+		if(lastSave == lastChange)
+		{
+			setState(SaveState.saved);
+		}
+		else
+		{
+			setState(SaveState.not_saved);
+		}
+	}
+	
 	public void markChanged()
 	{
 		timer.cancel();
 		timer.schedule(saveDelay);
-		setState(SaveState.not_saved);
+		lastChange = new Date().getTime();
+		if(state == SaveState.saved)
+		{
+			setState(SaveState.not_saved);
+		}
 		// changed = true;
 	}
 	

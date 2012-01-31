@@ -60,12 +60,14 @@ public class EditableTextItem extends PlaceBookItemWidget
 				fireChanged();
 			}
 		});
+		
+		textPanel.getElement().setInnerHTML(item.getText());		
 	}
 
 	@Override
 	public void refresh()
 	{
-		textPanel.getElement().setInnerHTML(item.getText());
+		//textPanel.getElement().setInnerHTML(item.getText());
 	}
 
 	@Override

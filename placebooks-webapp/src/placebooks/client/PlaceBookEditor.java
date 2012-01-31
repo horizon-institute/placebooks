@@ -18,6 +18,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 
 public class PlaceBookEditor implements EntryPoint
 {
+	public static final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 	private SimplePanel appWidget = new SimplePanel();
 
 	@Override
@@ -36,9 +37,8 @@ public class PlaceBookEditor implements EntryPoint
 		appWidget.setHeight("100%");
 
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
-		final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
-
+	
 		Place defaultPlace = new PlaceBookHome();
 
 		if (GWT.getHostPageBaseURL().endsWith("/a/view/"))

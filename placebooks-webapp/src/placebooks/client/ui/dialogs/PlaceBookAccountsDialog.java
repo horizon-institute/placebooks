@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
@@ -269,16 +270,15 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		{
 			return;
 		}						
-		PlaceBookService.getCurrentUser(new AbstractCallback()
-		{
+		PlaceBookService.getCurrentUser(new JSONResponse<User>()
+		{	
 			@Override
-			public void success(Request request, Response response)
+			public void handleResponse(User user)
 			{
-				User user = PlaceBookService.parse(User.class, response.getText());
 				if(user != null)
 				{
 					setUser(user);
-				}
+				}				
 			}
 		});
 	}
