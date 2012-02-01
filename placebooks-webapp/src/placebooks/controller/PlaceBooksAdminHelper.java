@@ -88,7 +88,7 @@ public final class PlaceBooksAdminHelper
 					 * 
 					 * @Override public void run() { try {
 					 */
-					final TileHelper.MapMetadata md = TileHelper.getMap(p);
+					final MapMetadata md = TileHelper.getMap(p);
 					p.setGeometry(md.getBoundingBox());
 					final MapImageItem mii = new MapImageItem(null, null, null, null);
 					p.addItem(mii);
