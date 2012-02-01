@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
+import placebooks.client.JSONResponse;
 import placebooks.client.Resources;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.model.Shelf;
@@ -31,9 +31,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -55,7 +52,7 @@ public class PlaceBookShelf extends Composite
 			this.place = place;
 		}
 
-		public abstract void getShelf(final RequestCallback callback);
+		public abstract void getShelf(final JSONResponse<Shelf> callback);
 
 		public abstract boolean include(PlaceBookEntry entry);
 	}
@@ -64,6 +61,21 @@ public class PlaceBookShelf extends Composite
 	{
 	}
 
+	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
+	{
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/admin/serverinfo";
+		}
+
+		@Override
+		protected String getStorageID(String id)
+		{
+			return "server.info";
+		}
+	};
+	
 	private static PlaceBookShelfUiBinder uiBinder = GWT.create(PlaceBookShelfUiBinder.class);
 
 	@UiField
@@ -210,12 +222,11 @@ public class PlaceBookShelf extends Composite
 
 	public void setShelfControl(final ShelfControl shelfControl)
 	{
-		shelfControl.getShelf(new AbstractCallback()
+		shelfControl.getShelf(new JSONResponse<Shelf>()
 		{
 			@Override
-			public void success(final Request request, final Response response)
+			public void handleResponse(Shelf shelf)
 			{
-				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
 				if (shelf == null) { return; }
 				progress.setVisible(false);
 				mapToggle.setVisible(true);
@@ -291,7 +302,9 @@ public class PlaceBookShelf extends Composite
 
 				setMapVisible(mapVisible);
 				recenter();
-			}
+
+				
+			}		
 		});
 	}
 
@@ -325,23 +338,16 @@ public class PlaceBookShelf extends Composite
 		}
 		else
 		{
-			PlaceBookService.getServerInfo(new AbstractCallback()
+			infoStore.get(null, new JSONResponse<ServerInfo>()
 			{
 				@Override
-				public void success(final Request request, final Response response)
+				public void handleResponse(ServerInfo object)
 				{
-					try
+					if(object != null)
 					{
-						MapItem.serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
-						if (MapItem.serverInfo != null)
-						{
-							createMap(MapItem.serverInfo);
-						}
-					}
-					catch (final Exception e)
-					{
-
-					}
+						MapItem.serverInfo = object;
+						createMap(object);
+					}	
 				}
 			});
 		}

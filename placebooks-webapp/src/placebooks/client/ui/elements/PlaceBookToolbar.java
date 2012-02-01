@@ -1,7 +1,9 @@
 package placebooks.client.ui.elements;
 
 import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.PlaceBookEditor;
@@ -16,7 +18,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -55,29 +56,18 @@ public class PlaceBookToolbar extends Composite
 
 	private PlaceBookPlace place;
 
-	private final RequestCallback shelfCallback = new AbstractCallback()
+	private final DataStore<User> userStore = new DataStore<User>()
 	{
 		@Override
-		public void failure(final Request request, final Response response)
+		protected String getRequestURL(final String id)
 		{
-			setUser(null);
+			return getHostURL() + "placebooks/a/currentUser";
 		}
 
 		@Override
-		public void success(final Request request, final Response response)
+		protected String getStorageID(final String id)
 		{
-			try
-			{
-				final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
-				if(shelf != null)
-				{
-					place.setUser(shelf.getUser());
-				}
-			}
-			catch (final Exception e)
-			{
-				failure(request, response);
-			}
+			return "current.user";
 		}
 	};
 
@@ -87,18 +77,18 @@ public class PlaceBookToolbar extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 
 		loginPanel.setVisible(false);
-		
+
 		accountItem.setVisible(false);
-		
+
 		createItem.setEnabled(false);
 		libraryItem.setEnabled(false);
 	}
-	
+
 	public void refresh()
 	{
 		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
 		createItem.setEnabled(place.getUser() != null);
-		
+
 		if (place != null && place.getUser() != null)
 		{
 			setUser(place.getUser());
@@ -106,6 +96,43 @@ public class PlaceBookToolbar extends Composite
 		else
 		{
 			setUser(null);
+		}
+	}
+
+	public void setPlace(final PlaceBookPlace place)
+	{
+		this.place = place;
+		homeItem.setEnabled(!(place instanceof PlaceBookHome));
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
+
+		createItem.setEnabled(place.getUser() != null);
+
+		if (place != null && place.getUser() != null)
+		{
+			setUser(place.getUser());
+		}
+		else
+		{
+			userStore.get(null, new JSONResponse<User>()
+			{
+				@Override
+				public void handleError(final Request request, final Response response, final Throwable throwable)
+				{
+					place.setUser(null);
+				}
+
+				@Override
+				public void handleOther(final Request request, final Response response)
+				{
+					place.setUser(null);
+				}
+
+				@Override
+				public void handleResponse(final User object)
+				{
+					place.setUser(object);
+				}
+			});
 		}
 	}
 
@@ -148,19 +175,27 @@ public class PlaceBookToolbar extends Composite
 				public void onClick(final ClickEvent event)
 				{
 					account.setProgress(true);
-					PlaceBookService.login(account.getUsername(), account.getPassword(), new AbstractCallback()
+					PlaceBookService.login(account.getUsername(), account.getPassword(), new JSONResponse<Shelf>()
 					{
 						@Override
-						public void failure(Request request, Response response)
+						public void handleError(final Request request, final Response response,
+								final Throwable throwable)
 						{
 							account.setProgress(false);
-							if(response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
+							if (response != null)
 							{
-								account.setError("Login not recognised. Check username and password.");								
-							}
-							else if(response.getText().startsWith("{\"detailMessage\":"))
-							{
-								account.setError(response.getText().substring(18, response.getText().length() - 2));
+								if (response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
+								{
+									account.setError("Login not recognised. Check username and password.");
+								}
+								else if (response.getText().startsWith("{\"detailMessage\":"))
+								{
+									account.setError(response.getText().substring(18, response.getText().length() - 2));
+								}
+								else
+								{
+									account.setError("Error logging in");
+								}
 							}
 							else
 							{
@@ -170,22 +205,9 @@ public class PlaceBookToolbar extends Composite
 						}
 
 						@Override
-						public void success(Request request, Response response)
+						public void handleResponse(final Shelf shelf)
 						{
-							account.hide();
-							try
-							{
-								final Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
-								if(shelf != null)
-								{
-									place.setUser(shelf.getUser());
-								}
-							}
-							catch (final Exception e)
-							{
-								failure(request, response);
-							}
-							
+							place.setUser(shelf.getUser());
 						}
 					});
 				}
@@ -206,42 +228,6 @@ public class PlaceBookToolbar extends Composite
 				place.getPlaceController().goTo(new PlaceBookHome(null));
 			}
 		});
-	}
-
-	public void setPlace(final PlaceBookPlace place)
-	{
-		this.place = place;
-		homeItem.setEnabled(!(place instanceof PlaceBookHome));
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
-
-		createItem.setEnabled(place.getUser() != null);
-
-		if (place != null && place.getUser() != null)
-		{
-			setUser(place.getUser());
-		}
-		else
-		{
-			PlaceBookService.getShelf(shelfCallback);
-		}
-	}
-
-	private void setUser(final User user)
-	{
-		loginPanel.setVisible(true);
-		if (this.user == user) { return; }
-		this.user = user;
-		if (user != null)
-		{
-			loginPanel.setVisible(false);
-			accountItem.setVisible(true);
-			accountItem.setHTML(user.getName());
-		}
-		else
-		{
-			loginPanel.setVisible(true);
-			accountItem.setVisible(false);
-		}
 	}
 
 	@UiHandler("linkedAccounts")
@@ -271,9 +257,47 @@ public class PlaceBookToolbar extends Composite
 			public void success(final Request request, final Response response)
 			{
 				account.hide();
-				PlaceBookService.login(account.getEmail(), account.getPassword(), shelfCallback);
+				PlaceBookService.login(account.getEmail(), account.getPassword(), new JSONResponse<Shelf>()
+				{
+
+					@Override
+					public void handleError(final Request request, final Response response, final Throwable throwable)
+					{
+						place.setUser(null);
+					}
+
+					@Override
+					public void handleOther(final Request request, final Response response)
+					{
+						place.setUser(null);
+					}
+
+					@Override
+					public void handleResponse(final Shelf object)
+					{
+						place.setUser(object.getUser());
+					}
+				});
 			}
 		});
 		account.show();
+	}
+
+	private void setUser(final User user)
+	{
+		loginPanel.setVisible(true);
+		if (this.user == user) { return; }
+		this.user = user;
+		if (user != null)
+		{
+			loginPanel.setVisible(false);
+			accountItem.setVisible(true);
+			accountItem.setHTML(user.getName());
+		}
+		else
+		{
+			loginPanel.setVisible(true);
+			accountItem.setVisible(false);
+		}
 	}
 }

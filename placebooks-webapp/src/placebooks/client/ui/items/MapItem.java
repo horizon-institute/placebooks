@@ -1,6 +1,6 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
@@ -21,8 +21,6 @@ import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -196,23 +194,12 @@ public class MapItem extends PlaceBookItemWidget
 			}
 			else
 			{
-				PlaceBookService.getServerInfo(new AbstractCallback()
-				{	
+				PlaceBookService.getServerInfo(new JSONResponse<ServerInfo>()
+				{
 					@Override
-					public void success(Request request, Response response)
+					public void handleResponse(ServerInfo object)
 					{
-						try
-						{
-							serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
-							if(serverInfo != null)
-							{
-								createMap(serverInfo);						
-							}
-						}
-						catch(Exception e)
-						{
-							
-						}
+						createMap(object);						
 					}
 				});
 			}

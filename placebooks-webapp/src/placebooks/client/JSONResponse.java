@@ -9,7 +9,12 @@ import com.google.gwt.json.client.JSONParser;
 
 public abstract class JSONResponse<T extends JavaScriptObject> implements RequestCallback
 {
-	public void handleError(final Throwable throwable)
+	public void handleError(final Request request, final Response response, final Throwable throwable)
+	{
+
+	}
+
+	public void handleOther(final Request request, final Response response)
 	{
 
 	}
@@ -19,8 +24,8 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 	@Override
 	public void onError(final Request request, final Throwable throwable)
 	{
-		GWT.log("Error: " + request.toString(), throwable);
-		handleError(throwable);
+		GWT.log("Error: " + throwable.getMessage(), throwable);
+		handleError(request, null, throwable);
 	}
 
 	@Override
@@ -31,13 +36,23 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 		{
 			if (response.getStatusCode() == 200)
 			{
-				handleResponse(parse(response.getText()));
+				T result = parse(response.getText());
+				if(result == null)
+				{
+					GWT.log("Error: 'null' parsed from " + response.getText());
+					handleError(request, response, new NullPointerException());
+				}
+				handleResponse(result);
+			}
+			else
+			{
+				handleOther(request, response);
 			}
 		}
 		catch (final Exception e)
 		{
-			GWT.log("Error: " + request.toString(), e);
-			handleError(e);
+			GWT.log("Error: " + response.getText(), e);
+			handleError(request, response, e);
 		}
 	}
 

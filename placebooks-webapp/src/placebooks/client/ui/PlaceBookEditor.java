@@ -3,6 +3,7 @@ package placebooks.client.ui;
 import placebooks.client.AbstractCallback;
 import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
@@ -29,6 +30,8 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -72,6 +75,34 @@ public class PlaceBookEditor extends PlaceBookPlace
 	
 	private final static String newPlaceBook = "{\"pages\":[{\"items\":[], \"metadata\":{} },{\"items\":[], \"metadata\":{} }]}";
 
+	private final DataStore<PlaceBookBinder> dataStore = new DataStore<PlaceBookBinder>()
+	{
+
+		@Override
+		protected String getStoreURL(String id)
+		{
+			return getHostURL() + "placebooks/a/saveplacebookbinder";
+		}
+
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/placebookbinder/" + id;
+		}
+
+		@Override
+		protected String getStoreData(PlaceBookBinder binder)
+		{
+			return "placebookbinder=" + URL.encodePathSegment(new JSONObject(binder).toString());
+		}
+
+		@Override
+		protected String getStorageID(String id)
+		{
+			return "placebook." + id;
+		}
+	};
+	
 	@UiField
 	Panel backPanel;
 
@@ -197,26 +228,19 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void run()
 			{
-				PlaceBookService.savePlaceBook(placebook, new AbstractCallback()
+				dataStore.put(placebook.getId(), placebook, new JSONResponse<PlaceBookBinder>()
 				{
 					@Override
-					public void failure(final Request request, final Response response)
+					public void handleError(Request request, Response response, Throwable throwable)
 					{
 						saveItem.setState(SaveState.save_error);
 					}
 
 					@Override
-					public void success(final Request request, final Response response)
+					public void handleResponse(final PlaceBookBinder binder)
 					{
-						try
-						{
-							updatePlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
-							saveItem.markSaved();
-						}
-						catch (final Exception e)
-						{
-							failure(request, response);
-						}
+						updatePlaceBook(binder);
+						saveItem.markSaved();
 					}
 				});
 			}
@@ -256,7 +280,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookID, new JSONResponse<PlaceBookBinder>()
+			dataStore.get(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
 				public void handleResponse(PlaceBookBinder binder)

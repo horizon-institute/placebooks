@@ -2,6 +2,8 @@ package placebooks.client;
 
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.ServerInfo;
+import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 
 import com.google.gwt.core.client.GWT;
@@ -52,24 +54,24 @@ public class PlaceBookService
 		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
 	}
 
-	public static void getServerInfo(final RequestCallback callback)
+	public static void getServerInfo(final JSONResponse<ServerInfo> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
 	}
 
-	public static void getShelf(final RequestCallback callback)
+	public static void getShelf(final JSONResponse<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
 	}
 
 	public static void linkAccount(final String username, final String password, final String service,
-			final AbstractCallback callback)
+			final JSONResponse<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/addLoginDetails", "username=" + username + "&password=" + password
 				+ "&service=" + service, callback);
 	}
 
-	public static void login(final String email, final String password, final RequestCallback callback)
+	public static void login(final String email, final String password, final JSONResponse<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password
 				+ "&_spring_security_remember_me=true", callback);
@@ -100,18 +102,18 @@ public class PlaceBookService
 				+ "&password=" + password, callback);
 	}
 
-	public static void savePlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)
+	public static void savePlaceBook(final PlaceBookBinder placebook, final JSONResponse<PlaceBookBinder> callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/saveplacebookbinder",
 						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
-	public static void search(final String search, final RequestCallback callback)
+	public static void search(final String search, final JSONResponse<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
 	}
 
-	public static void searchLocation(final String geometry, final RequestCallback callback)
+	public static void searchLocation(final String geometry, final JSONResponse<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebookbinder/" + geometry, callback);
 	}
