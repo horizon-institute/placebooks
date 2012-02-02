@@ -124,11 +124,25 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
+		// Clean package dir
+		try
+		{
+			final File clean = new File(pb.getPackagePath());
+			if (clean.exists())
+				FileUtils.deleteDirectory(clean);
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString());
+		}
+
+
 		final Map<String, String> out = placeBookBinderToXMLMap(pb);
 
 		if (out.size() == 0)
 			return null;
 
+		
 		final String pkgPath = pb.getPackagePath();
 		if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 		{
