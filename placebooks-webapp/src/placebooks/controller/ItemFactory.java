@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -45,6 +46,14 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.xuggler.Converter;
+import com.xuggle.xuggler.ICodec.ID;
+import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IStream;
+import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * @author pszmp
@@ -432,7 +441,7 @@ public class ItemFactory
 		StringBuilder trackGPXBuilder = new StringBuilder();
 		trackGPXBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		trackGPXBuilder.append("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Placebooks - http://www.placebooks.org\" version=\"1.1\">");
-		
+
 		Envelope envelope = new Envelope();
 		envelope.expandToInclude(trail.GetGeometry().getEnvelopeInternal());
 		double xMin = envelope.getMinX();
@@ -549,7 +558,7 @@ public class ItemFactory
 		imageItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
 	}
 
-	
+
 	/**
 	 * Convert an Peoples Collection Video to an Video item for the given user
 	 * @param testUser
@@ -611,7 +620,12 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				videoItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());				
+				videoItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());
+				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
+				{
+					transcodeVideo(videoItem.getPath());
+				}
+
 			}
 			catch (final IOException ex)
 			{
@@ -663,14 +677,14 @@ public class ItemFactory
 		{
 			log.error("Can't get geometry for Peoples Collection item: " + feature.GetPropertiesId(), e);
 		}
-		
+
 		textItem.setExternalID("peoplescollection-" + feature.GetPropertiesId());
 		textItem.addMetadataEntryIndexed("title", feature.GetProperties().GetTitle());
 		textItem.addMetadataEntryIndexed("description", feature.GetProperties().GetMarkup());
 		textItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
 	}
-	
-	
+
+
 	/**
 	 * Convert an Peoples Collection Audio to an Audio item for the given user
 	 * @param testUser
@@ -754,6 +768,48 @@ public class ItemFactory
 		audioItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
 	}
 
+	/**
+	 * Use xuggler to transcode the video to a Chroime compatible format and save as the same name with x on the end.
+	 * @param filename Input file will be transcoded to inputfilex.ogg
+	 */
+	protected static void transcodeVideo(String inputfilename)
+	{
+		log.debug("Transcoding video: " + inputfilename);
 
-	
+		String outputfilename = inputfilename +"x.ogg";
+		File outputFile = new File(outputfilename);
+		if(!outputFile.exists())
+		{
+			File inputfile = new File(inputfilename);
+			if(inputfile.exists())
+			{
+				//This is the converter object we will use.
+				Converter converter = new Converter();
+
+				// This is what's passed to the ffmpeg command line call...
+				String[] arguments = { inputfilename, "-acodec", "libvorbis", outputfilename };
+
+				try
+				{
+					//Finally, we run the transcoder with the options we provided.
+					converter.run(converter.parseOptions(converter.defineOptions(), arguments));
+				}
+				catch (Exception e)
+				{
+					log.error(e.getMessage());
+					e.printStackTrace();
+				}
+				log.debug("Transcoding of " + inputfilename + " complete.");
+			}
+			else
+			{
+				log.error("Not transcoding " + inputfilename + ": File not found!");
+			}
+		}
+		else
+		{
+			log.debug("Transcoding video not needed - file eists " + outputfilename);
+		}
+	}
+
 }

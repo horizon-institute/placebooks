@@ -1308,6 +1308,170 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	
+	@RequestMapping(value = "/admin/xserve/{type}item/{key}", method = RequestMethod.GET)
+	public void streamTranscodedMediaItem(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("type") final String type, @PathVariable("key") final String key)
+	{
+		log.debug("Request for media: " + type + " " + key);
+		String path = null;
+		final EntityManager em = EMFSingleton.getEntityManager();
+
+		try
+		{
+			final MediaItem m = em.find(MediaItem.class, key);
+			if (m == null)
+			{
+				throw new Exception("Error getting media file, invalid key");
+			}
+			path = m.getPath() + "x.ogg";
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+		}
+		finally
+		{
+			em.close();
+		}
+
+		if (path == null) { return; }
+		log.debug("Serving media: " + path);
+
+		try
+		{
+			String type_ = null;
+			if (type.trim().equalsIgnoreCase("video"))
+			{
+				type_ = "video";
+			}
+			else if (type.trim().equalsIgnoreCase("audio"))
+			{
+				type_ = "audio";
+			}
+			else
+			{
+				throw new Exception("Unrecognised media item type '" + type_ + "'");
+			}
+
+			final File file = new File(path);
+
+			String[] split = PlaceBooksAdminHelper.getExtension(path);
+			if (split == null)
+			{
+				split = new String[2];
+				split[1] = (type=="audio" ? "mp3" : "mpeg");
+				log.warn("Couildn't get name and extension for " + path + " defaulting to " + type + " and " + split[1]);
+			}
+
+			final ServletOutputStream sos = res.getOutputStream();
+			final FileInputStream fis = new FileInputStream(file);
+			BufferedInputStream bis = null;
+
+			long startByte = 0;
+			long endByte = file.length() - 1;
+
+			String contentType =  type + "/" + split[1]; 
+			log.debug("Content type: " + contentType);
+			res.setContentType("Content type: " + contentType);
+			res.addHeader("Accept-Ranges", "bytes");
+			String range = req.getHeader("Range");
+			//log.debug(range);
+			
+			if (range != null)
+			{
+				if (range.startsWith("bytes="))
+				{
+					try
+					{
+						//log.debug("Range string: " + range.substring(6));
+						final String[] rangeItems = range.substring(6).split("-");
+						switch(rangeItems.length)
+						{
+							case 0:
+								// do all of file (start and end already set above)
+								break;
+							case 1:
+								//set start position then go to end
+								startByte = Long.parseLong(rangeItems[0]);
+								break;
+							default:
+								// user start and end
+								startByte = Long.parseLong(rangeItems[0]);
+								endByte = Long.parseLong(rangeItems[1]);
+								break;
+						}
+						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
+					}
+					catch (final Exception e)
+					{
+						log.error(e.getMessage());
+					}
+				}
+			}
+			bis = new BufferedInputStream(fis);
+			long totalLengthToSend = file.length() - startByte;
+			long totalLengthOfFile = file.length();
+			//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
+
+			res.setContentLength((int) totalLengthToSend);			
+			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
+			res.addHeader("ETag", "placebooks-video-" + key);
+
+			if(totalLengthOfFile>totalLengthToSend)
+			{
+				res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+			}
+			final int bufferLen = 4096;
+			final byte data[] = new byte[bufferLen];
+
+			int totalBytesSent = 0;
+			int length = 0;
+			try
+			{
+				// Read only the number of bytes to left to send, in case it's less than the buffer size
+				// also start at the start byte
+				//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
+				bis.skip(startByte);
+				length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
+				while (length != -1)
+				{
+					sos.write(data, 0, length);
+					totalBytesSent += length;
+					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
+					
+					if(totalBytesSent >= totalLengthToSend)
+					{
+						length = -1;
+					}
+					else
+					{
+						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
+						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
+						//log.debug("Read bytes: " + length);
+					}
+				}
+			
+			}
+			finally
+			{
+				sos.close();
+				fis.close();
+			}
+		}
+		catch (final Throwable e)
+		{
+			/*Enumeration headers = req.getHeaderNames();
+			 while(headers.hasMoreElements())
+			 {
+			 String header = (String)headers.nextElement();
+			 log.info(header + ": " + req.getHeader(header));
+			 }*/
+			log.error("Error serving " + type + " " + key);
+			e.printStackTrace(System.out);
+		}
+	}
+	
 	@RequestMapping(value = "/sync/{serviceName}", method = RequestMethod.GET)
 	public void syncService(final HttpServletResponse res, @PathVariable("serviceName") final String serviceName)
 	{
