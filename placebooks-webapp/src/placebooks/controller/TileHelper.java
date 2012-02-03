@@ -95,100 +95,15 @@ public final class TileHelper
 		return url;
 	}
 
-	public static final MapMetadata getMap(final PlaceBook p)
-		throws IOException, IllegalArgumentException, Exception
+		private static final MapParam generateParameters(final Geometry g, 
+													 final int incX, 
+													 final int incY, 
+													 final boolean square,
+													 final int maxTiles)
 	{
-		if (p.getGeometry() == null)
-		{
-			p.calcBoundary();
-			if (p.getGeometry() != null)
-				return getMap(p.getGeometry());
-			else
-				return null;
-		}
-		else
-			return getMap(p.getGeometry());
-	}
+		
 
-	public static final MapMetadata getMap(final PlaceBookItem pi)
-		throws IOException, IllegalArgumentException, Exception
-	{
-		return getMap(pi.getGeometry());
-	}
-
-
-	// Geometry *must* be a boundary, i.e., four points
-	// Geometry g is updated with the boundaries of the map
-	public static final MapMetadata getMap(final Geometry g) 
-		throws IOException, IllegalArgumentException, Exception
-	{
-		log.info("getMap() geometry = " + g);
-		String layer = "5";
-		String product = null;
-		int incX = 1000;
-		int incY = 1000;
-		int pixelX = 200;
-		int pixelY = 200;
-		String fmt = "png";
-		int maxTiles = 100;
-		boolean square = false;
-
-		try
-		{
-			layer = PropertiesSingleton
-						.get(TileHelper.class.getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5");
-			product = PropertiesSingleton
-						.get(TileHelper.class.getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_TILER_PRODUCT, 
-							null);
-			incX = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_EASTING, 
-								 "1000")
-			);
-			incY = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_NORTHING, 
-								 "1000")
-			);
-			pixelX = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_X, "200")
-			);
-			pixelY = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_Y, "200")
-			);
-			fmt = PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png")
-					.toLowerCase().trim();
-			maxTiles = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(
-						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
-					)
-			);
-			square = Boolean.parseBoolean(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(
-						PropertiesSingleton.IDEN_TILER_SQUARE, "true"
-					)
-			);
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.toString());
-		}
-
-		// 0 = TL, 1 = BR
+			// 0 = TL, 1 = BR
 		Coordinate[] coords_ = new Coordinate[2];
 		coords_[0] = new Coordinate(Double.POSITIVE_INFINITY, 
 								    Double.POSITIVE_INFINITY);
@@ -277,7 +192,149 @@ public final class TileHelper
 
 
 		if (eBlocks * nBlocks > maxTiles)
+		{
 			log.error("Tiler limiting fetches to " + maxTiles + " tiles");
+			return null;
+		}
+
+		return new MapParam(bbox, new int[]{eBlocks, nBlocks});
+	}
+
+	public static final MapMetadata getMap(final PlaceBook p)
+		throws IOException, IllegalArgumentException, Exception
+	{
+		if (p.getGeometry() == null)
+		{
+			p.calcBoundary();
+			if (p.getGeometry() != null)
+				return getMap(p.getGeometry());
+			else
+				return null;
+		}
+		else
+			return getMap(p.getGeometry());
+	}
+
+	public static final MapMetadata getMap(final PlaceBookItem pi)
+		throws IOException, IllegalArgumentException, Exception
+	{
+		return getMap(pi.getGeometry());
+	}
+
+	private static final class MapParam
+	{
+		public final OSRef[] bbox;
+		public final int[] blocks;
+
+		public MapParam(final OSRef[] bbox, final int[] blocks)
+		{
+			this.bbox = bbox;
+			this.blocks = blocks;
+		}
+	}
+
+	// Geometry *must* be a boundary, i.e., four points
+	// Geometry g is updated with the boundaries of the map
+	public static final MapMetadata getMap(final Geometry g) 
+		throws IOException, IllegalArgumentException, Exception
+	{
+		log.info("getMap() geometry = " + g);
+		String[] layer = {"5"};
+		String[] product = null;
+		int[] incX = {1000};
+		int[] incY = {1000};
+		int pixelX = 200;
+		int pixelY = 200;
+		String fmt = "png";
+		int maxTiles = 100;
+		boolean square = false;
+
+		String[] incX_ = null;
+		String[] incY_ = null;
+
+		try
+		{
+			layer = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5")
+						.split(" ");
+			product = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_PRODUCT, 
+							null)
+						.split(" ");
+			incX_ = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_EASTING, 
+									 "1000")
+						.split(" ");
+			incY_ = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_NORTHING, 
+									 "1000")
+						.split(" ");
+			pixelX = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_X, "200")
+			);
+			pixelY = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_Y, "200")
+			);
+			fmt = PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png")
+					.toLowerCase().trim();
+			maxTiles = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
+					)
+			);
+			square = Boolean.parseBoolean(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_SQUARE, "true"
+					)
+			);
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString());
+		}
+
+		incX = new int[incX_.length];
+		incY = new int[incY_.length];
+		for (int i = 0; i < incX.length; ++i)
+			incX[i] = Integer.parseInt(incX_[i]);
+		for (int i = 0; i < incY.length; ++i)
+			incY[i] = Integer.parseInt(incY_[i]);
+
+		MapParam mp = null;
+		int pn = -1;
+		while (mp == null && pn < layer.length)
+		{
+			++pn;
+			try 
+			{
+				mp = generateParameters(g, incX[pn], incY[pn], square, 
+										maxTiles);
+			}
+			catch (final Throwable e)
+			{
+				System.out.println(e.toString());
+			}
+		}
+
+		if (mp == null || pn < 0 || pn > layer.length)
+			throw new Exception("Failed to find suitable parameters for map");
+		final OSRef[] bbox = mp.bbox;
+		final int eBlocks = mp.blocks[0];
+		final int nBlocks = mp.blocks[1];
 
 
 		final BufferedImage buf = 
@@ -288,7 +345,7 @@ public final class TileHelper
 		int n = 0;
 		int b = 0;
 		for (int i = (int)bbox[0].getEasting(); i <= (int)bbox[1].getEasting(); 
-			 i += incX)
+			 i += incX[pn])
 		{
 			if (b++ > maxTiles)
 			{
@@ -298,15 +355,15 @@ public final class TileHelper
 			}
 
 			int m = buf.getHeight();
-			for (int j = (int)bbox[0].getNorthing() - incY; 
-				 j <= (int)bbox[1].getNorthing() - incY; j += incY)
+			for (int j = (int)bbox[0].getNorthing() - incY[pn]; 
+				 j <= (int)bbox[1].getNorthing() - incY[pn]; j += incY[pn])
 			{
 				log.info("i = " + i + " j = " + j);
 				// %5C = \
 				final String url = 
-					buildOpenSpaceQuery(layer, incX, incY, pixelX, pixelY, 
-										new OSRef(i, j), "image%5C" + fmt,
-										product
+					buildOpenSpaceQuery(layer[pn], incX[pn], incY[pn], pixelX, 
+										pixelY, new OSRef(i, j), 
+										"image%5C" + fmt, product[pn]
 					);
 				try
 				{
@@ -393,29 +450,8 @@ public final class TileHelper
 		{
 			log.error(e.toString());
 		}
-		return new MapMetadata(mapFile, g_);
+		return new MapMetadata(mapFile, g_, pn);
 		
 	}
 
-	public static class MapMetadata
-	{
-		private File file;
-		private Geometry boundingBox;
-
-		public MapMetadata(final File file, final Geometry boundingBox)
-		{
-			this.file = file;
-			this.boundingBox = boundingBox;
-		}
-
-		public final Geometry getBoundingBox()
-		{
-			return boundingBox;
-		}
-
-		public final File getFile()
-		{
-			return file;
-		}
-	}
 }

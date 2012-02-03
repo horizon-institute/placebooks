@@ -1,6 +1,7 @@
 package placebooks.client.ui;
 
 import placebooks.client.AbstractCallback;
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.User;
@@ -160,12 +161,12 @@ public class PlaceBookPreview extends PlaceBookPlace
 		else
 		{
 			bookPanel.resized();
-			PlaceBookService.getPlaceBook(placebookID, new AbstractCallback()
+			PlaceBookService.getPlaceBook(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
-				public void success(final Request request, final Response response)
+				public void handleResponse(PlaceBookBinder binder)
 				{
-					setPlaceBook(PlaceBookService.parse(PlaceBookBinder.class, response.getText()));
+					setPlaceBook(binder);
 				}
 			});
 		}

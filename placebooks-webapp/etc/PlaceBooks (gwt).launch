@@ -12,7 +12,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="com.google.gwt.eclipse.core.moduleClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.DevMode"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-startupUrl http://127.0.0.1:8080/placebooks/index.html -war /Users/kevin/git/Bridging-the-Rural-Divide--Placebooks/placebooks-webapp/war -remoteUI &quot;${gwt_remote_ui_server_port}:${unique_id}&quot; -logLevel INFO -noserver -codeServerPort 9997 placebooks.PlaceBookEditor"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-startupUrl http://127.0.0.1:8080/placebooks/index.html -war D:\ktg\workspace\Bridging-the-Rural-Divide--Placebooks\placebooks-webapp\war -remoteUI &quot;${gwt_remote_ui_server_port}:${unique_id}&quot; -logLevel INFO -noserver -codeServerPort 9997 placebooks.PlaceBookEditor"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="placebooks-webapp"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XstartOnFirstThread -Xmx512m"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512m"/>
 </launchConfiguration>

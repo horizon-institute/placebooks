@@ -6,6 +6,7 @@ import java.util.List;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -103,6 +104,10 @@ public abstract class PlaceBookPages extends Composite
 			if(pageUI != null)
 			{
 				pageUI.update(page);
+			}
+			else
+			{
+				GWT.log("Page not matched!");
 			}
 		}
 
