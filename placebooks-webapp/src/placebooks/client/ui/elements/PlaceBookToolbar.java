@@ -132,7 +132,7 @@ public class PlaceBookToolbar extends Composite
 				{
 					place.setUser(object);
 				}
-			});
+			}, true);
 		}
 	}
 

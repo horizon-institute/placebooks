@@ -4,6 +4,7 @@
 	<ui:style>
 		.parent {
 			display: -webkit-box;
+			display: -moz-box;
 		}
 		
 		.list {
@@ -12,6 +13,8 @@
 		
 		.buttons {
 			display: -webkit-box;	
+			display: -moz-box;
+			-moz-box-orient: vertical;
 			-webkit-box-orient: vertical;
 		}
 	</ui:style>

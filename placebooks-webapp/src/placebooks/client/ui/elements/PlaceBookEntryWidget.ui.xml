@@ -18,8 +18,11 @@
 			text-align: center;
 			border-radius: 16px;
 			display: -webkit-inline-box;
+			display: -mox-inline-box;
 			-webkit-box-orient: vertical;
 			-webkit-box-align: center;
+			-moz-box-orient: vertical;
+			-moz-box-align: center;			
 			vertical-align: top;		
 		}
 		
@@ -27,6 +30,9 @@
 			display: -webkit-box;
 			-webkit-box-orient: horizontal;
 			-webkit-box-align: start;
+			display: -moz-box;
+			-moz-box-orient: horizontal;
+			-moz-box-align: start;			
 			max-width: 132px;
 		}
 		
@@ -34,6 +40,9 @@
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-orient: vertical;
+			-moz-box-align: center;			
 		}
 
 		.placebookEntry:HOVER {

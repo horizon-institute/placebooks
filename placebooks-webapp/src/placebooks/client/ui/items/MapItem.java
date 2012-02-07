@@ -1,7 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.JSONResponse;
-import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
@@ -26,8 +26,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	public static ServerInfo serverInfo = null;
-	
 	public final static String POINT_PREFIX = "POINT (";
 
 	private final EventHandler loadHandler = new EventHandler()
@@ -51,6 +49,21 @@ public class MapItem extends PlaceBookItemWidget
 	
 	private String url;
 
+	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
+	{
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/admin/serverinfo";
+		}
+
+		@Override
+		protected String getStorageID(String id)
+		{
+			return "server.info";
+		}
+	};
+	
 	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
@@ -171,6 +184,10 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void createMap(ServerInfo serverInfo)
 	{
+		if(map != null)
+		{
+			map.destroy();
+		}
 		map = Map.create(panel.getElement(), controller.canEdit());
 
 		// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
@@ -188,21 +205,14 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null)
 		{
-			if(serverInfo != null)
+			infoStore.get(null, new JSONResponse<ServerInfo>()
 			{
-				createMap(serverInfo);
-			}
-			else
-			{
-				PlaceBookService.getServerInfo(new JSONResponse<ServerInfo>()
+				@Override
+				public void handleResponse(ServerInfo object)
 				{
-					@Override
-					public void handleResponse(ServerInfo object)
-					{
-						createMap(object);						
-					}
-				});
-			}
+					createMap(object);
+				}
+			});
 		}
 
 		createRoute();

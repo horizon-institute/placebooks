@@ -6,7 +6,9 @@
 			cursor: pointer;
 			padding: 3px 5px;
 			display: -webkit-box;
+			display: -moz-box;
 			-webkit-box-align: center;
+			-moz-box-align: center;
 		}
 
 		.arrowButton:HOVER {
@@ -16,8 +18,11 @@
 		
 		.imagePanel {
 			display: -webkit-box;
+			display: -moz-box;
 			-webkit-box-align: stretch;
+			-moz-box-align: stretch;
 			-webkit-box-orient: horizontal;
+			-moz-box-orient: horizontal;
 		}
 		
 		.image {
@@ -35,11 +40,13 @@
 		}
 		
 		.flexBox {
-			-webkit-box-flex: 1
+			-webkit-box-flex: 1;
+			-moz-box-flex: 1;
 		}
 		
 		.inputPanel {
 			display: -webkit-box;
+			display: -moz-box;
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />

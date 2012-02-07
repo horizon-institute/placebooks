@@ -9,9 +9,13 @@
 			top: 0px;
 			bottom: 0px;
 			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
+			background: -moz-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));			
 			display: -webkit-box;
 			-webkit-box-pack: center;
 			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-pack: center;
+			-moz-box-align: center;			
 			cursor: wait;
 			z-index: 1000;
 		}
@@ -19,6 +23,8 @@
 		.progress {
 			display: -webkit-box;
 			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-align: center;
 			background: #555;
 			border: 1px solid #333;
 			border-radius: 5px;

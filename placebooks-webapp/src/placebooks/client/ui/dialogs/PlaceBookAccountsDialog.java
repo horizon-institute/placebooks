@@ -7,6 +7,7 @@ import java.util.List;
 import placebooks.client.AbstractCallback;
 import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
@@ -59,6 +60,21 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	private CellTable<LoginDetails> cellTable;
 	private User user;
+	
+	private final DataStore<User> userStore = new DataStore<User>()
+	{
+		@Override
+		protected String getRequestURL(final String id)
+		{
+			return getHostURL() + "placebooks/a/currentUser";
+		}
+
+		@Override
+		protected String getStorageID(final String id)
+		{
+			return "current.user";
+		}
+	};
 
 	public PlaceBookAccountsDialog(final User user)
 	{
@@ -264,16 +280,13 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	private void updateUser()
 	{
 		if (!isShowing()) { return; }
-		PlaceBookService.getCurrentUser(new JSONResponse<User>()
-		{
+		userStore.get(null, new JSONResponse<User>()
+		{	
 			@Override
-			public void handleResponse(final User user)
+			public void handleResponse(User object)
 			{
-				if (user != null)
-				{
-					setUser(user);
-				}
+				setUser(user);
 			}
-		});
+		}, true);
 	}
 }

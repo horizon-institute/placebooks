@@ -2,9 +2,7 @@ package placebooks.client;
 
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.ServerInfo;
 import placebooks.client.model.Shelf;
-import placebooks.client.model.User;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -19,11 +17,6 @@ public class PlaceBookService
 	public static void deletePlaceBook(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/deletebinder/" + key, callback);
-	}
-
-	public static void getCurrentUser(final JSONResponse<User> callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/currentUser", callback);
 	}
 
 	public static String getHostURL()
@@ -52,16 +45,6 @@ public class PlaceBookService
 	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
-	}
-
-	public static void getServerInfo(final JSONResponse<ServerInfo> callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", callback);
-	}
-
-	public static void getShelf(final JSONResponse<Shelf> callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/shelf", callback);
 	}
 
 	public static void linkAccount(final String username, final String password, final String service,

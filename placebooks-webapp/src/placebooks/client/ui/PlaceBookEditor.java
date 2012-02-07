@@ -228,6 +228,16 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void run()
 			{
+				int versionNumber = 0;
+				try
+				{
+					versionNumber = Integer.parseInt(placebook.getMetadata("version", "0"));
+				}
+				catch (NumberFormatException e)
+				{
+					GWT.log(e.getMessage(), e);
+				}
+				placebook.setMetadata("version", Integer.toString(versionNumber + 1));
 				dataStore.put(placebook.getId(), placebook, new JSONResponse<PlaceBookBinder>()
 				{
 					@Override

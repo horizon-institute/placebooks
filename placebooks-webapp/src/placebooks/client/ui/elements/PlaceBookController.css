@@ -6,6 +6,7 @@
 	border: 2px solid #000;
 	padding: 2px;
 	-webkit-transition: opacity .5s linear, visibility .5s linear;
+	-moz-transition: opacity .5s linear, visibility .5s linear;	
 	transition: opacity .5s linear, visibility .5s linear;
 	background: #fff;
 	-moz-box-shadow: 3px 3px 4px #222;

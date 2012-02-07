@@ -144,4 +144,9 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.zoomToMaxExtent();
 	}-*/;
+
+	public final native void destroy()
+	/*-{
+		this.destroy();
+	}-*/;
 }

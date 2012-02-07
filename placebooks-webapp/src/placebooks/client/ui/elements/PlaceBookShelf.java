@@ -332,25 +332,14 @@ public class PlaceBookShelf extends Composite
 
 	private void createMap()
 	{
-		if (MapItem.serverInfo != null)
+		infoStore.get(null, new JSONResponse<ServerInfo>()
 		{
-			createMap(MapItem.serverInfo);
-		}
-		else
-		{
-			infoStore.get(null, new JSONResponse<ServerInfo>()
+			@Override
+			public void handleResponse(ServerInfo object)
 			{
-				@Override
-				public void handleResponse(ServerInfo object)
-				{
-					if(object != null)
-					{
-						MapItem.serverInfo = object;
-						createMap(object);
-					}	
-				}
-			});
-		}
+				createMap(object);
+			};
+		});
 	}
 
 	private void createMap(final ServerInfo serverInfo)

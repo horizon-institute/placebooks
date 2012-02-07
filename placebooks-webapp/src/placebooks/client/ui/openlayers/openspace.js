@@ -24,7 +24,8 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 																"<a href=\"http://openspace.ordnancesurvey.co.uk/openspace/developeragreement.html#enduserlicense\" target=\"_blank\">End User License Agreement</a>",
 												projection:		EPSG27700,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
-												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 5, 2.5 ),
+												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 4, 2.5 ),
+												products:		new Array( "OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "25KR", "25K")
 												tileSize: 		new OpenLayers.Size(200 , 200)
 											}
 										)
@@ -35,19 +36,10 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 	moveTo:		function( bounds, zoomChanged, dragging )
 				{
 					var	resolution = this.getResolution();
-					this.params = OpenLayers.Util.extend( this.params, {"LAYERS":resolution} );						
-					if(resolution == 4)
-					{
-						this.params = OpenLayers.Util.extend( this.params,{"PRODUCT":"25KR"} );							
-					}
-					else if(resolution == 2.5)
-					{
-						this.params = OpenLayers.Util.extend( this.params, {"PRODUCT":"25K"} );							
-					}
-					else
-					{
-						delete this.params["PRODUCT"];
-					}
+					var index = resolutions.indexof(resolution);
+					var product = products[index];
+					this.params = OpenLayers.Util.extend( this.params, {"LAYERS":resolution} );
+					this.params = OpenLayers.Util.extend( this.params,{"PRODUCT":product} );					
 					OpenLayers.Layer.WMS.prototype.moveTo.apply(this, new Array(bounds, zoomChanged, dragging) );
 				},
 		
