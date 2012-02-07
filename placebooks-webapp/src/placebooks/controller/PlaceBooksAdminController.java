@@ -315,6 +315,16 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
+				
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						final EntityManager manager = EMFSingleton.getEntityManager();
+						ServiceRegistry.updateServices(manager, user);
+					}
+				}).start();
 			}
 			else
 			{				
@@ -329,16 +339,6 @@ public class PlaceBooksAdminController
 					log.error(e.getMessage(), e);
 				}
 			}
-
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final EntityManager manager = EMFSingleton.getEntityManager();
-					ServiceRegistry.updateServices(manager, user);
-				}
-			}).start();
 		}
 		finally
 		{
