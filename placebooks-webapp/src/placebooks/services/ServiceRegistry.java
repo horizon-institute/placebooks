@@ -32,6 +32,7 @@ public class ServiceRegistry
 	
 	public static void updateServices(final EntityManager manager, final User user)
 	{
+		if(user == null) { return; }
 		for(LoginDetails details: user.getLoginDetails())
 		{
 			Service service = services.get(details.getService());
