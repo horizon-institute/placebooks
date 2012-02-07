@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,37 +72,89 @@ public final class PlaceBooksAdminHelper
 		// Mapping
 		for (final PlaceBook p : pb.getPlaceBooks())
 		{
+			try
+			{
+				// Delete all existing maps
+				em.getTransaction().begin();
+				final List<PlaceBookItem> toDel = 
+					new ArrayList<PlaceBookItem>();
 
-			if (!p.hasPlaceBookItemClass(MapImageItem.class) && p.hasPlaceBookItemClass(GPSTraceItem.class))
+				for (final PlaceBookItem pbi : p.getItems())
+				{
+					if (pbi instanceof MapImageItem)
+					{
+						pbi.deleteItemData();
+						toDel.add(pbi);
+						em.remove(pbi);
+					}
+
+				}
+
+				for (final PlaceBookItem pbi : toDel)
+					p.removeItem(pbi);
+					 
+				em.getTransaction().commit();
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.getMessage(), e);
+			}
+			finally
+			{
+				if (em.getTransaction().isActive())
+				{
+					em.getTransaction().rollback();
+					log.error("Rolling current persist transaction back");
+				}
+			}
+
+
+//			if (!p.hasPlaceBookItemClass(MapImageItem.class) && p.hasPlaceBookItemClass(GPSTraceItem.class))
+			// Create overview map
+			if (p.hasPlaceBookItemClass(GPSTraceItem.class))
 			{
 				try
 				{
 					p.calcBoundary();
-					/*
-					 * final int timeout = Integer.parseInt( PropertiesSingleton
-					 * .get(PlaceBooksAdminHelper.class.getClassLoader()) .getProperty(
-					 * PropertiesSingleton.IDEN_WGET_TIMEOUT, "20000" ) );
-					 */
 					em.getTransaction().begin();
-					/*
-					 * final Runnable r = new Runnable() {
-					 * 
-					 * @Override public void run() { try {
-					 */
-					final TileHelper.MapMetadata md = TileHelper.getMap(p);
+					final MapMetadata md = TileHelper.getMap(p);
 					p.setGeometry(md.getBoundingBox());
 					final MapImageItem mii = new MapImageItem(null, null, null, null);
 					p.addItem(mii);
 					mii.setPlaceBook(p);
 					mii.setOwner(p.getOwner());
 					mii.setGeometry(p.getGeometry());
+					mii.addMetadataEntry("type", "overview");
 					mii.setPath(md.getFile().getPath());
-					/*
-					 * } catch (final Throwable e) { log.error(e.getMessage(), e); } } }; final
-					 * Thread t = new Thread(r); t.start();
-					 * log.info("Waiting for process... allowing " + timeout + " millis");
-					 * Thread.sleep(timeout); t.destroy();
-					 */
+					log.debug("Adding overview MapImageItem");
+
+					if (md.getSelectedScale() > 0)
+					{
+						// Create local content maps if necessary
+						final List<PlaceBookItem> toAdd = 
+							new ArrayList<PlaceBookItem>();
+						for (final PlaceBookItem pbi : p.getItems())
+						{
+							if (!(pbi instanceof GPSTraceItem) && 
+								pbi.getMetadataValue("mapItemID") != null)
+							{
+								final MapMetadata md_ = TileHelper.getMap(pbi);
+								final MapImageItem mii_ = 
+									new MapImageItem(null, null, null, null);
+								mii_.setPlaceBook(p);
+								mii_.setOwner(p.getOwner());
+								mii_.setGeometry(p.getGeometry());
+								mii_.addMetadataEntry("type", "content");
+								mii_.addMetadataEntry("ref", pbi.getKey());
+								mii_.setPath(md_.getFile().getPath());
+								toAdd.add(mii_);
+								log.debug("Adding content-local MapImageItem");
+							}
+						}
+
+						for (final PlaceBookItem pbi : toAdd)
+							p.addItem(pbi);
+					}
 
 					em.getTransaction().commit();
 				}
@@ -117,18 +170,34 @@ public final class PlaceBooksAdminHelper
 						log.error("Rolling current persist transaction back");
 					}
 				}
+
 			}
-			else
-			{
-				log.info("PlaceBook already has MapImageItem");
-			}
+			//else
+			//{
+			//	log.info("PlaceBook already has MapImageItem");
+			//}
+
 		}
+
+		// Clean package dir
+		try
+		{
+			final File clean = new File(pb.getPackagePath());
+			if (clean.exists())
+				FileUtils.deleteDirectory(clean);
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.toString());
+		}
+
 
 		final Map<String, String> out = placeBookBinderToXMLMap(pb);
 
 		if (out.size() == 0)
 			return null;
 
+		
 		final String pkgPath = pb.getPackagePath();
 		if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
 		{

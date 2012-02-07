@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -230,58 +231,73 @@ public class PeoplesCollectionService extends Service
 	protected GPSTraceItem importTrail(EntityManager manager, User user, PeoplesCollectionTrailResponse trail, 
 			GPSTraceItem traceItem, PeoplesCollectionTrailListItem trailListItem, ArrayList<String> itemsSeen) throws Exception
 			{
-		ItemFactory.toGPSTraceItem(user, trail, traceItem);
-		itemsSeen.add(traceItem.getExternalID());
-		log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
-		traceItem.saveUpdatedItem();
+		log.info("Importing Peoples Collection Trail: " + trail.GetPropertiesId() + " '" + trail.GetProperties().GetTitle());
+		try
+		{
+			ItemFactory.toGPSTraceItem(user, trail, traceItem);
+			itemsSeen.add(traceItem.getExternalID());
+			log.debug("Saving GPSTraceItem: " + traceItem.getExternalID());
+			traceItem.saveUpdatedItem();
+		}
+		catch(Exception ex)
+		{
+			log.error(ex.getMessage());
+		}
 
 		for(int trailItemId : trail.GetProperties().GetItems())
 		{
-			PeoplesCollectionItemResponse trailItem = Item(trailItemId);
-			PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
-			for(PeoplesCollectionItemFeature feature : features)
+			try
 			{
-				String featureType = feature.GetProperties().GetIcontype();
-				PlaceBookItem addedItem = null;
-				if(featureType.equals("image"))
+				PeoplesCollectionItemResponse trailItem = Item(trailItemId);
+				PeoplesCollectionItemFeature[] features = trailItem.getFeatures();
+				for(PeoplesCollectionItemFeature feature : features)
 				{
-					ImageItem newItem = new ImageItem();
-					ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-					newItem.saveUpdatedItem();
-					addedItem = newItem;
-				}
-				if(featureType.equals("video"))
-				{
-					VideoItem newItem = new VideoItem();
-					ItemFactory.toVideoItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-					newItem.saveUpdatedItem();
-					addedItem = newItem;
-				}
-				if(featureType.equals("audio"))
-				{
-					AudioItem newItem = new AudioItem();
-					ItemFactory.toAudioItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-					newItem.saveUpdatedItem();
-					addedItem = newItem;
-				}
+					String featureType = feature.GetProperties().GetIcontype();
+					PlaceBookItem addedItem = null;
+					if(featureType.equals("image"))
+					{
+						ImageItem newItem = new ImageItem();
+						ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+						newItem.saveUpdatedItem();
+						addedItem = newItem;
+					}
+					if(featureType.equals("video"))
+					{
+						VideoItem newItem = new VideoItem();
+						ItemFactory.toVideoItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+						newItem.saveUpdatedItem();
+						addedItem = newItem;
+					}
+					if(featureType.equals("audio"))
+					{
+						AudioItem newItem = new AudioItem();
+						ItemFactory.toAudioItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+						newItem.saveUpdatedItem();
+						addedItem = newItem;
+					}
 
-				if(featureType.equals("story"))
-				{
-					TextItem newItem = new TextItem();
-					ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
-					newItem.saveUpdatedItem();
-					addedItem = newItem;
-				}
+					if(featureType.equals("story"))
+					{
+						TextItem newItem = new TextItem();
+						ItemFactory.toTextItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);
+						newItem.saveUpdatedItem();
+						addedItem = newItem;
+					}
 
-				if(addedItem==null)
-				{
-					log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
+					if(addedItem==null)
+					{
+						log.debug("Unknown Peoples Collection feature type: " + featureType + " for item " + feature.GetPropertiesId());
+					}
+					else
+					{
+						log.debug("Saved item: " + addedItem.getExternalID());
+						itemsSeen.add(addedItem.getExternalID());
+					}
 				}
-				else
-				{
-					log.debug("Saved item: " + addedItem.getExternalID());
-					itemsSeen.add(addedItem.getExternalID());
-				}
+			}
+			catch(Exception ex)
+			{
+				log.error(ex.getMessage());
 			}
 		}
 		return traceItem;
@@ -300,7 +316,7 @@ public class PeoplesCollectionService extends Service
 		allTrailListItems.addAll( trailsResponse.GetMyTrails());
 		allTrailListItems.addAll( trailsResponse.GetMyFavouriteTrails());
 
-		
+
 		for(PeoplesCollectionTrailListItem trailListItem : allTrailListItems)
 		{
 			PeoplesCollectionTrailResponse trail = PeoplesCollectionService.Trail(trailListItem.GetPropertiesId());
@@ -317,7 +333,7 @@ public class PeoplesCollectionService extends Service
 
 		int itemsDeleted = cleanupItems(manager, itemsSeen, user);		
 		log.info("Finished PeoplesCollection cleanup, " + itemsSeen.size() + " items added/updated, " + itemsDeleted + " removed");
-		
+
 		PeoplesCollectionSearchTrailsResponse searchResponse = Search(54, -4, 0.1);
 		for(PeoplesCollectionTrailListItem trailListItem : searchResponse.GetTrails())
 		{

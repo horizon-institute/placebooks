@@ -14,6 +14,8 @@ public final class PropertiesSingleton
 	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";
 	public static final String IDEN_AUDIO_MAX_SIZE = "audioitem.size_limit";
 
+	public static final String VIDEOITEM_FFMPEG_TRANSCODE = "videoitem.ffmpeg_transcode";
+	
 	public static final String IDEN_CONFIG = "config.name";
 	public static final String IDEN_IMAGE_MAX_SIZE = "imageitem.size_limit";
 	public static final String IDEN_MEDIA = "media.dir";
@@ -39,6 +41,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_TILER_PIXEL_Y = "tiler.y_pixels";
 	public static final String IDEN_TILER_MAX_TILES = "tiler.max_tiles";
 	public static final String IDEN_TILER_SQUARE = "tiler.square";
+	public static final String IDEN_TILER_MAX_ATTEMPTS = "tiler.max_attempts";	
 	public static final String IDEN_TILER_PRODUCT = "tiler.product";
 
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
