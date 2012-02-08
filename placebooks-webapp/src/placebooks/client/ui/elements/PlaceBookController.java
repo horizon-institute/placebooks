@@ -290,6 +290,7 @@ public class PlaceBookController
 				GWT.log("Drag Start");
 				if (dragItemFrame != null)
 				{
+					dragItemFrame.getPanel().getPage().remove(dragItemFrame);
 					// TODO pages.remove(dragItemFrame);
 				}
 				dragFrame.setItemWidget(dragItem);
