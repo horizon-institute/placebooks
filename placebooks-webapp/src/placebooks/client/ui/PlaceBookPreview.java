@@ -24,6 +24,7 @@ import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.Anchor;
@@ -137,7 +138,9 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 
 		refresh();
-		loadingPanel.setVisible(false);		
+		loadingPanel.setVisible(false);
+		
+		bookPanel.resized();
 	}
 
 	@Override
@@ -160,7 +163,6 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 		else
 		{
-			bookPanel.resized();
 			PlaceBookService.getPlaceBook(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
@@ -170,6 +172,16 @@ public class PlaceBookPreview extends PlaceBookPlace
 				}
 			});
 		}
+		
+		bookPanel.resized();
+		new Timer()
+		{
+			@Override
+			public void run()
+			{
+				bookPanel.resized();	
+			}
+		}.schedule(10);
 	}
 
 	@UiHandler("delete")

@@ -93,7 +93,7 @@ public abstract class PlaceBookPages extends Composite
 		}
 		return null;
 	}
-	
+
 	public void update(final PlaceBookBinder newPlaceBook)
 	{
 		this.placebook = newPlaceBook;
@@ -110,8 +110,6 @@ public abstract class PlaceBookPages extends Composite
 				GWT.log("Page not matched!");
 			}
 		}
-
-		resized();
 	}
 
 	public Iterable<PlaceBookPage> getPages()

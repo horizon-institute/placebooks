@@ -194,15 +194,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 
 		loadingPanel.setVisible(false);
-		bookPanel.resized();
 	}
-
+	
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		Widget editor;
 		editor = uiBinder.createAndBindUi(this);
-
+		
 		loadingPanel.setVisible(true);
 		
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
@@ -301,8 +300,16 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 		
 		bookPanel.resized();
-	}
-
+		new Timer()
+		{
+			@Override
+			public void run()
+			{
+				bookPanel.resized();	
+			}
+		}.schedule(10);
+	}	
+	
 	public void updatePalette()
 	{
 		PlaceBookService.getPaletteItems(new AbstractCallback()
@@ -456,5 +463,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			
 			History.newItem(placebooks.client.PlaceBookEditor.historyMapper.getToken(this), false);
 		}
+		
+		bookPanel.resized();
 	}
 }

@@ -84,28 +84,9 @@ public class PlaceBookToolbar extends Composite
 		libraryItem.setEnabled(false);
 	}
 
-	public void refresh()
-	{
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
-		createItem.setEnabled(place.getUser() != null);
-
-		if (place != null && place.getUser() != null)
-		{
-			setUser(place.getUser());
-		}
-		else
-		{
-			setUser(null);
-		}
-	}
-
 	public void setPlace(final PlaceBookPlace place)
 	{
 		this.place = place;
-		homeItem.setEnabled(!(place instanceof PlaceBookHome));
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
-
-		createItem.setEnabled(place.getUser() != null);
 
 		if (place != null && place.getUser() != null)
 		{
@@ -134,6 +115,25 @@ public class PlaceBookToolbar extends Composite
 				}
 			}, true);
 		}
+	}
+
+	public void setUser(final User user)
+	{
+		loginPanel.setVisible(true);
+		if (this.user == user) { return; }
+		this.user = user;
+		if (user != null)
+		{
+			loginPanel.setVisible(false);
+			accountItem.setVisible(true);
+			accountItem.setHTML(user.getName());
+		}
+		else
+		{
+			loginPanel.setVisible(true);
+			accountItem.setVisible(false);
+		}
+		refreshItems();
 	}
 
 	@UiHandler("homeItem")
@@ -283,21 +283,10 @@ public class PlaceBookToolbar extends Composite
 		account.show();
 	}
 
-	private void setUser(final User user)
+	private void refreshItems()
 	{
-		loginPanel.setVisible(true);
-		if (this.user == user) { return; }
-		this.user = user;
-		if (user != null)
-		{
-			loginPanel.setVisible(false);
-			accountItem.setVisible(true);
-			accountItem.setHTML(user.getName());
-		}
-		else
-		{
-			loginPanel.setVisible(true);
-			accountItem.setVisible(false);
-		}
+		homeItem.setEnabled(!(place instanceof PlaceBookHome));
+		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
+		createItem.setEnabled(place.getUser() != null);
 	}
 }

@@ -19,7 +19,8 @@
 			-webkit-box-algin: center;
 			display: -moz-box;
 			-moz-box-orient: horizontal;
-			-moz-box-algin: center;			
+			-moz-box-algin: center;	
+			width: 100%;		
 		}
 		
 		.toolbarMenu {

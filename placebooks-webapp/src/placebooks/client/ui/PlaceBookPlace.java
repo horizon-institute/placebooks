@@ -55,6 +55,6 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	public void setUser(final User user)
 	{
 		this.user = user;
-		toolbar.setPlace(this);
+		toolbar.setUser(user);
 	}
 }
