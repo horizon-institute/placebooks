@@ -89,16 +89,19 @@ public class WebBundleItem extends PlaceBookItem
 	}
 
 	@Override
-	public void deleteItemData()
+	public boolean deleteItemData()
 	{
 		try
 		{
 			FileUtils.deleteDirectory(new File(webBundlePath));
+			return true;
 		}
 		catch (final Exception e)
 		{
 			log.error(e.toString());
 		}
+
+		return false;
 	}
 
 	public String generateWebBundlePath()

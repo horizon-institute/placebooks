@@ -129,8 +129,9 @@ public class GPSTraceItem extends PlaceBookItem
 	}
 	
 	@Override
-	public void deleteItemData()
+	public boolean deleteItemData()
 	{
+		return true;
 	}
 
 	@Override

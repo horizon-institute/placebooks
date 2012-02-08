@@ -191,13 +191,13 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	/**
 	 * Each class must provide a method for deleting any data sitting on disk
 	 */
-	public abstract void deleteItemData();
+	public abstract boolean deleteItemData();
 
 	/**
 	 * Header common to all items
 	 * 
 	 * @param config
-	 * @return
+	 * @return 
 	 */
 	protected Element getConfigurationHeader(final Document config)
 	{
