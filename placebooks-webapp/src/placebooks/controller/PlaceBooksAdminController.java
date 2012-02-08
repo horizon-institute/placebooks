@@ -1160,8 +1160,9 @@ public class PlaceBooksAdminController
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
-			if(m instanceof VideoItem)
+			if(type.trim().equalsIgnoreCase("video"))
 			{
+				log.debug("Getting chrome path for VideoItem");
 				VideoItem v = (VideoItem) m;  
 				path = v.getChromePath();
 			}
