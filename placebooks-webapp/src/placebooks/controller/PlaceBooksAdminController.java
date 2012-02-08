@@ -1496,7 +1496,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/add_item/upload", method = RequestMethod.POST)
-	public ModelAndView uploadFile(final HttpServletRequest req)
+	public void uploadFile(final HttpServletRequest req, final HttpServletResponse response)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final ItemData itemData = new ItemData();
@@ -1618,11 +1618,24 @@ public class PlaceBooksAdminController
 
 			manager.getTransaction().commit();
 
-			return new ModelAndView("message", "text", "Success");
+			response.setContentType("application/json");			
+			response.getWriter().write("Success");
+			response.getWriter().flush();
 		}
 		catch (final Exception e)
 		{
 			log.error(e.toString(), e);
+			try
+			{
+				response.setContentType("application/json");				
+				response.setStatus(500);
+				response.getWriter().write(e.getMessage());
+				response.getWriter().flush();
+			}
+			catch(Exception e2)
+			{
+				log.error(e2.toString(), e2);
+			}					
 		}
 		finally
 		{
@@ -1633,8 +1646,6 @@ public class PlaceBooksAdminController
 
 			manager.close();
 		}
-
-		return new ModelAndView("message", "text", "Failed");
 	}
 
 	// TODO: needs to be viewPlaceBookBinder
