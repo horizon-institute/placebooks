@@ -161,7 +161,7 @@ public abstract class MediaItem extends PlaceBookItem
 	}
 
 	@Override
-	public void deleteItemData()
+	public boolean deleteItemData()
 	{
 		// TODO: check no other items are using this file!
 		final EntityManager em = EMFSingleton.getEntityManager();
@@ -171,11 +171,12 @@ public abstract class MediaItem extends PlaceBookItem
 		if(q.getResultList().size()==0)
 		{
 			log.debug("Deleting: " + getPath());
-			if (getPath() == null) { return; }
+			if (getPath() == null) { return false; }
 			final File f = new File(getPath());
 			if (f.exists())
 			{
 				f.delete();
+				return true;
 			}
 			else
 			{
@@ -186,6 +187,7 @@ public abstract class MediaItem extends PlaceBookItem
 		{
 			log.debug("File in use by other items, not deleting: " + this.hash);
 		}
+		return true;
 	}
 
 	public String getPath()

@@ -97,7 +97,6 @@ public class ImageItem extends MediaItem
 		BufferedImage originalImage = ImageIO.read(imageFile);
 
 		String thumbPath = FileHelper.GetSavePath(PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_THUMBS, ""));
-		log.debug("Thumbnail path is:" + thumbPath);
 		File thumbFile = new File(thumbPath + File.separator + this.getHash());
 
 		if(!thumbFile.exists() || (thumbFile.length()==0))
@@ -135,7 +134,30 @@ public class ImageItem extends MediaItem
 		is.close();
 		createThumbnail();
 	}
-	
+
+	@Override
+	public boolean deleteItemData()
+	{
+		if (super.deleteItemData())
+		{
+			final File tf = 
+				new File(PropertiesSingleton.get(
+					this.getClass().getClassLoader())
+								   .getProperty(PropertiesSingleton.IDEN_THUMBS,
+								   				"") 
+					+ File.separator + this.getHash()
+				);
+			
+			if (tf.exists())
+			{
+				tf.delete();
+				return true;
+			}
+
+		}
+		return false;
+	}
+
 	@Override
 	public ImageItem deepCopy()
 	{

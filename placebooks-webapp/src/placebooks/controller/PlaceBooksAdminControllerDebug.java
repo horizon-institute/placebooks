@@ -419,35 +419,6 @@ public class PlaceBooksAdminControllerDebug
 		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 	}
 
-	@RequestMapping(value = "/admin/deletebinder/{key}", 
-			method = RequestMethod.GET)
-			public ModelAndView deletePlaceBookBinder(@PathVariable("key") final String key)
-	{
-
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		try
-		{
-			pm.getTransaction().begin();
-			final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
-			pm.remove(p);
-			pm.getTransaction().commit();
-		}
-		finally
-		{
-			if (pm.getTransaction().isActive())
-			{
-				pm.getTransaction().rollback();
-				log.error("Rolling current delete single transaction back");
-			}
-
-			pm.close();
-		}
-
-		log.info("Deleted PlaceBook");
-
-		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
-	}
 	
 	@RequestMapping(value = "/admin/delete_placebook/{key}", 
 			method = RequestMethod.GET)
