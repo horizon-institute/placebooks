@@ -12,10 +12,15 @@
 			color: #ccc;
 			background: #2d2d2d;
 			background: -webkit-linear-gradient(top, #2d2d2d, #111);
+			background: -moz-linear-gradient(top, #2d2d2d, #111);			
 			border-bottom: 1px solid #84817a;
 			display: -webkit-box;
 			-webkit-box-orient: horizontal;
 			-webkit-box-algin: center;
+			display: -moz-box;
+			-moz-box-orient: horizontal;
+			-moz-box-algin: center;	
+			width: 100%;		
 		}
 		
 		.toolbarMenu {
@@ -24,6 +29,7 @@
 			background: #000;
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 			-webkit-transition: clip 0.2s linear;
+			-moz-transition: clip 0.2s linear;			
 	        transition: clip 0.5s linear;  			
 		}		
 		
@@ -45,10 +51,12 @@
 		.toolbarLogin {
 			margin-right: 50px;
 			display: -webkit-box;
+			display: -moz-box;			
 		}
 		
 		.spacer {
 			-webkit-box-flex: 1;
+			-moz-box-flex: 1;			
 		}
 	</ui:style>	
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>

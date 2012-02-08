@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -195,7 +196,21 @@ public final class TileHelper
 		{
 			log.error("Tiler limiting fetches to " + maxTiles + " tiles");
 			return null;
+		} 
+		else if (eBlocks * nBlocks == 1)
+		{
+			if (bbox_[0].getEasting() - bbox[0].getEasting() > (incX / 2))
+				bbox[1].setEasting(bbox[1].getEasting() + incX);
+			else
+				bbox[0].setEasting(bbox[0].getEasting() - incX);
+			if (bbox_[0].getNorthing() - bbox[0].getNorthing() < (incY / 2))
+				bbox[1].setNorthing(bbox[1].getNorthing() + incY);
+			else
+				bbox[0].setNorthing(bbox[0].getNorthing() - incY);
+		
+			eBlocks = 2; nBlocks = 2;
 		}
+
 
 		return new MapParam(bbox, new int[]{eBlocks, nBlocks});
 	}
@@ -248,6 +263,7 @@ public final class TileHelper
 		String fmt = "png";
 		int maxTiles = 100;
 		boolean square = false;
+		int maxAttempts = 10;
 
 		String[] incX_ = null;
 		String[] incY_ = null;
@@ -292,6 +308,13 @@ public final class TileHelper
 					.get(TileHelper.class.getClassLoader())
 					.getProperty(
 						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
+					)
+			);
+			maxAttempts = Integer.parseInt(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_MAX_ATTEMPTS, "10"
 					)
 			);
 			square = Boolean.parseBoolean(
@@ -344,7 +367,7 @@ public final class TileHelper
 
 		int n = 0;
 		int b = 0;
-		for (int i = (int)bbox[0].getEasting(); i <= (int)bbox[1].getEasting(); 
+		for (int i = (int)bbox[0].getEasting(); i < (int)bbox[1].getEasting(); 
 			 i += incX[pn])
 		{
 			if (b++ > maxTiles)
@@ -354,36 +377,49 @@ public final class TileHelper
 				break;
 			}
 
-			int m = buf.getHeight();
+			int m = buf.getHeight() - pixelY;
 			for (int j = (int)bbox[0].getNorthing() - incY[pn]; 
-				 j <= (int)bbox[1].getNorthing() - incY[pn]; j += incY[pn])
+				 j < (int)bbox[1].getNorthing() - incY[pn]; j += incY[pn])
 			{
-				log.info("i = " + i + " j = " + j);
 				// %5C = \
 				final String url = 
 					buildOpenSpaceQuery(layer[pn], incX[pn], incY[pn], pixelX, 
 										pixelY, new OSRef(i, j), 
 										"image%5C" + fmt, product[pn]
 					);
-				try
+
+				int attempts = 0;
+				boolean success = true;
+				do 
 				{
-					
-					final URLConnection conn = 
-						CommunicationHelper.getConnection(new URL(url));
+					InputStream is = null;
+					try
+					{
+						final URLConnection conn = 
+							CommunicationHelper.getConnection(new URL(url));
+						is = conn.getInputStream();
+					}
+					catch (final Throwable e)
+					{
+						//log.error(e.toString());
+						success = false;
+						++attempts;
+						log.error("Retrying... attempt " + attempts
+								   + " of " + maxAttempts);
+					}
 
-					Image tile = null;
-					tile = ImageIO.read(
-								new BufferedInputStream(conn.getInputStream())
-						   );
+					if (success)
+					{
+						Image tile = null;
+						tile = ImageIO.read(
+									new BufferedInputStream(is)
+							   );
 
-					graphics.drawImage(tile, n, m, null);
-					log.info("Drawing tile at " + n + ", " + m);
-				}
-				catch (final Throwable e)
-				{
-					log.error(e.toString());
-				}
-
+						graphics.drawImage(tile, n, m, null);
+						log.info("Drawing tile at " + n + ", " + m);
+					}
+				} while (!success && attempts < maxAttempts);
+			
 				m -= pixelY;
 			}
 
@@ -395,7 +431,8 @@ public final class TileHelper
 		File mapFile = null;
 		try
 		{
-			final String path = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			final String path = PropertiesSingleton.get(
+				TileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 			if (!new File(path).exists() && !new File(path).mkdirs()) 

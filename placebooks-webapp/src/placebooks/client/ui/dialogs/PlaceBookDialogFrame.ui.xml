@@ -14,6 +14,7 @@
 		
 		.dialogGlass {
 			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
+			background: -moz-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));			
 			z-index: 2000;
 		}	
 	

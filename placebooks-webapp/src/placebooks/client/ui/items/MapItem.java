@@ -1,7 +1,7 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
+import placebooks.client.JSONResponse;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
@@ -21,15 +21,11 @@ import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
 {
-	public static ServerInfo serverInfo = null;
-	
 	public final static String POINT_PREFIX = "POINT (";
 
 	private final EventHandler loadHandler = new EventHandler()
@@ -53,6 +49,21 @@ public class MapItem extends PlaceBookItemWidget
 	
 	private String url;
 
+	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
+	{
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/admin/serverinfo";
+		}
+
+		@Override
+		protected String getStorageID(String id)
+		{
+			return "server.info";
+		}
+	};
+	
 	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
@@ -173,6 +184,10 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void createMap(ServerInfo serverInfo)
 	{
+		if(map != null)
+		{
+			map.destroy();
+		}
 		map = Map.create(panel.getElement(), controller.canEdit());
 
 		// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
@@ -190,32 +205,14 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null)
 		{
-			if(serverInfo != null)
+			infoStore.get(null, new JSONResponse<ServerInfo>()
 			{
-				createMap(serverInfo);
-			}
-			else
-			{
-				PlaceBookService.getServerInfo(new AbstractCallback()
-				{	
-					@Override
-					public void success(Request request, Response response)
-					{
-						try
-						{
-							serverInfo = PlaceBookService.parse(ServerInfo.class, response.getText());
-							if(serverInfo != null)
-							{
-								createMap(serverInfo);						
-							}
-						}
-						catch(Exception e)
-						{
-							
-						}
-					}
-				});
-			}
+				@Override
+				public void handleResponse(ServerInfo object)
+				{
+					createMap(object);
+				}
+			});
 		}
 
 		createRoute();

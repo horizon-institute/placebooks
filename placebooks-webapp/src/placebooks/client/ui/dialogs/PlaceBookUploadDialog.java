@@ -10,6 +10,8 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -112,14 +114,18 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
 				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
 				{
+					
 					@Override
-					public void handleError(Throwable throwable)
+					public void handleError(Request request, Response response, Throwable throwable)
 					{
 						infoLabel.setText("Upload Failed");
-//						final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
-//						item.getRootPanel().getElement().getStyle().clearOpacity();
-//						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
-//						item.getItemWidget().update(placebookItem);
+						if(response != null)
+						{
+							final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
+							item.getRootPanel().getElement().getStyle().clearOpacity();
+							item.getRootPanel().getElement().getStyle().clearBackgroundColor();
+							item.getItemWidget().update(placebookItem);
+						}
 					}
 
 					@Override

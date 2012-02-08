@@ -1,7 +1,9 @@
 package placebooks.client.ui;
 
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookShelf;
 import placebooks.client.ui.elements.PlaceBookShelf.ShelfControl;
@@ -17,7 +19,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.geolocation.client.Geolocation;
 import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.PositionError;
-import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.resources.client.ImageResource;
@@ -186,7 +187,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 						}
 						
 						@Override
-						public void getShelf(RequestCallback callback)
+						public void getShelf(JSONResponse<Shelf> callback)
 						{
 							PlaceBookService.searchLocation(geometry, callback);
 						}
@@ -231,7 +232,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 				}
 				
 				@Override
-				public void getShelf(RequestCallback callback)
+				public void getShelf(JSONResponse<Shelf> callback)
 				{
 					PlaceBookService.search(searchString, callback);	
 				}

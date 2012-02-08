@@ -7,6 +7,7 @@ import java.util.List;
 import placebooks.client.AbstractCallback;
 import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.LoginDetails;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
@@ -56,17 +57,32 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	@UiField
 	Panel buttonPanel;
-	
+
 	private CellTable<LoginDetails> cellTable;
 	private User user;
+	
+	private final DataStore<User> userStore = new DataStore<User>()
+	{
+		@Override
+		protected String getRequestURL(final String id)
+		{
+			return getHostURL() + "placebooks/a/currentUser";
+		}
+
+		@Override
+		protected String getStorageID(final String id)
+		{
+			return "current.user";
+		}
+	};
 
 	public PlaceBookAccountsDialog(final User user)
 	{
 		this.user = user;
 		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
-		center();		
-		updateUser();		
+		center();
+		updateUser();
 	}
 
 	/**
@@ -106,7 +122,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				{
 					return "Sync In Progress";
 				}
-				else if(object.getLastSync() == 0)
+				else if (object.getLastSync() == 0)
 				{
 					return "Never Synced";
 				}
@@ -117,24 +133,23 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			}
 		};
 		cellTable.addColumn(lastUpdateColumn, "Status");
-		
+
 		final EnabledButtonCell<LoginDetails> syncCell = new EnabledButtonCell<LoginDetails>()
 		{
 
 			@Override
-			public String getText(LoginDetails object)
+			public String getText(final LoginDetails object)
 			{
 				return "Sync Now";
 			}
 
 			@Override
-			public boolean isEnabled(LoginDetails object)
+			public boolean isEnabled(final LoginDetails object)
 			{
 				return !object.isSyncInProgress();
 			}
 		};
-		
-		
+
 		final Column<LoginDetails, LoginDetails> updateColumn = new Column<LoginDetails, LoginDetails>(syncCell)
 		{
 			@Override
@@ -146,7 +161,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		updateColumn.setFieldUpdater(new FieldUpdater<LoginDetails, LoginDetails>()
 		{
 			@Override
-			public void update(int index, LoginDetails object, LoginDetails value)
+			public void update(final int index, final LoginDetails object, final LoginDetails value)
 			{
 				PlaceBookService.sync(object.getService(), new AbstractCallback()
 				{
@@ -156,7 +171,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 					}
 				});
 				object.setSyncInProgress(true);
-				setUser(user);			
+				setUser(user);
 			}
 		});
 		cellTable.addColumn(updateColumn);
@@ -173,47 +188,47 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		initTableColumns(selectionModel);
 
 		tablePanel.add(cellTable);
-		
+
 		setUser(user);
 	}
-	
+
 	private void setUser(final User user)
 	{
 		this.user = user;
-		
+
 		final List<String> serviceList = new ArrayList<String>();
 		for (final String service : SERVICES)
 		{
 			serviceList.add(service);
 		}
-		
+
 		boolean syncing = false;
 		final List<LoginDetails> list = new ArrayList<LoginDetails>();
 		for (final LoginDetails details : user.getLoginDetails())
 		{
-			if(details.isSyncInProgress())
+			if (details.isSyncInProgress())
 			{
 				syncing = true;
 			}
 			serviceList.remove(details.getService());
 			list.add(details);
 		}
-		
-		if(syncing)
+
+		if (syncing)
 		{
 			new Timer()
 			{
 				@Override
 				public void run()
-				{	
-					updateUser();					
+				{
+					updateUser();
 				}
 			}.schedule(1000);
 		}
 
 		buttonPanel.clear();
 		cellTable.setRowData(list);
-	
+
 		for (final String service : serviceList)
 		{
 			buttonPanel.add(new Button("Link " + service + " Account", new ClickHandler()
@@ -222,7 +237,8 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				@Override
 				public void onClick(final ClickEvent arg0)
 				{
-					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account", "Link Account", service + " Username:");
+					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account",
+							"Link Account", service + " Username:");
 					account.addClickHandler(new ClickHandler()
 					{
 
@@ -231,26 +247,23 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 						{
 							account.setProgress(true);
 							PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), service,
-															new AbstractCallback()
+															new JSONResponse<Shelf>()
 															{
+
 																@Override
-																public void failure(final Request request,
-																		final Response response)
+																public void handleError(final Request request,
+																		final Response response,
+																		final Throwable throwable)
 																{
-																	account.setError(service + " Login Failed");																	
-																	account.setProgress(false);																	
+																	account.setError(service + " Login Failed");
+																	account.setProgress(false);
 																}
 
 																@Override
-																public void success(final Request request,
-																		final Response response)
+																public void handleResponse(final Shelf shelf)
 																{
 																	account.hide();
-																	Shelf shelf = PlaceBookService.parse(Shelf.class, response.getText());
-																	if(shelf != null)
-																	{
-																		setUser(shelf.getUser());
-																	}
+																	setUser(shelf.getUser());
 																}
 															});
 						}
@@ -259,27 +272,21 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 					account.show();
 				}
 			}));
-		}	
-		
+		}
+
 		center();
 	}
-	
+
 	private void updateUser()
 	{
-		if(!isShowing())
-		{
-			return;
-		}						
-		PlaceBookService.getCurrentUser(new JSONResponse<User>()
+		if (!isShowing()) { return; }
+		userStore.get(null, new JSONResponse<User>()
 		{	
 			@Override
-			public void handleResponse(User user)
+			public void handleResponse(User object)
 			{
-				if(user != null)
-				{
-					setUser(user);
-				}				
+				setUser(user);
 			}
-		});
+		}, true);
 	}
 }

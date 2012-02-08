@@ -5,6 +5,7 @@
 		.itemFrame {		
 			position: absolute;
 			-webkit-transition: opacity .5s linear, visibility .5s linear, z-index .5s linear;
+			-moz-transition: opacity .5s linear, visibility .5s linear, z-index .5s linear;			
 			transition: opacity .5s linear, visibility .5s linear, z-index .5s linear;
 			opacity: 0;
 			visibility: hidden;			
@@ -17,12 +18,14 @@
 			width: 16px;
 			height: 16px;
 			background: -webkit-linear-gradient(top,#669,#447);
+			background: -moz-linear-gradient(top,#669,#447);			
 			padding: 3px;
 			border-top-right-radius: 5px;			
 		}
 		
 		.menuButton:HOVER {
 			background: -webkit-linear-gradient(top,#88B,#669);
+			background: -moz-linear-gradient(top,#88B,#669);			
 		}		
 		
 		.dragSection {
@@ -32,6 +35,7 @@
 			right: 22px;
 			height: 22px;
 			background: -webkit-linear-gradient(top,#669,#447);
+			background: -moz-linear-gradient(top,#669,#447);			
 			min-height: 10px;
 			cursor:move;
 			line-height: 22px;

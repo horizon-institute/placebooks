@@ -315,6 +315,16 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
+				
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						final EntityManager manager = EMFSingleton.getEntityManager();
+						ServiceRegistry.updateServices(manager, user);
+					}
+				}).start();
 			}
 			else
 			{				
@@ -329,16 +339,6 @@ public class PlaceBooksAdminController
 					log.error(e.getMessage(), e);
 				}
 			}
-
-			new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final EntityManager manager = EMFSingleton.getEntityManager();
-					ServiceRegistry.updateServices(manager, user);
-				}
-			}).start();
 		}
 		finally
 		{
@@ -1200,6 +1200,8 @@ public class PlaceBooksAdminController
 
 			final File file = new File(path);
 
+			long modified = file.lastModified();
+
 			String[] split = PlaceBooksAdminHelper.getExtension(path);
 			if (split == null)
 			{
@@ -1218,6 +1220,7 @@ public class PlaceBooksAdminController
 			String contentType =  type + "/" + split[1]; 
 			log.debug("Content type: " + contentType);
 			res.setContentType("Content type: " + contentType);
+			res.setBufferSize(10240);
 			res.addHeader("Accept-Ranges", "bytes");
 			String range = req.getHeader("Range");
 			//log.debug(range);
@@ -1261,6 +1264,7 @@ public class PlaceBooksAdminController
 			res.setContentLength((int) totalLengthToSend);			
 			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
 			res.addHeader("ETag", "placebooks-video-" + key);
+			res.setDateHeader("Last-Modified", modified);
 
 			if(totalLengthOfFile>totalLengthToSend)
 			{
@@ -1721,4 +1725,37 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
+
+	@RequestMapping(value = "/admin/deletebinder/{key}",
+					method = RequestMethod.GET)
+	public ModelAndView deletePlaceBookBinder(
+		@PathVariable("key") final String key
+	)
+	{
+
+		final EntityManager pm = EMFSingleton.getEntityManager();
+
+		try
+		{
+			pm.getTransaction().begin();
+			final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
+			pm.remove(p);
+			pm.getTransaction().commit();
+		}
+		finally
+		{
+			if (pm.getTransaction().isActive())
+			{
+				pm.getTransaction().rollback();
+				log.error("Rolling current delete single transaction back");
+			}
+
+			pm.close();
+		}
+
+		log.info("Deleted PlaceBook");
+
+		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
+	}
+
 }

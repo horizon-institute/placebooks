@@ -1,14 +1,15 @@
 package placebooks.client.ui;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.JSONResponse;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookEntry;
+import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookShelf;
 import placebooks.client.ui.elements.PlaceBookShelf.ShelfControl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -19,6 +20,21 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookLibrary extends PlaceBookPlace
 {
+	private final DataStore<Shelf> libraryStore = new DataStore<Shelf>()
+	{
+		@Override
+		protected String getStorageID(String id)
+		{
+			return "library.shelf";
+		}
+		
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/shelf";
+		}
+	};
+	
 	@Prefix("browse")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookLibrary>
 	{
@@ -81,9 +97,9 @@ public class PlaceBookLibrary extends PlaceBookPlace
 			}
 			
 			@Override
-			public void getShelf(RequestCallback callback)
+			public void getShelf(JSONResponse<Shelf> callback)
 			{
-				PlaceBookService.getShelf(callback);			
+				libraryStore.get("", callback);			
 			}
 		});
 	}
