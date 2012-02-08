@@ -1160,7 +1160,15 @@ public class PlaceBooksAdminController
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
-			path = m.getPath();
+			if(m instanceof VideoItem)
+			{
+				VideoItem v = (VideoItem) m;  
+				path = v.getChromePath();
+			}
+			else
+			{
+				path = m.getPath();
+			}
 		}
 		catch (final Throwable e)
 		{
@@ -1309,11 +1317,11 @@ public class PlaceBooksAdminController
 	}
 
 	
-	@RequestMapping(value = "/admin/xserve/{type}item/{key}", method = RequestMethod.GET)
-	public void streamTranscodedMediaItem(final HttpServletRequest req, final HttpServletResponse res,
+	@RequestMapping(value = "/admin/serve/mobile/{type}item/{key}", method = RequestMethod.GET)
+	public void streamMobileMediaItem(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("key") final String key)
 	{
-		log.debug("Request for media: " + type + " " + key);
+		log.debug("Request for mobile media: " + type + " " + key);
 		String path = null;
 		final EntityManager em = EMFSingleton.getEntityManager();
 
@@ -1324,7 +1332,15 @@ public class PlaceBooksAdminController
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
-			path = m.getPath() + "x.ogg";
+			if(m instanceof VideoItem)
+			{
+				VideoItem v = (VideoItem) m;
+				path = v.getMobilePath();
+			}
+			else
+			{
+				path = m.getPath();
+			}
 		}
 		catch (final Throwable e)
 		{
