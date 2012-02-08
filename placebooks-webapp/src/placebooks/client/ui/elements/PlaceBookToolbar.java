@@ -168,52 +168,53 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (user == null)
 		{
-			final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Login", "Login", "Email:");
-			account.addClickHandler(new ClickHandler()
+			final PlaceBookLoginDialog loginDialog = new PlaceBookLoginDialog("Login", "Login", "Email:");
+			loginDialog.addClickHandler(new ClickHandler()
 			{
 				@Override
 				public void onClick(final ClickEvent event)
 				{
-					account.setProgress(true);
-					PlaceBookService.login(account.getUsername(), account.getPassword(), new JSONResponse<Shelf>()
+					loginDialog.setProgress(true);
+					PlaceBookService.login(loginDialog.getUsername(), loginDialog.getPassword(), new JSONResponse<Shelf>()
 					{
 						@Override
 						public void handleError(final Request request, final Response response,
 								final Throwable throwable)
 						{
-							account.setProgress(false);
+							loginDialog.setProgress(false);
 							if (response != null)
 							{
 								if (response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
 								{
-									account.setError("Login not recognised. Check username and password.");
+									loginDialog.setError("Login not recognised. Check username and password.");
 								}
 								else if (response.getText().startsWith("{\"detailMessage\":"))
 								{
-									account.setError(response.getText().substring(18, response.getText().length() - 2));
+									loginDialog.setError(response.getText().substring(18, response.getText().length() - 2));
 								}
 								else
 								{
-									account.setError("Error logging in");
+									loginDialog.setError("Error logging in");
 								}
 							}
 							else
 							{
-								account.setError("Error logging in");
+								loginDialog.setError("Error logging in");
 							}
-							account.center();
+							loginDialog.center();
 						}
 
 						@Override
 						public void handleResponse(final Shelf shelf)
 						{
 							place.setUser(shelf.getUser());
+							loginDialog.hide();
 						}
 					});
 				}
 			});
-			account.show();
-			account.focus();
+			loginDialog.show();
+			loginDialog.focus();
 		}
 	}
 
