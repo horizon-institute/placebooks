@@ -73,6 +73,11 @@ public abstract class PlaceBookPages extends Composite
 			add(pagePanel);
 		}
 
+		if(pageIndex == 0)
+		{
+			createPage();
+		}
+		
 		resized();
 	}
 

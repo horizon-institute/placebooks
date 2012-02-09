@@ -175,7 +175,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		if (saveItem.getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
 		return super.mayStop();
 	}
-
+	
 	public void setPlaceBook(final PlaceBookBinder newPlacebook)
 	{
 		placebook = newPlacebook;
