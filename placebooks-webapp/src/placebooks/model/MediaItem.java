@@ -233,7 +233,6 @@ public abstract class MediaItem extends PlaceBookItem
 				log.debug("Existing item found so updating");
 				item.update(this);
 				pm.flush();
-				this.deleteItemData();
 				returnItem = item;
 			}
 			else
@@ -273,11 +272,23 @@ public abstract class MediaItem extends PlaceBookItem
 		if (item instanceof MediaItem)
 		{
 			final MediaItem mediaItem = (MediaItem) item;
-			if (mediaItem.getPath() == null) { return; }
+			
+			// The new version has no file... so delete the existing one
+			if (mediaItem.getPath() == null)
+			{
+				this.deleteItemData();
+				this.hash=null;
+				return;
+			}
+			
+			// Otherwise check that the new file exists, and that there's an existing file and it's not the same as the new file
 			final File mediaFile = new File(mediaItem.getPath()).getAbsoluteFile();
 			if (getPath() != null && mediaFile.equals(new File(getPath()).getAbsoluteFile())) { return; }
+			
+			// there is a new file to replace the existing one, so delete the old one (if no others are using it...)
 			if (mediaFile.exists())
 			{
+				this.deleteItemData();
 				setPath(mediaFile.getAbsolutePath());
 				hash = mediaItem.hash;
 			}
@@ -289,6 +300,12 @@ public abstract class MediaItem extends PlaceBookItem
 		return hash;
 	}
 
+	/**
+	 * Writes an item to disk for the mediaitem and save it using the files MD5 hash+original file extension to ensure only one copy of each file.
+	 * @param name The original name of the file
+	 * @param is InputStream for the file
+	 * @throws IOException
+	 */
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
 		log.info("Writing media item data file '" + name +"' from: " + is);

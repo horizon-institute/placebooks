@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -46,14 +45,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.Converter;
-import com.xuggle.xuggler.ICodec.ID;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IStream;
-import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * @author pszmp
@@ -769,47 +760,13 @@ public class ItemFactory
 	}
 
 	/**
-	 * Use xuggler to transcode the video to a Chroime compatible format and save as the same name with x on the end.
+	 * Use xuggler to transcode the video to a Chrome and Android compatible format and save as the same name with x on the end.
 	 * @param filename Input file will be transcoded to inputfilex.ogg
 	 */
 	protected static void transcodeVideo(String inputfilename)
 	{
-		log.debug("Transcoding video: " + inputfilename);
-
-		String outputfilename = inputfilename +"x.ogg";
-		File outputFile = new File(outputfilename);
-		if(!outputFile.exists())
-		{
-			File inputfile = new File(inputfilename);
-			if(inputfile.exists())
-			{
-				//This is the converter object we will use.
-				Converter converter = new Converter();
-
-				// This is what's passed to the ffmpeg command line call...
-				String[] arguments = { inputfilename, "-acodec", "libvorbis", outputfilename };
-
-				try
-				{
-					//Finally, we run the transcoder with the options we provided.
-					converter.run(converter.parseOptions(converter.defineOptions(), arguments));
-				}
-				catch (Exception e)
-				{
-					log.error(e.getMessage());
-					e.printStackTrace();
-				}
-				log.debug("Transcoding of " + inputfilename + " complete.");
-			}
-			else
-			{
-				log.error("Not transcoding " + inputfilename + ": File not found!");
-			}
-		}
-		else
-		{
-			log.debug("Transcoding video not needed - file eists " + outputfilename);
-		}
+		TranscodeHelper.transcodeVideoForChrome(inputfilename);
+		TranscodeHelper.transcodeVideoForMobile(inputfilename);
 	}
 
 }

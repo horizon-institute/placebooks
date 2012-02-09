@@ -63,6 +63,7 @@ public class FileHelper
 		}
 		finally
 		{
+			log.debug("Trying to delete " + tempSaveName);
 			File tempCheck = new File(tempSaveName);
 			if(tempCheck.exists())
 			{
@@ -73,6 +74,14 @@ public class FileHelper
 		return saveName;
 	}
 	
+	
+	/**
+	 * Save a file from an input stream to a given directory name with a given name in the configured 
+	 * @param input
+	 * @param dir
+	 * @param saveName
+	 * @return String Full path + name of the saved file
+	 */
 	public static String SaveFile(InputStream input, String dir, String saveName)
 	{
 		log.info("Saving new file as: " + saveName);
