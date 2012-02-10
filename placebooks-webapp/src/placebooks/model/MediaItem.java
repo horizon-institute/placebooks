@@ -196,7 +196,7 @@ public abstract class MediaItem extends PlaceBookItem
 		attemptPathFix();
 		if(path==null)
 		{
-			//RedownloadItem();
+			RedownloadItem();
 		}
 		return path;
 	}

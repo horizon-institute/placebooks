@@ -8,7 +8,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.io.RandomAccessFile;
+import java.io.Closeable;
+
 import java.net.URL;
+import java.net.URLDecoder;
+
+import java.util.zip.GZIPOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -70,14 +76,12 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-// TODO: general todo is to do file checking to reduce unnecessary file writes, 
-// part of which is ensuring new file writes in cases of changes
-// 
-// TODO: stop orphan / null field elements being added to database
 
 @Controller
 public class PlaceBooksAdminController
 {
+
+
 	public PlaceBooksAdminController()
 	{
 		jsonMapper.configure(org.codehaus.jackson.map.SerializationConfig.Feature.AUTO_DETECT_FIELDS, true);
@@ -1145,188 +1149,38 @@ public class PlaceBooksAdminController
 		iis.close();
 	}
 
-	@RequestMapping(value = "/admin/serve/{type}item/{key}", method = RequestMethod.GET)
-	public void streamMediaItem(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("type") final String type, @PathVariable("key") final String key)
+  	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
+					method = RequestMethod.GET)
+	public void streamMediaItem(final HttpServletRequest request, 
+								final HttpServletResponse response,
+								@PathVariable("type") final String type,
+								@PathVariable("key") final String key) 
+		throws IOException
 	{
-		log.debug("Request for media: " + type + " " + key);
-		String path = null;
-		final EntityManager em = EMFSingleton.getEntityManager();
-
-		try
-		{
-			final MediaItem m = em.find(MediaItem.class, key);
-			if (m == null)
-			{
-				throw new Exception("Error getting media file, invalid key");
-			}
-			if(type.trim().equalsIgnoreCase("video"))
-			{
-				log.debug("Getting chrome path for VideoItem");
-				VideoItem v = (VideoItem) m;  
-				path = v.getChromePath();
-			}
-			else
-			{
-				path = m.getPath();
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			em.close();
-		}
-
-		if (path == null) { return; }
-		log.debug("Serving media: " + path);
-
-		try
-		{
-			String type_ = null;
-			if (type.trim().equalsIgnoreCase("video"))
-			{
-				type_ = "video";
-			}
-			else if (type.trim().equalsIgnoreCase("audio"))
-			{
-				type_ = "audio";
-			}
-			else
-			{
-				throw new Exception("Unrecognised media item type '" + type_ + "'");
-			}
-
-			final File file = new File(path);
-
-			long modified = file.lastModified();
-
-			String[] split = PlaceBooksAdminHelper.getExtension(path);
-			if (split == null)
-			{
-				split = new String[2];
-				split[1] = (type=="audio" ? "mp3" : "mpeg");
-				log.warn("Couildn't get name and extension for " + path + " defaulting to " + type + " and " + split[1]);
-			}
-
-			final ServletOutputStream sos = res.getOutputStream();
-			final FileInputStream fis = new FileInputStream(file);
-			BufferedInputStream bis = null;
-
-			long startByte = 0;
-			long endByte = file.length() - 1;
-
-			String contentType =  type + "/" + split[1]; 
-			log.debug("Content type: " + contentType);
-			res.setContentType("Content type: " + contentType);
-			res.setBufferSize(10240);
-			res.addHeader("Accept-Ranges", "bytes");
-			String range = req.getHeader("Range");
-			//log.debug(range);
-			
-			if (range != null)
-			{
-				if (range.startsWith("bytes="))
-				{
-					try
-					{
-						//log.debug("Range string: " + range.substring(6));
-						final String[] rangeItems = range.substring(6).split("-");
-						switch(rangeItems.length)
-						{
-							case 0:
-								// do all of file (start and end already set above)
-								break;
-							case 1:
-								//set start position then go to end
-								startByte = Long.parseLong(rangeItems[0]);
-								break;
-							default:
-								// user start and end
-								startByte = Long.parseLong(rangeItems[0]);
-								endByte = Long.parseLong(rangeItems[1]);
-								break;
-						}
-						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
-					}
-					catch (final Exception e)
-					{
-						log.error(e.getMessage());
-					}
-				}
-			}
-			bis = new BufferedInputStream(fis);
-			long totalLengthToSend = file.length() - startByte;
-			long totalLengthOfFile = file.length();
-			//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
-
-			res.setContentLength((int) totalLengthToSend);			
-			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
-			res.addHeader("ETag", "placebooks-video-" + key);
-			res.setDateHeader("Last-Modified", modified);
-
-			if(totalLengthOfFile>totalLengthToSend)
-			{
-				res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-			}
-			final int bufferLen = 4096;
-			final byte data[] = new byte[bufferLen];
-
-			int totalBytesSent = 0;
-			int length = 0;
-			try
-			{
-				// Read only the number of bytes to left to send, in case it's less than the buffer size
-				// also start at the start byte
-				//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
-				bis.skip(startByte);
-				length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-				while (length != -1)
-				{
-					sos.write(data, 0, length);
-					totalBytesSent += length;
-					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
-					
-					if(totalBytesSent >= totalLengthToSend)
-					{
-						length = -1;
-					}
-					else
-					{
-						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
-						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-						//log.debug("Read bytes: " + length);
-					}
-				}
-			
-			}
-			finally
-			{
-				sos.close();
-				fis.close();
-			}
-		}
-		catch (final Throwable e)
-		{
-			/*Enumeration headers = req.getHeaderNames();
-			 while(headers.hasMoreElements())
-			 {
-			 String header = (String)headers.nextElement();
-			 log.info(header + ": " + req.getHeader(header));
-			 }*/
-			log.error("Error serving " + type + " " + key);
-			e.printStackTrace(System.out);
-		}
+		streamMediaItem_(request, response, type, key, false);
 	}
 
-	
-	@RequestMapping(value = "/admin/serve/mobile/{type}item/{key}", method = RequestMethod.GET)
-	public void streamMobileMediaItem(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("type") final String type, @PathVariable("key") final String key)
+  	@RequestMapping(value = "/admin/serve/mobile/{type}item/{key}", 
+					method = RequestMethod.GET)
+	public void streamMediaItemMobile(final HttpServletRequest request, 
+								      final HttpServletResponse response,
+									  @PathVariable("type") final String type,
+									  @PathVariable("key") final String key) 
+		throws IOException
 	{
-		log.debug("Request for mobile media: " + type + " " + key);
+		streamMediaItem_(request, response, type, key, true);
+	}
+
+	// Method adapted / stolen from http://balusc.blogspot.com/2009/02/fileservlet-supporting-resume-and.html
+	public void streamMediaItem_(final HttpServletRequest request, 
+								 final HttpServletResponse response,
+								 final String type,
+								 final String key, 
+								 final boolean isMobile) throws IOException
+
+	{
+		log.debug("Request for media: " + key);
+
 		String path = null;
 		final EntityManager em = EMFSingleton.getEntityManager();
 
@@ -1337,10 +1191,19 @@ public class PlaceBooksAdminController
 			{
 				throw new Exception("Error getting media file, invalid key");
 			}
-			if(type.trim().equalsIgnoreCase("video"))
+			if (type.trim().equalsIgnoreCase("video"))
 			{
 				VideoItem v = (VideoItem) m;
-				path = v.getMobilePath();
+				if (isMobile)
+				{
+					log.debug("Getting chrome path for mobile VideoItem");
+					path = v.getMobilePath();
+				}
+				else
+				{
+					log.debug("Getting chrome path for VideoItem");
+					path = v.getChromePath();
+				}
 			}
 			else
 			{
@@ -1359,139 +1222,241 @@ public class PlaceBooksAdminController
 		if (path == null) { return; }
 		log.debug("Serving media: " + path);
 
-		try
+		String requestedFile = new File(path).getName();
+		String basePath = new File(path).getParent();
+		String[] split = PlaceBooksAdminHelper.getExtension(path);
+		if (split == null)
 		{
-			String type_ = null;
-			if (type.trim().equalsIgnoreCase("video"))
+			split = new String[2];
+			split[1] = (type == "audio" ? "mp3" : "mpeg");
+			log.warn("Couldn't get name and extension for " + path 
+					 + " defaulting to " + type + " and " + split[1]);
+		}
+
+		String contentType = type + "/" + split[1]; 
+
+    
+        final File file = new File(basePath, URLDecoder.decode(requestedFile, 
+														 	   "UTF-8"));
+
+        if (!file.exists()) 
+		{
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        final String fileName = file.getName();
+        final long length = file.length();
+        final long lastModified = file.lastModified();
+        final String eTag = fileName + "_" + length + "_" + lastModified;
+
+
+        final String ifNoneMatch = request.getHeader("If-None-Match");
+        if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag)) 
+		{
+            response.setHeader("ETag", eTag);
+            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
+        final long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+        if (ifNoneMatch == null && ifModifiedSince != -1 &&
+			ifModifiedSince + 1000 > lastModified) 
+		{
+            response.setHeader("ETag", eTag);
+            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
+        final String ifMatch = request.getHeader("If-Match");
+        if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag)) 
+		{
+            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+            return;
+        }
+
+        final long ifUnmodifiedSince = 
+			request.getDateHeader("If-Unmodified-Since");
+        if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified)
+		{
+            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+            return;
+        }
+
+
+        final MediaHelper.Range full = 
+			new MediaHelper.Range(0, length - 1, length);
+
+        final List<MediaHelper.Range> ranges = 
+			new ArrayList<MediaHelper.Range>();
+
+        final String range = request.getHeader("Range");
+        if (range != null) 
+		{
+
+            if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) 
 			{
-				type_ = "video";
-			}
-			else if (type.trim().equalsIgnoreCase("audio"))
+                response.setHeader("Content-Range", "bytes */" + length);
+                response.sendError(	
+					HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE
+				);
+                return;
+            }
+
+            final String ifRange = request.getHeader("If-Range");
+            if (ifRange != null && !ifRange.equals(eTag)) 
 			{
-				type_ = "audio";
-			}
+                try 
+				{
+                    final long ifRangeTime = request.getDateHeader("If-Range");
+                    if (ifRangeTime != -1 && ifRangeTime + 1000 < lastModified)
+                        ranges.add(full);
+                } 
+				catch (IllegalArgumentException ignore) 
+				{
+                    ranges.add(full);
+                }
+            }
+
+            if (ranges.isEmpty()) 
+			{
+                for (final String part : range.substring(6).split(",")) 
+				{
+                    long start = MediaHelper.sublong(part, 0, 
+													 part.indexOf("-"));
+                    long end = MediaHelper.sublong(part, part.indexOf("-") + 1, 
+												   part.length());
+
+                    if (start == -1) 
+					{
+                        start = length - end;
+                        end = length - 1;
+                    } 
+					else if (end == -1 || end > length - 1)
+                        end = length - 1;
+
+                    if (start > end) 
+					{
+                        response.setHeader("Content-Range", "bytes */" 
+										   + length);
+                        response.sendError(
+							HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE
+						);
+                        return;
+                    }
+
+                    ranges.add(new MediaHelper.Range(start, end, length));
+                }
+            }
+        }
+
+
+        boolean acceptsGzip = false;
+        String disposition = "inline";
+
+        if (contentType == null)
+			contentType = "application/octet-stream";
+
+        if (contentType.startsWith("text"))
+		{
+            final String acceptEncoding = request.getHeader("Accept-Encoding");
+            acceptsGzip = acceptEncoding != null && 
+						  MediaHelper.accepts(acceptEncoding, "gzip");
+            contentType += ";charset=UTF-8";
+        }
+        else if (!contentType.startsWith("image")) 
+		{
+            final String accept = request.getHeader("Accept");
+            disposition = accept != null && 
+						  MediaHelper.accepts(accept, contentType) ? 
+						  "inline" : "attachment";
+        }
+
+        response.reset();
+        response.setBufferSize(MediaHelper.DEFAULT_BUFFER_SIZE);
+        response.setHeader("Content-Disposition", disposition + ";filename=\"" 
+						   + fileName + "\"");
+        response.setHeader("Accept-Ranges", "bytes");
+        response.setHeader("ETag", eTag);
+        response.setDateHeader("Last-Modified", lastModified);
+        response.setDateHeader("Expires", System.currentTimeMillis() 
+							   + MediaHelper.DEFAULT_EXPIRE_TIME);
+
+
+        RandomAccessFile input = null;
+        OutputStream output = null;
+
+        try 
+		{
+            input = new RandomAccessFile(file, "r");
+            output = response.getOutputStream();
+
+            if (ranges.isEmpty() || ranges.get(0) == full) 
+			{
+
+                final MediaHelper.Range r = full;
+                response.setContentType(contentType);
+                response.setHeader("Content-Range", "bytes " + r.start + "-" 
+								   + r.end + "/" + r.total);
+
+				if (acceptsGzip) 
+				{
+					response.setHeader("Content-Encoding", "gzip");
+					output = new GZIPOutputStream(
+								output, 
+							    MediaHelper.DEFAULT_BUFFER_SIZE
+							 );
+				} 
+				else
+				{
+					response.setHeader("Content-Length", 
+									   String.valueOf(r.length));
+				}
+
+				MediaHelper.copy(input, output, r.start, r.length);
+            } 
+			else if (ranges.size() == 1) 
+			{
+
+                final MediaHelper.Range r = ranges.get(0);
+                response.setContentType(contentType);
+                response.setHeader("Content-Range", "bytes " + r.start + "-" 
+								   + r.end + "/" + r.total);
+                response.setHeader("Content-Length", String.valueOf(r.length));
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+                MediaHelper.copy(input, output, r.start, r.length);
+
+            } 
 			else
 			{
-				throw new Exception("Unrecognised media item type '" + type_ + "'");
-			}
+                response.setContentType("multipart/byteranges; boundary=" 
+										+ MediaHelper.MULTIPART_BOUNDARY);
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-			final File file = new File(path);
+				final ServletOutputStream sos = (ServletOutputStream) output;
 
-			String[] split = PlaceBooksAdminHelper.getExtension(path);
-			if (split == null)
-			{
-				split = new String[2];
-				split[1] = (type=="audio" ? "mp3" : "mpeg");
-				log.warn("Couildn't get name and extension for " + path + " defaulting to " + type + " and " + split[1]);
-			}
-
-			final ServletOutputStream sos = res.getOutputStream();
-			final FileInputStream fis = new FileInputStream(file);
-			BufferedInputStream bis = null;
-
-			long startByte = 0;
-			long endByte = file.length() - 1;
-
-			String contentType =  type + "/" + split[1]; 
-			log.debug("Content type: " + contentType);
-			res.setContentType("Content type: " + contentType);
-			res.addHeader("Accept-Ranges", "bytes");
-			String range = req.getHeader("Range");
-			//log.debug(range);
-			
-			if (range != null)
-			{
-				if (range.startsWith("bytes="))
+				for (final MediaHelper.Range r : ranges) 
 				{
-					try
-					{
-						//log.debug("Range string: " + range.substring(6));
-						final String[] rangeItems = range.substring(6).split("-");
-						switch(rangeItems.length)
-						{
-							case 0:
-								// do all of file (start and end already set above)
-								break;
-							case 1:
-								//set start position then go to end
-								startByte = Long.parseLong(rangeItems[0]);
-								break;
-							default:
-								// user start and end
-								startByte = Long.parseLong(rangeItems[0]);
-								endByte = Long.parseLong(rangeItems[1]);
-								break;
-						}
-						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
-					}
-					catch (final Exception e)
-					{
-						log.error(e.getMessage());
-					}
+					sos.println();
+					sos.println("--" + MediaHelper.MULTIPART_BOUNDARY);
+					sos.println("Content-Type: " + contentType);
+					sos.println("Content-Range: bytes " + r.start + "-" + r.end + "/" + r.total);
+
+					MediaHelper.copy(input, output, r.start, r.length);
 				}
-			}
-			bis = new BufferedInputStream(fis);
-			long totalLengthToSend = file.length() - startByte;
-			long totalLengthOfFile = file.length();
-			//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
 
-			res.setContentLength((int) totalLengthToSend);			
-			res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
-			res.addHeader("ETag", "placebooks-video-" + key);
-
-			if(totalLengthOfFile>totalLengthToSend)
-			{
-				res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-			}
-			final int bufferLen = 4096;
-			final byte data[] = new byte[bufferLen];
-
-			int totalBytesSent = 0;
-			int length = 0;
-			try
-			{
-				// Read only the number of bytes to left to send, in case it's less than the buffer size
-				// also start at the start byte
-				//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
-				bis.skip(startByte);
-				length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-				while (length != -1)
-				{
-					sos.write(data, 0, length);
-					totalBytesSent += length;
-					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
-					
-					if(totalBytesSent >= totalLengthToSend)
-					{
-						length = -1;
-					}
-					else
-					{
-						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
-						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-						//log.debug("Read bytes: " + length);
-					}
-				}
-			
-			}
-			finally
-			{
-				sos.close();
-				fis.close();
-			}
-		}
-		catch (final Throwable e)
+				sos.println();
+				sos.println("--" + MediaHelper.MULTIPART_BOUNDARY + "--");
+        	}
+        } 
+		finally 
 		{
-			/*Enumeration headers = req.getHeaderNames();
-			 while(headers.hasMoreElements())
-			 {
-			 String header = (String)headers.nextElement();
-			 log.info(header + ": " + req.getHeader(header));
-			 }*/
-			log.error("Error serving " + type + " " + key);
-			e.printStackTrace(System.out);
-		}
-	}
+            MediaHelper.close(output);
+            MediaHelper.close(input);
+        }
+    }
+
 	
 	@RequestMapping(value = "/sync/{serviceName}", method = RequestMethod.GET)
 	public void syncService(final HttpServletResponse res, @PathVariable("serviceName") final String serviceName)
@@ -1665,7 +1630,6 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	// TODO: needs to be viewPlaceBookBinder
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
 	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
