@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -28,6 +29,7 @@ import placebooks.controller.FileHelper;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.PropertiesSingleton;
 
+import com.ibm.icu.impl.URLHandler;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
@@ -300,6 +302,46 @@ public abstract class MediaItem extends PlaceBookItem
 		return hash;
 	}
 
+
+	/**
+	 * Writes an item to disk for the mediaitem and save it using the files MD5 hash+original file extension to ensure only one copy of each file.
+	 * @param name The original name of the file
+	 * @param is InputStream for the file
+	 * @param originalURL
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public void writeDataToDisk(final String name, final InputStream is, String originalURL) throws IOException
+	{
+		String urlHash = name;
+		try
+		{
+			urlHash = MessageDigest.getInstance("MD5").digest(originalURL.getBytes()).toString();
+		}
+		catch (Exception ex) 
+		{
+			log.debug(ex.getMessage());
+		}
+		File downloadFile = new File(urlHash);
+			if(!downloadFile.exists())
+		{
+			writeDataToDisk(name, is);
+		}
+		else
+		{
+			// If it exists 
+			// Check if it's an old download by seeing if it's been modified in the last hour...
+			long timeout = System.currentTimeMillis() - (1000 * 3600);
+			if(downloadFile.lastModified() < timeout)
+			{
+				// Delete the old file and download again...
+				downloadFile.delete();
+				writeDataToDisk(name, is);
+			}	
+		}
+	}
+	
+	
 	/**
 	 * Writes an item to disk for the mediaitem and save it using the files MD5 hash+original file extension to ensure only one copy of each file.
 	 * @param name The original name of the file
@@ -343,12 +385,6 @@ public abstract class MediaItem extends PlaceBookItem
 			}
 
 			saveName = hash;
-			if (name != null)
-			{
-				final int extIdx = name.lastIndexOf(".");
-				final String ext = name.substring(extIdx + 1, name.length());
-				saveName = saveName + "." + ext;
-			}
 			saveName = dir + File.separator + saveName; 
 			log.info("Renaming temp file to: " + saveName);
 			boolean renamed = tempFile.renameTo(new File(saveName));
@@ -385,7 +421,7 @@ public abstract class MediaItem extends PlaceBookItem
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(getSourceURL());
-				writeDataToDisk(getSourceURL().getPath(), conn.getInputStream());
+				writeDataToDisk(getSourceURL().getPath(), conn.getInputStream(), getSourceURL().toString());
 			}
 			catch(Exception e)
 			{

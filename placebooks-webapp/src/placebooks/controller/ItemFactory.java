@@ -611,7 +611,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				videoItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());
+				videoItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream(), sourceUrl.toString());
 				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
 				{
 					transcodeVideo(videoItem.getPath());
@@ -737,7 +737,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				audioItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream());				
+				audioItem.writeDataToDisk(sourceUrl.getFile().replace("?" + sourceUrl.getQuery(), ""), conn.getInputStream(), sourceUrl.toString());				
 			}
 			catch (final IOException ex)
 			{

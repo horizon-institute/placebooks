@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -315,7 +317,7 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
-				
+
 				new Thread(new Runnable()
 				{
 					@Override
@@ -539,7 +541,7 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.toString());
 				}
-				
+
 				new Thread(new Runnable()
 				{
 
@@ -999,6 +1001,218 @@ public class PlaceBooksAdminController
 		}
 	}
 
+
+	@RequestMapping(value = "/admin/serve/media/{type}/{hash}", method = RequestMethod.GET)
+	public void serveItem(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("type") final String type,  @PathVariable("hash") final String hash)
+	{
+		String itemPath = "";
+		if(type.equalsIgnoreCase("imageitem"))
+		{
+			itemPath = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "") + File.separator + hash;
+		}
+		else
+		{
+			if(type.equalsIgnoreCase("thumb"))
+			{
+				itemPath = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_THUMBS, "") + File.separator + hash;
+			}
+			else
+			{
+				if(type.equalsIgnoreCase("audioitem"))
+				{
+					itemPath = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "") + File.separator + hash;
+				}
+				else
+				{
+					if(type.equalsIgnoreCase("videoitem"))
+					{
+						itemPath = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "") + File.separator + hash + "-chrome.ogg";
+
+					}
+					else
+					{
+						if(type.equalsIgnoreCase("videoitemmobile"))
+						{
+							itemPath = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "") + File.separator + hash + "-mobile.ogg";
+						}
+						else
+						{
+							res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+						}
+					}
+				}
+			}
+		}
+
+		// ?Is there a path to serve the file...
+		if(!itemPath.equalsIgnoreCase(""))
+		{
+			log.debug("Looking to serve file:" + itemPath);
+			File serveFile = new File(itemPath); 
+			if(!serveFile.exists())
+			{
+				// Attempt to find other versions of the file... in case extension guess was wrong...
+				String dirPath = itemPath.replace(serveFile.getName(), "");
+				log.warn("Can't find file, trying alternatives in " + dirPath);
+
+				final File path =  new File(dirPath);
+				File[] files = null; 
+				files = path.listFiles(new FilenameFilter()
+				{
+					@Override
+					public boolean accept(final File dir, final String name)
+					{
+						final int index = name.indexOf('.');
+						if (name.startsWith(hash) && index == hash.length())
+						{ 
+							log.debug("Found: " + name);
+							return true;
+						}
+						return false;
+					}
+				});
+
+				if (files.length > 0)
+				{
+					itemPath = files[0].getPath();
+					serveFile = new File(itemPath);
+					log.warn("Using alternative file: " + itemPath);
+				}
+			}
+
+			if(serveFile.exists())
+			{
+				try
+				{
+					long lastModified = req.getDateHeader("If-Modified-Since"); 
+					if(lastModified >= serveFile.lastModified())
+					{
+						res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+						return;
+					}
+				}
+				catch(Exception e)
+				{
+					log.warn(e.getMessage(), e);
+				}
+				res.addDateHeader("Last-Modified", serveFile.lastModified());
+
+				MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+				String mimeType = mimeTypesMap.getContentType(serveFile);
+				res.setContentType("Content type: " + mimeType);
+
+				res.setBufferSize(10240);
+				res.addHeader("Accept-Ranges", "bytes");
+				String range = req.getHeader("Range");
+
+				try
+				{
+					final ServletOutputStream sos = res.getOutputStream();
+					final FileInputStream fis = new FileInputStream(serveFile);
+					BufferedInputStream bis = null;
+
+					long startByte = 0;
+					long endByte = serveFile.length() - 1;
+
+
+					if (range != null)
+					{
+						if (range.startsWith("bytes="))
+						{
+							try
+							{
+								//log.debug("Range string: " + range.substring(6));
+								final String[] rangeItems = range.substring(6).split("-");
+								switch(rangeItems.length)
+								{
+								case 0:
+									// do all of file (start and end already set above)
+									break;
+								case 1:
+									//set start position then go to end
+									startByte = Long.parseLong(rangeItems[0]);
+									break;
+								default:
+									// user start and end
+									startByte = Long.parseLong(rangeItems[0]);
+									endByte = Long.parseLong(rangeItems[1]);
+									break;
+								}
+								//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
+							}
+							catch (final Exception e)
+							{
+								log.error(e.getMessage());
+							}
+						}
+					}
+					bis = new BufferedInputStream(fis);
+					long totalLengthToSend = serveFile.length() - startByte;
+					long totalLengthOfFile = serveFile.length();
+					//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
+
+					res.setContentLength((int) totalLengthToSend);			
+					res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
+					res.addHeader("ETag", "placebooks-" + hash);
+					res.setDateHeader("Last-Modified", serveFile.lastModified());
+
+					if(totalLengthOfFile>totalLengthToSend)
+					{
+						res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+					}
+					final int bufferLen = 4096;
+					final byte data[] = new byte[bufferLen];
+
+					int totalBytesSent = 0;
+					int length = 0;
+					try
+					{
+						// Read only the number of bytes to left to send, in case it's less than the buffer size
+						// also start at the start byte
+						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
+						bis.skip(startByte);
+						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
+						while (length != -1)
+						{
+							sos.write(data, 0, length);
+							totalBytesSent += length;
+							//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
+
+							if(totalBytesSent >= totalLengthToSend)
+							{
+								length = -1;
+							}
+							else
+							{
+								//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
+								length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
+								//log.debug("Read bytes: " + length);
+							}
+						}
+
+					}
+					finally
+					{
+						sos.close();
+						fis.close();
+					}
+				}
+				catch(Exception ex)
+				{
+					log.error(ex.getMessage());
+					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
+
+			}
+		}
+		else
+		{
+			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
+
+
+
 	@RequestMapping(value = "/admin/serve/imageitem/thumb/{key}", method = RequestMethod.GET)
 	public void serveImageItemThumb(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
 	{
@@ -1225,7 +1439,7 @@ public class PlaceBooksAdminController
 			res.addHeader("Accept-Ranges", "bytes");
 			String range = req.getHeader("Range");
 			//log.debug(range);
-			
+
 			if (range != null)
 			{
 				if (range.startsWith("bytes="))
@@ -1236,18 +1450,18 @@ public class PlaceBooksAdminController
 						final String[] rangeItems = range.substring(6).split("-");
 						switch(rangeItems.length)
 						{
-							case 0:
-								// do all of file (start and end already set above)
-								break;
-							case 1:
-								//set start position then go to end
-								startByte = Long.parseLong(rangeItems[0]);
-								break;
-							default:
-								// user start and end
-								startByte = Long.parseLong(rangeItems[0]);
-								endByte = Long.parseLong(rangeItems[1]);
-								break;
+						case 0:
+							// do all of file (start and end already set above)
+							break;
+						case 1:
+							//set start position then go to end
+							startByte = Long.parseLong(rangeItems[0]);
+							break;
+						default:
+							// user start and end
+							startByte = Long.parseLong(rangeItems[0]);
+							endByte = Long.parseLong(rangeItems[1]);
+							break;
 						}
 						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
 					}
@@ -1288,7 +1502,7 @@ public class PlaceBooksAdminController
 					sos.write(data, 0, length);
 					totalBytesSent += length;
 					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
-					
+
 					if(totalBytesSent >= totalLengthToSend)
 					{
 						length = -1;
@@ -1300,7 +1514,7 @@ public class PlaceBooksAdminController
 						//log.debug("Read bytes: " + length);
 					}
 				}
-			
+
 			}
 			finally
 			{
@@ -1321,7 +1535,7 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	
+
 	@RequestMapping(value = "/admin/serve/mobile/{type}item/{key}", method = RequestMethod.GET)
 	public void streamMobileMediaItem(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("key") final String key)
@@ -1341,6 +1555,7 @@ public class PlaceBooksAdminController
 			{
 				VideoItem v = (VideoItem) m;
 				path = v.getMobilePath();
+				log.debug("Mobile path is: " + path);
 			}
 			else
 			{
@@ -1398,7 +1613,7 @@ public class PlaceBooksAdminController
 			res.addHeader("Accept-Ranges", "bytes");
 			String range = req.getHeader("Range");
 			//log.debug(range);
-			
+
 			if (range != null)
 			{
 				if (range.startsWith("bytes="))
@@ -1409,18 +1624,18 @@ public class PlaceBooksAdminController
 						final String[] rangeItems = range.substring(6).split("-");
 						switch(rangeItems.length)
 						{
-							case 0:
-								// do all of file (start and end already set above)
-								break;
-							case 1:
-								//set start position then go to end
-								startByte = Long.parseLong(rangeItems[0]);
-								break;
-							default:
-								// user start and end
-								startByte = Long.parseLong(rangeItems[0]);
-								endByte = Long.parseLong(rangeItems[1]);
-								break;
+						case 0:
+							// do all of file (start and end already set above)
+							break;
+						case 1:
+							//set start position then go to end
+							startByte = Long.parseLong(rangeItems[0]);
+							break;
+						default:
+							// user start and end
+							startByte = Long.parseLong(rangeItems[0]);
+							endByte = Long.parseLong(rangeItems[1]);
+							break;
 						}
 						//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
 					}
@@ -1460,7 +1675,7 @@ public class PlaceBooksAdminController
 					sos.write(data, 0, length);
 					totalBytesSent += length;
 					//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
-					
+
 					if(totalBytesSent >= totalLengthToSend)
 					{
 						length = -1;
@@ -1472,7 +1687,7 @@ public class PlaceBooksAdminController
 						//log.debug("Read bytes: " + length);
 					}
 				}
-			
+
 			}
 			finally
 			{
@@ -1492,7 +1707,7 @@ public class PlaceBooksAdminController
 			e.printStackTrace(System.out);
 		}
 	}
-	
+
 	@RequestMapping(value = "/sync/{serviceName}", method = RequestMethod.GET)
 	public void syncService(final HttpServletResponse res, @PathVariable("serviceName") final String serviceName)
 	{
@@ -1728,10 +1943,10 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/deletebinder/{key}",
-					method = RequestMethod.GET)
+			method = RequestMethod.GET)
 	public ModelAndView deletePlaceBookBinder(
-		@PathVariable("key") final String key
-	)
+			@PathVariable("key") final String key
+			)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
