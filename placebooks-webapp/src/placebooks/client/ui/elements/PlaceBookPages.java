@@ -122,8 +122,9 @@ public abstract class PlaceBookPages extends Composite
 		return pages;
 	}
 
-	public void deleteCurrentPage()
+	public boolean deleteCurrentPage()
 	{
+		return false;
 	}
 
 	public void createPage()

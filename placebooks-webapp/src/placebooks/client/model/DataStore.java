@@ -144,7 +144,8 @@ public abstract class DataStore<T extends JavaScriptObject>
 
 	private void putLocal(final String id, final String object)
 	{
-		if (stockStore != null)
+		String storeId = getStorageID(id);
+		if (stockStore != null && storeId != null)
 		{
 			stockStore.setItem(getStorageID(id), object);
 		}		
@@ -152,7 +153,8 @@ public abstract class DataStore<T extends JavaScriptObject>
 	
 	private void putLocal(final String id, final T object)
 	{
-		if (stockStore != null)
+		String storeId = getStorageID(id);
+		if (stockStore != null && storeId != null)
 		{
 			GWT.log("Put " + getStorageID(id) + ": " + new JSONObject(object).toString());
 			stockStore.setItem(getStorageID(id), new JSONObject(object).toString());

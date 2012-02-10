@@ -99,6 +99,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		protected String getStorageID(String id)
 		{
+			if(id == null)
+			{
+				return null;
+			}
 			return "placebook." + id;
 		}
 	};
@@ -432,8 +436,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@UiHandler("deletePage")
 	void deletePage(final ClickEvent event)
 	{
-		bookPanel.deleteCurrentPage();
-		saveItem.markChanged();
+		if(bookPanel.deleteCurrentPage())
+		{
+			saveItem.markChanged();
+		}
 	}
 	
 	private String getKey()
