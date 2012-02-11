@@ -35,34 +35,34 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	}
 
 	private static UploadDialogUiBinder uiBinder = GWT.create(UploadDialogUiBinder.class);
-	
+
 	@UiField
 	Label infoLabel;
-	
+
 	@UiField
 	FormPanel form;
-	
+
 	@UiField
 	Hidden itemKey;
-	
+
 	@UiField
 	FileUpload upload;
-	
+
 	@UiField
 	Button uploadButton;
-	
+
 	@UiField
 	TextArea copyright;
-	
+
 	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
-	
+
 	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		this.item = item;
 		this.controller = controller;
 		setWidget(uiBinder.createAndBindUi(this));
-		
+
 		if (item.getItem().is(ItemType.IMAGE))
 		{
 			setTitle("Upload Image");
@@ -70,24 +70,24 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 		}
 		else if (item.getItem().is(ItemType.VIDEO))
 		{
-			setTitle("Upload Video");			
+			setTitle("Upload Video");
 			infoLabel.setText("Maximum Video File Size: 25Mb");
 		}
 		else if (item.getItem().is(ItemType.AUDIO))
 		{
-			setTitle("Upload Audio");			
+			setTitle("Upload Audio");
 			infoLabel.setText("Maximum Audio File Size: 10Mb");
 		}
-		
+
 		itemKey.setName("itemKey");
 		itemKey.setValue(item.getItem().getKey());
 
 		final String type = item.getItem().getClassName().substring(17, item.getItem().getClassName().length() - 4)
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
-		
+
 		uploadButton.setEnabled(false);
-		
+
 		form.setAction(PlaceBookService.getHostURL() + "/placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
@@ -108,52 +108,60 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
 				GWT.log("Upload Complete: " + event.getResults());
-				GWT.log("Upload Complete: " + event.toDebugString());
-				item.getItemWidget().refresh();
-				item.getRootPanel().getElement().getStyle().setOpacity(0.5);
-				item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
-				PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
+				if (event.getResults().contains("Success"))
 				{
-					
-					@Override
-					public void handleError(Request request, Response response, Throwable throwable)
+					item.getItemWidget().refresh();
+					item.getRootPanel().getElement().getStyle().setOpacity(0.5);
+					item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
+					PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
 					{
-						infoLabel.setText("Upload Failed");
-						if(response != null)
+
+						@Override
+						public void handleError(final Request request, final Response response,
+								final Throwable throwable)
 						{
-							final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, response.getText());
+							setError("Upload Failed");
+							if (response != null)
+							{
+								final PlaceBookItem placebookItem = PlaceBookService.parse(	PlaceBookItem.class,
+																							response.getText());
+								item.getRootPanel().getElement().getStyle().clearOpacity();
+								item.getRootPanel().getElement().getStyle().clearBackgroundColor();
+								item.getItemWidget().update(placebookItem);
+							}
+						}
+
+						@Override
+						public void handleResponse(final PlaceBookItem placebookItem)
+						{
 							item.getRootPanel().getElement().getStyle().clearOpacity();
 							item.getRootPanel().getElement().getStyle().clearBackgroundColor();
 							item.getItemWidget().update(placebookItem);
-						}
-					}
+							item.getItem().setMetadata("copyrightNotice", copyright.getText());
+							controller.markChanged();
+							hide();
 
-					@Override
-					public void handleResponse(PlaceBookItem placebookItem)
-					{
-						item.getRootPanel().getElement().getStyle().clearOpacity();
-						item.getRootPanel().getElement().getStyle().clearBackgroundColor();
-						item.getItemWidget().update(placebookItem);
-						hide();
-						
-					}
-				});
+						}
+					});
+				}
+				else
+				{
+					setError("Upload Failed");
+				}
 			}
 		});
 
 	}
-	
-	@UiHandler("uploadButton")
-	void upload(ClickEvent event)
-	{
-		item.getItem().setMetadata("copyrightNotice", copyright.getText());
-		controller.markChanged();
-		form.submit();
-	}
-	
+
 	@UiHandler("upload")
 	void fileChanged(final ChangeEvent event)
 	{
 		uploadButton.setEnabled(true);
+	}
+
+	@UiHandler("uploadButton")
+	void upload(final ClickEvent event)
+	{
+		form.submit();
 	}
 }

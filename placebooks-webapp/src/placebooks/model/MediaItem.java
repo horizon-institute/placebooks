@@ -172,9 +172,9 @@ public abstract class MediaItem extends PlaceBookItem
 		q.setParameter("id", this.getKey());
 		if(q.getResultList().size()==0)
 		{
-			log.debug("Deleting: " + getPath());
+			log.debug("Deleting: " + this.path);
 			if (getPath() == null) { return false; }
-			final File f = new File(getPath());
+			final File f = new File(this.path);
 			if (f.exists())
 			{
 				f.delete();
@@ -350,6 +350,11 @@ public abstract class MediaItem extends PlaceBookItem
 	 */
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
+		if (this.path != null)
+		{
+			log.info("Cleaning existing file");
+			deleteItemData();
+		}
 		log.info("Writing media item data file '" + name +"' from: " + is);
 		String saveName = null;
 

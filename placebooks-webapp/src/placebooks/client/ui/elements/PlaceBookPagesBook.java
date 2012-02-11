@@ -475,6 +475,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@Override
 	public void deleteCurrentPage()
 	{
+		if(pages.size() <= 1)
+		{
+			return;
+		}
 		int index = currentPage.getIndex();
 		getPlaceBook().remove(currentPage.getPlaceBook());
 		remove(currentPage);
@@ -527,7 +531,12 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@Override
 	public void createPage()
 	{
-		int index = currentPage.getIndex() + 1;
+		int index = 0;
+		if(currentPage != null)
+		{
+			index = currentPage.getIndex() + 1;			
+		}
+
 
 		PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
 		page.setMetadata("tempID", "" + System.currentTimeMillis());
@@ -538,11 +547,18 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		getPagePanel().add(pageUI);
 		pageUI.setStyleName(style.page());		
 		
-		flip.setup(currentPage, pageUI);
-		flip.target = -1;
-		flip.progress = 1;
-		flip.state = FlipState.flipping;
-		flip.scheduleRepeating(1000/60);
+		if(currentPage != null)
+		{
+			flip.setup(currentPage, pageUI);
+			flip.target = -1;
+			flip.progress = 1;
+			flip.state = FlipState.flipping;
+			flip.scheduleRepeating(1000/60);
+		}
+		else
+		{
+			currentPage = pageUI;
+		}
 		
 		updateIndices();
 	}
