@@ -1082,6 +1082,7 @@ public class PlaceBooksAdminController
 
 			if(serveFile.exists())
 			{
+				log.debug("Serving file: " + serveFile.getPath());
 				try
 				{
 					long lastModified = req.getDateHeader("If-Modified-Since"); 
