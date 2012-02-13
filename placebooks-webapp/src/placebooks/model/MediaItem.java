@@ -29,7 +29,6 @@ import placebooks.controller.FileHelper;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.PropertiesSingleton;
 
-import com.ibm.icu.impl.URLHandler;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
@@ -76,55 +75,20 @@ public abstract class MediaItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	/**
+	 * Attempt to find the file for this item and set the path accordingly
+	 * @return the path for the attached file, or null
+	 */
 	public String attemptPathFix()
 	{
 		String pathToReturn = null;
 		if (path != null && new File(path).exists()) { return path; }
 		if ((getHash() != null) || (getKey()!=null))
 		{
-			log.info("Attempting to fix media path " + path + " for item " + getKey() + " hash " + getHash());
+			log.info("Attempting to fix media path '" + path + "' for item '" + getKey() + "' hash '" + getHash() + "'");
 			try
 			{
-				final File path = getSavePath();
-				File[] files = null; 
-				if(getHash()!=null)
-				{
-					files = path.listFiles(new FilenameFilter()
-					{
-						@Override
-						public boolean accept(final File dir, final String name)
-						{
-							final int index = name.indexOf('.');
-							if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
-							return false;
-						}
-					});
-
-					if (files.length == 1)
-					{
-						pathToReturn = files[0].getPath();
-					}
-					else
-					{
-						if(getKey()!=null)
-						{
-							files = path.listFiles(new FilenameFilter()
-							{
-								@Override
-								public boolean accept(final File dir, final String name)
-								{
-									final int index = name.indexOf('.');
-									if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
-									return false;
-								}
-							});
-							if (files.length == 1)
-							{
-								pathToReturn = files[0].getPath();
-							}
-						}
-					}
-				}
+				pathToReturn = FileHelper.FindClosestFile(getSavePath().getAbsolutePath(), hash);
 			}
 			catch (final Exception e)
 			{
@@ -203,6 +167,11 @@ public abstract class MediaItem extends PlaceBookItem
 		return path;
 	}
 
+	/**
+	 * Gets the path for and creates the saved items folder
+	 * @return File Folder to save files in 
+	 * @throws IOException
+	 */
 	private File getSavePath() throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
@@ -323,9 +292,9 @@ public abstract class MediaItem extends PlaceBookItem
 			log.debug(ex.getMessage());
 		}
 		File downloadFile = new File(urlHash);
-			if(!downloadFile.exists())
+		if(!downloadFile.exists())
 		{
-			writeDataToDisk(name, is);
+			writeDataToDisk(urlHash, is);
 		}
 		else
 		{
@@ -336,8 +305,12 @@ public abstract class MediaItem extends PlaceBookItem
 			{
 				// Delete the old file and download again...
 				downloadFile.delete();
-				writeDataToDisk(name, is);
+				writeDataToDisk(urlHash, is);
 			}	
+			else
+			{
+				log.warn("Download already in progress... do nothing");
+			}
 		}
 	}
 	
@@ -371,7 +344,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 
 		String dir = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-		File tempFile = File.createTempFile("mediaitem-download-", "", getSavePath());
+		File tempFile = File.createTempFile(name, "", getSavePath());
 		String tempSaveName = tempFile.getName();
 		try
 		{
@@ -413,7 +386,7 @@ public abstract class MediaItem extends PlaceBookItem
 	}
 
 	/**
-	 * Attepmt to redownload an image from sourceURL, return true of ok false if not
+	 * Attempt to redownload an image from sourceURL, return true of ok false if not
 	 * @return
 	 */
 	public boolean RedownloadItem()

@@ -132,7 +132,7 @@ public class PlaceBookItem extends JavaScriptObject
 			}
 			else
 			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass + "/" + key;
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key;
 			}
 		}
 

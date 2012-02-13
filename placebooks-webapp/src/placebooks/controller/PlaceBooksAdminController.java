@@ -970,29 +970,40 @@ public class PlaceBooksAdminController
 		searchGET(res, out.toString());
 	}
 
-	@RequestMapping(value = "/admin/serve/gpstraceitem/{key}", method = RequestMethod.GET)
-	public void serveGPSTraceItem(final HttpServletResponse res,
-			@PathVariable("key") final String key)
+	@RequestMapping(value = "/admin/serve/media/gpstraceitem/{hash}", method = RequestMethod.GET)
+	public void serveGPSTraceItem(final HttpServletResponse res, @PathVariable("hash") final String hash)
 	{
+		//Serve a GPS trace based on hash... get the first item in the DB that has this hash since they'll all be the same
+		// TODO check permissions
 		final EntityManager em = EMFSingleton.getEntityManager();
-
-		log.info("Serving GPS Trace for " + key);
+		log.info("Serving GPS Trace " + hash);
 
 		try
 		{
-			final GPSTraceItem g = em.find(GPSTraceItem.class, key);
-
-			if (g != null)
+			
+			TypedQuery<GPSTraceItem> q = em.createQuery("SELECT item FROM GPSTraceItem as item WHERE item.hash = ?1", GPSTraceItem.class);
+			q.setParameter(1, hash);
+			List<GPSTraceItem> items = q.getResultList();
+			if(items.size()==0)
 			{
-				final String trace = g.getTrace();
-				res.setContentType("text/xml");
-				final PrintWriter p = res.getWriter();
-				p.print(trace);
-				p.close();
+				log.debug("Can't find GPS trace: " + hash);
+				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			}
 			else
 			{
-				throw new Exception("GPSTrace is null");
+				final GPSTraceItem g = items.get(0);
+				if (g != null)
+				{
+					final String trace = g.getTrace();
+					res.setContentType("text/xml");
+					final PrintWriter p = res.getWriter();
+					p.print(trace);
+					p.close();
+				}
+				else
+				{
+					throw new Exception("GPSTrace is null");
+				}
 			}
 		}
 		catch (final Throwable e)
@@ -1004,8 +1015,55 @@ public class PlaceBooksAdminController
 			em.close();
 		}
 	}
+	
 
+	@RequestMapping(value = "/admin/serve/item/media/{type}/{key}", method = RequestMethod.GET)
+	public void serveItemMedia(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("type") final String type,  @PathVariable("key") final String key)
+	{
+		final EntityManager em = EMFSingleton.getEntityManager();
+		log.info("Serving Item: "+ type + ":" + key);
 
+		try
+		{
+			final ImageItem i = em.find(ImageItem.class, key);
+			boolean found = false;
+			if (i != null)
+			{
+				if(i.getHash()!= null)
+				{
+					found = true;
+				}
+			}
+			if(found)
+			{
+				serveMedia(req, res, type, i.getHash());
+			}
+			else
+			{
+				log.info("Item "+ type + ":" + key + " not found in db");
+				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		}
+		catch (final Throwable e)
+		{
+			log.error(e.getMessage(), e);
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try
+			{
+				e.printStackTrace(res.getWriter());
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		finally
+		{
+			em.close();
+		}
+	}
+
+	
 	@RequestMapping(value = "/admin/serve/media/{type}/{hash}", method = RequestMethod.GET)
 	public void serveMedia(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("type") final String type,  @PathVariable("hash") final String hash)
 	{
@@ -1058,29 +1116,11 @@ public class PlaceBooksAdminController
 				// Attempt to find other versions of the file... in case extension guess was wrong...
 				String dirPath = itemPath.replace(serveFile.getName(), "");
 				log.warn("Can't find file, trying alternatives in " + dirPath);
-
-				final File path =  new File(dirPath);
-				File[] files = null; 
-				files = path.listFiles(new FilenameFilter()
+				itemPath = FileHelper.FindClosestFile(dirPath, hash);
+				if(itemPath!=null)
 				{
-					@Override
-					public boolean accept(final File dir, final String name)
-					{
-						final int index = name.indexOf('.');
-						if (name.startsWith(hash) && index == hash.length())
-						{ 
-							log.debug("Found: " + name);
-							return true;
-						}
-						return false;
-					}
-				});
-
-				if (files.length > 0)
-				{
-					itemPath = files[0].getPath();
-					serveFile = new File(itemPath);
 					log.warn("Using alternative file: " + itemPath);
+					serveFile = new File(itemPath);
 				}
 			}
 
