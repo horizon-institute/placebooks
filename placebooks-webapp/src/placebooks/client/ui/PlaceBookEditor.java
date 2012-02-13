@@ -202,10 +202,10 @@ public class PlaceBookEditor extends PlaceBookPlace
 	
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
-	{
+	{		
 		Widget editor;
 		editor = uiBinder.createAndBindUi(this);
-		
+			
 		loadingPanel.setVisible(true);
 		
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
@@ -310,6 +310,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 			public void run()
 			{
 				bookPanel.resized();	
+				new Timer()
+				{
+					@Override
+					public void run()
+					{
+						bookPanel.resized();	
+					}
+				}.schedule(20);				
 			}
 		}.schedule(10);
 	}	

@@ -3,6 +3,7 @@ package placebooks.client.ui.items;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.media.client.Video;
 import com.google.gwt.user.client.Timer;
 
@@ -34,7 +35,14 @@ public class VideoItem extends PlaceBookItemWidget
 	{
 		if (video.getVideoHeight() == 0)
 		{
-			loadTimer.schedule(1000);
+			try
+			{
+				loadTimer.schedule(1000);
+			}
+			catch(Exception e)
+			{
+				GWT.log(e.getMessage());
+			}
 		}
 		else
 		{
