@@ -1007,7 +1007,7 @@ public class PlaceBooksAdminController
 
 
 	@RequestMapping(value = "/admin/serve/media/{type}/{hash}", method = RequestMethod.GET)
-	public void serveItem(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("type") final String type,  @PathVariable("hash") final String hash)
+	public void serveMedia(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("type") final String type,  @PathVariable("hash") final String hash)
 	{
 		String itemPath = "";
 		if(type.equalsIgnoreCase("imageitem"))
@@ -1086,128 +1086,208 @@ public class PlaceBooksAdminController
 
 			if(serveFile.exists())
 			{
-				log.debug("Serving file: " + serveFile.getPath());
 				try
 				{
-					long lastModified = req.getDateHeader("If-Modified-Since"); 
-					if(lastModified >= serveFile.lastModified())
+					log.debug("Serving file: " + serveFile.getPath());
+
+					final long length = serveFile.length();
+					final long lastModified = serveFile.lastModified();
+					final String eTag = itemPath + "_" + length + "_" + lastModified;
+
+
+					final String ifNoneMatch = req.getHeader("If-None-Match");
+					if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag)) 
 					{
-						res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+						res.setHeader("ETag", eTag);
+						res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 						return;
 					}
-				}
-				catch(Exception e)
-				{
-					log.warn(e.getMessage(), e);
-				}
-				res.addDateHeader("Last-Modified", serveFile.lastModified());
 
-				MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-				String mimeType = mimeTypesMap.getContentType(serveFile);
-				res.setContentType("Content type: " + mimeType);
-
-				res.setBufferSize(10240);
-				res.addHeader("Accept-Ranges", "bytes");
-				String range = req.getHeader("Range");
-
-				try
-				{
-					final ServletOutputStream sos = res.getOutputStream();
-					final FileInputStream fis = new FileInputStream(serveFile);
-					BufferedInputStream bis = null;
-
-					long startByte = 0;
-					long endByte = serveFile.length() - 1;
-
-
-					if (range != null)
+					final long ifModifiedSince = req.getDateHeader("If-Modified-Since");
+					if (ifNoneMatch == null && ifModifiedSince != -1 &&
+							ifModifiedSince + 1000 > lastModified) 
 					{
-						if (range.startsWith("bytes="))
+						res.setHeader("ETag", eTag);
+						res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+						return;
+					}
+
+					final String ifMatch = req.getHeader("If-Match");
+					if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag)) 
+					{
+						res.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+						return;
+					}
+
+					final long ifUnmodifiedSince = 
+							req.getDateHeader("If-Unmodified-Since");
+					if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified)
+					{
+						res.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+						return;
+					}
+
+					final MediaHelper.Range full =  new MediaHelper.Range(0, length - 1, length);
+					final List<MediaHelper.Range> ranges =  new ArrayList<MediaHelper.Range>();
+					final String range = req.getHeader("Range");
+					if (range != null) 
+					{
+
+						if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) 
 						{
-							try
+							res.setHeader("Content-Range", "bytes */" + length);
+							res.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+							return;
+						}
+
+						final String ifRange = req.getHeader("If-Range");
+						if (ifRange != null && !ifRange.equals(eTag)) 
+						{
+							try 
 							{
-								//log.debug("Range string: " + range.substring(6));
-								final String[] rangeItems = range.substring(6).split("-");
-								switch(rangeItems.length)
-								{
-								case 0:
-									// do all of file (start and end already set above)
-									break;
-								case 1:
-									//set start position then go to end
-									startByte = Long.parseLong(rangeItems[0]);
-									break;
-								default:
-									// user start and end
-									startByte = Long.parseLong(rangeItems[0]);
-									endByte = Long.parseLong(rangeItems[1]);
-									break;
-								}
-								//log.debug("Range decoded: " + Long.toString(startByte) + " " + Long.toString(endByte));
+								final long ifRangeTime = req.getDateHeader("If-Range");
+								if (ifRangeTime != -1 && ifRangeTime + 1000 < lastModified)
+									ranges.add(full);
+							} 
+							catch (IllegalArgumentException ignore) 
+							{
+								ranges.add(full);
 							}
-							catch (final Exception e)
+						}
+
+						if (ranges.isEmpty()) 
+						{
+							for (final String part : range.substring(6).split(",")) 
 							{
-								log.error(e.getMessage());
+								long start = MediaHelper.sublong(part, 0, 
+										part.indexOf("-"));
+								long end = MediaHelper.sublong(part, part.indexOf("-") + 1, 
+										part.length());
+
+								if (start == -1) 
+								{
+									start = length - end;
+									end = length - 1;
+								} 
+								else if (end == -1 || end > length - 1)
+									end = length - 1;
+
+								if (start > end) 
+								{
+									res.setHeader("Content-Range", "bytes */" 
+											+ length);
+									res.sendError(
+											HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE
+											);
+									return;
+								}
+
+								ranges.add(new MediaHelper.Range(start, end, length));
 							}
 						}
 					}
-					bis = new BufferedInputStream(fis);
-					long totalLengthToSend = serveFile.length() - startByte;
-					long totalLengthOfFile = serveFile.length();
-					//log.debug("Serving " + type + " data range " + startByte + " to " + endByte + " of " + totalLengthOfFile);
 
-					res.setContentLength((int) totalLengthToSend);			
-					res.addHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + totalLengthOfFile);
-					res.addHeader("ETag", "placebooks-" + hash);
-					res.setDateHeader("Last-Modified", serveFile.lastModified());
+					boolean acceptsGzip = false;
+					String disposition = "inline";
+					
+					MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+					String contentType = mimeTypesMap.getContentType(serveFile);
+					if (contentType == null)
+						contentType = "application/octet-stream";
 
-					if(totalLengthOfFile>totalLengthToSend)
+					if (contentType.startsWith("text"))
 					{
-						res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+						final String acceptEncoding = req.getHeader("Accept-Encoding");
+						acceptsGzip = acceptEncoding != null &&  MediaHelper.accepts(acceptEncoding, "gzip");
+						contentType += ";charset=UTF-8";
 					}
-					final int bufferLen = 4096;
-					final byte data[] = new byte[bufferLen];
-
-					int totalBytesSent = 0;
-					int length = 0;
-					try
+					else if (!contentType.startsWith("image")) 
 					{
-						// Read only the number of bytes to left to send, in case it's less than the buffer size
-						// also start at the start byte
-						//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + startByte + " for a total of " + totalLengthToSend);
-						bis.skip(startByte);
-						length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-						while (length != -1)
-						{
-							sos.write(data, 0, length);
-							totalBytesSent += length;
-							//log.debug(totalBytesSent + " / " + totalLengthToSend + " remaining: " + (totalLengthToSend - totalBytesSent));
+						final String accept = req.getHeader("Accept");
+						disposition = accept != null &&  MediaHelper.accepts(accept, contentType) ? "inline" : "attachment";
+					}
 
-							if(totalBytesSent >= totalLengthToSend)
+					res.reset();
+
+					res.setBufferSize(MediaHelper.DEFAULT_BUFFER_SIZE);
+					res.setHeader("Content-Disposition", disposition + ";filename=\""  + itemPath + "\"");
+					res.setHeader("Accept-Ranges", "bytes");
+					res.setHeader("ETag", eTag);
+					res.setDateHeader("Last-Modified", lastModified);
+					res.setDateHeader("Expires", System.currentTimeMillis()  + MediaHelper.DEFAULT_EXPIRE_TIME);
+
+
+					RandomAccessFile input = null;
+					OutputStream output = null;
+
+					try 
+					{
+						input = new RandomAccessFile(serveFile, "r");
+						output = res.getOutputStream();
+
+						if (ranges.isEmpty() || ranges.get(0) == full) 
+						{
+
+							final MediaHelper.Range r = full;
+							res.setContentType(contentType);
+							res.setHeader("Content-Range", "bytes " + r.start + "-" 
+									+ r.end + "/" + r.total);
+
+							if (acceptsGzip) 
 							{
-								length = -1;
-							}
+								res.setHeader("Content-Encoding", "gzip");
+								output = new GZIPOutputStream(output, MediaHelper.DEFAULT_BUFFER_SIZE);
+							} 
 							else
 							{
-								//log.debug("Reading " + Math.min(bufferLen, (totalLengthToSend - totalBytesSent)) + " bytes starting at " + (startByte+totalBytesSent) + " for a total of " + totalLengthToSend);
-								length = bis.read(data, 0, (int) Math.min(bufferLen, (totalLengthToSend - totalBytesSent)));
-								//log.debug("Read bytes: " + length);
+								res.setHeader("Content-Length", String.valueOf(r.length));
 							}
-						}
+							MediaHelper.copy(input, output, r.start, r.length);
+						} 
+						else if (ranges.size() == 1) 
+						{
 
-					}
-					finally
+							final MediaHelper.Range r = ranges.get(0);
+							res.setContentType(contentType);
+							res.setHeader("Content-Range", "bytes " + r.start + "-" + r.end + "/" + r.total);
+							res.setHeader("Content-Length", String.valueOf(r.length));
+							res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+							MediaHelper.copy(input, output, r.start, r.length);
+
+						} 
+						else
+						{
+							res.setContentType("multipart/byteranges; boundary=" + MediaHelper.MULTIPART_BOUNDARY);
+							res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+							final ServletOutputStream sos = (ServletOutputStream) output;
+
+							for (final MediaHelper.Range r : ranges) 
+							{
+								sos.println();
+								sos.println("--" + MediaHelper.MULTIPART_BOUNDARY);
+								sos.println("Content-Type: " + contentType);
+								sos.println("Content-Range: bytes " + r.start + "-" + r.end + "/" + r.total);
+
+								MediaHelper.copy(input, output, r.start, r.length);
+							}
+
+							sos.println();
+							sos.println("--" + MediaHelper.MULTIPART_BOUNDARY + "--");
+						}
+					} 
+					finally 
 					{
-						sos.close();
-						fis.close();
+						MediaHelper.close(output);
+						MediaHelper.close(input);
 					}
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					log.error(ex.getMessage());
 					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				}
-
 			}
 		}
 		else
@@ -1217,462 +1297,6 @@ public class PlaceBooksAdminController
 	}
 
 
-
-	@RequestMapping(value = "/admin/serve/imageitem/thumb/{key}", method = RequestMethod.GET)
-	public void serveImageItemThumb(final HttpServletRequest req, final HttpServletResponse res, @PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving ImageItem thumbnail: " + key);
-		try
-		{
-			final ImageItem i = em.find(ImageItem.class, key);
-			if (i != null)
-			{
-				log.info("ImageItem thumnail path:" + (i.getThumbPath() != null ? i.getThumbPath() : "null"));
-				if(i.getTimestamp() != null)
-				{
-					try
-					{
-						long lastModified = req.getDateHeader("If-Modified-Since"); 
-						if(lastModified >= i.getTimestamp().getTime())
-						{
-							res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-							return;
-						}
-					}
-					catch(Exception e)
-					{
-						log.warn(e.getMessage(), e);
-					}
-
-					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
-				}
-				ServeImage(i.getThumbPath(), res);
-			}
-			else
-			{
-				log.info("Image Item " + key + " not found in db");
-				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			try
-			{
-				e.printStackTrace(res.getWriter());
-			}
-			catch (IOException e1)
-			{
-				e1.printStackTrace();
-			}
-		}
-		finally
-		{
-			em.close();
-		}
-	}
-
-
-	@RequestMapping(value = "/admin/serve/imageitem/{key}", method = RequestMethod.GET)
-	public void serveImageItem(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-		log.info("Serving Image Item: " + key);
-
-		try
-		{
-			final ImageItem i = em.find(ImageItem.class, key);
-			if (i != null)
-			{
-				String imagePath = i.getPath();
-				log.info("ImageItem path: " + (imagePath != null ? imagePath : "null"));
-				if(i.getTimestamp() != null)
-				{
-					try
-					{
-						long lastModified = req.getDateHeader("If-Modified-Since"); 
-						if(lastModified >= i.getTimestamp().getTime())
-						{
-							res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-							return;
-						}
-					}
-					catch(Exception e)
-					{
-						log.warn(e.getMessage(), e);
-					}
-
-					res.addDateHeader("Last-Modified", i.getTimestamp().getTime());
-
-				}
-
-				if (imagePath != null)
-				{
-					ServeImage(imagePath, res);
-				}
-				else
-				{
-					log.error("Image for ImageItem " + i.getKey() + " does not exist");
-					res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				}
-			}
-			else
-			{
-				log.info("ImageItem " + key + " not found in db");
-				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			try
-			{
-				e.printStackTrace(res.getWriter());
-			}
-			catch (IOException e1)
-			{
-				e1.printStackTrace();
-			}
-		}
-		finally
-		{
-			em.close();
-		}
-	}
-
-	private void ServeImage(String path, final HttpServletResponse res) throws IOException
-	{
-		log.debug("Serve image: " + path);
-		File image = new File(path);
-		final ImageInputStream iis = ImageIO.createImageInputStream(image);
-		final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-		String fmt = "png";
-		while (readers.hasNext())
-		{
-			final ImageReader read = readers.next();
-			fmt = read.getFormatName();
-			read.dispose();
-		}
-
-		final OutputStream out = res.getOutputStream();
-		ImageIO.write(ImageIO.read(new File(path)), fmt, out);
-		out.close();
-		iis.close();
-	}
-
-  	@RequestMapping(value = "/admin/serve/{type}item/{key}", 
-					method = RequestMethod.GET)
-	public void streamMediaItem(final HttpServletRequest request, 
-								final HttpServletResponse response,
-								@PathVariable("type") final String type,
-								@PathVariable("key") final String key) 
-		throws IOException
-	{
-		streamMediaItem_(request, response, type, key, false);
-	}
-
-  	@RequestMapping(value = "/admin/serve/mobile/{type}item/{key}", 
-					method = RequestMethod.GET)
-	public void streamMediaItemMobile(final HttpServletRequest request, 
-								      final HttpServletResponse response,
-									  @PathVariable("type") final String type,
-									  @PathVariable("key") final String key) 
-		throws IOException
-	{
-		streamMediaItem_(request, response, type, key, true);
-	}
-
-	// Method adapted / stolen from http://balusc.blogspot.com/2009/02/fileservlet-supporting-resume-and.html
-	public void streamMediaItem_(final HttpServletRequest request, 
-								 final HttpServletResponse response,
-								 final String type,
-								 final String key, 
-								 final boolean isMobile) throws IOException
-
-	{
-		log.debug("Request for media: " + key);
-
-		String path = null;
-		final EntityManager em = EMFSingleton.getEntityManager();
-
-		try
-		{
-			final MediaItem m = em.find(MediaItem.class, key);
-			if (m == null)
-			{
-				throw new Exception("Error getting media file, invalid key");
-			}
-			if (type.trim().equalsIgnoreCase("video"))
-			{
-				VideoItem v = (VideoItem) m;
-				if (isMobile)
-				{
-					log.debug("Getting chrome path for mobile VideoItem");
-					path = v.getMobilePath();
-				}
-				else
-				{
-					log.debug("Getting chrome path for VideoItem");
-					path = v.getChromePath();
-				}
-			}
-			else
-			{
-				path = m.getPath();
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			em.close();
-		}
-
-		if (path == null) { return; }
-		log.debug("Serving media: " + path);
-
-		String requestedFile = new File(path).getName();
-		String basePath = new File(path).getParent();
-		String[] split = PlaceBooksAdminHelper.getExtension(path);
-		if (split == null)
-		{
-			split = new String[2];
-			split[1] = (type == "audio" ? "mp3" : "mpeg");
-			log.warn("Couldn't get name and extension for " + path 
-					 + " defaulting to " + type + " and " + split[1]);
-		}
-
-		String contentType = type + "/" + split[1]; 
-
-    
-        final File file = new File(basePath, URLDecoder.decode(requestedFile, 
-														 	   "UTF-8"));
-
-        if (!file.exists()) 
-		{
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
-        final String fileName = file.getName();
-        final long length = file.length();
-        final long lastModified = file.lastModified();
-        final String eTag = fileName + "_" + length + "_" + lastModified;
-
-
-        final String ifNoneMatch = request.getHeader("If-None-Match");
-        if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag)) 
-		{
-            response.setHeader("ETag", eTag);
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
-
-        final long ifModifiedSince = request.getDateHeader("If-Modified-Since");
-        if (ifNoneMatch == null && ifModifiedSince != -1 &&
-			ifModifiedSince + 1000 > lastModified) 
-		{
-            response.setHeader("ETag", eTag);
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
-
-        final String ifMatch = request.getHeader("If-Match");
-        if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag)) 
-		{
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
-        }
-
-        final long ifUnmodifiedSince = 
-			request.getDateHeader("If-Unmodified-Since");
-        if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified)
-		{
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
-        }
-
-
-        final MediaHelper.Range full = 
-			new MediaHelper.Range(0, length - 1, length);
-
-        final List<MediaHelper.Range> ranges = 
-			new ArrayList<MediaHelper.Range>();
-
-        final String range = request.getHeader("Range");
-        if (range != null) 
-		{
-
-            if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) 
-			{
-                response.setHeader("Content-Range", "bytes */" + length);
-                response.sendError(	
-					HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE
-				);
-                return;
-            }
-
-            final String ifRange = request.getHeader("If-Range");
-            if (ifRange != null && !ifRange.equals(eTag)) 
-			{
-                try 
-				{
-                    final long ifRangeTime = request.getDateHeader("If-Range");
-                    if (ifRangeTime != -1 && ifRangeTime + 1000 < lastModified)
-                        ranges.add(full);
-                } 
-				catch (IllegalArgumentException ignore) 
-				{
-                    ranges.add(full);
-                }
-            }
-
-            if (ranges.isEmpty()) 
-			{
-                for (final String part : range.substring(6).split(",")) 
-				{
-                    long start = MediaHelper.sublong(part, 0, 
-													 part.indexOf("-"));
-                    long end = MediaHelper.sublong(part, part.indexOf("-") + 1, 
-												   part.length());
-
-                    if (start == -1) 
-					{
-                        start = length - end;
-                        end = length - 1;
-                    } 
-					else if (end == -1 || end > length - 1)
-                        end = length - 1;
-
-                    if (start > end) 
-					{
-                        response.setHeader("Content-Range", "bytes */" 
-										   + length);
-                        response.sendError(
-							HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE
-						);
-                        return;
-                    }
-
-                    ranges.add(new MediaHelper.Range(start, end, length));
-                }
-            }
-        }
-
-
-        boolean acceptsGzip = false;
-        String disposition = "inline";
-
-        if (contentType == null)
-			contentType = "application/octet-stream";
-
-        if (contentType.startsWith("text"))
-		{
-            final String acceptEncoding = request.getHeader("Accept-Encoding");
-            acceptsGzip = acceptEncoding != null && 
-						  MediaHelper.accepts(acceptEncoding, "gzip");
-            contentType += ";charset=UTF-8";
-        }
-        else if (!contentType.startsWith("image")) 
-		{
-            final String accept = request.getHeader("Accept");
-            disposition = accept != null && 
-						  MediaHelper.accepts(accept, contentType) ? 
-						  "inline" : "attachment";
-        }
-
-        response.reset();
-        response.setBufferSize(MediaHelper.DEFAULT_BUFFER_SIZE);
-        response.setHeader("Content-Disposition", disposition + ";filename=\"" 
-						   + fileName + "\"");
-        response.setHeader("Accept-Ranges", "bytes");
-        response.setHeader("ETag", eTag);
-        response.setDateHeader("Last-Modified", lastModified);
-        response.setDateHeader("Expires", System.currentTimeMillis() 
-							   + MediaHelper.DEFAULT_EXPIRE_TIME);
-
-
-        RandomAccessFile input = null;
-        OutputStream output = null;
-
-        try 
-		{
-            input = new RandomAccessFile(file, "r");
-            output = response.getOutputStream();
-
-            if (ranges.isEmpty() || ranges.get(0) == full) 
-			{
-
-                final MediaHelper.Range r = full;
-                response.setContentType(contentType);
-                response.setHeader("Content-Range", "bytes " + r.start + "-" 
-								   + r.end + "/" + r.total);
-
-				if (acceptsGzip) 
-				{
-					response.setHeader("Content-Encoding", "gzip");
-					output = new GZIPOutputStream(
-								output, 
-							    MediaHelper.DEFAULT_BUFFER_SIZE
-							 );
-				} 
-				else
-				{
-					response.setHeader("Content-Length", 
-									   String.valueOf(r.length));
-				}
-
-				MediaHelper.copy(input, output, r.start, r.length);
-            } 
-			else if (ranges.size() == 1) 
-			{
-
-                final MediaHelper.Range r = ranges.get(0);
-                response.setContentType(contentType);
-                response.setHeader("Content-Range", "bytes " + r.start + "-" 
-								   + r.end + "/" + r.total);
-                response.setHeader("Content-Length", String.valueOf(r.length));
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-
-                MediaHelper.copy(input, output, r.start, r.length);
-
-            } 
-			else
-			{
-                response.setContentType("multipart/byteranges; boundary=" 
-										+ MediaHelper.MULTIPART_BOUNDARY);
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-
-				final ServletOutputStream sos = (ServletOutputStream) output;
-
-				for (final MediaHelper.Range r : ranges) 
-				{
-					sos.println();
-					sos.println("--" + MediaHelper.MULTIPART_BOUNDARY);
-					sos.println("Content-Type: " + contentType);
-					sos.println("Content-Range: bytes " + r.start + "-" + r.end + "/" + r.total);
-
-					MediaHelper.copy(input, output, r.start, r.length);
-				}
-
-				sos.println();
-				sos.println("--" + MediaHelper.MULTIPART_BOUNDARY + "--");
-        	}
-        } 
-		finally 
-		{
-            MediaHelper.close(output);
-            MediaHelper.close(input);
-        }
-    }
-
-	
 	@RequestMapping(value = "/sync/{serviceName}", method = RequestMethod.GET)
 	public void syncService(final HttpServletResponse res, @PathVariable("serviceName") final String serviceName)
 	{
