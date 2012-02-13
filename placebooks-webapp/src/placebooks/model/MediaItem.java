@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -74,55 +75,20 @@ public abstract class MediaItem extends PlaceBookItem
 		root.appendChild(item);
 	}
 
+	/**
+	 * Attempt to find the file for this item and set the path accordingly
+	 * @return the path for the attached file, or null
+	 */
 	public String attemptPathFix()
 	{
 		String pathToReturn = null;
 		if (path != null && new File(path).exists()) { return path; }
 		if ((getHash() != null) || (getKey()!=null))
 		{
-			log.info("Attempting to fix media path " + path + " for item " + getKey() + " hash " + getHash());
+			log.info("Attempting to fix media path '" + path + "' for item '" + getKey() + "' hash '" + getHash() + "'");
 			try
 			{
-				final File path = getSavePath();
-				File[] files = null; 
-				if(getHash()!=null)
-				{
-					files = path.listFiles(new FilenameFilter()
-					{
-						@Override
-						public boolean accept(final File dir, final String name)
-						{
-							final int index = name.indexOf('.');
-							if (name.startsWith(getHash()) && index == getHash().length()) { return true; }
-							return false;
-						}
-					});
-
-					if (files.length == 1)
-					{
-						pathToReturn = files[0].getPath();
-					}
-					else
-					{
-						if(getKey()!=null)
-						{
-							files = path.listFiles(new FilenameFilter()
-							{
-								@Override
-								public boolean accept(final File dir, final String name)
-								{
-									final int index = name.indexOf('.');
-									if (name.startsWith(getKey()) && index == getKey().length()) { return true; }
-									return false;
-								}
-							});
-							if (files.length == 1)
-							{
-								pathToReturn = files[0].getPath();
-							}
-						}
-					}
-				}
+				pathToReturn = FileHelper.FindClosestFile(getSavePath().getAbsolutePath(), hash);
 			}
 			catch (final Exception e)
 			{
@@ -196,11 +162,16 @@ public abstract class MediaItem extends PlaceBookItem
 		attemptPathFix();
 		if(path==null)
 		{
-			//RedownloadItem();
+			RedownloadItem();
 		}
 		return path;
 	}
 
+	/**
+	 * Gets the path for and creates the saved items folder
+	 * @return File Folder to save files in 
+	 * @throws IOException
+	 */
 	private File getSavePath() throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
@@ -300,6 +271,50 @@ public abstract class MediaItem extends PlaceBookItem
 		return hash;
 	}
 
+
+	/**
+	 * Writes an item to disk for the mediaitem and save it using the files MD5 hash+original file extension to ensure only one copy of each file.
+	 * @param name The original name of the file
+	 * @param is InputStream for the file
+	 * @param originalURL
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public void writeDataToDisk(final String name, final InputStream is, String originalURL) throws IOException
+	{
+		String urlHash = name;
+		try
+		{
+			urlHash = MessageDigest.getInstance("MD5").digest(originalURL.getBytes()).toString();
+		}
+		catch (Exception ex) 
+		{
+			log.debug(ex.getMessage());
+		}
+		File downloadFile = new File(urlHash);
+		if(!downloadFile.exists())
+		{
+			writeDataToDisk(urlHash, is);
+		}
+		else
+		{
+			// If it exists 
+			// Check if it's an old download by seeing if it's been modified in the last hour...
+			long timeout = System.currentTimeMillis() - (1000 * 3600);
+			if(downloadFile.lastModified() < timeout)
+			{
+				// Delete the old file and download again...
+				downloadFile.delete();
+				writeDataToDisk(urlHash, is);
+			}	
+			else
+			{
+				log.warn("Download already in progress... do nothing");
+			}
+		}
+	}
+	
+	
 	/**
 	 * Writes an item to disk for the mediaitem and save it using the files MD5 hash+original file extension to ensure only one copy of each file.
 	 * @param name The original name of the file
@@ -329,7 +344,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 
 		String dir = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-		File tempFile = File.createTempFile("mediaitem-download-", "", getSavePath());
+		File tempFile = File.createTempFile(name, "", getSavePath());
 		String tempSaveName = tempFile.getName();
 		try
 		{
@@ -348,12 +363,6 @@ public abstract class MediaItem extends PlaceBookItem
 			}
 
 			saveName = hash;
-			if (name != null)
-			{
-				final int extIdx = name.lastIndexOf(".");
-				final String ext = name.substring(extIdx + 1, name.length());
-				saveName = saveName + "." + ext;
-			}
 			saveName = dir + File.separator + saveName; 
 			log.info("Renaming temp file to: " + saveName);
 			boolean renamed = tempFile.renameTo(new File(saveName));
@@ -377,7 +386,7 @@ public abstract class MediaItem extends PlaceBookItem
 	}
 
 	/**
-	 * Attepmt to redownload an image from sourceURL, return true of ok false if not
+	 * Attempt to redownload an image from sourceURL, return true of ok false if not
 	 * @return
 	 */
 	public boolean RedownloadItem()
@@ -390,7 +399,7 @@ public abstract class MediaItem extends PlaceBookItem
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(getSourceURL());
-				writeDataToDisk(getSourceURL().getPath(), conn.getInputStream());
+				writeDataToDisk(getSourceURL().getPath(), conn.getInputStream(), getSourceURL().toString());
 			}
 			catch(Exception e)
 			{

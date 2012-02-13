@@ -84,13 +84,16 @@ public class VideoItem extends MediaItem
 			File mobileFile = new File(mobilePath);
 			//Check if the mobile version of the file exists and if it doesn't, and it should be transcoded, do it now.
 			// Otherwise return the original items path
-			if( !mobileFile.exists() && PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
-			{
-				TranscodeHelper.transcodeVideoForMobile(mobilePath);
-			}
-			else
-			{
-				mobilePath = originalPath;
+			if(!mobileFile.exists())
+			{	
+				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
+				{
+					TranscodeHelper.transcodeVideoForChrome(originalPath);
+				}
+				else
+				{
+					mobilePath = originalPath;
+				}
 			}
 		}
 		return mobilePath;
@@ -108,14 +111,14 @@ public class VideoItem extends MediaItem
 		if(originalPath!=null)
 		{
 			chromePath = originalPath + "-chrome.ogg";
-			File mobileFile = new File(chromePath);
+			File chromeFile = new File(chromePath);
 			//Check if the mobile version of the file exists and if it doesn't, and it should be transcoded, do it now.
 			// Otherwise return the original items path
-			if(!mobileFile.exists())
+			if(!chromeFile.exists())
 			{	
 				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
 				{
-					TranscodeHelper.transcodeVideoForChrome(chromePath);
+					TranscodeHelper.transcodeVideoForChrome(originalPath);
 				}
 				else
 				{

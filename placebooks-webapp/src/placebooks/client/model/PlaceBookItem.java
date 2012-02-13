@@ -128,12 +128,11 @@ public class PlaceBookItem extends JavaScriptObject
 		{
 			if (getHash() != null)
 			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key
-						+ "?" + getHash();
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass + "/" + getHash();
 			}
 			else
 			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key;
 			}
 		}
 
@@ -143,17 +142,11 @@ public class PlaceBookItem extends JavaScriptObject
 	public final String getThumbURL()
 	{
 		final String shortClass = getShortClassName();
-		String key = getKey();
-		if (key == null)
-		{
-			key = getMetadata("originalItemID", null);
-		}
-		if (key != null && isMedia(shortClass))
+		if (isMedia(shortClass))
 		{
 			if (getHash() != null)
 			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/thumb/" + key
-						+ "?" + getHash();
+				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/thumb/" + getHash();
 			}
 		}
 

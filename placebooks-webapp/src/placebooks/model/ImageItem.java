@@ -76,7 +76,7 @@ public class ImageItem extends MediaItem
 				{
 					log.warn("Attempting to redownload from " + getSourceURL());
 					final URLConnection conn = CommunicationHelper.getConnection(getSourceURL());
-					writeDataToDisk(getSourceURL().getPath(), conn.getInputStream());
+					writeDataToDisk(getSourceURL().getPath(), conn.getInputStream(), getSourceURL().toString());
 				}
 				else
 				{
