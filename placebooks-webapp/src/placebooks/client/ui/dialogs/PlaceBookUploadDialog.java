@@ -54,13 +54,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiField
 	TextArea copyright;
 
-	private final PlaceBookController controller;
-	private final PlaceBookItemFrame item;
-
 	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		this.item = item;
-		this.controller = controller;
 		setWidget(uiBinder.createAndBindUi(this));
 
 		if (item.getItem().is(ItemType.IMAGE))
@@ -99,6 +94,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				infoLabel.setVisible(true);
 				infoLabel.setText("Uploading File...");
 				uploadButton.setEnabled(false);
+				setAutoHide(false);
 				GWT.log("Uploading File");
 			}
 		});
@@ -108,6 +104,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
 				GWT.log("Upload Complete: " + event.getResults());
+				setAutoHide(true);
 				if (event.getResults().contains("Success"))
 				{
 					item.getItemWidget().refresh();

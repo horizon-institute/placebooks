@@ -16,7 +16,7 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 
 	public void handleOther(final Request request, final Response response)
 	{
-
+		handleError(request, response, null);
 	}
 
 	public abstract void handleResponse(T object);

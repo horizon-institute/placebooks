@@ -120,20 +120,19 @@ public class PlaceBookItem extends JavaScriptObject
 	{
 		final String shortClass = getShortClassName();
 		String key = getKey();
+		if (getHash() != null)
+		{
+			return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass + "/" + getHash();
+		}
+		
 		if (key == null)
 		{
 			key = getMetadata("originalItemID", null);
 		}
+		
 		if (key != null && isMedia(shortClass))
 		{
-			if (getHash() != null)
-			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass + "/" + getHash();
-			}
-			else
-			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key;
-			}
+			return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key;
 		}
 
 		return getSourceURL();

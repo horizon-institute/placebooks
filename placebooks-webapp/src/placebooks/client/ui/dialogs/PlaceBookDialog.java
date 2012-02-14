@@ -41,6 +41,11 @@ public abstract class PlaceBookDialog
 		dialog.setError(error);
 	}	
 	
+	public void setAutoHide(final boolean autoHide)
+	{
+		dialog.setAutoHideEnabled(autoHide);
+	}
+	
 	public void center()
 	{
 		dialog.center();		

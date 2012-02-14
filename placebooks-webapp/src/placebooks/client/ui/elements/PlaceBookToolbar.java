@@ -202,7 +202,7 @@ public class PlaceBookToolbar extends Composite
 								loginDialog.setError("Error logging in");
 							}
 							loginDialog.center();
-						}
+						}						
 
 						@Override
 						public void handleResponse(final Shelf shelf)

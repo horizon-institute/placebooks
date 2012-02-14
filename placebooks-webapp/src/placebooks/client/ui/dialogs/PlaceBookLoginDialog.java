@@ -83,6 +83,7 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 			submit.setEnabled(false);
 		}
 		progress.setVisible(showProgress);
+		setAutoHide(!showProgress);
 	}
 	
 	public void focus()
