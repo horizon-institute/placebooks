@@ -70,7 +70,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 	      {
 		      sb.appendEscaped("Owner");	    	  
 	      }
-	      else if(value.email.equals("R_W"))
+	      else if(value.permission.equals("R_W"))
 	      {
 	    	  sb.appendEscaped("Read + Write");
 	      }
