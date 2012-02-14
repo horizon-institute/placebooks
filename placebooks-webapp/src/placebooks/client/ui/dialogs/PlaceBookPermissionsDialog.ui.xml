@@ -11,11 +11,9 @@
 			margin: 0 5px;
 		}
 		
-		.buttons {
-			display: -webkit-box;	
-			display: -moz-box;
-			-moz-box-orient: vertical;
-			-webkit-box-orient: vertical;
+		.button {
+			display: block;
+
 		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
@@ -26,8 +24,8 @@
 			<g:Label>Permissions:</g:Label>
 			<g:ListBox ui:field="permissionsBox"/>
 		</g:FlowPanel>
-		<g:FlowPanel styleName="{style.buttons}"> 	
-			<g:Button ui:field="addUser">New User</g:Button>
+		<g:FlowPanel> 	
+			<g:Button ui:field="addUser" styleName="{style.button}">New User</g:Button>
 			<g:Button ui:field="removePermission">Remove</g:Button>
 		</g:FlowPanel>
 	</g:FlowPanel>
