@@ -10,6 +10,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -307,6 +308,11 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	@UiHandler("rootPanel")
 	void flipEnd(final MouseUpEvent event)
 	{
+		endFlip(event);
+	}
+	
+	private void endFlip(final MouseEvent<?> event)
+	{
 		if(flip.state == FlipState.dragging)
 		{
 			flip.state = FlipState.flipping;
@@ -332,12 +338,13 @@ public class PlaceBookPagesBook extends PlaceBookPages
 					flip.scheduleRepeating(1000/60);
 				}
 			}
-		}
+		}	
 	}
 	
 	@UiHandler("rootPanel")
 	void flipExit(final MouseOutEvent event)
 	{
+		endFlip(event);
 		if(flip.state == FlipState.edgeHighlight)
 		{
 			flip.target = 1;
