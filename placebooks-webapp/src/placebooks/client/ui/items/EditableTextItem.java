@@ -89,7 +89,8 @@ public class EditableTextItem extends PlaceBookItemWidget
 			final double scale = getParent().getOffsetWidth() / panelWidth;
 			textPanel.getElement().setAttribute("style",
 												"width: "+ panelWidth +"px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale("
-														+ scale + ")");
+														+ scale + "); -moz-transform-origin: 0% 0%; -moz-transform: scale("
+														+ scale + ")");	
 			return (getOffsetHeight() * scale) + "px";
 		}
 		return null;

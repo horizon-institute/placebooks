@@ -50,6 +50,15 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			image.getElement().getStyle().setOpacity(0.5);
 		}		
+
+		image.addMouseDownHandler(new MouseDownHandler()
+		{
+			@Override
+			public void onMouseDown(MouseDownEvent event)
+			{
+				event.preventDefault();				
+			}
+		});
 		
 		panel.addMouseDownHandler(new MouseDownHandler()
 		{

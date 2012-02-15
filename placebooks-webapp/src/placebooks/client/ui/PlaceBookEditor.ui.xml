@@ -33,6 +33,9 @@
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
 			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-orient: vertical;
+			-moz-box-align: center;			
 		}
 		
 		.savingLabel {
@@ -99,6 +102,9 @@
 			display: -webkit-box;
 			-webkit-box-orient: horizontal;
 			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-orient: horizontal;
+			-moz-box-align: center;			
 		}
 		
 		.imageButton:HOVER {
@@ -107,17 +113,22 @@
 		
 		.spacer {
 			-webkit-box-flex: 1;
+			-moz-box-flex: 1;			
 		}
 		
 		.zoomPanel {
 			padding: 0px 12px;	
 			display: -webkit-box;
 			-webkit-box-orient: horizontal;
-			-webkit-box-align: center;			
+			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-orient: horizontal;
+			-moz-box-align: center;	
 		}
 		
 		.zoomLabel {
 			-webkit-box-flex: 1;
+			-moz-box-flex: 1;			
 			padding-right: 10px;
 		}
 		
@@ -140,6 +151,7 @@
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 			border: 1px solid #DDD;
 			-webkit-transition: clip 0.2s linear;
+			-moz-transition: clip 0.2s linear;			
 	        transition: clip 0.5s linear;  					
 		}
 		

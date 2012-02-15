@@ -96,6 +96,7 @@ a:hover {
 
 img {
 	-webkit-user-drag: none;
+	-moz-user-drag: none;	
 	user-drag: none;
 }
 
