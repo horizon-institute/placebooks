@@ -1,7 +1,5 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.PlaceBookService;
-
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
@@ -34,13 +32,13 @@ public class QTVideo extends Widget
 //		addParam(getElement(), "scale", "tofit");						
 	}
 
-
-	private static void addParam(final Element element, final String name, final String value)
-	{
-		final Element param = DOM.createElement("param");
-		param.setAttribute("name", name);
-		param.setAttribute("value", value);
-		
-		element.appendChild(param);
-	}
+//
+//	private static void addParam(final Element element, final String name, final String value)
+//	{
+//		final Element param = DOM.createElement("param");
+//		param.setAttribute("name", name);
+//		param.setAttribute("value", value);
+//		
+//		element.appendChild(param);
+//	}
 }

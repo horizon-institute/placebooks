@@ -23,8 +23,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class MapItem extends PlaceBookItemWidget
+public class MapItem extends MediaItem
 {
 	public final static String POINT_PREFIX = "POINT (";
 
@@ -297,5 +298,26 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			GWT.log(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	protected Widget getMediaWidget()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getMediaHeight()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected void setURL(String url)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

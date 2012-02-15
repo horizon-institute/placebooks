@@ -20,7 +20,7 @@ public class UploadMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		final PlaceBookUploadDialog dialog = new PlaceBookUploadDialog(controller, item);
+		final PlaceBookUploadDialog dialog = new PlaceBookUploadDialog(controller, item.getItemWidget());
 		dialog.show();
 	}
 }

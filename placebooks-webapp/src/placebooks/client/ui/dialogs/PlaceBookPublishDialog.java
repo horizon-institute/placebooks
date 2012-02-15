@@ -87,6 +87,8 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	private final PlaceBookBinder placebook;
 
 	private final PlaceBookPlace place;
+	
+	private boolean allowPublish = true;
 
 	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookPages canvas)
 	{
@@ -124,9 +126,15 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		{
 			for (final PlaceBookItemFrame frame : page.getItems())
 			{
-				if (frame.getItem().is(ItemType.IMAGE))
+				if (frame.getItem().is(ItemType.IMAGE) && frame.getItem().getHash() != null)
 				{
 					imageItems.add(frame);
+				}
+				
+				if((frame.getItem().is(ItemType.IMAGE) || frame.getItem().is(ItemType.VIDEO) || frame.getItem().is(ItemType.AUDIO)) && frame.getItem().getHash() == null)
+				{
+					allowPublish = false;
+					setError("Cannot publish while there are items which require uploading");
 				}
 			}
 		}
@@ -212,7 +220,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			placebookImage.setUrl(frame.getItem().getURL());
 		}
 
-		publish.setEnabled(!title.getText().trim().isEmpty()
+		publish.setEnabled(allowPublish && !title.getText().trim().isEmpty()
 				&& (!activityList.getItemText(activityList.getSelectedIndex()).equals("Other:") || !activity.getText()
 						.trim().isEmpty()) && !location.getText().trim().isEmpty());
 

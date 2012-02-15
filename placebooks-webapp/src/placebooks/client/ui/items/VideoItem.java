@@ -3,21 +3,11 @@ package placebooks.client.ui.items;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.media.client.Video;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Widget;
 
-public class VideoItem extends PlaceBookItemWidget
+public class VideoItem extends MediaItem
 {
-	private final Timer loadTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			checkSize();
-		}
-	};
-	private String url;
 	private final Video video;
 	
 	VideoItem(final PlaceBookItem item, final PlaceBookController handler)
@@ -26,47 +16,23 @@ public class VideoItem extends PlaceBookItemWidget
 
 		video = Video.createIfSupported();
 		video.setControls(true);
-		video.setWidth("100%");
-
-		initWidget(video);
-	}
-
-	private void checkSize()
-	{
-		if (video.getVideoHeight() == 0)
-		{
-			try
-			{
-				loadTimer.schedule(1000);
-			}
-			catch(Exception e)
-			{
-				GWT.log(e.getMessage());
-			}
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
 	}
 
 	@Override
-	public void refresh()
+	protected Widget getMediaWidget()
 	{
-		if (getItem().hasParameter("height"))
-		{
-			video.setHeight("100%");
-		}
-		else
-		{
-			video.setHeight("auto");
-		}
-		if (url == null || !url.equals(getItem().getURL()))
-		{
-			url = getItem().getURL();
-			video.setSrc(url);
-			checkSize();
-		}
+		return video;
 	}
+
+	@Override
+	protected int getMediaHeight()
+	{
+		return video.getVideoHeight();
+	}
+
+	@Override
+	protected void setURL(String url)
+	{
+		video.setSrc(url);
+	}	
 }

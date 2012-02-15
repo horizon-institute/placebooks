@@ -5,7 +5,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.items.PlaceBookItemWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -54,7 +54,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiField
 	TextArea copyright;
 
-	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemFrame item)
+	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemWidget item)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 
@@ -107,9 +107,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				setAutoHide(true);
 				if (event.getResults().contains("Success"))
 				{
-					item.getItemWidget().refresh();
-					item.getRootPanel().getElement().getStyle().setOpacity(0.5);
-					item.getRootPanel().getElement().getStyle().setBackgroundColor("#000");
+					item.refresh();
 					PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
 					{
 
@@ -122,18 +120,14 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 							{
 								final PlaceBookItem placebookItem = PlaceBookService.parse(	PlaceBookItem.class,
 																							response.getText());
-								item.getRootPanel().getElement().getStyle().clearOpacity();
-								item.getRootPanel().getElement().getStyle().clearBackgroundColor();
-								item.getItemWidget().update(placebookItem);
+								item.update(placebookItem);
 							}
 						}
 
 						@Override
 						public void handleResponse(final PlaceBookItem placebookItem)
 						{
-							item.getRootPanel().getElement().getStyle().clearOpacity();
-							item.getRootPanel().getElement().getStyle().clearBackgroundColor();
-							item.getItemWidget().update(placebookItem);
+							item.update(placebookItem);
 							item.getItem().setMetadata("copyrightNotice", copyright.getText());
 							controller.markChanged();
 							hide();

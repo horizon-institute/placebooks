@@ -8,27 +8,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ImageItem extends PlaceBookItemWidget
+public class ImageItem extends MediaItem
 {
 	private final Image image = new Image();
 	
-	private final Timer loadTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			checkSize();
-		}
-	};
-
 	ImageItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
-		image.setUrl(item.getURL());
-		initWidget(image);
 		image.getElement().getStyle().setProperty("margin", "0 auto");
 		image.getElement().getStyle().setDisplay(Display.BLOCK);
 
@@ -50,34 +39,40 @@ public class ImageItem extends PlaceBookItemWidget
 				event.stopPropagation();
 			}
 		});
+		
+		refresh();
 	}
 
-	private void checkSize()
+	@Override
+	protected void checkHeightParam()
 	{
-		if (image.getHeight() == 0)
+		if (getItem().hasParameter("height"))
 		{
-			loadTimer.schedule(1000);
+			getMediaWidget().setWidth("auto");
+			getMediaWidget().setHeight("100%");
 		}
 		else
 		{
-			loadTimer.cancel();
-			fireResized();
+			getMediaWidget().setWidth("100%");
+			getMediaWidget().setHeight("auto");
 		}
 	}
 
 	@Override
-	public void refresh()
+	protected Widget getMediaWidget()
 	{
-		if (getItem().hasParameter("height"))
-		{
-			image.setWidth("auto");
-			image.setHeight("100%");
-		}
-		else
-		{
-			image.setWidth("100%");
-			image.setHeight("auto");
-		}
-		image.setUrl(getItem().getURL());
+		return image;
+	}
+
+	@Override
+	protected int getMediaHeight()
+	{
+		return image.getHeight();
+	}
+
+	@Override
+	protected void setURL(String url)
+	{
+		image.setUrl(url);
 	}
 }
