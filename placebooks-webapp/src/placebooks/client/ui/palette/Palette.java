@@ -18,9 +18,9 @@ public class Palette extends FlowPanel
 
 	//private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
-	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/example.mp3\",\"hash\":\"1f02c22d5fc59a7f6434a40bbbb9ff82\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
-	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\", \"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
-	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"sourceURL\":\"" + PlaceBookService.getHostURL() + "example/chrome.mp4\",\"hash\":\"29cf39d796cbcfd7d6807ef6bbefeb41\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
+	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
+	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\",\"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
+	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"sourceURL\":\""
 			+ PlaceBookService.getHostURL() + "example/example.gpx\",\"hash\":\"b13ada21dd8eda0c3bcc5019045a3c23\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
