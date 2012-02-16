@@ -52,7 +52,8 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			{
 				if(target == 1)
 				{
-					setPage(left);					
+					setPage(left);
+					right.setVisible(true);
 				}
 				else if(target == -1)
 				{

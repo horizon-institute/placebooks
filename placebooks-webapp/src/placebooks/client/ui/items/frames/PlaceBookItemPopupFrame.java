@@ -14,7 +14,6 @@ import placebooks.client.ui.menuItems.EditTitleMenuItem;
 import placebooks.client.ui.menuItems.FitToContentMenuItem;
 import placebooks.client.ui.menuItems.HideTrailMenuItem;
 import placebooks.client.ui.menuItems.MenuItem;
-import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
 
@@ -191,6 +190,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	@Override
 	public void updateFrame()
 	{
+		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));
 		if (controller.getSelected() == this)
 		{
 			resize();

@@ -182,6 +182,24 @@ public class PlaceBookEditor extends PlaceBookPlace
 	
 	public void setPlaceBook(final PlaceBookBinder newPlacebook)
 	{
+		if(placebook != null)
+		{
+			int currentVersion = Integer.parseInt(placebook.getMetadata("version", "1"));
+			int newVersion = Integer.parseInt(newPlacebook.getMetadata("version", "1"));
+			
+			GWT.log("Current: " + currentVersion + ", new: " + newVersion);
+			
+			if(currentVersion > newVersion)
+			{
+				controller.markChanged();
+				return;
+			}
+			else if(currentVersion == newVersion)
+			{
+				updatePlaceBook(newPlacebook);
+				return;
+			}
+		}
 		placebook = newPlacebook;
 
 		bookPanel.setPlaceBook(newPlacebook, controller);

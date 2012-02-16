@@ -1,6 +1,6 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.Resources;
+import placebooks.client.ui.dialogs.PlaceBookDialog;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -9,7 +9,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class EditTitleMenuItem extends MenuItem
@@ -34,7 +33,9 @@ public class EditTitleMenuItem extends MenuItem
 	public void run()
 	{
 		final Panel panel = new FlowPanel();
-		final PopupPanel dialogBox = new PopupPanel(true, true);
+		final PlaceBookDialog dialogBox = new PlaceBookDialog()
+		{
+		};
 		final TextBox title = new TextBox();
 		title.setText(item.getItem().getMetadata("title", ""));
 		final Button uploadButton = new Button("Set Title", new ClickHandler()
@@ -45,18 +46,17 @@ public class EditTitleMenuItem extends MenuItem
 				item.getItem().setMetadata("title", title.getText());
 				controller.markChanged();
 				dialogBox.hide();
+				item.updateFrame();
 			}
 		});
 
 		panel.add(title);
 		panel.add(uploadButton);
-
-		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
-		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
-		dialogBox.setGlassEnabled(true);
-		dialogBox.setAnimationEnabled(true);
+		
+		dialogBox.setTitle("Edit Title");
 		dialogBox.setWidget(panel);
-		dialogBox.center();
 		dialogBox.show();
+		
+		title.setFocus(true);
 	}
 }

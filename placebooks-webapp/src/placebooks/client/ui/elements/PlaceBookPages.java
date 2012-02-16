@@ -58,10 +58,10 @@ public abstract class PlaceBookPages extends Composite
 	
 	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
 	{
-		assert placebook == null;
 		this.placebook = newPlaceBook;
 		this.controller = controller;
 		getPagePanel().clear();
+		pages.clear();
 
 		int pageIndex = 0;
 		for (PlaceBook page: newPlaceBook.getPages())
@@ -77,7 +77,7 @@ public abstract class PlaceBookPages extends Composite
 		{
 			createPage();
 		}
-		
+			
 		resized();
 	}
 
