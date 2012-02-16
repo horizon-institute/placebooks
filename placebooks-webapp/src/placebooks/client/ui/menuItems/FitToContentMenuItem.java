@@ -1,5 +1,6 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
@@ -18,7 +19,7 @@ public class FitToContentMenuItem extends MenuItem
 	@Override
 	public boolean isEnabled()
 	{
-		return item.getItem().hasParameter("height");
+		return item.getItem().hasParameter("height") && !item.getItem().is(ItemType.GPS);
 	}
 
 	@Override
