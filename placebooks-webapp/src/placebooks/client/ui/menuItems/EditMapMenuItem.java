@@ -6,7 +6,6 @@ import java.util.List;
 import placebooks.client.ui.dialogs.PlaceBookMapsDialog;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.elements.PlaceBookPage;
-import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class EditMapMenuItem extends MenuItem

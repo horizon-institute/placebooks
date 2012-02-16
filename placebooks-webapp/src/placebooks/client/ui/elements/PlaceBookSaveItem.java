@@ -4,7 +4,6 @@ import java.util.Date;
 
 import placebooks.client.Resources;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 
 public class PlaceBookSaveItem extends PlaceBookToolbarItem
