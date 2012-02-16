@@ -35,9 +35,6 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 	@UiField
 	Label usernameLabel;
 
-	@UiField
-	Widget progress;
-	
 	public PlaceBookLoginDialog(final String title, final String submitText, final String usernameText)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
@@ -82,8 +79,7 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 		{
 			submit.setEnabled(false);
 		}
-		progress.setVisible(showProgress);
-		setAutoHide(!showProgress);
+		setProgressVisible(showProgress, "Logging In...");
 	}
 	
 	public void focus()

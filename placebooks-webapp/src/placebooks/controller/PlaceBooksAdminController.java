@@ -4,29 +4,20 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.io.RandomAccessFile;
-import java.io.Closeable;
-
+import java.io.Writer;
 import java.net.URL;
-import java.net.URLDecoder;
-
-import java.util.zip.GZIPOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.zip.GZIPOutputStream;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -414,37 +405,6 @@ public class PlaceBooksAdminController
 		}
 
 		manager.close();
-	}
-
-	@RequestMapping(value = "/placebookitem/{key}", method = RequestMethod.GET)
-	public void getPlaceBookItemJSON(final HttpServletResponse res, @PathVariable("key") final String key)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			final PlaceBookItem item = manager.find(PlaceBookItem.class, key);
-			if (item != null)
-			{
-				try
-				{
-					jsonMapper.writeValue(res.getWriter(), item);
-					res.setContentType("application/json");				
-					res.flushBuffer();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			manager.close();
-		}
 	}
 
 	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
@@ -1357,7 +1317,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/add_item/upload", method = RequestMethod.POST)
-	public void uploadFile(final HttpServletRequest req, final HttpServletResponse response)
+	public void uploadFile(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final ItemData itemData = new ItemData();
@@ -1479,19 +1439,19 @@ public class PlaceBooksAdminController
 
 			manager.getTransaction().commit();
 
-			response.setContentType("application/json");			
-			response.getWriter().write("Success");
-			response.getWriter().flush();
+			jsonMapper.writeValue(res.getWriter(), item);
+			res.setContentType("text/html");			
+			res.getWriter().flush();
 		}
 		catch (final Exception e)
 		{
 			log.error(e.toString(), e);
 			try
 			{
-				response.setContentType("application/json");				
-				response.setStatus(500);
-				response.getWriter().write(e.getMessage());
-				response.getWriter().flush();
+				res.setContentType("application/json");				
+				res.setStatus(500);
+				res.getWriter().write(e.getMessage());
+				res.getWriter().flush();
 			}
 			catch(Exception e2)
 			{

@@ -50,4 +50,10 @@ public abstract class PlaceBookDialog
 	{
 		dialog.center();		
 	}
+	
+	public void setProgressVisible(final boolean visible, final String text)
+	{
+		dialog.setProgressVisible(visible, text);
+		dialog.setAutoHideEnabled(!visible);		
+	}
 }

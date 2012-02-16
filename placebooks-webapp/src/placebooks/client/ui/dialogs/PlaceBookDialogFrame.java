@@ -1,5 +1,7 @@
 package placebooks.client.ui.dialogs;
 
+import placebooks.client.ui.elements.ProgressPanel;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -24,6 +26,9 @@ class PlaceBookDialogFrame extends PopupPanel
 
 	private static PlaceBookDialogUiBinder uiBinder = GWT.create(PlaceBookDialogUiBinder.class);
 
+	@UiField
+	ProgressPanel progress;
+	
 	@UiField 
 	DialogStyle style;
 	
@@ -65,5 +70,11 @@ class PlaceBookDialogFrame extends PopupPanel
 	{
 		errorLabel.setText(error);
 		errorLabel.setVisible(true);
+	}
+
+	public void setProgressVisible(boolean visible, String text)
+	{
+		progress.setVisible(visible);
+		progress.setText(text);
 	}
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.button {
 			margin: 10px 0 0 0;
@@ -20,6 +20,5 @@
 		<g:Label>Password:</g:Label>
 		<g:PasswordTextBox ui:field="password" name="pb_password" />
 		<g:SimplePanel styleName="{style.buttonPanel}"><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
-		<p:ProgressPanel ui:field="progress" text="Logging In..."/>	
 	</g:FlowPanel>
 </ui:UiBinder> 

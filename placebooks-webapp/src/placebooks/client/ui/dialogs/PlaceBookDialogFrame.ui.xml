@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
 	<ui:style type='placebooks.client.ui.dialogs.PlaceBookDialogFrame.DialogStyle'>
 		.dialog {
 			background-color: #fff;
@@ -39,7 +39,8 @@
 	</ui:style>
 	<g:FlowPanel>
 		<g:Label ui:field="titleLabel" styleName="{style.title}" />
-		<g:Label ui:field="errorLabel" styleName="{style.error}"></g:Label>		
+		<g:Label ui:field="errorLabel" styleName="{style.error}" />		
 		<g:SimplePanel ui:field="content" styleName="{style.content}" />
+		<p:ProgressPanel ui:field="progress"/>
 	</g:FlowPanel>
 </ui:UiBinder> 

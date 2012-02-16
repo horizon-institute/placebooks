@@ -1,6 +1,5 @@
 package placebooks.client.ui.dialogs;
 
-import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
@@ -10,8 +9,6 @@ import placebooks.client.ui.items.PlaceBookItemWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -91,10 +88,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			@Override
 			public void onSubmit(final SubmitEvent event)
 			{
-				infoLabel.setVisible(true);
-				infoLabel.setText("Uploading File...");
+				setProgressVisible(true, "Uploading File...");
 				uploadButton.setEnabled(false);
-				setAutoHide(false);
 				GWT.log("Uploading File");
 			}
 		});
@@ -103,39 +98,18 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			@Override
 			public void onSubmitComplete(final SubmitCompleteEvent event)
 			{
-				GWT.log("Upload Complete: " + event.getResults());
-				setAutoHide(true);
-				if (event.getResults().contains("Success"))
+				try
 				{
-					item.refresh();
-					PlaceBookService.getPlaceBookItem(item.getItem().getKey(), new JSONResponse<PlaceBookItem>()
-					{
-
-						@Override
-						public void handleError(final Request request, final Response response,
-								final Throwable throwable)
-						{
-							setError("Upload Failed");
-							if (response != null)
-							{
-								final PlaceBookItem placebookItem = PlaceBookService.parse(	PlaceBookItem.class,
-																							response.getText());
-								item.update(placebookItem);
-							}
-						}
-
-						@Override
-						public void handleResponse(final PlaceBookItem placebookItem)
-						{
-							item.update(placebookItem);
-							item.getItem().setMetadata("copyrightNotice", copyright.getText());
-							controller.markChanged();
-							hide();
-
-						}
-					});
+					String result = event.getResults().replaceAll("(<([^>]+)>)", "");
+					GWT.log("Upload Complete: " + result);
+					setProgressVisible(false, null);
+					
+					final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, result);
+					item.update(placebookItem);
+					hide();
+					controller.markChanged();
 				}
-				else
+				catch(Exception e)
 				{
 					setError("Upload Failed");
 				}

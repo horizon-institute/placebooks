@@ -1,7 +1,6 @@
 package placebooks.client;
 
 import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.Shelf;
 
 import com.google.gwt.core.client.GWT;
@@ -35,11 +34,6 @@ public class PlaceBookService
 	public static void getPlaceBook(final String key, final JSONResponse<PlaceBookBinder> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/placebookbinder/" + key, callback);
-	}
-
-	public static void getPlaceBookItem(final String key, final JSONResponse<PlaceBookItem> callback)
-	{
-		serverRequest(getHostURL() + "placebooks/a/placebookitem/" + key, callback);
 	}
 
 	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
