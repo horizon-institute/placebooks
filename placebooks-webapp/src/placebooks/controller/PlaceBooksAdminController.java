@@ -168,28 +168,36 @@ public class PlaceBooksAdminController
 	private static final int MEGABYTE = 1048576;
 
 
-	private boolean isLoggedIn(final EntityManager em, 
-							   final HttpServletResponse res)
+	private final User authUser(final EntityManager em)
+	{
+		return authUser(em, null);
+	}
+
+	private final User authUser(final EntityManager em, 
+							    final HttpServletResponse res)
 	{
 
-		final User user = UserManager.getCurrentUser(manager);
+		final User user = UserManager.getCurrentUser(em);
 		if (user == null)
 		{
 			try
 			{
 				log.info("User not logged in");
-				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				res.setContentType("application/json");
-				res.getWriter().write("User not logged in");
-				return false;
+				if (res != null)
+				{
+					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					res.setContentType("application/json");
+					res.getWriter().write("User not logged in");
+				}
+				return null;
 			}
 			catch (final Exception e)
 			{
 				log.error(e.getMessage(), e);
-				return false;
+				return null;
 			}
 		}
-		return true;
+		return user;
 	}
 
 
@@ -374,22 +382,10 @@ public class PlaceBooksAdminController
 	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
+		final User user = authUser(manager, res);
 		if (user == null)
-		{
-			try
-			{
-				log.info("User not logged in");
-				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				res.setContentType("application/json");
-				res.getWriter().write("User not logged in");
-				return;
-			}
-			catch (final Exception e)
-			{
-				log.error(e.getMessage(), e);
-			}
-		}
+			return;
+
 		final TypedQuery<PlaceBookItem> q = manager
 				.createQuery(	"SELECT p FROM PlaceBookItem p WHERE p.owner = :owner AND p.placebook IS NULL",
 						PlaceBookItem.class);
@@ -514,8 +510,7 @@ public class PlaceBooksAdminController
 						manager.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
 								PlaceBookBinder.class);
 				q.setParameter("user", user);
-				q.setParameter("email", 
-						"'%" + user.getEmail() + "%'");
+				q.setParameter("email",	"%" + user.getEmail() + "%");
 
 				final Collection<PlaceBookBinder> pbs = q.getResultList();
 				log.info("Converting " + pbs.size() + 
@@ -573,6 +568,9 @@ public class PlaceBooksAdminController
 		if (owner.trim().isEmpty()) { return; }
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
+		if (authUser(pm) == null)
+			return;
+
 		final TypedQuery<User> uq = 
 				pm.createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class);
 		uq.setParameter("email", owner.trim());
@@ -587,8 +585,8 @@ public class PlaceBooksAdminController
 							);
 
 			q.setParameter("user", user);
-			q.setParameter("email", "'%" + owner.trim() + "%'");
-			final Collection<PlaceBookBinder> pbs = q.getResultList();
+			q.setParameter("email", "%" + owner.trim() + "%");
+			final List<PlaceBookBinder> pbs = q.getResultList();
 
 			log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
 			if (!pbs.isEmpty())
@@ -683,6 +681,9 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
+		if (authUser(pm, res) == null)
+			return null;
+
 		final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
 		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
 		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
@@ -730,20 +731,9 @@ public class PlaceBooksAdminController
 	{
 		log.info("Publish PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User currentUser = UserManager.getCurrentUser(manager);
-		if (currentUser == null)
-		{
-			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			try
-			{
-				res.getWriter().write("User not logged in");
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
+		if (authUser(manager, res) == null)
 			return;
-		}
+
 
 		try
 		{
@@ -782,20 +772,8 @@ public class PlaceBooksAdminController
 	{
 		log.info("Save PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User currentUser = UserManager.getCurrentUser(manager);
-		if (currentUser == null)
-		{
-			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			try
-			{
-				res.getWriter().write("User not logged in");
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
+		if (authUser(manager, res) == null)
 			return;
-		}
 
 		try
 		{
@@ -1335,7 +1313,9 @@ public class PlaceBooksAdminController
 		if (service != null)
 		{
 			final EntityManager manager = EMFSingleton.getEntityManager();
-			final User user = UserManager.getCurrentUser(manager);
+			final User user = authUser(manager, res);
+			if (user == null)
+				return;
 
 			service.sync(manager, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
 					Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
@@ -1350,6 +1330,9 @@ public class PlaceBooksAdminController
 	public void uploadFile(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
+		if (authUser(manager, res) == null)
+			return;
+
 		final ItemData itemData = new ItemData();
 
 		try
@@ -1573,12 +1556,14 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/admin/deletebinder/{key}",
 			method = RequestMethod.GET)
-	public ModelAndView deletePlaceBookBinder(
-			@PathVariable("key") final String key
-			)
+	public ModelAndView deletePlaceBookBinder(final HttpServletRequest req, 
+											  final HttpServletResponse res,
+								 	@PathVariable("key") final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
+		if (authUser(pm, res) == null)
+			return null;
 
 		try
 		{
