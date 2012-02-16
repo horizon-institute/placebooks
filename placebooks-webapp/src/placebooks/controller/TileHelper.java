@@ -261,12 +261,13 @@ public final class TileHelper
 		int pixelX = 200;
 		int pixelY = 200;
 		String fmt = "png";
-		int maxTiles = 100;
+		int[] maxTiles = {100};
 		boolean square = false;
 		int maxAttempts = 10;
 
 		String[] incX_ = null;
 		String[] incY_ = null;
+		String[] maxTiles_ = null;
 
 		try
 		{
@@ -289,6 +290,11 @@ public final class TileHelper
 						.getProperty(PropertiesSingleton.IDEN_TILER_NORTHING, 
 									 "1000")
 						.split(" ");
+			maxTiles_ = PropertiesSingleton
+						.get(TileHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.IDEN_TILER_MAX_TILES, 
+									 "100")
+						.split(" ");
 			pixelX = Integer.parseInt(
 				PropertiesSingleton
 					.get(TileHelper.class.getClassLoader())
@@ -303,13 +309,6 @@ public final class TileHelper
 					.get(TileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png")
 					.toLowerCase().trim();
-			maxTiles = Integer.parseInt(
-				PropertiesSingleton
-					.get(TileHelper.class.getClassLoader())
-					.getProperty(
-						PropertiesSingleton.IDEN_TILER_MAX_TILES, "100"
-					)
-			);
 			maxAttempts = Integer.parseInt(
 				PropertiesSingleton
 					.get(TileHelper.class.getClassLoader())
@@ -332,10 +331,13 @@ public final class TileHelper
 
 		incX = new int[incX_.length];
 		incY = new int[incY_.length];
+		maxTiles = new int[maxTiles_.length];
 		for (int i = 0; i < incX.length; ++i)
 			incX[i] = Integer.parseInt(incX_[i]);
 		for (int i = 0; i < incY.length; ++i)
 			incY[i] = Integer.parseInt(incY_[i]);
+		for (int i = 0; i < maxTiles.length; ++i)
+			maxTiles[i] = Integer.parseInt(maxTiles_[i]);
 
 		MapParam mp = null;
 		int pn = -1;
@@ -345,7 +347,7 @@ public final class TileHelper
 			try 
 			{
 				mp = generateParameters(g, incX[pn], incY[pn], square, 
-										maxTiles);
+										maxTiles[pn]);
 			}
 			catch (final Throwable e)
 			{
@@ -370,10 +372,10 @@ public final class TileHelper
 		for (int i = (int)bbox[0].getEasting(); i < (int)bbox[1].getEasting(); 
 			 i += incX[pn])
 		{
-			if (b++ > maxTiles)
+			if (b++ > maxTiles[pn])
 			{
-				log.error("Tiler stopped fetching: maxTiles being exceeded");
-
+				log.error("Tiler stopped fetching: maxTiles (" + maxTiles[pn] 
+						  + ") being exceeded");
 				break;
 			}
 

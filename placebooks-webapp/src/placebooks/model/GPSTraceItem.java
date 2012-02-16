@@ -6,8 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+
 import java.math.BigInteger;
+
 import java.net.URL;
+import java.net.URLConnection;
+
 import java.security.MessageDigest;
 
 import javax.persistence.Entity;
@@ -31,6 +35,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import placebooks.controller.PropertiesSingleton;
+import placebooks.controller.CommunicationHelper;
+
 import placebooks.model.jaxb.GPX10.Gpx;
 import placebooks.model.jaxb.GPX11.GpxType;
 import placebooks.model.jaxb.GPX11.RteType;
@@ -149,6 +155,20 @@ public class GPSTraceItem extends PlaceBookItem
 	// @Column(jdbcType = "CLOB")
 	public String getTrace()
 	{
+		/*if (trace == null && getSourceURL() != null)
+		{
+			log.warn("Attempting to redownload GPSTraceItem content for " 
+					 + getKey() + " from URL " + getSourceURL());
+			try
+			{
+				CommunicationHelper.getConnection(getSourceURL()).getInputStream();
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.toString());
+			}
+		}*/
+
 		return trace;
 	}
 	
@@ -182,7 +202,7 @@ public class GPSTraceItem extends PlaceBookItem
 		Geometry bounds = null;
 		float minLat = Float.POSITIVE_INFINITY;
 		float maxLat = Float.NEGATIVE_INFINITY;
-		float minLon =  Float.POSITIVE_INFINITY;
+		float minLon = Float.POSITIVE_INFINITY;
 		float maxLon = Float.NEGATIVE_INFINITY;
 
 		final WKTReader wktReader = new WKTReader();

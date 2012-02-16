@@ -167,6 +167,33 @@ public class PlaceBooksAdminController
 
 	private static final int MEGABYTE = 1048576;
 
+
+	private boolean isLoggedIn(final EntityManager em, 
+							   final HttpServletResponse res)
+	{
+
+		final User user = UserManager.getCurrentUser(manager);
+		if (user == null)
+		{
+			try
+			{
+				log.info("User not logged in");
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				res.setContentType("application/json");
+				res.getWriter().write("User not logged in");
+				return false;
+			}
+			catch (final Exception e)
+			{
+				log.error(e.getMessage(), e);
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
 	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public String accountPage()
 	{
@@ -940,11 +967,14 @@ public class PlaceBooksAdminController
 
 		try
 		{
-			
-			TypedQuery<GPSTraceItem> q = em.createQuery("SELECT item FROM GPSTraceItem as item WHERE item.hash = ?1", GPSTraceItem.class);
-			q.setParameter(1, hash);
-			List<GPSTraceItem> items = q.getResultList();
-			if(items.size()==0)
+	
+			final TypedQuery<GPSTraceItem> q = 
+				em.createQuery("SELECT g FROM GPSTraceItem g WHERE g.hash= :hash", GPSTraceItem.class);
+			q.setParameter("hash", hash);
+
+			final List<GPSTraceItem> items = q.getResultList();
+
+			if (items.size() == 0)
 			{
 				log.debug("Can't find GPS trace: " + hash);
 				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
