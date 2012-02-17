@@ -285,7 +285,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			@Override
 			public void handleResponse(User object)
 			{
-				setUser(user);
+				setUser(object);
 			}
 		}, true);
 	}

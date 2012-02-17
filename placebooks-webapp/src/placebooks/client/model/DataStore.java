@@ -40,8 +40,7 @@ public abstract class DataStore<T extends JavaScriptObject>
 					{
 						//GWT.log("Get " + getStorageID(id) + ": Server version matches cached version");
 						return;
-					}
-					GWT.log("Get " + getStorageID(id) + ": Server version doesn't match cached version");					
+					}			
 					T result = parse(response.getText());
 					if(result == null)
 					{
