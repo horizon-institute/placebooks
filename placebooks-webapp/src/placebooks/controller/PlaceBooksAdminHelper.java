@@ -789,11 +789,9 @@ public final class PlaceBooksAdminHelper
 				}
 				dbBinder.setPlaceBooks(placebooks);
 
-				for (final Entry<String, String> entry : binder.getMetadata().entrySet())
-				{
-					dbBinder.addMetadataEntry(entry.getKey(), entry.getValue());
-				}
-
+				dbBinder.setMetadata(binder.getMetadata());
+				dbBinder.setParameters(binder.getParameters());
+				
 				dbBinder.setGeometry(binder.getGeometry());
 
 				dbBinder.setPermissions(binder.getPermissions());

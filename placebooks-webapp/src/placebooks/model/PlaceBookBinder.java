@@ -71,7 +71,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	@ElementCollection
 	@Column(columnDefinition = "LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
-
+	
+	// The PlaceBookItem's configuration data
+	@ElementCollection
+	private Map<String, Integer> parameters = new HashMap<String, Integer>();
+	
 	@ElementCollection
 	private Map<String, Permission> perms = new HashMap<String, Permission>();
 
@@ -336,6 +340,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		return Collections.unmodifiableMap(metadata);
 	}
+	
+	public Map<String, Integer> getParameters()
+	{
+		return Collections.unmodifiableMap(parameters);
+	}
 
 	public void addMetadataEntry(final String key, final String value)
 	{
@@ -447,4 +456,15 @@ public class PlaceBookBinder extends BoundaryGenerator
 		return index;
 	}
 
+	public void setMetadata(Map<String, String> metadata)
+	{
+		this.metadata.clear();
+		this.metadata.putAll(metadata);
+	}
+	
+	public void setParameters(final Map<String, Integer> parameters)
+	{
+		this.parameters.clear();
+		this.parameters.putAll(parameters);
+	}
 }

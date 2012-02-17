@@ -184,8 +184,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		if(placebook != null)
 		{
-			int currentVersion = Integer.parseInt(placebook.getMetadata("version", "1"));
-			int newVersion = Integer.parseInt(newPlacebook.getMetadata("version", "1"));
+			int currentVersion = placebook.getParameter("version", 1);
+			int newVersion = newPlacebook.getParameter("version", 1);
 			
 			GWT.log("Current: " + currentVersion + ", new: " + newVersion);
 			
@@ -252,13 +252,13 @@ public class PlaceBookEditor extends PlaceBookPlace
 				int versionNumber = 0;
 				try
 				{
-					versionNumber = Integer.parseInt(placebook.getMetadata("version", "0"));
+					versionNumber = placebook.getParameter("version", 0);
 				}
 				catch (NumberFormatException e)
 				{
 					GWT.log(e.getMessage(), e);
 				}
-				placebook.setMetadata("version", Integer.toString(versionNumber + 1));
+				placebook.setParameter("version", versionNumber + 1);
 				dataStore.put(placebook.getId(), placebook, new JSONResponse<PlaceBookBinder>()
 				{
 					@Override
@@ -360,6 +360,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 				palette.setPalette(items, controller);
 			}
 		});
+	}
+
+	@Override
+	public void onStop()
+	{
+		saveItem.markSaved();
 	}
 
 	@UiHandler("deleteBook")
