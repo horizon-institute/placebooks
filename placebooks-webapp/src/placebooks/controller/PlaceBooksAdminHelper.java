@@ -368,6 +368,7 @@ public final class PlaceBooksAdminHelper
 						else if (item instanceof GPSTraceItem)
 						{
 							final GPSTraceItem gpsItem = (GPSTraceItem) item;
+
 							if (gpsItem.getSourceURL() != null)
 							{
 								gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL()).getInputStream());

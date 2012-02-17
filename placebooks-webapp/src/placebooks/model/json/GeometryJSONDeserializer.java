@@ -24,7 +24,7 @@ public class GeometryJSONDeserializer extends JsonDeserializer<Geometry>
 		{
 			return new WKTReader().read(parser.getText());
 		}
-		catch (final Exception e)
+		catch (final Throwable e)
 		{
 			logger.log(Level.SEVERE, e.getMessage(), e);
 			return null;

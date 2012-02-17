@@ -155,7 +155,7 @@ public class GPSTraceItem extends PlaceBookItem
 	// @Column(jdbcType = "CLOB")
 	public String getTrace()
 	{
-		/*if (trace == null && getSourceURL() != null)
+		if (trace == null && getSourceURL() != null)
 		{
 			log.warn("Attempting to redownload GPSTraceItem content for " 
 					 + getKey() + " from URL " + getSourceURL());
@@ -167,7 +167,7 @@ public class GPSTraceItem extends PlaceBookItem
 			{
 				log.error(e.toString());
 			}
-		}*/
+		}
 
 		return trace;
 	}
@@ -297,7 +297,9 @@ public class GPSTraceItem extends PlaceBookItem
 			} 
 			catch (final Exception e_) 
 			{
+				log.error("Fatal error in reading GPX file");
 				log.error(e_.toString(), e_);
+				return;
 			}
 		}
 		try
@@ -330,7 +332,9 @@ public class GPSTraceItem extends PlaceBookItem
 		}
 		catch (final Throwable e_)
 		{
+			log.error("Fatal error in calculating bounds for GPX");
 			log.error(e_.toString(), e_);
+			return;
 		}
 		if (bounds != null)
 			setGeometry(bounds.getBoundary());
