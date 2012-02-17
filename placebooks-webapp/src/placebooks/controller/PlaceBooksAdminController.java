@@ -430,37 +430,6 @@ public class PlaceBooksAdminController
 		manager.close();
 	}
 
-	@RequestMapping(value = "/placebook/{key}", method = RequestMethod.GET)
-	public void getPlaceBookJSON(final HttpServletResponse res, @PathVariable("key") final String key)
-	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		try
-		{
-			final PlaceBook placebook = manager.find(PlaceBook.class, key);
-			if (placebook != null)
-			{
-				try
-				{
-					jsonMapper.writeValue(res.getWriter(), placebook);
-					res.setContentType("application/json");				
-					res.flushBuffer();
-				}
-				catch (final IOException e)
-				{
-					log.error(e.toString());
-				}
-			}
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		finally
-		{
-			manager.close();
-		}
-	}
-
 	@RequestMapping(value = "/placebookbinder/{key}", 
 			method = RequestMethod.GET)
 	public void getPlaceBookBinderJSON(final HttpServletResponse res, 
@@ -497,7 +466,6 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-
 
 	@RequestMapping(value = "/shelf", method = RequestMethod.GET)
 	public void getPlaceBookBindersJSON(final HttpServletRequest req, 
