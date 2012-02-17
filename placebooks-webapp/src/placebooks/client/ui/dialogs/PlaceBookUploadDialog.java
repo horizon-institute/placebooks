@@ -112,6 +112,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				catch(Exception e)
 				{
 					setError("Upload Failed");
+					uploadButton.setEnabled(true);
 				}
 			}
 		});
