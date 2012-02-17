@@ -228,21 +228,24 @@ public class MapItem extends PlaceBookItemWidget
 		}
 
 		// GWT.log("Map URL: " + getItem().getURL());
-		routeLayer = RouteLayer.create("Route", getItem().getURL(), map.getDisplayProjection());
-		try
+		if(getItem().getHash() != null)
 		{
-			if (loadHandler != null)
+			routeLayer = RouteLayer.create("Route", getItem().getURL(), map.getDisplayProjection());
+			try
 			{
-				routeLayer.getEvents().register("loadend", routeLayer, loadHandler.getFunction());
+				if (loadHandler != null)
+				{
+					routeLayer.getEvents().register("loadend", routeLayer, loadHandler.getFunction());
+				}
+				// routeLayer.setVisible(Boolean.parseBoolean(item.getMetadata("", "")));
+				map.addLayer(routeLayer);
+				map.raiseLayer(markerLayer, 10);
 			}
-			// routeLayer.setVisible(Boolean.parseBoolean(item.getMetadata("", "")));
-			map.addLayer(routeLayer);
-			map.raiseLayer(markerLayer, 10);
-		}
-		catch (final Exception e)
-		{
-			routeLayer = null;
-			GWT.log(e.getMessage(), e);
+			catch (final Exception e)
+			{
+				routeLayer = null;
+				GWT.log(e.getMessage(), e);
+			}
 		}
 	}
 
