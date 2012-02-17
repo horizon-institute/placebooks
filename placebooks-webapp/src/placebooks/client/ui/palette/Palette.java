@@ -7,6 +7,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -16,7 +17,8 @@ public class Palette extends FlowPanel
 	private static final String NEW_TEXT_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Body Text\"},\"parameters\":{},\"text\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"}";
 	private static final String NEW_TEXT_LIST_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"Bulleted List\"},\"parameters\":{},\"text\":\"<ul style='margin: 3px 0px;'><li>List Item</li><li>List Item</li><li>List Item</li></ul>\"}";
 
-	//private static final String NEW_WEB_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
+	// private static final String NEW_WEB_ITEM =
+	// "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://www.google.com/\",\"metadata\":{\"title\":\"Web Page\"},\"parameters\":{}}";
 
 	private static final String NEW_AUDIO_ITEM = "{\"@class\":\"placebooks.model.AudioItem\",\"metadata\":{\"title\":\"Audio\"},\"parameters\":{}}";
 	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\",\"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
@@ -24,57 +26,24 @@ public class Palette extends FlowPanel
 
 	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
 
-
 	private PaletteFolder currentFolder = null;
 
 	public Palette()
 	{
 	}
 
-	private PaletteFolder findFolder(final PaletteFolder root, final PaletteFolder folder)
-	{
-		final List<PaletteFolder> path = getPath(folder);
-
-		PaletteFolder current = root;
-		for (final PaletteFolder pathElement : path)
-		{
-			final PaletteFolder equiv = current.getFolder(pathElement.getName());
-			if (equiv != null)
-			{
-				current = equiv;
-			}
-			else
-			{
-				break;
-			}
-		}
-		return current;
-	}
-
-	private List<PaletteFolder> getPath(final PaletteFolder folder)
-	{
-		final List<PaletteFolder> path = new ArrayList<PaletteFolder>();
-
-		PaletteFolder current = folder;
-		while (current.getParentFolder() != null)
-		{
-			path.add(0, current);
-			current = current.getParentFolder();
-		}
-
-		return path;
-	}
-
 	public void setPalette(final JsArray<PlaceBookItem> items, final PlaceBookController dragHandler)
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_HEADER_ITEM), dragHandler));
+		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_HEADER_ITEM),
+				dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_LIST_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_IMAGE_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_VIDEO_ITEM), dragHandler));
-		//root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_WEB_ITEM), dragHandler));
+		// root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class,
+		// NEW_WEB_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_GPS_ITEM), dragHandler));
 		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_AUDIO_ITEM), dragHandler));
 
@@ -113,10 +82,58 @@ public class Palette extends FlowPanel
 	public void setPaletteFolder(final PaletteFolder folder)
 	{
 		currentFolder = folder;
-		clear();
+		try
+		{
+			clear();
+		}
+		catch (final Exception e)
+		{
+			GWT.log(e.getMessage(), e);
+		}
 		for (final PaletteItem paletteItem : folder)
 		{
-			add(paletteItem.createWidget());
+			try
+			{
+				add(paletteItem.createWidget());
+			}
+			catch (final Exception e)
+			{
+				GWT.log(e.getMessage(), e);
+			}
 		}
+	}
+
+	private PaletteFolder findFolder(final PaletteFolder root, final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = getPath(folder);
+
+		PaletteFolder current = root;
+		for (final PaletteFolder pathElement : path)
+		{
+			final PaletteFolder equiv = current.getFolder(pathElement.getName());
+			if (equiv != null)
+			{
+				current = equiv;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return current;
+	}
+
+	private List<PaletteFolder> getPath(final PaletteFolder folder)
+	{
+		final List<PaletteFolder> path = new ArrayList<PaletteFolder>();
+
+		PaletteFolder current = folder;
+		while (current.getParentFolder() != null)
+		{
+			path.add(0, current);
+			current = current.getParentFolder();
+		}
+
+		return path;
 	}
 }
