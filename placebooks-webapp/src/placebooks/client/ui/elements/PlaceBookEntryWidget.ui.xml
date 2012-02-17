@@ -18,7 +18,7 @@
 			text-align: center;
 			border-radius: 16px;
 			display: -webkit-inline-box;
-			display: -mox-inline-box;
+			display: -moz-inline-box;
 			-webkit-box-orient: vertical;
 			-webkit-box-align: center;
 			-moz-box-orient: vertical;

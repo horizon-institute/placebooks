@@ -18,7 +18,6 @@
 		.placebookList
 		{
 			overflow: auto;
-			position: absolute;
 			left: 0px;
 			top: 0px;
 			bottom: 0px;
@@ -39,8 +38,6 @@
 		{
 			padding-top: 30px;
 			position: relative;
-			-webkit-box-flex: 1;
-			-moz-box-flex: 1;
 		}
 		
 		.mapToggle

@@ -15,10 +15,6 @@
 		
 		.parent {
 			height: 100%;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;			
-			display: -moz-box;
-			-moz-box-orient: vertical;
 		}
 	</ui:style>	
 	<g:FlowPanel styleName="{style.parent}">
