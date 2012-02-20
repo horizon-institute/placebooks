@@ -17,42 +17,50 @@ public abstract class DataStore<T extends JavaScriptObject>
 {
 	private class CallbackWrapper implements RequestCallback
 	{
-		public CallbackWrapper(String id, String cached, JSONResponse<T> callback)
+		private String id;
+
+		private String cached;
+		private JSONResponse<T> callback;
+
+		public CallbackWrapper(final String id, final String cached, final JSONResponse<T> callback)
 		{
 			this.id = id;
 			this.callback = callback;
 			this.cached = cached;
 		}
-		
-		private String id;
-		private String cached;
-		private JSONResponse<T> callback;
-		
+
 		@Override
-		public void onResponseReceived(Request request, Response response)
+		public void onError(final Request request, final Throwable exception)
+		{
+			callback.onError(request, exception);
+		}
+
+		@Override
+		public void onResponseReceived(final Request request, final Response response)
 		{
 			try
 			{
 				if (response.getStatusCode() == 200)
 				{
-					GWT.log("Get " + getStorageID(id) + ": " + response.getText());					
-					if(response.getText().equals(cached))
+					GWT.log("Get " + getStorageID(id) + ": " + response.getText());
+					if (response.getText().equals(cached))
 					{
-						//GWT.log("Get " + getStorageID(id) + ": Server version matches cached version");
+						// GWT.log("Get " + getStorageID(id) +
+						// ": Server version matches cached version");
 						return;
-					}			
-					T result = parse(response.getText());
-					if(result == null)
+					}
+					final T result = parse(response.getText());
+					if (result == null)
 					{
 						GWT.log("Get " + getStorageID(id) + " Error: 'null' parsed from " + response.getText());
 						callback.handleError(request, response, new NullPointerException());
 					}
-					putLocal(id, response.getText());					
+					putLocal(id, response.getText());
 					callback.handleResponse(result);
 				}
 				else
 				{
-					GWT.log("Get " + getStorageID(id) + " " + response.getStatusCode() + ": " + response.getText());					
+					GWT.log("Get " + getStorageID(id) + " " + response.getStatusCode() + ": " + response.getText());
 					callback.handleOther(request, response);
 				}
 			}
@@ -62,26 +70,20 @@ public abstract class DataStore<T extends JavaScriptObject>
 				callback.handleError(request, response, e);
 			}
 		}
-
-		@Override
-		public void onError(Request request, Throwable exception)
-		{
-			callback.onError(request, exception);			
-		}
 	}
-	
+
 	private Storage stockStore = Storage.getLocalStorageIfSupported();
 
 	public void get(final String id, final JSONResponse<T> callback)
 	{
 		get(id, callback, false);
 	}
-	
+
 	public void get(final String id, final JSONResponse<T> callback, final boolean ignoreCache)
 	{
-		final String localID = getStorageID(id);		
+		final String localID = getStorageID(id);
 		String cached = null;
-		if(!ignoreCache && stockStore != null)
+		if (!ignoreCache && stockStore != null)
 		{
 			cached = stockStore.getItem(localID);
 			GWT.log("Get " + localID + ": " + cached);
@@ -90,21 +92,12 @@ public abstract class DataStore<T extends JavaScriptObject>
 				callback.handleResponse(parse(cached));
 			}
 		}
-		
+
 		final String url = getRequestURL(id);
 		if (url != null)
 		{
 			serverRequest("Get " + localID, url, new CallbackWrapper(id, cached, callback));
 		}
-	}
-	
-	public void removeCached(final String id)
-	{
-		String storeId = getStorageID(id);
-		if (stockStore != null && storeId != null)
-		{
-			stockStore.removeItem(storeId);
-		}	
 	}
 
 	public void put(final String id, final T object, final JSONResponse<T> callback)
@@ -115,6 +108,15 @@ public abstract class DataStore<T extends JavaScriptObject>
 		if (url != null)
 		{
 			serverRequest("Put " + getStorageID(id), url, getStoreData(object), callback);
+		}
+	}
+
+	public void removeCached(final String id)
+	{
+		final String storeId = getStorageID(id);
+		if (stockStore != null && storeId != null)
+		{
+			stockStore.removeItem(storeId);
 		}
 	}
 
@@ -130,16 +132,16 @@ public abstract class DataStore<T extends JavaScriptObject>
 
 	protected abstract String getStorageID(final String id);
 
+	protected String getStoreData(final T object)
+	{
+		return new JSONObject(object).toString();
+	}
+
 	protected String getStoreURL(final String id)
 	{
 		return null;
 	}
 
-	protected String getStoreData(final T object)
-	{
-		return new JSONObject(object).toString();
-	}
-	
 	private T parse(final String json)
 	{
 		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().<T> cast();
@@ -147,16 +149,16 @@ public abstract class DataStore<T extends JavaScriptObject>
 
 	private void putLocal(final String id, final String object)
 	{
-		String storeId = getStorageID(id);
+		final String storeId = getStorageID(id);
 		if (stockStore != null && storeId != null)
 		{
 			stockStore.setItem(getStorageID(id), object);
-		}		
+		}
 	}
-	
+
 	private void putLocal(final String id, final T object)
 	{
-		String storeId = getStorageID(id);
+		final String storeId = getStorageID(id);
 		if (stockStore != null && storeId != null)
 		{
 			GWT.log("Put " + getStorageID(id) + ": " + new JSONObject(object).toString());
@@ -164,8 +166,8 @@ public abstract class DataStore<T extends JavaScriptObject>
 		}
 	}
 
-	private void serverRequest(final String loginfo, final String url, final RequestBuilder.Method method, final String data,
-			final RequestCallback callback)
+	private void serverRequest(final String loginfo, final String url, final RequestBuilder.Method method,
+			final String data, final RequestCallback callback)
 	{
 		GWT.log(loginfo + ": " + url);
 		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));

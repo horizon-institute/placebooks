@@ -46,24 +46,24 @@ public class MapItem extends PlaceBookItemWidget
 	private PlaceBookItem positionItem = null;
 
 	private RouteLayer routeLayer;
-	
+
 	private String url;
 
 	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
 	{
 		@Override
-		protected String getRequestURL(String id)
+		protected String getRequestURL(final String id)
 		{
 			return getHostURL() + "placebooks/a/admin/serverinfo";
 		}
 
 		@Override
-		protected String getStorageID(String id)
+		protected String getStorageID(final String id)
 		{
 			return "server.info";
 		}
 	};
-	
+
 	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
@@ -75,89 +75,15 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			item.setParameter("height", 5000);
 		}
-		
-		createMap();		
+
+		createMap();
 	}
 
-	@Override
-	public void refresh()
-	{
-		final String newURL = getItem().getURL();
-		if (url == null || !url.equals(newURL) || routeLayer == null)
-		{
-			this.url = newURL;
-			createRoute();
-		}
-		refreshMarkers();
-		recenter();
-	}
-
-	private ImageResource getMarker(final PlaceBookItem item)
-	{
-		if(item.is(ItemType.AUDIO))
-		{
-			return Markers.IMAGES.marker_audio();
-		}
-		else if(item.is(ItemType.VIDEO))
-		{
-			return Markers.IMAGES.marker_video();			
-		}
-		else if(item.is(ItemType.WEB))
-		{
-			return Markers.IMAGES.marker_web();			
-		}
-		else if(item.is(ItemType.TEXT))
-		{
-			return Markers.IMAGES.marker_text();
-		}
-		else if(item.is(ItemType.IMAGE))
-		{
-			return Markers.IMAGES.marker_image();
-		}		
-		else
-		{
-			return Markers.IMAGES.marker();
-		}
-	}
-	
-	public void refreshMarkers()
-	{
-		if(markerLayer == null) { return; }
-		markerLayer.clearMarkers();
-
-		for(final PlaceBookPage page: controller.getPages().getPages())
-		{
-			for (final PlaceBookItem item : page.getPlaceBook().getItems())
-			{
-				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
-				{
-					if (item.getGeometry() != null)
-					{
-						final String geometry = item.getGeometry();
-						if (geometry.startsWith(POINT_PREFIX))
-						{
-							final LonLat lonlat = LonLat
-									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
-									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
-							final Marker marker = Marker.create(getMarker(item), lonlat);
-							if(positionItem != null && !item.equals(positionItem))
-							{
-								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
-							}
-							markerLayer.addMarker(marker);
-						}
-					}
-				}
-			}
-		}
-		recenter();
-	}
-	
 	public void moveMarker(final PlaceBookItem item, final ChangeHandler changeHandler)
 	{
 		positionItem = item;
 		refreshMarkers();
-		
+
 		final ClickControl control = ClickControl.create(new EventHandler()
 		{
 			@Override
@@ -174,17 +100,80 @@ public class MapItem extends PlaceBookItemWidget
 					fireFocusChanged(true);
 					controller.markChanged();
 					refreshMarkers();
-					changeHandler.onChange(null);					
+					changeHandler.onChange(null);
 				}
 			}
 		}.getFunction());
 		map.addControl(control);
-		control.activate();		
+		control.activate();
 	}
 
-	private void createMap(ServerInfo serverInfo)
+	@Override
+	public void refresh()
 	{
-		if(map != null)
+		final String newURL = getItem().getURL();
+		if (url == null || !url.equals(newURL) || routeLayer == null)
+		{
+			this.url = newURL;
+			createRoute();
+		}
+		refreshMarkers();
+		recenter();
+	}
+
+	public void refreshMarkers()
+	{
+		if (markerLayer == null) { return; }
+		markerLayer.clearMarkers();
+
+		for (final PlaceBookPage page : controller.getPages().getPages())
+		{
+			for (final PlaceBookItem item : page.getPlaceBook().getItems())
+			{
+				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
+				{
+					if (item.getGeometry() != null)
+					{
+						final String geometry = item.getGeometry();
+						if (geometry.startsWith(POINT_PREFIX))
+						{
+							final LonLat lonlat = LonLat
+									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
+									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
+							final Marker marker = Marker.create(getMarker(item), lonlat);
+							if (positionItem != null && !item.equals(positionItem))
+							{
+								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
+							}
+							markerLayer.addMarker(marker);
+						}
+					}
+				}
+			}
+		}
+		recenter();
+	}
+
+	private void createMap()
+	{
+		if (map == null)
+		{
+			infoStore.get(null, new JSONResponse<ServerInfo>()
+			{
+				@Override
+				public void handleResponse(final ServerInfo object)
+				{
+					createMap(object);
+				}
+			});
+		}
+
+		createRoute();
+	}
+
+	private void createMap(final ServerInfo serverInfo)
+	{
+		if (map != null)
 		{
 			map.destroy();
 		}
@@ -200,23 +189,6 @@ public class MapItem extends PlaceBookItemWidget
 		createRoute();
 		refreshMarkers();
 	}
-	
-	private void createMap()
-	{
-		if (map == null)
-		{
-			infoStore.get(null, new JSONResponse<ServerInfo>()
-			{
-				@Override
-				public void handleResponse(ServerInfo object)
-				{
-					createMap(object);
-				}
-			});
-		}
-
-		createRoute();
-	}
 
 	private void createRoute()
 	{
@@ -228,7 +200,7 @@ public class MapItem extends PlaceBookItemWidget
 		}
 
 		// GWT.log("Map URL: " + getItem().getURL());
-		if(getItem().getHash() != null)
+		if (getItem().getHash() != null)
 		{
 			routeLayer = RouteLayer.create("Route", getItem().getURL(), map.getDisplayProjection());
 			try
@@ -257,11 +229,12 @@ public class MapItem extends PlaceBookItemWidget
 			final Bounds routeBounds = routeLayer.getDataExtent();
 			if (routeBounds != null)
 			{
-//				GWT.log(routeBounds.toString());			
-//				Bounds transformed = routeBounds.transform(map.getProjection(), map.getDisplayProjection());
-//				GWT.log(transformed.toString());
-//				GWT.log(routeBounds.toString());
-				
+				// GWT.log(routeBounds.toString());
+				// Bounds transformed = routeBounds.transform(map.getProjection(),
+				// map.getDisplayProjection());
+				// GWT.log(transformed.toString());
+				// GWT.log(routeBounds.toString());
+
 				if (bounds == null)
 				{
 					bounds = routeBounds;
@@ -275,6 +248,34 @@ public class MapItem extends PlaceBookItemWidget
 		return bounds;
 	}
 
+	private ImageResource getMarker(final PlaceBookItem item)
+	{
+		if (item.is(ItemType.AUDIO))
+		{
+			return Markers.IMAGES.marker_audio();
+		}
+		else if (item.is(ItemType.VIDEO))
+		{
+			return Markers.IMAGES.marker_video();
+		}
+		else if (item.is(ItemType.WEB))
+		{
+			return Markers.IMAGES.marker_web();
+		}
+		else if (item.is(ItemType.TEXT))
+		{
+			return Markers.IMAGES.marker_text();
+		}
+		else if (item.is(ItemType.IMAGE))
+		{
+			return Markers.IMAGES.marker_image();
+		}
+		else
+		{
+			return Markers.IMAGES.marker();
+		}
+	}
+
 	private void recenter()
 	{
 		if (map == null) { return; }
@@ -286,7 +287,7 @@ public class MapItem extends PlaceBookItemWidget
 			final Bounds bounds = getLayerBounds();
 			if (bounds != null)
 			{
-				if(map.getMaxExtent().contains(bounds))
+				if (map.getMaxExtent().contains(bounds))
 				{
 					map.zoomToExtent(bounds);
 				}

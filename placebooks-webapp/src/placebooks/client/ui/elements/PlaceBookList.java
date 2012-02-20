@@ -20,19 +20,12 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PlaceBookList extends CellList<PlaceBookEntry>
 {
-	interface Style extends CssResource
-	{
-		String listItem();
-	}
-
 	interface Bundle extends ClientBundle
 	{
 		@Source("PlaceBookList.css")
 		Style style();
 	}
-	
-	private static final Bundle STYLES = GWT.create(Bundle.class);
-	
+
 	static class PlaceBookCell extends AbstractCell<PlaceBookEntry>
 	{
 		public PlaceBookCell()
@@ -45,8 +38,7 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			// Value can be null, so do a null check..
 			if (value == null) { return; }
 
-			sb.appendHtmlConstant("<div class=\"" + STYLES.style().listItem()
-					+ "\">");
+			sb.appendHtmlConstant("<div class=\"" + STYLES.style().listItem() + "\">");
 
 			// Add the name and address.
 			sb.appendHtmlConstant("<div>");
@@ -73,6 +65,13 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 		}
 	}
 
+	interface Style extends CssResource
+	{
+		String listItem();
+	}
+
+	private static final Bundle STYLES = GWT.create(Bundle.class);
+
 	private static final PlaceBookEntry newPlaceBook;
 
 	private static final ProvidesKey<PlaceBookEntry> placebookKeyProvider = new ProvidesKey<PlaceBookEntry>()
@@ -86,7 +85,9 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 	static
 	{
-		newPlaceBook = PlaceBookService.parse(PlaceBookEntry.class, "{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
+		newPlaceBook = PlaceBookService
+				.parse(	PlaceBookEntry.class,
+						"{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
 	}
 
 	public PlaceBookList()

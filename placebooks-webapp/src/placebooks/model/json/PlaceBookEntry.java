@@ -18,7 +18,7 @@ public class PlaceBookEntry extends ShelfEntry
 		setKey(placebook.getKey());
 		setTitle(placebook.getMetadataValue("title"));
 		setOwner(placebook.getOwner().getKey());
-		setTimestamp(placebook.getTimestamp());		
+		setTimestamp(placebook.getTimestamp());
 		this.description = placebook.getMetadataValue("description");
 		this.numItems = placebook.getItems().size();
 

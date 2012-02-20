@@ -72,41 +72,37 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private static final PlaceBookBookEditorUiBinder uiBinder = GWT.create(PlaceBookBookEditorUiBinder.class);
 
-	
 	private final static String newPlaceBook = "{\"pages\":[{\"items\":[], \"metadata\":{} },{\"items\":[], \"metadata\":{} }]}";
 
 	private final DataStore<PlaceBookBinder> dataStore = new DataStore<PlaceBookBinder>()
 	{
 
 		@Override
-		protected String getStoreURL(String id)
-		{
-			return getHostURL() + "placebooks/a/saveplacebookbinder";
-		}
-
-		@Override
-		protected String getRequestURL(String id)
+		protected String getRequestURL(final String id)
 		{
 			return getHostURL() + "placebooks/a/placebookbinder/" + id;
 		}
 
 		@Override
-		protected String getStoreData(PlaceBookBinder binder)
+		protected String getStorageID(final String id)
+		{
+			if (id == null) { return null; }
+			return "placebook." + id;
+		}
+
+		@Override
+		protected String getStoreData(final PlaceBookBinder binder)
 		{
 			return "placebookbinder=" + URL.encodePathSegment(new JSONObject(binder).toString());
 		}
 
 		@Override
-		protected String getStorageID(String id)
+		protected String getStoreURL(final String id)
 		{
-			if(id == null)
-			{
-				return null;
-			}
-			return "placebook." + id;
+			return getHostURL() + "placebooks/a/saveplacebookbinder";
 		}
 	};
-	
+
 	@UiField
 	Panel backPanel;
 
@@ -154,7 +150,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	public PlaceBookEditor(final User user, final String placebookID)
 	{
 		super(user);
-		this.placebookID = placebookID;			
+		this.placebookID = placebookID;
 		this.placebook = null;
 	}
 
@@ -179,31 +175,37 @@ public class PlaceBookEditor extends PlaceBookPlace
 		if (saveItem.getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
 		return super.mayStop();
 	}
-	
+
+	@Override
+	public void onStop()
+	{
+		saveItem.markSaved();
+	}
+
 	public void setPlaceBook(final PlaceBookBinder newPlacebook)
 	{
-		if(placebook != null)
+		if (placebook != null)
 		{
-			int currentVersion = placebook.getParameter("version", 1);
-			int newVersion = newPlacebook.getParameter("version", 1);
-			
-			//TODO Check auth
-			if(getUser() == null)
+			final int currentVersion = placebook.getParameter("version", 1);
+			final int newVersion = newPlacebook.getParameter("version", 1);
+
+			// TODO Check auth
+			if (getUser() == null)
 			{
 				if ("PUBLISHED".equals(placebook.getState()))
 				{
 					getPlaceController().goTo(new PlaceBookPreview(getUser(), newPlacebook));
 				}
 			}
-			
+
 			GWT.log("Current: " + currentVersion + ", new: " + newVersion);
-			
-			if(currentVersion > newVersion)
+
+			if (currentVersion > newVersion)
 			{
 				controller.markChanged();
 				return;
 			}
-			else if(currentVersion == newVersion)
+			else if (currentVersion == newVersion)
 			{
 				updatePlaceBook(newPlacebook);
 				return;
@@ -226,15 +228,15 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 		loadingPanel.setVisible(false);
 	}
-	
+
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
-	{		
+	{
 		Widget editor;
 		editor = uiBinder.createAndBindUi(this);
-			
+
 		loadingPanel.setVisible(true);
-		
+
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler()
 		{
 			@Override
@@ -263,7 +265,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 				{
 					versionNumber = placebook.getParameter("version", 0);
 				}
-				catch (NumberFormatException e)
+				catch (final NumberFormatException e)
 				{
 					GWT.log(e.getMessage(), e);
 				}
@@ -271,7 +273,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 				dataStore.put(placebook.getId(), placebook, new JSONResponse<PlaceBookBinder>()
 				{
 					@Override
-					public void handleError(Request request, Response response, Throwable throwable)
+					public void handleError(final Request request, final Response response, final Throwable throwable)
 					{
 						saveItem.setState(SaveState.save_error);
 					}
@@ -311,8 +313,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 		}
 		else if (placebookID.equals("new"))
 		{
-			PlaceBookBinder binder = PlaceBookService.parse(PlaceBookBinder.class, newPlaceBook);
-			for(PlaceBook page: binder.getPages())
+			final PlaceBookBinder binder = PlaceBookService.parse(PlaceBookBinder.class, newPlaceBook);
+			for (final PlaceBook page : binder.getPages())
 			{
 				page.setMetadata("tempID", "" + System.currentTimeMillis());
 			}
@@ -323,38 +325,38 @@ public class PlaceBookEditor extends PlaceBookPlace
 			dataStore.get(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
-				public void handleOther(Request request, Response response)
+				public void handleOther(final Request request, final Response response)
 				{
 					getPlaceController().goTo(new PlaceBookHome(getUser()));
 				}
-				
+
 				@Override
-				public void handleResponse(PlaceBookBinder binder)
+				public void handleResponse(final PlaceBookBinder binder)
 				{
 					setPlaceBook(binder);
 				}
 			});
 		}
-		
+
 		bookPanel.resized();
 		new Timer()
 		{
 			@Override
 			public void run()
 			{
-				bookPanel.resized();	
+				bookPanel.resized();
 				new Timer()
 				{
 					@Override
 					public void run()
 					{
-						bookPanel.resized();	
+						bookPanel.resized();
 					}
-				}.schedule(20);				
+				}.schedule(20);
 			}
 		}.schedule(10);
-	}	
-	
+	}
+
 	public void updatePalette()
 	{
 		PlaceBookService.getPaletteItems(new AbstractCallback()
@@ -377,17 +379,28 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 	}
 
-	@Override
-	public void onStop()
+	@UiHandler("newPage")
+	void createPage(final ClickEvent event)
 	{
-		saveItem.markSaved();
+		bookPanel.createPage();
+		saveItem.markChanged();
+	}
+
+	@UiHandler("deletePage")
+	void deletePage(final ClickEvent event)
+	{
+		if (bookPanel.deleteCurrentPage())
+		{
+			saveItem.markChanged();
+		}
 	}
 
 	@UiHandler("deleteBook")
 	void deletePlaceBook(final ClickEvent event)
 	{
 		GWT.log("Delete Click");
-		final PlaceBookConfirmDialog dialog = new PlaceBookConfirmDialog("You will not be able to get your placebook back after deleting it. Are you sure?");
+		final PlaceBookConfirmDialog dialog = new PlaceBookConfirmDialog(
+				"You will not be able to get your placebook back after deleting it. Are you sure?");
 		dialog.setTitle("Confirm Delete");
 		dialog.setConfirmHandler(new ClickHandler()
 		{
@@ -415,6 +428,14 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dialog.show();
 	}
 
+	@UiHandler("permissions")
+	void handleEditPermissions(final ClickEvent event)
+	{
+		final PlaceBookPermissionsDialog dialog = new PlaceBookPermissionsDialog(controller);
+		dialog.show();
+		dialog.center();
+	}
+
 	@UiHandler("title")
 	void handleTitleEdit(final KeyUpEvent event)
 	{
@@ -434,15 +455,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		setZoom(zoom - 20);
 	}
 
-	@UiHandler("permissions")
-	void handleEditPermissions(final ClickEvent event)
-	{
-		PlaceBookPermissionsDialog dialog = new PlaceBookPermissionsDialog(controller);
-		dialog.show();
-		dialog.center();
-	}
-
-	
 	@UiHandler("preview")
 	void preview(final ClickEvent event)
 	{
@@ -464,7 +476,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		});
 
 		publish.show();
-		//publish.getElement().getStyle().setTop(50, Unit.PX);
+		// publish.getElement().getStyle().setTop(50, Unit.PX);
 	}
 
 	@UiHandler("actionMenu")
@@ -473,22 +485,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		dropMenu.show(actionMenu.getAbsoluteLeft(), actionMenu.getAbsoluteTop() + actionMenu.getOffsetHeight());
 	}
 
-	@UiHandler("newPage")
-	void createPage(final ClickEvent event)
-	{
-		bookPanel.createPage();
-		saveItem.markChanged();
-	}
-	
-	@UiHandler("deletePage")
-	void deletePage(final ClickEvent event)
-	{
-		if(bookPanel.deleteCurrentPage())
-		{
-			saveItem.markChanged();
-		}
-	}
-	
 	private String getKey()
 	{
 		return placebookID;
@@ -505,18 +501,19 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	private void updatePlaceBook(final PlaceBookBinder newPlacebook)
 	{
-		boolean changeURL = placebook != null && (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId()));
-			
+		final boolean changeURL = placebook != null
+				&& (placebook.getId() == null || !placebook.getId().equals(newPlacebook.getId()));
+
 		placebook = newPlacebook;
 		bookPanel.update(newPlacebook);
 
-		if(changeURL)
+		if (changeURL)
 		{
 			placebookID = newPlacebook.getId();
-			
+
 			History.newItem(placebooks.client.PlaceBookEditor.historyMapper.getToken(this), false);
 		}
-		
+
 		bookPanel.resized();
 	}
 }

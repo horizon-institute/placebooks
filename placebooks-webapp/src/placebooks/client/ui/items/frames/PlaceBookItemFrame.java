@@ -41,14 +41,6 @@ public abstract class PlaceBookItemFrame
 		return rootPanel;
 	}
 
-	protected void itemWidgetResized()
-	{
-		if (panel != null)
-		{
-			panel.reflow();
-		}
-	}
-
 	public void resize(final String height)
 	{
 		final String clientHeight = itemWidget.resize();
@@ -102,5 +94,13 @@ public abstract class PlaceBookItemFrame
 	public void updateFrame()
 	{
 
+	}
+
+	protected void itemWidgetResized()
+	{
+		if (panel != null)
+		{
+			panel.reflow();
+		}
 	}
 }

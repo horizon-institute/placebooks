@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class VideoItem extends MediaItem
 {
 	private final Video video;
-	
+
 	VideoItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
@@ -19,20 +19,20 @@ public class VideoItem extends MediaItem
 	}
 
 	@Override
-	protected Widget getMediaWidget()
-	{
-		return video;
-	}
-
-	@Override
 	protected int getMediaHeight()
 	{
 		return video.getVideoHeight();
 	}
 
 	@Override
-	protected void setURL(String url)
+	protected Widget getMediaWidget()
+	{
+		return video;
+	}
+
+	@Override
+	protected void setURL(final String url)
 	{
 		video.setSrc(url);
-	}	
+	}
 }

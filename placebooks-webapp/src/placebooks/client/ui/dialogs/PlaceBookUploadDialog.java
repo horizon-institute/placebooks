@@ -52,13 +52,13 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	TextArea copyright;
 
 	private final PlaceBookItemWidget item;
-	
+
 	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemWidget item)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 
 		this.item = item;
-		
+
 		if (item.getItem().is(ItemType.IMAGE))
 		{
 			setTitle("Upload Image");
@@ -101,29 +101,24 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			{
 				try
 				{
-					String result = event.getResults().replaceAll("(<([^>]+)>)", "");
+					final String result = event.getResults().replaceAll("(<([^>]+)>)", "");
 					GWT.log("Upload Complete: " + result);
 					setProgressVisible(false, null);
-					
+
 					final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, result);
 					item.update(placebookItem);
 					hide();
 					controller.markChanged();
 				}
-				catch(Exception e)
+				catch (final Exception e)
 				{
 					setError("Upload Failed");
 					refresh();
 				}
 			}
 		});
-		
+
 		refresh();
-	}
-	
-	private void refresh()
-	{
-		uploadButton.setEnabled(item.getItem().getKey() != null && upload.getFilename() != null && !"Unknown".equals(upload.getFilename()));
 	}
 
 	@UiHandler("upload")
@@ -135,7 +130,13 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiHandler("uploadButton")
 	void upload(final ClickEvent event)
 	{
-		itemKey.setValue(item.getItem().getKey());		
+		itemKey.setValue(item.getItem().getKey());
 		form.submit();
+	}
+
+	private void refresh()
+	{
+		uploadButton.setEnabled(item.getItem().getKey() != null && upload.getFilename() != null
+				&& !"Unknown".equals(upload.getFilename()));
 	}
 }

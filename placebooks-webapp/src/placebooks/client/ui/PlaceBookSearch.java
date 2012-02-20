@@ -60,10 +60,10 @@ public class PlaceBookSearch extends PlaceBookPlace
 
 	@UiField
 	TextBox searchBox;
-	
+
 	@UiField
 	Anchor nearbyLink;
-		
+
 	private String searchString;
 
 	public PlaceBookSearch(final User user, final String search)
@@ -72,50 +72,77 @@ public class PlaceBookSearch extends PlaceBookPlace
 		this.searchString = search;
 	}
 
+	public ImageResource getMarker(final int index)
+	{
+		switch (index)
+		{
+			case 1:
+				return Markers.IMAGES.markera();
+			case 2:
+				return Markers.IMAGES.markerb();
+			case 3:
+				return Markers.IMAGES.markerc();
+			case 4:
+				return Markers.IMAGES.markerd();
+			case 5:
+				return Markers.IMAGES.markere();
+			case 6:
+				return Markers.IMAGES.markerf();
+			case 7:
+				return Markers.IMAGES.markerg();
+			case 8:
+				return Markers.IMAGES.markerh();
+			case 9:
+				return Markers.IMAGES.markeri();
+			case 10:
+				return Markers.IMAGES.markerj();
+			case 11:
+				return Markers.IMAGES.markerk();
+			case 12:
+				return Markers.IMAGES.markerl();
+			case 13:
+				return Markers.IMAGES.markerm();
+			case 14:
+				return Markers.IMAGES.markern();
+			case 15:
+				return Markers.IMAGES.markero();
+			case 16:
+				return Markers.IMAGES.markerp();
+			case 17:
+				return Markers.IMAGES.markerq();
+			case 18:
+				return Markers.IMAGES.markerr();
+			case 19:
+				return Markers.IMAGES.markers();
+			case 20:
+				return Markers.IMAGES.markert();
+			case 21:
+				return Markers.IMAGES.markeru();
+			case 22:
+				return Markers.IMAGES.markerv();
+			case 23:
+				return Markers.IMAGES.markerw();
+			case 24:
+				return Markers.IMAGES.markerx();
+			case 25:
+				return Markers.IMAGES.markery();
+			case 26:
+				return Markers.IMAGES.markerz();
+			default:
+				return Markers.IMAGES.marker();
+		}
+	}
+
 	public String getSearch()
 	{
 		return searchString;
 	}
 
-	public ImageResource getMarker(int index)
-	{
-		switch(index)
-		{
-			case 1: return Markers.IMAGES.markera();
-			case 2: return Markers.IMAGES.markerb();
-			case 3: return Markers.IMAGES.markerc();
-			case 4: return Markers.IMAGES.markerd();
-			case 5: return Markers.IMAGES.markere();
-			case 6: return Markers.IMAGES.markerf();
-			case 7: return Markers.IMAGES.markerg();
-			case 8: return Markers.IMAGES.markerh();
-			case 9: return Markers.IMAGES.markeri();
-			case 10: return Markers.IMAGES.markerj();
-			case 11: return Markers.IMAGES.markerk();
-			case 12: return Markers.IMAGES.markerl();
-			case 13: return Markers.IMAGES.markerm();
-			case 14: return Markers.IMAGES.markern();	
-			case 15: return Markers.IMAGES.markero();
-			case 16: return Markers.IMAGES.markerp();
-			case 17: return Markers.IMAGES.markerq();
-			case 18: return Markers.IMAGES.markerr();
-			case 19: return Markers.IMAGES.markers();
-			case 20: return Markers.IMAGES.markert();
-			case 21: return Markers.IMAGES.markeru();
-			case 22: return Markers.IMAGES.markerv();
-			case 23: return Markers.IMAGES.markerw();
-			case 24: return Markers.IMAGES.markerx();
-			case 25: return Markers.IMAGES.markery();
-			case 26: return Markers.IMAGES.markerz();
-			default: return Markers.IMAGES.marker();
-		}
-	}
-	
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
 		final Widget widget = uiBinder.createAndBindUi(this);
-		
+
 		Window.setTitle("PlaceBooks Search - " + searchString);
 
 		searchBox.setText(searchString);
@@ -125,14 +152,8 @@ public class PlaceBookSearch extends PlaceBookPlace
 		// setShelf(shelf);
 
 		panel.setWidget(widget);
-		
+
 		search();
-	}
-	
-	@UiHandler("nearbyLink")
-	void handleSearchNearby(final ClickEvent event)
-	{
-		getPlaceController().goTo(new PlaceBookSearch(getUser(), "location:current"));
 	}
 
 	@UiHandler("searchButton")
@@ -140,7 +161,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 	{
 		search();
 	}
-	
+
 	@UiHandler("searchBox")
 	void handleSearchEnter(final KeyPressEvent event)
 	{
@@ -150,25 +171,39 @@ public class PlaceBookSearch extends PlaceBookPlace
 		}
 	}
 
+	@UiHandler("nearbyLink")
+	void handleSearchNearby(final ClickEvent event)
+	{
+		getPlaceController().goTo(new PlaceBookSearch(getUser(), "location:current"));
+	}
+
 	private void search()
 	{
 		searchString = searchBox.getText();
 		shelf.showProgress("SEARCHING");
-		if(searchString.equals("location:current"))
+		if (searchString.equals("location:current"))
 		{
 			nearbyLink.setVisible(false);
-			Geolocation geolocation = Geolocation.getIfSupported();
+			final Geolocation geolocation = Geolocation.getIfSupported();
 			geolocation.getCurrentPosition(new Callback<Position, PositionError>()
 			{
 				@Override
-				public void onSuccess(Position result)
+				public void onFailure(final PositionError reason)
 				{
-					final String geometry = MapItem.POINT_PREFIX + result.getCoordinates().getLatitude() + " " + result.getCoordinates().getLongitude() + ")";
-					
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void onSuccess(final Position result)
+				{
+					final String geometry = MapItem.POINT_PREFIX + result.getCoordinates().getLatitude() + " "
+							+ result.getCoordinates().getLongitude() + ")";
+
 					shelf.setShelfControl(new ShelfControl(PlaceBookSearch.this)
 					{
 						@Override
-						public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
+						public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
 						{
 							if (o2.getScore() != o1.getScore())
 							{
@@ -179,26 +214,19 @@ public class PlaceBookSearch extends PlaceBookPlace
 								return o1.getTitle().compareTo(o2.getTitle());
 							}
 						}
-						
+
 						@Override
-						public boolean include(PlaceBookEntry entry)
-						{
-							return true;
-						}
-						
-						@Override
-						public void getShelf(JSONResponse<Shelf> callback)
+						public void getShelf(final JSONResponse<Shelf> callback)
 						{
 							PlaceBookService.searchLocation(geometry, callback);
 						}
+
+						@Override
+						public boolean include(final PlaceBookEntry entry)
+						{
+							return true;
+						}
 					});
-				}
-				
-				@Override
-				public void onFailure(PositionError reason)
-				{
-					// TODO Auto-generated method stub
-					
 				}
 			});
 		}
@@ -207,9 +235,9 @@ public class PlaceBookSearch extends PlaceBookPlace
 			nearbyLink.setVisible(true);
 			shelf.setShelfControl(new ShelfControl(this)
 			{
-				
+
 				@Override
-				public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
+				public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
 				{
 					if (o2.getScore() != o1.getScore())
 					{
@@ -220,21 +248,18 @@ public class PlaceBookSearch extends PlaceBookPlace
 						return o1.getTitle().compareTo(o2.getTitle());
 					}
 				}
-				
+
 				@Override
-				public boolean include(PlaceBookEntry entry)
+				public void getShelf(final JSONResponse<Shelf> callback)
 				{
-					if(searchString.equals(""))
-					{
-						return true;
-					}
-					return entry.getScore() > 0;
+					PlaceBookService.search(searchString, callback);
 				}
-				
+
 				@Override
-				public void getShelf(JSONResponse<Shelf> callback)
+				public boolean include(final PlaceBookEntry entry)
 				{
-					PlaceBookService.search(searchString, callback);	
+					if (searchString.equals("")) { return true; }
+					return entry.getScore() > 0;
 				}
 			});
 		}

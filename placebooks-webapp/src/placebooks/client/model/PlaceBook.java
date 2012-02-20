@@ -26,6 +26,11 @@ public class PlaceBook extends JavaScriptObject
 		return this.geom;
 	}-*/;
 
+	public final native String getId()
+	/*-{
+		return this.id;
+	}-*/;
+
 	public final Iterable<PlaceBookItem> getItems()
 	{
 		return new Iterable<PlaceBookItem>()
@@ -37,20 +42,6 @@ public class PlaceBook extends JavaScriptObject
 			}
 		};
 	}
-	
-	private final native JsArray<PlaceBookItem> getItemsInternal()
-	/*-{
-		if(!('items' in this))
-		{
-			this.items = new Array();
-		}
-		return this.items;
-	}-*/;
-
-	public final native String getId()
-	/*-{
-		return this.id;
-	}-*/;
 
 	public final native String getMetadata(String name)
 	/*-{
@@ -66,13 +57,13 @@ public class PlaceBook extends JavaScriptObject
 		return defaultValue;
 	}-*/;
 
-//	public final native User getOwner() /*-{
-//										return this.owner;
-//										}-*/;
-
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
 															}-*/;
+
+	// public final native User getOwner() /*-{
+	// return this.owner;
+	// }-*/;
 
 	public final native void remove(PlaceBookItem item) /*-{
 															var idx = this.items.indexOf(item);
@@ -80,6 +71,13 @@ public class PlaceBook extends JavaScriptObject
 															this.items.splice(idx, 1);
 															}
 															}-*/;
+
+	public final native void removeMetadata(String name)
+	/*-{
+		if (('metadata' in this)) {
+			delete this.metadata[name];
+		}
+	}-*/;
 
 	public final native void setKey(String text) /*-{
 													this.id = text;
@@ -94,12 +92,14 @@ public class PlaceBook extends JavaScriptObject
 		this.metadata[name] = value;
 	}-*/;
 
-	public final native void removeMetadata(String name)
+	private final native JsArray<PlaceBookItem> getItemsInternal()
 	/*-{
-		if (('metadata' in this)) {
-			delete this.metadata[name];
+		if(!('items' in this))
+		{
+			this.items = new Array();
 		}
+		return this.items;
 	}-*/;
 
-//	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
+	// public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
 }

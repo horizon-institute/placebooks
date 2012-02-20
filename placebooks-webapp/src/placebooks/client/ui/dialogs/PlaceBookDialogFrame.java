@@ -13,10 +13,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 class PlaceBookDialogFrame extends PopupPanel
 {
-	interface PlaceBookDialogUiBinder extends UiBinder<Widget, PlaceBookDialogFrame>
-	{
-	}
-
 	interface DialogStyle extends CssResource
 	{
 		String dialog();
@@ -24,14 +20,18 @@ class PlaceBookDialogFrame extends PopupPanel
 		String dialogGlass();
 	}
 
+	interface PlaceBookDialogUiBinder extends UiBinder<Widget, PlaceBookDialogFrame>
+	{
+	}
+
 	private static PlaceBookDialogUiBinder uiBinder = GWT.create(PlaceBookDialogUiBinder.class);
 
 	@UiField
 	ProgressPanel progress;
-	
-	@UiField 
+
+	@UiField
 	DialogStyle style;
-	
+
 	@UiField
 	Label titleLabel;
 
@@ -40,41 +40,42 @@ class PlaceBookDialogFrame extends PopupPanel
 
 	@UiField
 	Panel content;
-	
+
 	PlaceBookDialogFrame()
-	{	
+	{
 		setWidget(uiBinder.createAndBindUi(this));
-		
+
 		setGlassEnabled(true);
 		setAnimationEnabled(true);
 
 		setStyleName(style.dialog());
 		setGlassStyleName(style.dialogGlass());
-		setAutoHideEnabled(true);	
-		
-		errorLabel.setVisible(false);		
+		setAutoHideEnabled(true);
+
+		errorLabel.setVisible(false);
 	}
-	
-	void setContent(Widget contentWidget)
+
+	public void setProgressVisible(final boolean visible, final String text)
 	{
-		content.clear();
-		content.add(contentWidget);
+		progress.setVisible(visible);
+		progress.setText(text);
 	}
-	
+
+	@Override
 	public void setTitle(final String title)
 	{
 		titleLabel.setText(title);
 	}
-	
+
+	void setContent(final Widget contentWidget)
+	{
+		content.clear();
+		content.add(contentWidget);
+	}
+
 	void setError(final String error)
 	{
 		errorLabel.setText(error);
 		errorLabel.setVisible(true);
-	}
-
-	public void setProgressVisible(boolean visible, String text)
-	{
-		progress.setVisible(visible);
-		progress.setText(text);
 	}
 }

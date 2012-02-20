@@ -29,7 +29,7 @@ public class PalettePlaceBookItem extends PaletteItem
 	@Override
 	public Widget createWidget()
 	{
-		Widget result =super.createWidget();
+		final Widget result = super.createWidget();
 
 		if (item.is(ItemType.IMAGE) && item.getKey() != null)
 		{
@@ -41,25 +41,25 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			image.setResource(item.getIcon());
 		}
-		
-		if(controller.canAdd(item))
+
+		if (controller.canAdd(item))
 		{
 			panel.getElement().getStyle().setCursor(Cursor.MOVE);
 		}
 		else
 		{
 			image.getElement().getStyle().setOpacity(0.5);
-		}		
+		}
 
 		image.addMouseDownHandler(new MouseDownHandler()
 		{
 			@Override
-			public void onMouseDown(MouseDownEvent event)
+			public void onMouseDown(final MouseDownEvent event)
 			{
-				event.preventDefault();				
+				event.preventDefault();
 			}
 		});
-		
+
 		panel.addMouseDownHandler(new MouseDownHandler()
 		{
 			@Override
@@ -70,11 +70,9 @@ public class PalettePlaceBookItem extends PaletteItem
 					controller.setupDrag(event, createItem(), null);
 				}
 			}
-		});		
+		});
 		return result;
 	}
-
-
 
 	private PlaceBookItemWidget createItem()
 	{
@@ -83,11 +81,11 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			newItem.setKey(null);
 		}
-		if( item.getKey()!=null)
+		if (item.getKey() != null)
 		{
 			newItem.setMetadata("originalItemID", item.getKey());
 		}
-		if(newItem.getMetadata("originalItemID")==null)
+		if (newItem.getMetadata("originalItemID") == null)
 		{
 			newItem.removeMetadata("originalItemID");
 		}

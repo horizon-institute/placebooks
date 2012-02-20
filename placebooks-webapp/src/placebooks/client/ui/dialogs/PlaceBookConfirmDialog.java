@@ -18,17 +18,17 @@ public class PlaceBookConfirmDialog extends PlaceBookDialog
 	}
 
 	private static ConfirmDialogUiBinder uiBinder = GWT.create(ConfirmDialogUiBinder.class);
-	
+
 	@UiField
 	Label textLabel;
-	
+
 	@UiField
 	Button accept;
-	
+
 	public PlaceBookConfirmDialog(final String confirmText)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
-		
+
 		textLabel.setText(confirmText);
 	}
 
@@ -36,7 +36,7 @@ public class PlaceBookConfirmDialog extends PlaceBookDialog
 	{
 		accept.addClickHandler(handler);
 	}
-	
+
 	@UiHandler("cancel")
 	void cancel(final ClickEvent event)
 	{

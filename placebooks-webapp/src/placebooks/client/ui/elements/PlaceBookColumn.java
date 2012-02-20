@@ -18,21 +18,23 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookColumn extends FlowPanel
 {
-	interface Style extends CssResource
-	{
-		String panel();
-	    String innerPanel();
-	    String panelEdge();
-	}
-
 	interface Bundle extends ClientBundle
 	{
 		@Source("PlaceBookPanel.css")
 		Style style();
 	}
-	
+
+	interface Style extends CssResource
+	{
+		String innerPanel();
+
+		String panel();
+
+		String panelEdge();
+	}
+
 	private static final Bundle STYLES = GWT.create(Bundle.class);
-	
+
 	protected static final double HEIGHT_PRECISION = 10000;
 
 	private static final Comparator<PlaceBookItemFrame> orderComparator = new Comparator<PlaceBookItemFrame>()
@@ -53,14 +55,9 @@ public class PlaceBookColumn extends FlowPanel
 	private final int panelIndex;
 
 	private PlaceBookPage page;
-	
-	public PlaceBookPage getPage()
-	{
-		return page;
-	}
-	
-	public PlaceBookColumn(final PlaceBookPage page, final int index, final int columns, final double left, final double width,
-			final boolean visible)
+
+	public PlaceBookColumn(final PlaceBookPage page, final int index, final int columns, final double left,
+			final double width, final boolean visible)
 	{
 		STYLES.style().ensureInjected();
 		this.page = page;
@@ -78,7 +75,7 @@ public class PlaceBookColumn extends FlowPanel
 
 		add(innerPanel);
 	}
-	
+
 	public void add(final PlaceBookItemFrame item)
 	{
 		final int order = item.getItem().getParameter("order", items.size());
@@ -91,7 +88,7 @@ public class PlaceBookColumn extends FlowPanel
 			items.add(order, item);
 		}
 	}
-	
+
 	public int getIndex()
 	{
 		return panelIndex;
@@ -102,42 +99,9 @@ public class PlaceBookColumn extends FlowPanel
 		return innerPanel;
 	}
 
-	boolean isIn(final int x, final int y)
+	public PlaceBookPage getPage()
 	{
-		final int left = getElement().getAbsoluteLeft();
-		final int right = getElement().getAbsoluteRight();
-		final int top = getElement().getAbsoluteTop() - 20;
-		final int bottom = getElement().getAbsoluteBottom();
-		return left < x && x < right && top < y && y < bottom;
-	}
-
-	private int layoutItem(final PlaceBookItemFrame item, final int order, final boolean move)
-	{
-		if (move && innerPanel.getWidgetIndex(item.getRootPanel()) != order)
-		{
-			innerPanel.insert(item.getRootPanel(), order);
-		}
-		item.getItem().setParameter("order", order);
-
-		String heightString;
-
-		if (item.getItem().hasParameter("height") && item.getPanel() != null)
-		{
-			final int height = item.getItem().getParameter("height");
-			final double heightPCT = height * 100 / HEIGHT_PRECISION;
-			heightString = heightPCT + "%";
-			// final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
-
-			// heightString = heightPX + "px";
-		}
-		else
-		{
-			heightString = "";
-		}
-
-		item.resize(heightString);
-
-		return item.getRootPanel().getOffsetHeight();
+		return page;
 	}
 
 	public void reflow()
@@ -150,6 +114,25 @@ public class PlaceBookColumn extends FlowPanel
 			layoutItem(item, order, true);
 			order++;
 		}
+	}
+
+	public void remove(final PlaceBookItemFrame item)
+	{
+		items.remove(item);
+	}
+
+	public void setPage(final PlaceBookPage page)
+	{
+		this.page = page;
+	}
+
+	boolean isIn(final int x, final int y)
+	{
+		final int left = getElement().getAbsoluteLeft();
+		final int right = getElement().getAbsoluteRight();
+		final int top = getElement().getAbsoluteTop() - 20;
+		final int bottom = getElement().getAbsoluteBottom();
+		return left < x && x < right && top < y && y < bottom;
 	}
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
@@ -175,7 +158,7 @@ public class PlaceBookColumn extends FlowPanel
 			item.getItem().setParameter("order", order);
 			order++;
 		}
-	
+
 		if (!inserted)
 		{
 			newItem.getItem().setParameter("order", order);
@@ -205,13 +188,32 @@ public class PlaceBookColumn extends FlowPanel
 		innerPanel.add(insert);
 	}
 
-	public void remove(final PlaceBookItemFrame item)
+	private int layoutItem(final PlaceBookItemFrame item, final int order, final boolean move)
 	{
-		items.remove(item);
-	}
+		if (move && innerPanel.getWidgetIndex(item.getRootPanel()) != order)
+		{
+			innerPanel.insert(item.getRootPanel(), order);
+		}
+		item.getItem().setParameter("order", order);
 
-	public void setPage(PlaceBookPage page)
-	{
-		this.page = page;		
+		String heightString;
+
+		if (item.getItem().hasParameter("height") && item.getPanel() != null)
+		{
+			final int height = item.getItem().getParameter("height");
+			final double heightPCT = height * 100 / HEIGHT_PRECISION;
+			heightString = heightPCT + "%";
+			// final int heightPX = (int) (item.getPanel().getOffsetHeight() * heightPCT);
+
+			// heightString = heightPX + "px";
+		}
+		else
+		{
+			heightString = "";
+		}
+
+		item.resize(heightString);
+
+		return item.getRootPanel().getOffsetHeight();
 	}
 }

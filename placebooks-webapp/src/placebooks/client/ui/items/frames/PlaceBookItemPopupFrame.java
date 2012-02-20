@@ -128,23 +128,12 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		menuItems.add(new FitToContentMenuItem(controller, this));
 		menuItems.add(new HideTrailMenuItem(controller, this));
 		menuItems.add(new EditTitleMenuItem(controller, this));
-		//menuItems.add(new SetSourceURLMenuItem(controller, this));
+		// menuItems.add(new SetSourceURLMenuItem(controller, this));
 		menuItems.add(new ShowTrailMenuItem(controller, this));
 		menuItems.add(new UploadMenuItem(controller, this));
 
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
-	}
-
-	void add(final MenuItem menuItem)
-	{
-		menuItems.add(menuItem);
-	}
-
-	private void resize()
-	{
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
 	}
 
 	@Override
@@ -154,15 +143,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
-	}
-
-	private void setHighlight(final boolean highlight)
-	{
-		if (highlighted != highlight)
-		{
-			highlighted = highlight;
-			updateFrame();
-		}
 	}
 
 	@Override
@@ -212,6 +192,26 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			frame.getElement().getStyle().setZIndex(0);
 			frame.getElement().getStyle().setOpacity(0);
 			frame.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		}
+	}
+
+	void add(final MenuItem menuItem)
+	{
+		menuItems.add(menuItem);
+	}
+
+	private void resize()
+	{
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+	}
+
+	private void setHighlight(final boolean highlight)
+	{
+		if (highlighted != highlight)
+		{
+			highlighted = highlight;
+			updateFrame();
 		}
 	}
 }

@@ -8,9 +8,9 @@ public class ServerInfo extends JavaScriptObject
 	{
 	}
 
-	public final native String getOpenSpaceKey()
+	public final native String getOpenSpaceBaseURL()
 	/*-{
-		return this.openSpaceKey;
+		return this.openSpaceBaseURL;
 	}-*/;
 
 	public final native String getOpenSpaceHost()
@@ -18,13 +18,13 @@ public class ServerInfo extends JavaScriptObject
 		return this.openSpaceHost;
 	}-*/;
 
-	public final native String getOpenSpaceBaseURL()
+	public final native String getOpenSpaceKey()
 	/*-{
-		return this.openSpaceBaseURL;
+		return this.openSpaceKey;
 	}-*/;
-	
+
 	public final native String getServerName()
 	/*-{
 		return this.serverName;
-	}-*/;	
+	}-*/;
 }

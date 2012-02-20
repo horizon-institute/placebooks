@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Frame;
 public class FacebookLikeButton extends Composite
 {
 	private final Frame frame;
-	
+
 	public FacebookLikeButton()
 	{
 		frame = new Frame();
@@ -17,9 +17,10 @@ public class FacebookLikeButton extends Composite
 		frame.setHeight("20px");
 		frame.setWidth("90px");
 	}
-	
+
 	public void setURL(final String url)
 	{
-		frame.setUrl("http://www.facebook.com/plugins/like.php?href=" + URL.encodeQueryString(url) + "&layout=button_count");
+		frame.setUrl("http://www.facebook.com/plugins/like.php?href=" + URL.encodeQueryString(url)
+				+ "&layout=button_count");
 	}
 }

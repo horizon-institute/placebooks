@@ -4,14 +4,14 @@ import placebooks.model.PlaceBookBinder;
 
 public class PlaceBookBinderOwnedEntry extends PlaceBookBinderEntry
 {
-	public PlaceBookBinderOwnedEntry(PlaceBookBinder placebookBinder)
+	private String ownerName;
+
+	public PlaceBookBinderOwnedEntry(final PlaceBookBinder placebookBinder)
 	{
 		super(placebookBinder);
 		this.ownerName = placebookBinder.getOwner().getName();
 	}
 
-	private String ownerName;
-	
 	public String getOwnerName()
 	{
 		return ownerName;

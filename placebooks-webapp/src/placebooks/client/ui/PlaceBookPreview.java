@@ -77,40 +77,37 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	@UiField
 	ProgressPanel loadingPanel;
-	
+
 	@UiField
 	Label delete;
 
 	@UiField
 	PlaceBookToolbarItem actionMenu;
-	
+
 	@UiField
 	Anchor authorLabel;
 
 	private PlaceBookController controller;
-	
+
 	private PlaceBookBinder placebook;
 	private final String placebookID;
 
 	private final DataStore<PlaceBookBinder> dataStore = new DataStore<PlaceBookBinder>()
 	{
 		@Override
-		protected String getRequestURL(String id)
+		protected String getRequestURL(final String id)
 		{
 			return getHostURL() + "placebooks/a/placebookbinder/" + id;
 		}
 
 		@Override
-		protected String getStorageID(String id)
+		protected String getStorageID(final String id)
 		{
-			if(id == null)
-			{
-				return null;
-			}
+			if (id == null) { return null; }
 			return "placebook." + id;
 		}
 	};
-	
+
 	public PlaceBookPreview(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
@@ -159,7 +156,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		refresh();
 		loadingPanel.setVisible(false);
-		
+
 		bookPanel.resized();
 	}
 
@@ -169,9 +166,9 @@ public class PlaceBookPreview extends PlaceBookPlace
 		final Widget preview = uiBinder.createAndBindUi(this);
 
 		controller = new PlaceBookController(bookPanel, PlaceBookItemBlankFrame.FACTORY);
-		
+
 		infoPanel.setVisible(false);
-		loadingPanel.setVisible(true);		
+		loadingPanel.setVisible(true);
 
 		toolbar.setPlace(this);
 
@@ -186,26 +183,26 @@ public class PlaceBookPreview extends PlaceBookPlace
 			dataStore.get(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
 				@Override
-				public void handleOther(Request request, Response response)
+				public void handleOther(final Request request, final Response response)
 				{
 					getPlaceController().goTo(new PlaceBookHome(getUser()));
 				}
 
 				@Override
-				public void handleResponse(PlaceBookBinder binder)
+				public void handleResponse(final PlaceBookBinder binder)
 				{
 					setPlaceBook(binder);
 				}
 			});
 		}
-		
+
 		bookPanel.resized();
 		new Timer()
 		{
 			@Override
 			public void run()
 			{
-				bookPanel.resized();	
+				bookPanel.resized();
 			}
 		}.schedule(10);
 	}

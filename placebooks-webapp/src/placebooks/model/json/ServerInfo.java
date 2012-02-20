@@ -15,28 +15,20 @@ public class ServerInfo
 
 	public ServerInfo()
 	{
-		this.openSpaceKey = 
-			PropertiesSingleton
-				.get(PlaceBooksAdminHelper.class.getClassLoader())
+		this.openSpaceKey = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_APIKEY, "");
-		this.openSpaceHost = 
-			PropertiesSingleton
-				.get(PlaceBooksAdminHelper.class.getClassLoader())
+		this.openSpaceHost = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_HOST, "");
-		this.serverName = 
-			PropertiesSingleton
-				.get(PlaceBooksAdminHelper.class.getClassLoader())
+		this.serverName = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_SERVER_NAME, "");
-		this.openSpaceBaseURL = 
-			PropertiesSingleton
-				.get(PlaceBooksAdminHelper.class.getClassLoader())
+		this.openSpaceBaseURL = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_BASEURL, "");
 
 	}
 
-	public final String getOpenSpaceKey()
+	public final String getOpenSpaceBaseURL()
 	{
-		return openSpaceKey;
+		return openSpaceBaseURL;
 	}
 
 	public final String getOpenSpaceHost()
@@ -44,9 +36,9 @@ public class ServerInfo
 		return openSpaceHost;
 	}
 
-	public final String getOpenSpaceBaseURL()
+	public final String getOpenSpaceKey()
 	{
-		return openSpaceBaseURL;
+		return openSpaceKey;
 	}
 
 	public final String getServerName()

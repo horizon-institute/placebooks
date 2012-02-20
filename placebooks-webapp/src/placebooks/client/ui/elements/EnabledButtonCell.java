@@ -43,7 +43,7 @@ public abstract class EnabledButtonCell<T> extends AbstractCell<T>
 	}
 
 	@Override
-	public void render(Context context, T data, SafeHtmlBuilder sb)
+	public void render(final Context context, final T data, final SafeHtmlBuilder sb)
 	{
 		String disabledString = "";
 		if (!isEnabled(data))

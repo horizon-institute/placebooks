@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ImageItem extends MediaItem
 {
 	private final Image image = new Image();
-	
+
 	ImageItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
@@ -39,7 +39,7 @@ public class ImageItem extends MediaItem
 				event.stopPropagation();
 			}
 		});
-		
+
 		refresh();
 	}
 
@@ -59,19 +59,19 @@ public class ImageItem extends MediaItem
 	}
 
 	@Override
-	protected Widget getMediaWidget()
-	{
-		return image;
-	}
-
-	@Override
 	protected int getMediaHeight()
 	{
 		return image.getHeight();
 	}
 
 	@Override
-	protected void setURL(String url)
+	protected Widget getMediaWidget()
+	{
+		return image;
+	}
+
+	@Override
+	protected void setURL(final String url)
 	{
 		image.setUrl(url);
 	}

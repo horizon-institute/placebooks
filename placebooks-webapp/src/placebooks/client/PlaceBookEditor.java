@@ -38,7 +38,7 @@ public class PlaceBookEditor implements EntryPoint
 
 		// Start PlaceHistoryHandler with our PlaceHistoryMapper
 		final PlaceHistoryHandler historyHandler = new PlaceHistoryHandler(historyMapper);
-	
+
 		Place defaultPlace = new PlaceBookHome();
 
 		if (GWT.getHostPageBaseURL().endsWith("/a/view/"))

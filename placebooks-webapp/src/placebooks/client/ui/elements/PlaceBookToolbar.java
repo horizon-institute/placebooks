@@ -106,7 +106,7 @@ public class PlaceBookToolbar extends Composite
 				public void handleOther(final Request request, final Response response)
 				{
 					place.setUser(null);
-					if(response.getStatusCode() == 401)
+					if (response.getStatusCode() == 401)
 					{
 						userStore.removeCached(null);
 					}
@@ -179,42 +179,46 @@ public class PlaceBookToolbar extends Composite
 				public void onClick(final ClickEvent event)
 				{
 					loginDialog.setProgress(true);
-					PlaceBookService.login(loginDialog.getUsername(), loginDialog.getPassword(), new JSONResponse<Shelf>()
-					{
-						@Override
-						public void handleError(final Request request, final Response response,
-								final Throwable throwable)
-						{
-							loginDialog.setProgress(false);
-							if (response != null)
-							{
-								if (response.getText().equals("{\"detailMessage\":\"Bad credentials\"}"))
-								{
-									loginDialog.setError("Login not recognised. Check username and password.");
-								}
-								else if (response.getText().startsWith("{\"detailMessage\":"))
-								{
-									loginDialog.setError(response.getText().substring(18, response.getText().length() - 2));
-								}
-								else
-								{
-									loginDialog.setError("Error logging in");
-								}
-							}
-							else
-							{
-								loginDialog.setError("Error logging in");
-							}
-							loginDialog.center();
-						}						
+					PlaceBookService.login(	loginDialog.getUsername(), loginDialog.getPassword(),
+											new JSONResponse<Shelf>()
+											{
+												@Override
+												public void handleError(final Request request, final Response response,
+														final Throwable throwable)
+												{
+													loginDialog.setProgress(false);
+													if (response != null)
+													{
+														if (response.getText()
+																.equals("{\"detailMessage\":\"Bad credentials\"}"))
+														{
+															loginDialog
+																	.setError("Login not recognised. Check username and password.");
+														}
+														else if (response.getText().startsWith("{\"detailMessage\":"))
+														{
+															loginDialog.setError(response.getText()
+																	.substring(18, response.getText().length() - 2));
+														}
+														else
+														{
+															loginDialog.setError("Error logging in");
+														}
+													}
+													else
+													{
+														loginDialog.setError("Error logging in");
+													}
+													loginDialog.center();
+												}
 
-						@Override
-						public void handleResponse(final Shelf shelf)
-						{
-							place.setUser(shelf.getUser());
-							loginDialog.hide();
-						}
-					});
+												@Override
+												public void handleResponse(final Shelf shelf)
+												{
+													place.setUser(shelf.getUser());
+													loginDialog.hide();
+												}
+											});
 				}
 			});
 			loginDialog.show();

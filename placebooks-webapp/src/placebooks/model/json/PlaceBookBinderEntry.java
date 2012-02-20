@@ -26,10 +26,9 @@ public class PlaceBookBinderEntry extends ShelfEntry
 		setKey(placebookBinder.getKey());
 		setTitle(placebookBinder.getMetadataValue("title"));
 		setOwner(placebookBinder.getOwner().getKey());
-		setTimestamp(placebookBinder.getTimestamp());		
+		setTimestamp(placebookBinder.getTimestamp());
 		this.description = placebookBinder.getMetadataValue("description");
-		this.previewImage = 
-			placebookBinder.getMetadataValue("placebookBinderImage");
+		this.previewImage = placebookBinder.getMetadataValue("placebookBinderImage");
 		this.numPlaceBooks = placebookBinder.getPlaceBooks().size();
 		this.packagePath = placebookBinder.getPackagePath();
 		this.state = placebookBinder.getState().toString();
@@ -62,6 +61,11 @@ public class PlaceBookBinderEntry extends ShelfEntry
 		return packagePath;
 	}
 
+	public String getPermissions()
+	{
+		return permissions;
+	}
+
 	public String getPreviewImage()
 	{
 		return previewImage;
@@ -70,10 +74,5 @@ public class PlaceBookBinderEntry extends ShelfEntry
 	public String getState()
 	{
 		return state;
-	}
-
-	public String getPermissions()
-	{
-		return permissions;
 	}
 }

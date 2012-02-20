@@ -23,16 +23,21 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 		super(name);
 		this.parent = parent;
 		this.palette = palette;
-		if(parent != null)
+		if (parent != null)
 		{
-			add(new PaletteBackItem("Back", parent, palette));			
+			add(new PaletteBackItem("Back", parent, palette));
 		}
+	}
+
+	public void add(final PaletteItem item)
+	{
+		children.add(item);
 	}
 
 	@Override
 	public Widget createWidget()
 	{
-		Widget result = super.createWidget();
+		final Widget result = super.createWidget();
 
 		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
@@ -43,13 +48,8 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 				palette.setPaletteFolder(PaletteFolder.this);
 			}
 		});
-		
-		return result;
-	}
 
-	public void add(final PaletteItem item)
-	{
-		children.add(item);
+		return result;
 	}
 
 	public PaletteFolder getFolder(final String name)

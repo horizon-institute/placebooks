@@ -25,33 +25,17 @@ public class WebBundleItem extends PlaceBookItemWidget
 		frame.addLoadHandler(new LoadHandler()
 		{
 			@Override
-			public void onLoad(LoadEvent event)
+			public void onLoad(final LoadEvent event)
 			{
-				GWT.log("Loaded: " + frame.getElement());			
+				GWT.log("Loaded: " + frame.getElement());
 				GWT.log("Loaded: " + getContentDocument(frame.getElement()));
 				GWT.log("Loaded: " + getURL(frame.getElement()));
-				GWT.log("Loaded: " + getURL2(frame.getElement()));				
+				GWT.log("Loaded: " + getURL2(frame.getElement()));
 				GWT.log("Loaded: " + frame.getElement().getPropertyJSO("contentDocument"));
 				GWT.log("Loaded: " + frame.getElement().getPropertyJSO("contentWindow"));
 			}
 		});
 	}
-
-	private final native String getURL2(Element element)
-	/*-{
-		return element.contentDocument.url;
-	}-*/;	
-	
-	
-	private final native String getURL(Element element)
-	/*-{
-		return element.contentWindow.location.href;
-	}-*/;	
-	
-	private final native Document getContentDocument(Element element)
-	/*-{
-		return element.contentDocument;
-	}-*/;
 
 	@Override
 	public void refresh()
@@ -70,6 +54,21 @@ public class WebBundleItem extends PlaceBookItemWidget
 		{
 			frame.setWidth("100%");
 			frame.setHeight("auto");
-		}	
+		}
 	}
+
+	private final native Document getContentDocument(Element element)
+	/*-{
+		return element.contentDocument;
+	}-*/;
+
+	private final native String getURL(Element element)
+	/*-{
+		return element.contentWindow.location.href;
+	}-*/;
+
+	private final native String getURL2(Element element)
+	/*-{
+		return element.contentDocument.url;
+	}-*/;
 }

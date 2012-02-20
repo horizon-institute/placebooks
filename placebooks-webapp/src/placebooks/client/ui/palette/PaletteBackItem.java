@@ -10,7 +10,7 @@ public class PaletteBackItem extends PaletteItem
 {
 	private final PaletteFolder parent;
 	private final Palette palette;
-	
+
 	public PaletteBackItem(final String name, final PaletteFolder parent, final Palette palette)
 	{
 		super(name);
@@ -21,7 +21,7 @@ public class PaletteBackItem extends PaletteItem
 	@Override
 	public Widget createWidget()
 	{
-		Widget result = super.createWidget();
+		final Widget result = super.createWidget();
 
 		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
@@ -31,7 +31,7 @@ public class PaletteBackItem extends PaletteItem
 			{
 				palette.setPaletteFolder(parent);
 			}
-		});		
+		});
 		return result;
 	}
 

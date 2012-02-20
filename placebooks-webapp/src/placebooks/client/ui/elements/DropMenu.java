@@ -30,11 +30,11 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 	{
 		super();
 		hide();
-		
+
 		addDomHandler(new ClickHandler()
-		{	
+		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				hide();
 			}
@@ -117,9 +117,9 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 					return;
 				}
 
-				if(!eventTargetsMenu(nativeEvent))
+				if (!eventTargetsMenu(nativeEvent))
 				{
-					hide();					
+					hide();
 				}
 
 				return;

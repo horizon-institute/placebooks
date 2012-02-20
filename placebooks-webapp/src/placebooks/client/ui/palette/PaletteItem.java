@@ -27,24 +27,22 @@ public class PaletteItem
 	Label text;
 
 	private String name;
-	
+
 	public PaletteItem(final String name)
 	{
 		this.name = name;
 	}
 
+	public Widget createWidget()
+	{
+		final Widget result = uiBinder.createAndBindUi(this);
+		text.setText(name);
+		return result;
+	}
+
 	public String getName()
 	{
 		return name;
-	}
-	
-
-	
-	public Widget createWidget()
-	{
-		Widget result = uiBinder.createAndBindUi(this);		
-		text.setText(name);
-		return result;
 	}
 
 	public boolean isFolder()

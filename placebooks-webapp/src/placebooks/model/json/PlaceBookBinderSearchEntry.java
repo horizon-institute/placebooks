@@ -5,7 +5,7 @@ import placebooks.model.PlaceBookBinder;
 public class PlaceBookBinderSearchEntry extends PlaceBookBinderOwnedEntry
 {
 	private int score;
-	
+
 	public PlaceBookBinderSearchEntry(final PlaceBookBinder p, final int score)
 	{
 		super(p);

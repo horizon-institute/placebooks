@@ -15,13 +15,13 @@ public class UserShelf extends Shelf
 	{
 		super();
 		this.user = user;
-		
+
 		final List<ShelfEntry> entries = new ArrayList<ShelfEntry>();
 		for (final PlaceBookBinder pb : pbs)
 		{
-			if(pb.getOwner().getEmail().equals(user.getEmail()))
+			if (pb.getOwner().getEmail().equals(user.getEmail()))
 			{
-				entries.add(new PlaceBookBinderEntry(pb));				
+				entries.add(new PlaceBookBinderEntry(pb));
 			}
 			else
 			{
@@ -30,10 +30,9 @@ public class UserShelf extends Shelf
 		}
 		setEntries(entries);
 	}
-	
+
 	public User getUser()
 	{
 		return user;
 	}
 }
-

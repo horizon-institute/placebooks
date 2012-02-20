@@ -15,7 +15,7 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryJSONDeserializer extends JsonDeserializer<Geometry>
 {
 	private final Logger logger = Logger.getLogger(GeometryJSONDeserializer.class.getName());
-	
+
 	@Override
 	public Geometry deserialize(final JsonParser parser, final DeserializationContext context) throws IOException,
 			JsonProcessingException

@@ -116,42 +116,36 @@ public class PlaceBookItem extends JavaScriptObject
 											return this.text;
 											}-*/;
 
-	public final String getURL()
-	{
-		final String shortClass = getShortClassName();
-		String key = getKey();
-		if (getHash() != null)
-		{
-			return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass + "/" + getHash();
-		}
-		
-		if (key == null)
-		{
-			key = getMetadata("originalItemID", null);
-		}
-		
-		if (key != null && isMedia(shortClass))
-		{
-			return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key;
-		}
-
-		return getSourceURL();
-	}
-
 	public final String getThumbURL()
 	{
 		final String shortClass = getShortClassName();
 		if (isMedia(shortClass))
 		{
-			if (getHash() != null)
-			{
-				return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/thumb/" + getHash();
-			}
+			if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/thumb/"
+					+ getHash(); }
 		}
 
 		return getURL();
 	}
-	
+
+	public final String getURL()
+	{
+		final String shortClass = getShortClassName();
+		String key = getKey();
+		if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass
+				+ "/" + getHash(); }
+
+		if (key == null)
+		{
+			key = getMetadata("originalItemID", null);
+		}
+
+		if (key != null && isMedia(shortClass)) { return PlaceBookService.getHostURL()
+				+ "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key; }
+
+		return getSourceURL();
+	}
+
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
 															}-*/;
@@ -163,12 +157,6 @@ public class PlaceBookItem extends JavaScriptObject
 	public final boolean is(final ItemType type)
 	{
 		return getClassName().equals(type.getTypeName());
-	}
-
-	private boolean isMedia(final String shortClass)
-	{
-		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
-				|| shortClass.equals("videoitem");
 	}
 
 	public final native void removeMetadata(String name)
@@ -222,4 +210,10 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setText(String newText) /*-{
 														this.text = newText;
 														}-*/;
+
+	private boolean isMedia(final String shortClass)
+	{
+		return shortClass.equals("imageitem") || shortClass.equals("gpstraceitem") || shortClass.equals("audioitem")
+				|| shortClass.equals("videoitem");
+	}
 }

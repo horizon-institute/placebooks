@@ -60,14 +60,14 @@ public class EditableTextItem extends PlaceBookItemWidget
 				fireChanged();
 			}
 		});
-		
-		textPanel.getElement().setInnerHTML(item.getText());		
+
+		textPanel.getElement().setInnerHTML(item.getText());
 	}
 
 	@Override
 	public void refresh()
 	{
-		//textPanel.getElement().setInnerHTML(item.getText());
+		// textPanel.getElement().setInnerHTML(item.getText());
 	}
 
 	@Override
@@ -77,20 +77,22 @@ public class EditableTextItem extends PlaceBookItemWidget
 		if (getParent() != null)
 		{
 			double panelWidth = 300;
-			if(getParent().getParent() != null && getParent().getParent().getParent() != null)
+			if (getParent().getParent() != null && getParent().getParent().getParent() != null)
 			{
-				final String panelWidthString = getParent().getParent().getParent().getElement().getStyle().getWidth();				
-				if(panelWidthString != null && panelWidthString.endsWith("%"))
+				final String panelWidthString = getParent().getParent().getParent().getElement().getStyle().getWidth();
+				if (panelWidthString != null && panelWidthString.endsWith("%"))
 				{
-					double percent = Double.parseDouble(panelWidthString.substring(0, panelWidthString.length() - 1));
+					final double percent = Double
+							.parseDouble(panelWidthString.substring(0, panelWidthString.length() - 1));
 					panelWidth = (900d * percent) / 100d;
 				}
 			}
 			final double scale = getParent().getOffsetWidth() / panelWidth;
-			textPanel.getElement().setAttribute("style",
-												"width: "+ panelWidth +"px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale("
-														+ scale + "); -moz-transform-origin: 0% 0%; -moz-transform: scale("
-														+ scale + ")");	
+			textPanel.getElement()
+					.setAttribute(	"style",
+									"width: " + panelWidth
+											+ "px; -webkit-transform-origin: 0% 0%; -webkit-transform: scale(" + scale
+											+ "); -moz-transform-origin: 0% 0%; -moz-transform: scale(" + scale + ")");
 			return (getOffsetHeight() * scale) + "px";
 		}
 		return null;

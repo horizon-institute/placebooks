@@ -13,53 +13,24 @@ public class PlaceBookBinder extends JavaScriptObject
 
 	}
 
-	private final native JsArray<PlaceBook> getPagesInternal()
+	public final native void add(int index, PlaceBook page)
 	/*-{
-		if (!('pages' in this)) {
-			this.pages = new Array();
-		}
-		return this.pages;
+		this.pages.splice(index, 0, page);
 	}-*/;
 
-	public final native String getId()
+	public final native void add(PlaceBook page)
 	/*-{
-		return this.id;
-	}-*/;
-
-	public final native boolean hasParameter(String name) /*-{
-		return 'parameters' in this && name in this.parameters;
-	}-*/;
-
-	public final native void removeParameter(String name)
-	/*-{
-		if (('parameters' in this)) {
-			delete this.parameters[name];
-		}
-	}-*/;
-
-	public final native void setParameter(String name, int value)
-	/*-{
-		if (!('parameters' in this)) {
-			this.parameters = new Object();
-		}
-		this.parameters[name] = value;
-	}-*/;
-
-	public final native int getParameter(String name) /*-{
-		return this.parameters[name];
-	}-*/;
-
-	public final native int getParameter(String name, final int defaultValue)
-	/*-{
-		if ('parameters' in this && name in this.parameters) {
-			return this.parameters[name];
-		}
-		return defaultValue;
+		this.pages.push(page);
 	}-*/;
 
 	public final native void clearPages()
 	/*-{
 		this.pages = new Array();
+	}-*/;
+
+	public final native String getId()
+	/*-{
+		return this.id;
 	}-*/;
 
 	public final native String getMetadata(String name)
@@ -76,16 +47,8 @@ public class PlaceBookBinder extends JavaScriptObject
 	}-*/;
 
 	public final native User getOwner() /*-{
-		return this.owner;
-	}-*/;
-
-	public final native String getState() /*-{
-		return this.state;
-	}-*/;
-
-	public final native boolean hasMetadata(String name) /*-{
-		return 'metadata' in this && name in this.metadata;
-	}-*/;
+										return this.owner;
+										}-*/;
 
 	public final Iterable<PlaceBook> getPages()
 	{
@@ -99,10 +62,34 @@ public class PlaceBookBinder extends JavaScriptObject
 		};
 	}
 
-	public final native void setPages(final JsArray<PlaceBook> pages)
+	public final native int getParameter(String name) /*-{
+														return this.parameters[name];
+														}-*/;
+
+	public final native int getParameter(String name, final int defaultValue)
 	/*-{
-		this.pages = pages;
+		if ('parameters' in this && name in this.parameters) {
+			return this.parameters[name];
+		}
+		return defaultValue;
 	}-*/;
+
+	public final JSONObject getPermissions()
+	{
+		return new JSONObject(getPermissionsImpl());
+	}
+
+	public final native String getState() /*-{
+											return this.state;
+											}-*/;
+
+	public final native boolean hasMetadata(String name) /*-{
+															return 'metadata' in this && name in this.metadata;
+															}-*/;
+
+	public final native boolean hasParameter(String name) /*-{
+															return 'parameters' in this && name in this.parameters;
+															}-*/;
 
 	public final native void remove(final PlaceBook page)
 	/*-{
@@ -112,15 +99,16 @@ public class PlaceBookBinder extends JavaScriptObject
 		}
 	}-*/;
 
-	public final JSONObject getPermissions()
-	{
-		return new JSONObject(getPermissionsImpl());
-	}
-
-	private final native JavaScriptObject getPermissionsImpl()
+	public final native void removeParameter(String name)
 	/*-{
-		return this.perms;
+		if (('parameters' in this)) {
+			delete this.parameters[name];
+		}
 	}-*/;
+
+	public final native void setId(String text) /*-{
+												this.id = text;
+												}-*/;
 
 	public final native void setMetadata(String name, String value)
 	/*-{
@@ -130,17 +118,29 @@ public class PlaceBookBinder extends JavaScriptObject
 		this.metadata[name] = value;
 	}-*/;
 
-	public final native void setId(String text) /*-{
-		this.id = text;
+	public final native void setPages(final JsArray<PlaceBook> pages)
+	/*-{
+		this.pages = pages;
 	}-*/;
 
-	public final native void add(PlaceBook page)
+	public final native void setParameter(String name, int value)
 	/*-{
-		this.pages.push(page);
+		if (!('parameters' in this)) {
+			this.parameters = new Object();
+		}
+		this.parameters[name] = value;
 	}-*/;
 
-	public final native void add(int index, PlaceBook page)
+	private final native JsArray<PlaceBook> getPagesInternal()
 	/*-{
-		this.pages.splice(index, 0, page);
+		if (!('pages' in this)) {
+			this.pages = new Array();
+		}
+		return this.pages;
+	}-*/;
+
+	private final native JavaScriptObject getPermissionsImpl()
+	/*-{
+		return this.perms;
 	}-*/;
 }

@@ -11,7 +11,7 @@ public abstract class ShelfEntry
 	private String owner;
 
 	private Date timestamp;
-	
+
 	public ShelfEntry()
 	{
 	}
@@ -20,17 +20,17 @@ public abstract class ShelfEntry
 	{
 		return key;
 	}
-	
+
 	public String getOwner()
 	{
 		return owner;
 	}
-	
+
 	public Date getTimestamp()
 	{
 		return timestamp;
 	}
-	
+
 	public String getTitle()
 	{
 		return title;

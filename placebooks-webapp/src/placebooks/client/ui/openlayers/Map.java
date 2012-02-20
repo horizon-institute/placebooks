@@ -64,9 +64,19 @@ public class Map extends JavaScriptObject
 		this.addLayer(layer);
 	}-*/;
 
+	public final native void destroy()
+	/*-{
+		this.destroy();
+	}-*/;
+
 	public final native Projection getDisplayProjection()
 	/*-{
 		return this.displayProjection;
+	}-*/;
+
+	public final native Element getDiv()
+	/*-{
+		return this.div;
 	}-*/;
 
 	public final native Events getEvents()
@@ -74,11 +84,6 @@ public class Map extends JavaScriptObject
 		return this.events;
 	}-*/;
 
-	public final native void raiseLayer(Layer layer, int delta)
-	/*-{
-		return this.raiseLayer(layer, delta);
-	}-*/;
-	
 	public final native LonLat getLonLatFromPixel(final JavaScriptObject pixels)
 	/*-{
 		return this.getLonLatFromPixel(pixels);
@@ -100,16 +105,6 @@ public class Map extends JavaScriptObject
 		return this.maxExtent;
 	}-*/;
 
-	public final native Element getDiv()
-	/*-{
-		return this.div;
-	}-*/;	
-	
-	public final native void render()
-	/*-{
-		this.render(this.div);
-	}-*/;
-	
 	public final native Projection getProjection()
 	/*-{
 		return this.getProjectionObject();
@@ -120,9 +115,19 @@ public class Map extends JavaScriptObject
 		this.raiseLayer(layer);
 	}-*/;
 
+	public final native void raiseLayer(Layer layer, int delta)
+	/*-{
+		return this.raiseLayer(layer, delta);
+	}-*/;
+
 	public final native void removeLayer(Layer layer)
 	/*-{
 		this.removeLayer(layer);
+	}-*/;
+
+	public final native void render()
+	/*-{
+		this.render(this.div);
 	}-*/;
 
 	public final native void setCenter(final LonLat lonLat)
@@ -139,14 +144,9 @@ public class Map extends JavaScriptObject
 	/*-{
 		this.zoomToExtent(extent);
 	}-*/;
-	
+
 	public final native void zoomToMaxExtent()
 	/*-{
 		this.zoomToMaxExtent();
-	}-*/;
-
-	public final native void destroy()
-	/*-{
-		this.destroy();
 	}-*/;
 }

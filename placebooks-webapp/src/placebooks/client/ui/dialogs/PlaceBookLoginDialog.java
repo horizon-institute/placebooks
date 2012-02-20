@@ -49,6 +49,41 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 		submit.addClickHandler(clickHandler);
 	}
 
+	public void focus()
+	{
+		username.setFocus(true);
+	}
+
+	public String getPassword()
+	{
+		return password.getText();
+	}
+
+	public String getUsername()
+	{
+		return username.getText();
+	}
+
+	public void setProgress(final boolean showProgress)
+	{
+		username.setEnabled(!showProgress);
+		password.setEnabled(!showProgress);
+		if (!showProgress)
+		{
+			checkValid(null);
+		}
+		else
+		{
+			submit.setEnabled(false);
+		}
+		setProgressVisible(showProgress, "Logging In...");
+	}
+
+	public void setUsername(final String username)
+	{
+		this.username.setText(username);
+	}
+
 	@UiHandler(value = { "username", "password" })
 	void checkValid(final KeyUpEvent event)
 	{
@@ -65,41 +100,6 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 		}
 
 		submit.setEnabled(true);
-	}
-	
-	public void setProgress(boolean showProgress)
-	{
-		username.setEnabled(!showProgress);
-		password.setEnabled(!showProgress);
-		if(!showProgress)
-		{
-			checkValid(null);
-		}
-		else
-		{
-			submit.setEnabled(false);
-		}
-		setProgressVisible(showProgress, "Logging In...");
-	}
-	
-	public void focus()
-	{
-		username.setFocus(true);
-	}
-
-	public String getPassword()
-	{
-		return password.getText();
-	}
-
-	public String getUsername()
-	{
-		return username.getText();
-	}
-
-	public void setUsername(final String username)
-	{
-		this.username.setText(username);
 	}
 
 	@UiHandler("password")

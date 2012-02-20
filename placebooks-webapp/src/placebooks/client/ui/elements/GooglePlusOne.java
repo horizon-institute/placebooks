@@ -8,18 +8,17 @@ import com.google.gwt.user.client.ui.HTML;
 public class GooglePlusOne extends Composite
 {
 	private final HTML html;
-	
+
 	public GooglePlusOne()
 	{
 		html = new HTML();
-		initWidget(html);		
+		initWidget(html);
 	}
-	
+
 	public void setURL(final String url)
 	{
-		html.setHTML("<g:plusone size=\"medium\" annotation=\"bubble\" href=\"" + url
-						+ "\"></g:plusone>");
-		
-		JavaScriptInjector.add("https://apis.google.com/js/plusone.js");		
+		html.setHTML("<g:plusone size=\"medium\" annotation=\"bubble\" href=\"" + url + "\"></g:plusone>");
+
+		JavaScriptInjector.add("https://apis.google.com/js/plusone.js");
 	}
 }

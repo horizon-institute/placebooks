@@ -20,21 +20,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookLibrary extends PlaceBookPlace
 {
-	private final DataStore<Shelf> libraryStore = new DataStore<Shelf>()
-	{
-		@Override
-		protected String getStorageID(String id)
-		{
-			return "library.shelf";
-		}
-		
-		@Override
-		protected String getRequestURL(String id)
-		{
-			return getHostURL() + "placebooks/a/shelf";
-		}
-	};
-	
 	@Prefix("browse")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookLibrary>
 	{
@@ -54,6 +39,21 @@ public class PlaceBookLibrary extends PlaceBookPlace
 	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
 	{
 	}
+
+	private final DataStore<Shelf> libraryStore = new DataStore<Shelf>()
+	{
+		@Override
+		protected String getRequestURL(final String id)
+		{
+			return getHostURL() + "placebooks/a/shelf";
+		}
+
+		@Override
+		protected String getStorageID(final String id)
+		{
+			return "library.shelf";
+		}
+	};
 
 	private static PlaceBookLibraryUiBinder uiBinder = GWT.create(PlaceBookLibraryUiBinder.class);
 
@@ -80,26 +80,26 @@ public class PlaceBookLibrary extends PlaceBookPlace
 		toolbar.setPlace(this);
 
 		panel.setWidget(library);
-		
+
 		shelf.setShelfControl(new ShelfControl(this)
 		{
 			@Override
-			public int compare(PlaceBookEntry o1, PlaceBookEntry o2)
+			public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
 			{
 				// TODO Auto-generated method stub
 				return 0;
 			}
-			
+
 			@Override
-			public boolean include(PlaceBookEntry entry)
+			public void getShelf(final JSONResponse<Shelf> callback)
+			{
+				libraryStore.get("", callback);
+			}
+
+			@Override
+			public boolean include(final PlaceBookEntry entry)
 			{
 				return true;
-			}
-			
-			@Override
-			public void getShelf(JSONResponse<Shelf> callback)
-			{
-				libraryStore.get("", callback);			
 			}
 		});
 	}

@@ -28,15 +28,15 @@ public abstract class PlaceBookItemFrameWidget extends PlaceBookItemFrame
 	@UiField
 	Panel resizeSection;
 
-	protected Panel createFrame()
-	{
-		return uiBinder.createAndBindUi(this);
-	}
-
 	@Override
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		super.setItemWidget(itemWidget);
 		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));
+	}
+
+	protected Panel createFrame()
+	{
+		return uiBinder.createAndBindUi(this);
 	}
 }

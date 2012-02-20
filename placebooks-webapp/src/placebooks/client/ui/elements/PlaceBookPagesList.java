@@ -12,6 +12,7 @@ public class PlaceBookPagesList extends PlaceBookPages
 		initWidget(panel);
 	}
 
+	@Override
 	public void resized()
 	{
 		for (final PlaceBookPage page : pages)

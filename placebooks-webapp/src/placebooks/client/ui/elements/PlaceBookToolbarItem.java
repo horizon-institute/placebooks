@@ -22,19 +22,21 @@ import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookToolbarItem extends Composite implements HasClickHandlers, HasMouseOverHandlers, HasMouseOutHandlers, HasHTML
+public class PlaceBookToolbarItem extends Composite implements HasClickHandlers, HasMouseOverHandlers,
+		HasMouseOutHandlers, HasHTML
 {
 	interface PlaceBookToolbarItemUiBinder extends UiBinder<Widget, PlaceBookToolbarItem>
 	{
 	}
 
-	private static final PlaceBookToolbarItemUiBinder uiBinder = GWT.create(PlaceBookToolbarItemUiBinder.class);
-
 	interface Style extends CssResource
 	{
-		String enabled();
 		String disabled();
+
+		String enabled();
 	}
+
+	private static final PlaceBookToolbarItemUiBinder uiBinder = GWT.create(PlaceBookToolbarItemUiBinder.class);
 
 	private boolean enabled;
 
@@ -42,7 +44,7 @@ public class PlaceBookToolbarItem extends Composite implements HasClickHandlers,
 	Image image;
 	@UiField
 	HTML label;
-	
+
 	@UiField
 	Style style;
 
@@ -53,13 +55,36 @@ public class PlaceBookToolbarItem extends Composite implements HasClickHandlers,
 		setEnabled(true);
 	}
 
-	public HandlerRegistration addClickHandler(ClickHandler handler)
+	@Override
+	public HandlerRegistration addClickHandler(final ClickHandler handler)
 	{
 		return addDomHandler(handler, ClickEvent.getType());
 	}
 
+	@Override
+	public HandlerRegistration addMouseOutHandler(final MouseOutHandler handler)
+	{
+		return addDomHandler(handler, MouseOutEvent.getType());
+	}
 
-	
+	@Override
+	public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler)
+	{
+		return addDomHandler(handler, MouseOverEvent.getType());
+	}
+
+	@Override
+	public String getHTML()
+	{
+		return label.getHTML();
+	}
+
+	@Override
+	public String getText()
+	{
+		return label.getText();
+	}
+
 	public void hideImage()
 	{
 		image.setVisible(false);
@@ -83,6 +108,12 @@ public class PlaceBookToolbarItem extends Composite implements HasClickHandlers,
 		}
 	}
 
+	@Override
+	public void setHTML(final String html)
+	{
+		label.setHTML(html);
+	}
+
 	public void setImage(final ImageResource imageResource)
 	{
 		if (imageResource != null)
@@ -90,7 +121,7 @@ public class PlaceBookToolbarItem extends Composite implements HasClickHandlers,
 			image.setVisible(true);
 			image.setResource(imageResource);
 			image.getElement().getStyle().setMarginRight(5, Unit.PX);
-			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);			
+			image.getElement().getStyle().setMarginBottom(-2, Unit.PX);
 		}
 		else
 		{
@@ -102,35 +133,5 @@ public class PlaceBookToolbarItem extends Composite implements HasClickHandlers,
 	public void setText(final String text)
 	{
 		label.setText(text);
-	}
-
-	@Override
-	public String getText()
-	{
-		return label.getText();
-	}
-
-	@Override
-	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler)
-	{
-		return addDomHandler(handler, MouseOutEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler)
-	{
-		return addDomHandler(handler, MouseOverEvent.getType());
-	}
-
-	@Override
-	public String getHTML()
-	{
-		return label.getHTML();
-	}
-
-	@Override
-	public void setHTML(String html)
-	{
-		label.setHTML(html);		
 	}
 }

@@ -27,30 +27,24 @@ public class AudioItem extends MediaItem
 		});
 	}
 
-//	@Override
-//	public void refresh()
-//	{
-//		if (getItem().hasParameter("height"))
-//		{
-//			audio.setHeight("100%");
-//		}
-//		else
-//		{
-//			audio.getElement().getStyle().clearHeight();
-//		}
-//		if (url == null || !url.equals(getItem().getURL()))
-//		{
-//			url = getItem().getURL();
-//			audio.setSrc(url);
-//			checkSize();
-//		}
-//	}
-
-	@Override
-	protected Widget getMediaWidget()
-	{
-		return audio;
-	}
+	// @Override
+	// public void refresh()
+	// {
+	// if (getItem().hasParameter("height"))
+	// {
+	// audio.setHeight("100%");
+	// }
+	// else
+	// {
+	// audio.getElement().getStyle().clearHeight();
+	// }
+	// if (url == null || !url.equals(getItem().getURL()))
+	// {
+	// url = getItem().getURL();
+	// audio.setSrc(url);
+	// checkSize();
+	// }
+	// }
 
 	@Override
 	protected int getMediaHeight()
@@ -59,8 +53,14 @@ public class AudioItem extends MediaItem
 	}
 
 	@Override
-	protected void setURL(String url)
+	protected Widget getMediaWidget()
 	{
-		audio.setSrc(url);		
+		return audio;
+	}
+
+	@Override
+	protected void setURL(final String url)
+	{
+		audio.setSrc(url);
 	}
 }

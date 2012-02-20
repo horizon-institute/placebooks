@@ -33,7 +33,7 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	}
 
 	private static PlaceBookEntryWidgetUiBinder uiBinder = GWT.create(PlaceBookEntryWidgetUiBinder.class);
-	
+
 	@UiField
 	Image image;
 	@UiField
@@ -41,22 +41,22 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	@UiField
 	Label author;
 	@UiField
-	Label distance;	
+	Label distance;
 	@UiField
 	Image markerImage;
-	
+
 	private Marker marker;
-	
+
 	private final PlaceBookPlace place;
 	private final PlaceBookEntry entry;
-	
+
 	public PlaceBookEntryWidget(final PlaceBookPlace place, final PlaceBookEntry entry)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		
+
 		this.place = place;
 		this.entry = entry;
-		
+
 		title.setText(entry.getTitle());
 		if (isPublished())
 		{
@@ -78,54 +78,66 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		{
 			author.setVisible(false);
 		}
-		
-		if(entry.getDistance() != -1)
+
+		if (entry.getDistance() != -1)
 		{
-			double milesDist = ((entry.getDistance() * Math.PI) / 180.0) * 3966.8;  
-			NumberFormat fmt = NumberFormat.getDecimalFormat();
+			final double milesDist = ((entry.getDistance() * Math.PI) / 180.0) * 3966.8;
+			final NumberFormat fmt = NumberFormat.getDecimalFormat();
 			distance.setText(fmt.format(milesDist) + " miles");
 			distance.setVisible(true);
 		}
 		else
 		{
-			distance.setVisible(false);			
+			distance.setVisible(false);
 		}
-		
+
 		markerImage.setVisible(false);
 	}
-	
-	public boolean isPublished()
+
+	@Override
+	public HandlerRegistration addMouseOutHandler(final MouseOutHandler handler)
 	{
-		return entry.getState().equals("1");
+		return addDomHandler(handler, MouseOutEvent.getType());
 	}
-	
+
+	@Override
+	public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler)
+	{
+		return addDomHandler(handler, MouseOverEvent.getType());
+	}
+
+	public PlaceBookEntry getEntry()
+	{
+		return entry;
+	}
+
 	public Marker getMarker()
 	{
 		return marker;
 	}
-	
-	public void setMarker(Marker marker, ImageResource resource)
+
+	public boolean isPublished()
+	{
+		return entry.getState().equals("1");
+	}
+
+	public void setMarker(final Marker marker, final ImageResource resource)
 	{
 		this.marker = marker;
 		markerImage.setResource(resource);
 		markerImage.setVisible(true);
 	}
-	
-	public void setMarkerVisible(boolean visible)
+
+	public void setMarkerVisible(final boolean visible)
 	{
-		if(marker != null)
+		if (marker != null)
 		{
-			markerImage.setVisible(visible);			
+			markerImage.setVisible(visible);
 		}
 	}
-	
-	public PlaceBookEntry getEntry()
-	{
-		return entry;
-	}
-	
+
 	@UiHandler("container")
-	void clicked(ClickEvent event)
+	void clicked(final ClickEvent event)
 	{
 		if (isPublished())
 		{
@@ -135,17 +147,5 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		{
 			place.getPlaceController().goTo(new PlaceBookEditor(place.getUser(), entry.getKey()));
 		}
-	}
-
-	@Override
-	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler)
-	{
-		return addDomHandler(handler, MouseOutEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler)
-	{
-		return addDomHandler(handler, MouseOverEvent.getType());
 	}
 }

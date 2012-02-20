@@ -34,40 +34,42 @@ public class PlaceBookEntryPreview extends Composite
 
 	@UiField
 	Label description;
-	
+
 	@UiField
 	Label author;
-	
+
 	@UiField
 	FlowPanel container;
 
 	public PlaceBookEntryPreview(final PlaceBookPlace place, final PlaceBookEntry entry)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		container.getElement().getStyle().setBackgroundImage("url(" + Resources.IMAGES.placebook_open().getSafeUri().asString() + ")");
-		
+
+		container.getElement().getStyle()
+				.setBackgroundImage("url(" + Resources.IMAGES.placebook_open().getSafeUri().asString() + ")");
+
 		title.setText(entry.getTitle());
 		description.setText(entry.getDescription());
 		author.setText(entry.getOwnerName());
-		
-		if(entry.getPreviewImage() != null)
+
+		if (entry.getPreviewImage() != null)
 		{
-			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/imageitem/" + entry.getPreviewImage());
+			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/imageitem/"
+					+ entry.getPreviewImage());
 		}
 		else
 		{
 			image.setVisible(false);
 		}
-		
+
 		container.addDomHandler(new ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
 			}
 		}, ClickEvent.getType());
-		
+
 	}
 }

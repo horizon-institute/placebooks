@@ -114,18 +114,6 @@ public class PlaceBookController
 		return true;
 	}
 
-	private boolean canAdd(PlaceBook page, final PlaceBookItem addItem)
-	{
-		if(addItem.is(ItemType.GPS))
-		{
-			for (final PlaceBookItem item : page.getItems())
-			{
-				if (item.is(ItemType.GPS)) { return false; }
-			}
-		}
-		return true;
-	}
-	
 	public boolean canEdit()
 	{
 		return saveContext != null;
@@ -134,6 +122,11 @@ public class PlaceBookController
 	public PlaceBookItemFrame createFrame(final PlaceBookItem item)
 	{
 		return factory.createFrame(item, this);
+	}
+
+	public PlaceBookPages getPages()
+	{
+		return pages;
 	}
 
 	// public void refreshMap()
@@ -146,11 +139,6 @@ public class PlaceBookController
 	// }
 	// }
 	// }
-
-	public PlaceBookPages getPages()
-	{
-		return pages;
-	}
 
 	public PlaceBookItemFrame getSelected()
 	{
@@ -264,6 +252,18 @@ public class PlaceBookController
 		dropMenu.getElement().getStyle().setLeft(left, Unit.PX);
 		dropMenu.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		dropMenu.getElement().getStyle().setOpacity(1);
+	}
+
+	private boolean canAdd(final PlaceBook page, final PlaceBookItem addItem)
+	{
+		if (addItem.is(ItemType.GPS))
+		{
+			for (final PlaceBookItem item : page.getItems())
+			{
+				if (item.is(ItemType.GPS)) { return false; }
+			}
+		}
+		return true;
 	}
 
 	private PlaceBookColumn getColumn(final MouseEvent<?> event)

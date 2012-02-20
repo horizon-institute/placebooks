@@ -19,7 +19,7 @@ public abstract class PlaceBookPages extends Composite
 
 	private PlaceBookBinder placebook;
 	protected PlaceBookController controller;
-	
+
 	public PlaceBookPages()
 	{
 		Window.addResizeHandler(new ResizeHandler()
@@ -32,30 +32,28 @@ public abstract class PlaceBookPages extends Composite
 		});
 	}
 
+	public void createPage()
+	{
+
+	}
+
+	public boolean deleteCurrentPage()
+	{
+		return false;
+	}
+
+	public Iterable<PlaceBookPage> getPages()
+	{
+		return pages;
+	}
+
 	public PlaceBookBinder getPlaceBook()
 	{
 		return placebook;
 	}
-	
+
 	public abstract void resized();
-	
-	protected void add(PlaceBookPage page)
-	{
-		pages.add(page);
-		getPagePanel().add(page);
-	}
-	
-	protected void remove(PlaceBookPage page)
-	{
-		pages.remove(page);
-		getPagePanel().remove(page);
-	}
-	
-	protected int getDefaultColumnCount()
-	{
-		return 3;
-	}
-	
+
 	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
 	{
 		this.placebook = newPlaceBook;
@@ -64,39 +62,21 @@ public abstract class PlaceBookPages extends Composite
 		pages.clear();
 
 		int pageIndex = 0;
-		for (PlaceBook page: newPlaceBook.getPages())
+		for (final PlaceBook page : newPlaceBook.getPages())
 		{
 			final PlaceBookPage pagePanel = new PlaceBookPage(page, controller, pageIndex, getDefaultColumnCount());
 
-			pageIndex ++;
-			
+			pageIndex++;
+
 			add(pagePanel);
 		}
 
-		if(pageIndex == 0)
+		if (pageIndex == 0)
 		{
 			createPage();
 		}
-			
-		resized();
-	}
 
-	protected abstract Panel getPagePanel();
-	
-	private PlaceBookPage getPage(final PlaceBook page)
-	{
-		for(PlaceBookPage pbPage: pages)
-		{
-			if(page.getId().equals(pbPage.getPlaceBook().getId()))
-			{
-				return pbPage;
-			}
-			else if(page.hasMetadata("tempID") && page.getMetadata("tempID").equals(pbPage.getPlaceBook().getMetadata("tempID")))
-			{
-				return pbPage;
-			}
-		}
-		return null;
+		resized();
 	}
 
 	public void update(final PlaceBookBinder newPlaceBook)
@@ -106,7 +86,7 @@ public abstract class PlaceBookPages extends Composite
 		for (final PlaceBook page : newPlaceBook.getPages())
 		{
 			final PlaceBookPage pageUI = getPage(page);
-			if(pageUI != null)
+			if (pageUI != null)
 			{
 				pageUI.update(page);
 			}
@@ -117,18 +97,36 @@ public abstract class PlaceBookPages extends Composite
 		}
 	}
 
-	public Iterable<PlaceBookPage> getPages()
+	protected void add(final PlaceBookPage page)
 	{
-		return pages;
+		pages.add(page);
+		getPagePanel().add(page);
 	}
 
-	public boolean deleteCurrentPage()
+	protected int getDefaultColumnCount()
 	{
-		return false;
+		return 3;
 	}
 
-	public void createPage()
+	protected abstract Panel getPagePanel();
+
+	protected void remove(final PlaceBookPage page)
 	{
-		
+		pages.remove(page);
+		getPagePanel().remove(page);
+	}
+
+	private PlaceBookPage getPage(final PlaceBook page)
+	{
+		for (final PlaceBookPage pbPage : pages)
+		{
+			if (page.getId().equals(pbPage.getPlaceBook().getId()))
+			{
+				return pbPage;
+			}
+			else if (page.hasMetadata("tempID")
+					&& page.getMetadata("tempID").equals(pbPage.getPlaceBook().getMetadata("tempID"))) { return pbPage; }
+		}
+		return null;
 	}
 }

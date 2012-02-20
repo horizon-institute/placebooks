@@ -20,7 +20,7 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 	private long lastChange;
 	private long lastSave;
 	private long saveAttempt;
-	
+
 	private Runnable runnable;
 
 	private Timer timer = new Timer()
@@ -28,12 +28,9 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 		@Override
 		public void run()
 		{
-			if(state == SaveState.saved)
-			{
-				return;
-			}
+			if (state == SaveState.saved) { return; }
 			setState(SaveState.saving);
-			if(runnable != null)
+			if (runnable != null)
 			{
 				saveAttempt = lastChange;
 				runnable.run();
@@ -45,16 +42,23 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 	{
 		return state;
 	}
-	
-	public void pause()
+
+	public void markChanged()
 	{
 		timer.cancel();
+		timer.schedule(saveDelay);
+		lastChange = new Date().getTime();
+		if (state == SaveState.saved)
+		{
+			setState(SaveState.not_saved);
+		}
+		// changed = true;
 	}
-	
+
 	public void markSaved()
 	{
 		lastSave = saveAttempt;
-		if(lastSave == lastChange)
+		if (lastSave == lastChange)
 		{
 			setState(SaveState.saved);
 		}
@@ -63,19 +67,12 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 			setState(SaveState.not_saved);
 		}
 	}
-	
-	public void markChanged()
+
+	public void pause()
 	{
 		timer.cancel();
-		timer.schedule(saveDelay);
-		lastChange = new Date().getTime();
-		if(state == SaveState.saved)
-		{
-			setState(SaveState.not_saved);
-		}
-		// changed = true;
 	}
-	
+
 	public void setRunnable(final Runnable runnable)
 	{
 		this.runnable = runnable;

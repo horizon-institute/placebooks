@@ -7,53 +7,53 @@ public abstract class PlaceBookDialog
 	private PlaceBookDialogFrame dialog = new PlaceBookDialogFrame();
 
 	public PlaceBookDialog()
-	{	
-	}
-	
-	public void setWidget(final Widget widget)
 	{
-		dialog.setContent(widget);
 	}
-	
-	public boolean isShowing()
+
+	public void center()
 	{
-		return dialog.isShowing();
-	}
-	
-	public void show()
-	{
-		dialog.show();
 		dialog.center();
 	}
-	
+
 	public void hide()
 	{
 		dialog.hide();
 	}
-	
-	public void setTitle(final String title)
+
+	public boolean isShowing()
 	{
-		dialog.setTitle(title);
+		return dialog.isShowing();
 	}
-	
-	public void setError(final String error)
-	{
-		dialog.setError(error);
-	}	
-	
+
 	public void setAutoHide(final boolean autoHide)
 	{
 		dialog.setAutoHideEnabled(autoHide);
 	}
-	
-	public void center()
+
+	public void setError(final String error)
 	{
-		dialog.center();		
+		dialog.setError(error);
 	}
-	
+
 	public void setProgressVisible(final boolean visible, final String text)
 	{
 		dialog.setProgressVisible(visible, text);
-		dialog.setAutoHideEnabled(!visible);		
+		dialog.setAutoHideEnabled(!visible);
+	}
+
+	public void setTitle(final String title)
+	{
+		dialog.setTitle(title);
+	}
+
+	public void setWidget(final Widget widget)
+	{
+		dialog.setContent(widget);
+	}
+
+	public void show()
+	{
+		dialog.show();
+		dialog.center();
 	}
 }

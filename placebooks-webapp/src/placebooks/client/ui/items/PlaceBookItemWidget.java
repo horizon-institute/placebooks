@@ -31,35 +31,9 @@ public abstract class PlaceBookItemWidget extends Composite
 		this.controller = handler;
 	}
 
-	protected void fireChanged()
-	{
-		controller.markChanged();
-	}
-
-	protected void fireFocusChanged(final boolean focussed)
-	{
-		if (focusHandler != null)
-		{
-			focusHandler.itemFocusChanged(focussed);
-		}
-	}
-
-	protected void fireResized()
-	{
-		if (resizeHandler != null)
-		{
-			resizeHandler.itemResized();
-		}
-	}
-
 	public PlaceBookItem getItem()
 	{
 		return item;
-	}
-
-	int getOrder()
-	{
-		return item.getParameter("order", 0);
 	}
 
 	public abstract void refresh();
@@ -91,5 +65,31 @@ public abstract class PlaceBookItemWidget extends Composite
 			item.setSourceURL(newItem.getSourceURL());
 		}
 		refresh();
+	}
+
+	int getOrder()
+	{
+		return item.getParameter("order", 0);
+	}
+
+	protected void fireChanged()
+	{
+		controller.markChanged();
+	}
+
+	protected void fireFocusChanged(final boolean focussed)
+	{
+		if (focusHandler != null)
+		{
+			focusHandler.itemFocusChanged(focussed);
+		}
+	}
+
+	protected void fireResized()
+	{
+		if (resizeHandler != null)
+		{
+			resizeHandler.itemResized();
+		}
 	}
 }

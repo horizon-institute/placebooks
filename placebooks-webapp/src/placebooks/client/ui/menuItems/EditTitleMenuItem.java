@@ -52,11 +52,11 @@ public class EditTitleMenuItem extends MenuItem
 
 		panel.add(title);
 		panel.add(uploadButton);
-		
+
 		dialogBox.setTitle("Edit Title");
 		dialogBox.setWidget(panel);
 		dialogBox.show();
-		
+
 		title.setFocus(true);
 	}
 }

@@ -60,7 +60,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	private CellTable<LoginDetails> cellTable;
 	private User user;
-	
+
 	private final DataStore<User> userStore = new DataStore<User>()
 	{
 		@Override
@@ -281,9 +281,9 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	{
 		if (!isShowing()) { return; }
 		userStore.get(null, new JSONResponse<User>()
-		{	
+		{
 			@Override
-			public void handleResponse(User object)
+			public void handleResponse(final User object)
 			{
 				setUser(object);
 			}

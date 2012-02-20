@@ -10,26 +10,26 @@ public class PlaceBookItemWidgetFactory
 	{
 		if (item.is(ItemType.TEXT))
 		{
-			if (handler.canEdit()) { return new EditableTextItem(item,handler); }
-			return new TextItem(item,handler);
+			if (handler.canEdit()) { return new EditableTextItem(item, handler); }
+			return new TextItem(item, handler);
 		}
 		else if (item.is(ItemType.IMAGE))
 		{
-			return new ImageItem(item,handler);
+			return new ImageItem(item, handler);
 		}
 		else if (item.is(ItemType.AUDIO))
 		{
-			return new AudioItem(item,handler);
+			return new AudioItem(item, handler);
 		}
 		else if (item.is(ItemType.VIDEO))
 		{
-			return new VideoItem(item,handler);
+			return new VideoItem(item, handler);
 		}
 		else if (item.is(ItemType.GPS))
 		{
 			return new MapItem(item, handler);
 		}
-		else if (item.is(ItemType.WEB)) { return new WebBundleItem(item,handler); }
+		else if (item.is(ItemType.WEB)) { return new WebBundleItem(item, handler); }
 		return null;
 	}
 }

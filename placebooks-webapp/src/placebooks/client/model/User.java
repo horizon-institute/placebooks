@@ -11,6 +11,11 @@ public class User extends JavaScriptObject
 	{
 	}
 
+	public final native String getEmail()
+	/*-{
+		return this.email;
+	}-*/;
+
 	public final Iterable<LoginDetails> getLoginDetails()
 	{
 		return new Iterable<LoginDetails>()
@@ -23,6 +28,11 @@ public class User extends JavaScriptObject
 		};
 	}
 
+	public final native String getName()
+	/*-{
+		return this.name;
+	}-*/;
+
 	private final native JsArray<LoginDetails> getLoginDetailsImpl()
 	/*-{
 		if(!('loginDetails' in this))
@@ -30,15 +40,5 @@ public class User extends JavaScriptObject
 			this.loginDetails = new Array();
 		}
 		return this.loginDetails;
-	}-*/;
-
-	public final native String getName()
-	/*-{
-		return this.name;
-	}-*/;
-
-	public final native String getEmail()
-	/*-{
-		return this.email;
 	}-*/;
 }

@@ -25,75 +25,77 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPagesBook extends PlaceBookPages
 {
-	private final static String newPage = "{\"items\":[], \"metadata\":{} }";
-	
-	private enum FlipState
+	interface PageStyle extends CssResource
 	{
-		none, dragging, edgeHighlight, flipping 
+		String page();
 	}
-	
+
+	interface PlaceBookBookPanelUiBinder extends UiBinder<Widget, PlaceBookPagesBook>
+	{
+	}
+
 	private class Flip extends Timer
 	{
 		private FlipState state = FlipState.none;
-		
+
 		private double target;
 		private double progress;
 		private PlaceBookPage left;
 		private PlaceBookPage right;
-		
+
 		@Override
 		public void run()
 		{
-			if(state != FlipState.flipping)
+			if (state != FlipState.flipping)
 			{
 				cancel();
 			}
 			else
 			{
-				if(target == 1)
+				if (target == 1)
 				{
 					setPage(left);
 					right.setVisible(true);
 				}
-				else if(target == -1)
+				else if (target == -1)
 				{
 					setPage(right);
 				}
-				
-				if(Math.abs(target - progress) > 0.01)
-				{	
-					drawFlip(left, progress + (target - progress) * 0.2);				
+
+				if (Math.abs(target - progress) > 0.01)
+				{
+					drawFlip(left, progress + (target - progress) * 0.2);
 				}
 				else
 				{
 					drawFlip(left, target);
-					
-					if(target == 1)
+
+					if (target == 1)
 					{
-						left.clearFlip();					
+						left.clearFlip();
 					}
-					else if(target == -1)
+					else if (target == -1)
 					{
 						right.clearFlip();
 					}
-					
+
 					state = FlipState.none;
-					cancel();				
+					cancel();
 				}
 			}
-		}	
-		
+		}
+
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
 		{
-			if(this.left != null)
+			if (this.left != null)
 			{
 				this.left.setVisible(false);
 			}
-			if(this.right != null)
+			if (this.right != null)
 			{
 				this.right.setVisible(false);
 			}
-			
+
 			flip.cancel();
 			this.left = left;
 			this.right = right;
@@ -105,15 +107,13 @@ public class PlaceBookPagesBook extends PlaceBookPages
 			right.getElement().getStyle().setZIndex(0);
 		}
 	}
-	
-	interface PageStyle extends CssResource
+
+	private enum FlipState
 	{
-		String page();
+		none, dragging, edgeHighlight, flipping
 	}
-	
-	interface PlaceBookBookPanelUiBinder extends UiBinder<Widget, PlaceBookPagesBook>
-	{
-	}
+
+	private final static String newPage = "{\"items\":[], \"metadata\":{} }";
 
 	private static PlaceBookBookPanelUiBinder uiBinder = GWT.create(PlaceBookBookPanelUiBinder.class);
 
@@ -127,99 +127,157 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 	@UiField
 	Panel leftPanel;
-	
+
 	@UiField
 	Canvas canvas;
-	
+
 	@UiField
 	PageStyle style;
-	
+
 	private double bookWidth;
 	private double pageWidth;
 	private double pageHeight;
-	
+
 	private int startX;
 	private int startY;
 	private boolean dragged = false;
-	
+
 	private double margin = 30;
 
 	private Flip flip = new Flip();
-		
-	@Override
-	public void setPlaceBook(PlaceBookBinder newPlaceBook, PlaceBookController controller)
-	{
-		super.setPlaceBook(newPlaceBook, controller);
-		
-		if(pages.size() > 0)
-		{
-			setPage(pages.get(0));
-		}
-	}
 
 	public PlaceBookPagesBook()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
+	@Override
+	public void createPage()
+	{
+		int index = 0;
+		if (currentPage != null)
+		{
+			index = currentPage.getIndex() + 1;
+		}
+
+		final PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
+		page.setMetadata("tempID", "" + System.currentTimeMillis());
+		getPlaceBook().add(index, page);
+		final PlaceBookPage pageUI = new PlaceBookPage(page, controller, index, getDefaultColumnCount());
+
+		pages.add(index, pageUI);
+		getPagePanel().add(pageUI);
+		pageUI.setStyleName(style.page());
+
+		if (currentPage != null)
+		{
+			flip.setup(currentPage, pageUI);
+			flip.target = -1;
+			flip.progress = 1;
+			flip.state = FlipState.flipping;
+			flip.scheduleRepeating(1000 / 60);
+		}
+		else
+		{
+			currentPage = pageUI;
+		}
+
+		updateIndices();
+	}
+
+	@Override
+	public boolean deleteCurrentPage()
+	{
+		if (pages.size() <= 1) { return false; }
+		final int index = currentPage.getIndex();
+		getPlaceBook().remove(currentPage.getPlaceBook());
+		remove(currentPage);
+		setPage(pages.get(Math.min(index, pages.size() - 1)));
+		currentPage.clearFlip();
+		updateIndices();
+		return true;
+	}
+
 	public PlaceBook getCurrentPage()
 	{
-		if(currentPage == null)
-		{
-			return null;
-		}
+		if (currentPage == null) { return null; }
 		return currentPage.getPlaceBook();
 	}
-	
+
+	@Override
+	public void resized()
+	{
+		final double height = getOffsetHeight();
+		if (height == 0) { return; }
+		final double width = getOffsetWidth();
+		final double bookWidth = height * 3 / 2;
+		if (bookWidth < width)
+		{
+			// Height is constraint
+			final double left = (width - bookWidth) / 2;
+
+			setPosition(left, 0, bookWidth, height);
+		}
+		else
+		{
+			// Width is constraint
+			final double bookHeight = (width * 2 / 3);
+			final double top = (height - bookHeight) / 2;
+
+			setPosition(0, top, width, bookHeight);
+		}
+	}
+
 	public void setPage(final PlaceBookPage page)
 	{
-		if(currentPage == page)
-		{
-			return;
-		}
+		if (currentPage == page) { return; }
 		GWT.log("Set Page: " + page.getIndex());
-		if(currentPage != null)
+		if (currentPage != null)
 		{
-			currentPage.setVisible(false);			
+			currentPage.setVisible(false);
 		}
 
 		currentPage = page;
-		currentPage.setVisible(true);		
+		currentPage.setVisible(true);
 		currentPage.getElement().getStyle().setZIndex(1);
 	}
 
-	@UiHandler("rootPanel")
-	void flipStart(final MouseDownEvent event)
+	@Override
+	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
 	{
-		if(pages.size() <= 1)
+		super.setPlaceBook(newPlaceBook, controller);
+
+		if (pages.size() > 0)
 		{
-			return;
+			setPage(pages.get(0));
 		}
-		if(flip.state != FlipState.flipping)
+	}
+
+	@UiHandler("rootPanel")
+	void clickFlip(final ClickEvent event)
+	{
+		if (pages.size() <= 1) { return; }
+		if (!dragged)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
 			// Make sure the mouse pointer is inside of the book
 			if (mouseX < pageWidth)
-			{		
+			{
 				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
 				{
-					// We are on the left side, drag the previous page
-					flip.state = FlipState.dragging;
-					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);				
-					startX = mouseX;
-					startY = event.getRelativeY(pagesPanel.getElement());
-					dragged = false;
-					event.preventDefault();				
+					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
+					flip.target = 1;
+					flip.progress = -1;
+					flip.state = FlipState.flipping;
+					flip.scheduleRepeating(1000 / 60);
 				}
 				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
 				{
-					// We are on the right side, drag the current page
-					flip.state = FlipState.dragging;	
 					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
-					startX = mouseX;
-					startY = event.getRelativeY(pagesPanel.getElement());
-					dragged = false;					
-					event.preventDefault();				
+					flip.target = -1;
+					flip.progress = 1;
+					flip.state = FlipState.flipping;
+					flip.scheduleRepeating(1000 / 60);
 				}
 			}
 		}
@@ -229,81 +287,37 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	void flip(final MouseMoveEvent event)
 	{
 		final int mouseX = event.getRelativeX(pagesPanel.getElement());
-		if(pages.size() <= 1)
+		if (pages.size() <= 1) { return; }
+		if (flip.state == FlipState.dragging)
 		{
-			return;
-		}
-		if(flip.state == FlipState.dragging)
-		{
-			drawFlip(flip.left, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
-			
-			int distanceX = Math.abs(startX - mouseX);
-			int distanceY = Math.abs(startY - event.getRelativeY(pagesPanel.getElement()));			
-			
-			if(!dragged && distanceX + distanceY > 10)
+			drawFlip(flip.left, Math.max(Math.min(mouseX / pageWidth, 1), -1));
+
+			final int distanceX = Math.abs(startX - mouseX);
+			final int distanceY = Math.abs(startY - event.getRelativeY(pagesPanel.getElement()));
+
+			if (!dragged && distanceX + distanceY > 10)
 			{
 				dragged = true;
 			}
-			
+
 			event.preventDefault();
 		}
-		else if(flip.state != FlipState.flipping)
+		else if (flip.state != FlipState.flipping)
 		{
-			if(mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
+			if (mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
 			{
 				flip.state = FlipState.edgeHighlight;
 				flip.cancel();
-				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));				
-				drawFlip(currentPage, Math.max( Math.min( mouseX / pageWidth, 1 ), -1 ));
+				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+				drawFlip(currentPage, Math.max(Math.min(mouseX / pageWidth, 1), -1));
 			}
-			else if(flip.state == FlipState.edgeHighlight)
+			else if (flip.state == FlipState.edgeHighlight)
 			{
 				flip.target = 1;
-				flip.state = FlipState.flipping;				
-				flip.scheduleRepeating(1000/60);
+				flip.state = FlipState.flipping;
+				flip.scheduleRepeating(1000 / 60);
 			}
 		}
-	}
-	
-	@UiHandler("rootPanel")	
-	void clickFlip(final ClickEvent event)
-	{
-		if(pages.size() <= 1)
-		{
-			return;
-		}
-		if(!dragged)
-		{
-			final int mouseX = event.getRelativeX(pagesPanel.getElement());
-			// Make sure the mouse pointer is inside of the book
-			if (mouseX < pageWidth)
-			{		
-				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
-				{
-					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
-					flip.target = 1;
-					flip.progress = -1;
-					flip.state = FlipState.flipping;				
-					flip.scheduleRepeating(1000/60);				
-				}
-				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
-				{
-					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
-					flip.target = -1;
-					flip.progress = 1;
-					flip.state = FlipState.flipping;
-					flip.scheduleRepeating(1000/60);			
-				}
-			}
-		}
-	}
-
-	@Override
-	protected void add(PlaceBookPage page)
-	{
-		super.add(page);
-		page.setStyleName(style.page());
-		page.setVisible(false);
 	}
 
 	@UiHandler("rootPanel")
@@ -311,53 +325,77 @@ public class PlaceBookPagesBook extends PlaceBookPages
 	{
 		endFlip(event);
 	}
-	
-	private void endFlip(final MouseEvent<?> event)
-	{
-		if(flip.state == FlipState.dragging)
-		{
-			flip.state = FlipState.flipping;
-			final int mouseX = event.getRelativeX(pagesPanel.getElement());
-			
-			if (mouseX > (pageWidth - margin))
-			{
-				flip.state = FlipState.edgeHighlight;
-			}
-			else
-			{
-				final double progress = Math.max( Math.min( mouseX / pageWidth, 1 ), -1 );
-				if(progress < 0.5)
-				{
-					flip.target = -1;
-					flip.state = FlipState.flipping;				
-					flip.scheduleRepeating(1000/60);
-				}
-				else
-				{
-					flip.target = 1;
-					flip.state = FlipState.flipping;				
-					flip.scheduleRepeating(1000/60);
-				}
-			}
-		}	
-	}
-	
+
 	@UiHandler("rootPanel")
 	void flipExit(final MouseOutEvent event)
 	{
 		endFlip(event);
-		if(flip.state == FlipState.edgeHighlight)
+		if (flip.state == FlipState.edgeHighlight)
 		{
 			flip.target = 1;
-			flip.state = FlipState.flipping;				
-			flip.scheduleRepeating(1000/60);
+			flip.state = FlipState.flipping;
+			flip.scheduleRepeating(1000 / 60);
 		}
 	}
-	
+
+	@UiHandler("rootPanel")
+	void flipStart(final MouseDownEvent event)
+	{
+		if (pages.size() <= 1) { return; }
+		if (flip.state != FlipState.flipping)
+		{
+			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			// Make sure the mouse pointer is inside of the book
+			if (mouseX < pageWidth)
+			{
+				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
+				{
+					// We are on the left side, drag the previous page
+					flip.state = FlipState.dragging;
+					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
+					startX = mouseX;
+					startY = event.getRelativeY(pagesPanel.getElement());
+					dragged = false;
+					event.preventDefault();
+				}
+				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
+				{
+					// We are on the right side, drag the current page
+					flip.state = FlipState.dragging;
+					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+					startX = mouseX;
+					startY = event.getRelativeY(pagesPanel.getElement());
+					dragged = false;
+					event.preventDefault();
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void add(final PlaceBookPage page)
+	{
+		super.add(page);
+		page.setStyleName(style.page());
+		page.setVisible(false);
+	}
+
+	@Override
+	protected int getDefaultColumnCount()
+	{
+		return 2;
+	}
+
+	@Override
+	protected Panel getPagePanel()
+	{
+		return pagesPanel;
+	}
+
 	private void drawFlip(final PlaceBookPage page, final double progress)
-	{	
+	{
 		flip.progress = progress;
-		
+
 		// Determines the strength of the fold/bend on a 0-1 range
 		final double strength = 1 - Math.abs(progress);
 
@@ -381,11 +419,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		final Context2d context = canvas.getContext2d();
 		context.clearRect(0, 0, canvas.getOffsetWidth(), canvas.getOffsetHeight());
 		context.save();
-		context.translate( (bookWidth / 2) + margin, margin );
-
+		context.translate((bookWidth / 2) + margin, margin);
 
 		// Draw a sharp shadow on the left side of the page
-		final String strokeAlpha = NumberFormat.getFormat("#.################").format(strength * 0.05);		
+		final String strokeAlpha = NumberFormat.getFormat("#.################").format(strength * 0.05);
 		context.setStrokeStyle("rgba(0,0,0," + strokeAlpha + ")");
 		context.setLineWidth(30 * strength);
 		context.beginPath();
@@ -411,7 +448,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		final CanvasGradient leftShadowGradient = context.createLinearGradient(	foldX - foldWidth - leftShadowWidth, 0,
 																				foldX - foldWidth, 0);
 		leftShadowGradient.addColorStop(0, "rgba(0,0,0,0.0)");
-		final String leftShadowAlpha = NumberFormat.getFormat("#.################").format(strength * 0.15);	
+		final String leftShadowAlpha = NumberFormat.getFormat("#.################").format(strength * 0.15);
 		leftShadowGradient.addColorStop(1, "rgba(0,0,0," + leftShadowAlpha + ")");
 
 		context.setFillStyle(leftShadowGradient);
@@ -448,52 +485,34 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		context.restore();
 	}
 
-	public void resized()
+	private void endFlip(final MouseEvent<?> event)
 	{
-		final double height = getOffsetHeight();
-		if(height == 0)
+		if (flip.state == FlipState.dragging)
 		{
-			return;
-		}		
-		final double width = getOffsetWidth();
-		final double bookWidth = height * 3 / 2;
-		if (bookWidth < width)
-		{
-			// Height is constraint
-			final double left = (width - bookWidth) / 2;
+			flip.state = FlipState.flipping;
+			final int mouseX = event.getRelativeX(pagesPanel.getElement());
 
-			setPosition(left, 0, bookWidth, height);
+			if (mouseX > (pageWidth - margin))
+			{
+				flip.state = FlipState.edgeHighlight;
+			}
+			else
+			{
+				final double progress = Math.max(Math.min(mouseX / pageWidth, 1), -1);
+				if (progress < 0.5)
+				{
+					flip.target = -1;
+					flip.state = FlipState.flipping;
+					flip.scheduleRepeating(1000 / 60);
+				}
+				else
+				{
+					flip.target = 1;
+					flip.state = FlipState.flipping;
+					flip.scheduleRepeating(1000 / 60);
+				}
+			}
 		}
-		else
-		{
-			// Width is constraint
-			final double bookHeight = (width * 2 / 3);
-			final double top = (height - bookHeight) / 2;
-
-			setPosition(0, top, width, bookHeight);
-		}
-	}
-
-	@Override
-	protected int getDefaultColumnCount()
-	{
-		return 2;
-	}	
-
-	@Override
-	public boolean deleteCurrentPage()
-	{
-		if(pages.size() <= 1)
-		{
-			return false;
-		}
-		int index = currentPage.getIndex();
-		getPlaceBook().remove(currentPage.getPlaceBook());
-		remove(currentPage);
-		setPage(pages.get(Math.min(index, pages.size() - 1)));
-		currentPage.clearFlip();
-		updateIndices();
-		return true;
 	}
 
 	private void setPosition(final double left, final double top, final double width, final double height)
@@ -506,7 +525,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		canvas.getElement().getStyle().setLeft(left - width, Unit.PX);
 		canvas.getCanvasElement().setWidth((int) bookWidth);
 		canvas.getCanvasElement().setHeight((int) height);
-		
+
 		pagesPanel.getElement().getStyle().setTop(top + margin, Unit.PX);
 		pagesPanel.getElement().getStyle().setLeft(left + margin, Unit.PX);
 		pagesPanel.setWidth(pageWidth + "px");
@@ -516,7 +535,7 @@ public class PlaceBookPagesBook extends PlaceBookPages
 		leftPanel.getElement().getStyle().setLeft(left + margin - pageWidth, Unit.PX);
 		leftPanel.setWidth(pageWidth + "px");
 		leftPanel.setHeight(pageHeight + "px");
-		
+
 		for (final PlaceBookPage page : pages)
 		{
 			page.setSize(width, height);
@@ -525,51 +544,10 @@ public class PlaceBookPagesBook extends PlaceBookPages
 
 	private void updateIndices()
 	{
-		for(int index = 0; index < pages.size(); index++)
+		for (int index = 0; index < pages.size(); index++)
 		{
 			final PlaceBookPage page = pages.get(index);
 			page.setIndex(index);
 		}
-	}
-	
-	@Override
-	protected Panel getPagePanel()
-	{
-		return pagesPanel;		
-	}
-
-	@Override
-	public void createPage()
-	{
-		int index = 0;
-		if(currentPage != null)
-		{
-			index = currentPage.getIndex() + 1;			
-		}
-
-
-		PlaceBook page = PlaceBookService.parse(PlaceBook.class, newPage);
-		page.setMetadata("tempID", "" + System.currentTimeMillis());
-		getPlaceBook().add(index, page);
-		PlaceBookPage pageUI = new PlaceBookPage(page, controller, index, getDefaultColumnCount());
-		
-		pages.add(index, pageUI);
-		getPagePanel().add(pageUI);
-		pageUI.setStyleName(style.page());		
-		
-		if(currentPage != null)
-		{
-			flip.setup(currentPage, pageUI);
-			flip.target = -1;
-			flip.progress = 1;
-			flip.state = FlipState.flipping;
-			flip.scheduleRepeating(1000/60);
-		}
-		else
-		{
-			currentPage = pageUI;
-		}
-		
-		updateIndices();
 	}
 }

@@ -64,18 +64,18 @@ public class PlaceBookShelf extends Composite
 	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
 	{
 		@Override
-		protected String getRequestURL(String id)
+		protected String getRequestURL(final String id)
 		{
 			return getHostURL() + "placebooks/a/admin/serverinfo";
 		}
 
 		@Override
-		protected String getStorageID(String id)
+		protected String getStorageID(final String id)
 		{
 			return "server.info";
 		}
 	};
-	
+
 	private static PlaceBookShelfUiBinder uiBinder = GWT.create(PlaceBookShelfUiBinder.class);
 
 	@UiField
@@ -225,7 +225,7 @@ public class PlaceBookShelf extends Composite
 		shelfControl.getShelf(new JSONResponse<Shelf>()
 		{
 			@Override
-			public void handleResponse(Shelf shelf)
+			public void handleResponse(final Shelf shelf)
 			{
 				if (shelf == null) { return; }
 				progress.setVisible(false);
@@ -303,8 +303,7 @@ public class PlaceBookShelf extends Composite
 				setMapVisible(mapVisible);
 				recenter();
 
-				
-			}		
+			}
 		});
 	}
 
@@ -335,7 +334,7 @@ public class PlaceBookShelf extends Composite
 		infoStore.get(null, new JSONResponse<ServerInfo>()
 		{
 			@Override
-			public void handleResponse(ServerInfo object)
+			public void handleResponse(final ServerInfo object)
 			{
 				createMap(object);
 			};

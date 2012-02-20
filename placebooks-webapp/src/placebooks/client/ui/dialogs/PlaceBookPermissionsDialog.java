@@ -32,6 +32,49 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 	{
 	}
 
+	private static class Permission
+	{
+		private String email;
+		private String permission;
+	}
+
+	/**
+	 * The Cell used to render a {@link ContactInfo}.
+	 */
+	private class PermissionsCell extends AbstractCell<Permission>
+	{
+		@Override
+		public void render(final Context context, final Permission value, final SafeHtmlBuilder sb)
+		{
+			// Value can be null, so do a null check..
+			if (value == null) { return; }
+
+			sb.appendHtmlConstant("<div>");
+
+			// Add the contact image.
+			sb.appendHtmlConstant("<div>");
+			sb.appendHtmlConstant(value.email);
+			sb.appendHtmlConstant("</div>");
+
+			// Add the name and address.
+			sb.appendHtmlConstant("<div>");
+			if (value.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
+			{
+				sb.appendEscaped("Owner");
+			}
+			else if (value.permission.equals("R_W"))
+			{
+				sb.appendEscaped("Read + Write");
+			}
+			else
+			{
+				sb.appendEscaped("Read");
+			}
+
+			sb.appendHtmlConstant("</div></div>");
+		}
+	}
+
 	private static PlaceBookPermissionsDialogUiBinder uiBinder = GWT.create(PlaceBookPermissionsDialogUiBinder.class);
 
 	private static final ProvidesKey<Permission> keyProvider = new ProvidesKey<Permission>()
@@ -43,69 +86,23 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 		}
 	};
 
-
-	  /**
-	   * The Cell used to render a {@link ContactInfo}.
-	   */
-	  private class PermissionsCell extends AbstractCell<Permission>
-	  {
-	    @Override
-	    public void render(Context context, Permission value, SafeHtmlBuilder sb)
-	    {
-	      // Value can be null, so do a null check..
-	      if (value == null) {
-	        return;
-	      }
-
-	      sb.appendHtmlConstant("<div>");
-
-	      // Add the contact image.
-	      sb.appendHtmlConstant("<div>");
-	      sb.appendHtmlConstant(value.email);
-	      sb.appendHtmlConstant("</div>");
-
-	      // Add the name and address.
-	      sb.appendHtmlConstant("<div>");
-	      if(value.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
-	      {
-		      sb.appendEscaped("Owner");	    	  
-	      }
-	      else if(value.permission.equals("R_W"))
-	      {
-	    	  sb.appendEscaped("Read + Write");
-	      }
-	      else
-	      {
-	    	  sb.appendEscaped("Read");
-	      }
-	    	  
-	      sb.appendHtmlConstant("</div></div>");
-	    }
-	  }
-	
-	private static class Permission
-	{
-		private String email;
-		private String permission;
-	}
-	
 	@UiField
 	Panel listPanel;
 
 	@UiField
 	TextBox emailBox;
-	
+
 	@UiField
-	ListBox permissionsBox; 
-	
+	ListBox permissionsBox;
+
 	@UiField
 	Button removePermission;
-	
+
 	private final CellList<Permission> cellList;
 	private final PlaceBookController controller;
 	private final SingleSelectionModel<Permission> selectionModel;
 	private List<Permission> permissionList;
-	
+
 	public PlaceBookPermissionsDialog(final PlaceBookController controller)
 	{
 		setTitle("Edit Permissions");
@@ -113,25 +110,25 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 		setWidget(uiBinder.createAndBindUi(this));
 
 		permissionsBox.addItem("Read");
-		permissionsBox.addItem("Read + Write");		
-		
+		permissionsBox.addItem("Read + Write");
+
 		cellList = new CellList<Permission>(new PermissionsCell(), keyProvider);
 		cellList.setWidth("100%");
 
 		selectionModel = new SingleSelectionModel<Permission>(keyProvider);
 		cellList.setSelectionModel(selectionModel);
-		
+
 		selectionModel.addSelectionChangeHandler(new Handler()
 		{
 			@Override
-			public void onSelectionChange(SelectionChangeEvent event)
+			public void onSelectionChange(final SelectionChangeEvent event)
 			{
 				final Permission permission = selectionModel.getSelectedObject();
-				if(permission != null)
+				if (permission != null)
 				{
-					emailBox.setText(permission.email);		
-					
-					if(permission.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
+					emailBox.setText(permission.email);
+
+					if (permission.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
 					{
 						emailBox.setEnabled(false);
 						permissionsBox.setEnabled(false);
@@ -139,21 +136,21 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 					}
 					else
 					{
-						emailBox.setEnabled(true);						
+						emailBox.setEnabled(true);
 						permissionsBox.setEnabled(true);
-						removePermission.setEnabled(true);		
-						
-						if(permission.permission.equals("R_W"))
+						removePermission.setEnabled(true);
+
+						if (permission.permission.equals("R_W"))
 						{
 							permissionsBox.setSelectedIndex(1);
 						}
 						else
 						{
-							permissionsBox.setSelectedIndex(0);							
+							permissionsBox.setSelectedIndex(0);
 						}
-						emailBox.setFocus(true);						
+						emailBox.setFocus(true);
 					}
-					
+
 				}
 				else
 				{
@@ -165,33 +162,10 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 		});
 
 		listPanel.add(cellList);
-				
-		center();		
+
+		center();
 		updatePermissionsList();
 		selectionModel.setSelected(permissionList.get(0), true);
-	}
-	
-	@UiHandler("permissionsBox")
-	void handleSelectPermissions(final ChangeEvent event)
-	{
-		if(selectionModel.getSelectedObject() != null)
-		{
-			Permission selection = selectionModel.getSelectedObject();
-
-			if(permissionsBox.getSelectedIndex() == 0)
-			{
-				selection.permission = "R";				
-			}
-			else
-			{
-
-				selection.permission = "R_W";				
-			}
-			controller.getPages().getPlaceBook().getPermissions().put(selection.email, new JSONString(selection.permission));
-			
-			cellList.redraw();
-			controller.markChanged();
-		}
 	}
 
 	@UiHandler("addUser")
@@ -199,44 +173,69 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 	{
 		controller.getPages().getPlaceBook().getPermissions().put("", new JSONString("R"));
 		updatePermissionsList();
-		for(Permission permission: permissionList)
+		for (final Permission permission : permissionList)
 		{
-			if(permission.email.equals(""))
+			if (permission.email.equals(""))
 			{
 				selectionModel.setSelected(permission, true);
 				return;
 			}
-		}		
-	}
-	
-	@UiHandler("removePermission")
-	void handleRemovePermssion(final ClickEvent event)
-	{
-		if(selectionModel.getSelectedObject() != null)
-		{
-			Permission selection = selectionModel.getSelectedObject();
-
-			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
-			controller.markChanged();			
-			updatePermissionsList();
 		}
 	}
 
 	@UiHandler("emailBox")
 	void handleEditEmail(final KeyUpEvent event)
 	{
-		if(selectionModel.getSelectedObject() != null)
+		if (selectionModel.getSelectedObject() != null)
 		{
-			Permission selection = selectionModel.getSelectedObject();
+			final Permission selection = selectionModel.getSelectedObject();
 
 			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
-			controller.getPages().getPlaceBook().getPermissions().put(emailBox.getText(), new JSONString(selection.permission));
-			selection.email = emailBox.getText();			
+			controller.getPages().getPlaceBook().getPermissions()
+					.put(emailBox.getText(), new JSONString(selection.permission));
+			selection.email = emailBox.getText();
 			cellList.redraw();
 			controller.markChanged();
 		}
 	}
-	
+
+	@UiHandler("removePermission")
+	void handleRemovePermssion(final ClickEvent event)
+	{
+		if (selectionModel.getSelectedObject() != null)
+		{
+			final Permission selection = selectionModel.getSelectedObject();
+
+			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
+			controller.markChanged();
+			updatePermissionsList();
+		}
+	}
+
+	@UiHandler("permissionsBox")
+	void handleSelectPermissions(final ChangeEvent event)
+	{
+		if (selectionModel.getSelectedObject() != null)
+		{
+			final Permission selection = selectionModel.getSelectedObject();
+
+			if (permissionsBox.getSelectedIndex() == 0)
+			{
+				selection.permission = "R";
+			}
+			else
+			{
+
+				selection.permission = "R_W";
+			}
+			controller.getPages().getPlaceBook().getPermissions()
+					.put(selection.email, new JSONString(selection.permission));
+
+			cellList.redraw();
+			controller.markChanged();
+		}
+	}
+
 	private void updatePermissionsList()
 	{
 		permissionList = new ArrayList<Permission>();
@@ -254,12 +253,14 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 			permission = new Permission();
 			permission.email = user;
-			permission.permission = controller.getPages().getPlaceBook().getPermissions().get(user).isString().stringValue();
+			permission.permission = controller.getPages().getPlaceBook().getPermissions().get(user).isString()
+					.stringValue();
 
 			permissionList.add(permission);
 		}
 
-		controller.getPages().getPlaceBook().getPermissions().put(controller.getPages().getPlaceBook().getOwner().getEmail(), new JSONString("R_W"));
+		controller.getPages().getPlaceBook().getPermissions()
+				.put(controller.getPages().getPlaceBook().getOwner().getEmail(), new JSONString("R_W"));
 
 		cellList.setRowData(permissionList);
 	}

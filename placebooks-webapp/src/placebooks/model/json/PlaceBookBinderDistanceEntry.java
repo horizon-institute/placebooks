@@ -6,8 +6,7 @@ public class PlaceBookBinderDistanceEntry extends PlaceBookBinderOwnedEntry
 {
 	private final double distance;
 
-	public PlaceBookBinderDistanceEntry(final PlaceBookBinder p, 
-										final double distance)
+	public PlaceBookBinderDistanceEntry(final PlaceBookBinder p, final double distance)
 	{
 		super(p);
 		this.distance = distance;

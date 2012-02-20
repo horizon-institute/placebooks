@@ -34,15 +34,16 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 	@UiField
 	Label mapLabel;
-	
+
 	private MapItem map;
-	
+
 	private final PlaceBookItem item;
 	private final List<PlaceBookItemFrame> mapItems;
-	
+
 	private final PlaceBookController controller;
 
-	public PlaceBookMapsDialog(final PlaceBookItem item, final List<PlaceBookItemFrame> mapItems, final PlaceBookController controller)
+	public PlaceBookMapsDialog(final PlaceBookItem item, final List<PlaceBookItemFrame> mapItems,
+			final PlaceBookController controller)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 		this.controller = controller;
@@ -50,15 +51,15 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		this.mapItems = mapItems;
 		setTitle("Locate " + item.getMetadata("title", "Item") + " on Map");
 		onInitialize();
-		
-		String mapID = item.getMetadata("mapItemID"); 
+
+		final String mapID = item.getMetadata("mapItemID");
 		selectMap(mapID);
-		
-		if(mapID != null)
+
+		if (mapID != null)
 		{
-			for(int index = 0; index < mapSelect.getItemCount(); index++)
+			for (int index = 0; index < mapSelect.getItemCount(); index++)
 			{
-				if(mapID.equals(mapSelect.getValue(index)))
+				if (mapID.equals(mapSelect.getValue(index)))
 				{
 					mapSelect.setSelectedIndex(index);
 				}
@@ -66,77 +67,12 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		}
 	}
 
-	private void onInitialize()
-	{
-		mapSelect.clear();
-		mapSelect.addItem("Not On Any Map", "");
-		
-		mapPanel.clear();
-		
-		for(PlaceBookItemFrame item: mapItems)
-		{
-			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page " + (item.getPanel().getPage().getIndex() + 1) + ")", item.getItem().getKey());
-		}
-	}
-	
-	private void selectMap(final String id)
-	{
-		if(id == null)
-		{
-			item.removeMetadata("mapItemID");
-		}
-		else
-		{
-			item.setMetadata("mapItemID", id);
-		}
-		
-		mapPanel.clear();
-		
-		mapPanel.setVisible(id != null);
-		mapLabel.setVisible(id != null);
-		
-		if(item.getGeometry() == null)
-		{
-			mapLabel.setText("Click to Place " + item.getMetadata("title", "Untitled") + " on Map:");
-		}
-		else
-		{
-			mapLabel.setText("Click to Move " + item.getMetadata("title", "Untitled") + " on Map:");
-		}
-			
-		if(id != null)
-		{
-			for(final PlaceBookItemFrame mapItem: mapItems)
-			{
-				if(id.equals(mapItem.getItem().getKey()))
-				{
-					map = new MapItem(mapItem.getItem(), controller);
-					map.refreshMarkers();
-					
-					mapPanel.add(map);
-					
-					map.moveMarker(item, new ChangeHandler()
-					{
-						@Override
-						public void onChange(ChangeEvent event)
-						{
-							mapItem.getItemWidget().refresh();							
-						}
-					});
-					break;
-				}
-			}
-		}
-		
-		center();
-	}
-	
 	@UiHandler("mapSelect")
 	void mapSelected(final ChangeEvent event)
 	{
-		int index = mapSelect.getSelectedIndex();
-		String value = mapSelect.getValue(index);
-		if("".equals(value))
+		final int index = mapSelect.getSelectedIndex();
+		final String value = mapSelect.getValue(index);
+		if ("".equals(value))
 		{
 			selectMap(null);
 		}
@@ -144,10 +80,76 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		{
 			selectMap(value);
 		}
-		
+
 		controller.markChanged();
-//		item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
-//		item.getItemWidget().refresh();
-//		controller.getContext().markChanged();		
+		// item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
+		// item.getItemWidget().refresh();
+		// controller.getContext().markChanged();
+	}
+
+	private void onInitialize()
+	{
+		mapSelect.clear();
+		mapSelect.addItem("Not On Any Map", "");
+
+		mapPanel.clear();
+
+		for (final PlaceBookItemFrame item : mapItems)
+		{
+			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page "
+					+ (item.getPanel().getPage().getIndex() + 1) + ")", item.getItem().getKey());
+		}
+	}
+
+	private void selectMap(final String id)
+	{
+		if (id == null)
+		{
+			item.removeMetadata("mapItemID");
+		}
+		else
+		{
+			item.setMetadata("mapItemID", id);
+		}
+
+		mapPanel.clear();
+
+		mapPanel.setVisible(id != null);
+		mapLabel.setVisible(id != null);
+
+		if (item.getGeometry() == null)
+		{
+			mapLabel.setText("Click to Place " + item.getMetadata("title", "Untitled") + " on Map:");
+		}
+		else
+		{
+			mapLabel.setText("Click to Move " + item.getMetadata("title", "Untitled") + " on Map:");
+		}
+
+		if (id != null)
+		{
+			for (final PlaceBookItemFrame mapItem : mapItems)
+			{
+				if (id.equals(mapItem.getItem().getKey()))
+				{
+					map = new MapItem(mapItem.getItem(), controller);
+					map.refreshMarkers();
+
+					mapPanel.add(map);
+
+					map.moveMarker(item, new ChangeHandler()
+					{
+						@Override
+						public void onChange(final ChangeEvent event)
+						{
+							mapItem.getItemWidget().refresh();
+						}
+					});
+					break;
+				}
+			}
+		}
+
+		center();
 	}
 }

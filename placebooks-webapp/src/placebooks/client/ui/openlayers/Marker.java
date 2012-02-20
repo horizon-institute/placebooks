@@ -5,11 +5,11 @@ import com.google.gwt.resources.client.ImageResource;
 
 public class Marker extends JavaScriptObject
 {
-	public final static Marker create(ImageResource image, LonLat lonLat)
+	public final static Marker create(final ImageResource image, final LonLat lonLat)
 	{
 		return create(image.getSafeUri().asString(), lonLat, image.getHeight(), image.getWidth());
 	}
-	
+
 	public final static native Marker create(String markerURL, LonLat lonLat, int iconHeight, int iconWidth)
 	/*-{
 		var size = new $wnd.OpenLayers.Size(iconWidth, iconHeight);

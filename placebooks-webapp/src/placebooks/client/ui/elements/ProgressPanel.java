@@ -18,7 +18,7 @@ public class ProgressPanel extends Composite implements HasText
 
 	@UiField
 	Label progressLabel;
-	
+
 	public ProgressPanel()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
@@ -32,8 +32,8 @@ public class ProgressPanel extends Composite implements HasText
 	}
 
 	@Override
-	public void setText(String text)
+	public void setText(final String text)
 	{
-		progressLabel.setText(text);		
+		progressLabel.setText(text);
 	}
 }

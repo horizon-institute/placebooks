@@ -36,8 +36,8 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 		{
 			if (response.getStatusCode() == 200)
 			{
-				T result = parse(response.getText());
-				if(result == null)
+				final T result = parse(response.getText());
+				if (result == null)
 				{
 					GWT.log("Error: 'null' parsed from " + response.getText());
 					handleError(request, response, new NullPointerException());

@@ -8,13 +8,13 @@ import com.google.gwt.user.client.ui.Widget;
 public class FlashVideoItem extends MediaItem
 {
 	private FlashVideo video;
-	
+
 	FlashVideoItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		super(item, handler);		
-			
+		super(item, handler);
+
 		video = new FlashVideo();
-		
+
 		initWidget(video);
 	}
 
@@ -31,8 +31,8 @@ public class FlashVideoItem extends MediaItem
 	}
 
 	@Override
-	protected void setURL(String url)
+	protected void setURL(final String url)
 	{
-		video.setSrc(url);	
+		video.setSrc(url);
 	}
 }
