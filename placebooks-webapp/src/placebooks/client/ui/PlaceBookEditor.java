@@ -187,6 +187,15 @@ public class PlaceBookEditor extends PlaceBookPlace
 			int currentVersion = placebook.getParameter("version", 1);
 			int newVersion = newPlacebook.getParameter("version", 1);
 			
+			//TODO Check auth
+			if(getUser() == null)
+			{
+				if ("PUBLISHED".equals(placebook.getState()))
+				{
+					getPlaceController().goTo(new PlaceBookPreview(getUser(), newPlacebook));
+				}
+			}
+			
 			GWT.log("Current: " + currentVersion + ", new: " + newVersion);
 			
 			if(currentVersion > newVersion)
@@ -313,6 +322,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 		{
 			dataStore.get(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
+				@Override
+				public void handleOther(Request request, Response response)
+				{
+					getPlaceController().goTo(new PlaceBookHome(getUser()));
+				}
+				
 				@Override
 				public void handleResponse(PlaceBookBinder binder)
 				{
