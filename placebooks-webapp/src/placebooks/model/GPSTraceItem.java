@@ -304,31 +304,26 @@ public class GPSTraceItem extends PlaceBookItem
 		}
 		try
 		{
-			if(minLat == Float.POSITIVE_INFINITY)
+	
+			if (minLat == Float.POSITIVE_INFINITY || 
+				maxLat == Float.NEGATIVE_INFINITY ||
+				minLon == Float.POSITIVE_INFINITY || 
+				maxLon == Float.NEGATIVE_INFINITY)
 			{
-				minLat = 0;
+				log.error("Warning: calculated bounds were not valid, ignoring");
+				setGeometry(null);
 			}
-			if(minLon == Float.POSITIVE_INFINITY)
+			else
 			{
-				minLat = 0;
-			}
-			if(maxLat == Float.NEGATIVE_INFINITY)
-			{
-				maxLat = 0;
-			}
-			if(maxLon == Float.NEGATIVE_INFINITY)
-			{
-				maxLon = 0;
-			}
 
-			
-			log.info("Creating bounds: " + minLat  + ", " + minLon + ",  "  + maxLat + ",  " + maxLon);
-			bounds = wktReader.read("POLYGON ((" 
-					+ minLat + " " + minLon + ", "
-					+ minLat + " " + maxLon + ", "
-					+ maxLat + " " + maxLon + ", "
-					+ maxLat + " " + minLon + ", "
-					+ minLat + " " + minLon + "))");
+				log.info("Creating bounds: " + minLat  + ", " + minLon + ",  "  + maxLat + ",  " + maxLon);
+				bounds = wktReader.read("POLYGON ((" 
+						+ minLat + " " + minLon + ", "
+						+ minLat + " " + maxLon + ", "
+						+ maxLat + " " + maxLon + ", "
+						+ maxLat + " " + minLon + ", "
+						+ minLat + " " + minLon + "))");
+			}
 		}
 		catch (final Throwable e_)
 		{

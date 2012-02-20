@@ -439,12 +439,37 @@ public class PlaceBooksAdminController
 		final User user = authUser(manager, res);
 		if (user == null)
 			return;
-
+	
 		try
 		{
 			final PlaceBookBinder pb = manager.find(PlaceBookBinder.class, key);
 			if (pb != null)
 			{
+				if (pb.getOwner() != user)
+				{
+					log.debug("This user is not the owner");
+					final PlaceBookBinder.Permission perms = 	
+						pb.getPermission(user);
+					if (perms == null) 
+					{
+						try
+						{
+							log.info("User doesn't have sufficient permissions");
+							res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							res.setContentType("application/json");
+							res.getWriter().write(
+								"User doesn't have sufficient permissions"
+							);
+							return;
+						}
+						catch (final Exception e)
+						{
+							log.error(e.getMessage(), e);
+							return;
+						}
+					}
+
+				}
 				try
 				{
 					jsonMapper.writeValue(res.getWriter(), pb);
@@ -653,10 +678,38 @@ public class PlaceBooksAdminController
 	{
 		final EntityManager pm = EMFSingleton.getEntityManager();
 
-		if (authUser(pm, res) == null)
+		final User currentUser = authUser(pm, res);
+		if (currentUser == null)
 			return null;
 
 		final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
+
+		if (p.getOwner() != currentUser)
+		{
+			log.debug("This user is not the owner");
+			final PlaceBookBinder.Permission perms = 	
+				p.getPermission(currentUser);
+			if (perms == null) 
+			{
+				try
+				{
+					log.info("User doesn't have sufficient permissions");
+					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					res.setContentType("application/json");
+					res.getWriter().write(
+						"User doesn't have sufficient permissions"
+					);
+					return null;
+				}
+				catch (final Exception e)
+				{
+					log.error(e.getMessage(), e);
+					return null;
+				}
+			}
+		}
+		
+
 		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
 		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
 
@@ -1337,7 +1390,8 @@ public class PlaceBooksAdminController
 	public void uploadFile(final HttpServletRequest req, final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		if (authUser(manager, res) == null)
+		final User currentUser = authUser(manager, res);
+		if (currentUser == null)
 			return;
 
 		final ItemData itemData = new ItemData();
@@ -1412,13 +1466,20 @@ public class PlaceBooksAdminController
 
 			if (itemData.getOwner() == null)
 			{
-				itemData.setOwner(UserManager.getCurrentUser(manager));
+				itemData.setOwner(currentUser);
 			}
+
+			PlaceBookBinder.Permission perms = PlaceBookBinder.Permission.R_W;
 
 			PlaceBookItem item = null;
 			if (itemKey != null)
 			{
 				item = manager.find(PlaceBookItem.class, itemKey);
+				final PlaceBookBinder dbBinder = 
+					item.getPlaceBook().getPlaceBookBinder();
+				if (dbBinder.getOwner() != currentUser)
+					perms =	dbBinder.getPermission(currentUser);
+	
 			}
 			else if (placebookKey != null)
 			{
@@ -1444,7 +1505,19 @@ public class PlaceBooksAdminController
 					item = new AudioItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 				}
+
+				final PlaceBookBinder dbBinder = placebook.getPlaceBookBinder();
+				if (dbBinder.getOwner() != currentUser)
+					perms =	dbBinder.getPermission(currentUser);
+
 			}
+
+			if (perms == null || 
+				(perms != null && perms == PlaceBookBinder.Permission.R))
+			{
+				throw new Exception("No permission to upload");
+			}
+
 
 			if (item instanceof MediaItem)
 			{

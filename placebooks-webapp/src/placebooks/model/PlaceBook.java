@@ -158,6 +158,11 @@ public class PlaceBook extends BoundaryGenerator
 		final Element root = config.createElement(PlaceBook.class.getName());
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
+		if (this.getOwner() == null)
+		{
+			log.error("Fatal error: PlaceBook " + this.getKey() + 
+					  " has no owner");
+		}
 
 		if (getTimestamp() != null)
 		{
