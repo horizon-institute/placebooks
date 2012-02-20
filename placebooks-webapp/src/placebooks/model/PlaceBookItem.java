@@ -153,6 +153,9 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		}
 		else
 		{
+			// Strip HTML tags since people seem unable to remove them 
+			// themselves before calling this method
+			key = key.replaceAll("<(.|\n)*?>", "");
 			if (key.length() > VALUE_LENGTH_LIMIT)
 			{
 				log.warn("Metadata Key entry too long, truncating: " + key);

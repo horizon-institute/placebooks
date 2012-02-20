@@ -301,8 +301,9 @@ public final class PlaceBooksAdminHelper
 				{
 					if (item instanceof MediaItem)
 					{
-						final String data = ((MediaItem) item).getPath();
-						((MediaItem) item).writeDataToDisk(data, new FileInputStream(new File(data)));
+						final File data = new File(((MediaItem)item).getPath());
+						((MediaItem)item).writeDataToDisk(data.getName(), 
+													new FileInputStream(data));
 					}
 					else if (item instanceof WebBundleItem)
 					{
