@@ -205,6 +205,12 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		final Element item = config.createElement(getEntityName());
 		item.setAttribute("key", getKey());
 		item.setAttribute("owner", getOwner().getKey());
+		if (this.getOwner() == null)
+		{
+			log.error("Fatal error: PlaceBookItem " + this.getKey() + 
+					  " has no owner");
+		}
+
 
 		// Timestamp is ok to be null
 		if (getTimestamp() != null)

@@ -116,47 +116,55 @@ public final class PlaceBooksAdminHelper
 				try
 				{
 					p.calcBoundary();
-					em.getTransaction().begin();
-					final MapMetadata md = TileHelper.getMap(p);
-					p.setGeometry(md.getBoundingBox());
-					final MapImageItem mii = new MapImageItem(null, null, null, null);
-					p.addItem(mii);
-					mii.setPlaceBook(p);
-					mii.setOwner(p.getOwner());
-					mii.setGeometry(p.getGeometry());
-					mii.addMetadataEntry("type", "overview");
-					mii.setPath(md.getFile().getPath());
-					log.debug("Adding overview MapImageItem");
-
-					if (md.getSelectedScale() > 0)
+					if (p.getGeometry() != null)
 					{
-						// Create local content maps if necessary
-						final List<PlaceBookItem> toAdd = 
-								new ArrayList<PlaceBookItem>();
-						for (final PlaceBookItem pbi : p.getItems())
+						em.getTransaction().begin();
+						final MapMetadata md = TileHelper.getMap(p);
+						p.setGeometry(md.getBoundingBox());
+						final MapImageItem mii = new MapImageItem(null, null, null, null);
+						p.addItem(mii);
+						mii.setPlaceBook(p);
+						mii.setOwner(p.getOwner());
+						mii.setGeometry(p.getGeometry());
+						mii.addMetadataEntry("type", "overview");
+						mii.setPath(md.getFile().getPath());
+						log.debug("Adding overview MapImageItem");
+
+						if (md.getSelectedScale() > 0)
 						{
-							if (!(pbi instanceof GPSTraceItem) && 
-									pbi.getMetadataValue("mapItemID") != null)
+							// Create local content maps if necessary
+							final List<PlaceBookItem> toAdd = 
+									new ArrayList<PlaceBookItem>();
+							for (final PlaceBookItem pbi : p.getItems())
 							{
-								final MapMetadata md_ = TileHelper.getMap(pbi);
-								final MapImageItem mii_ = 
-										new MapImageItem(null, null, null, null);
-								mii_.setPlaceBook(p);
-								mii_.setOwner(p.getOwner());
-								mii_.setGeometry(p.getGeometry());
-								mii_.addMetadataEntry("type", "content");
-								mii_.addMetadataEntry("ref", pbi.getKey());
-								mii_.setPath(md_.getFile().getPath());
-								toAdd.add(mii_);
-								log.debug("Adding content-local MapImageItem");
+								if (!(pbi instanceof GPSTraceItem) && 
+									pbi.getMetadataValue("mapItemID") != null)
+								{
+									final MapMetadata md_ = 
+										TileHelper.getMap(pbi);
+									final MapImageItem mii_ = 
+										new MapImageItem(null, null, null, 
+														 null);
+									mii_.setPlaceBook(p);
+									mii_.setOwner(p.getOwner());
+									mii_.setGeometry(p.getGeometry());
+									mii_.addMetadataEntry("type", "content");
+									mii_.addMetadataEntry("ref", pbi.getKey());
+									mii_.setPath(md_.getFile().getPath());
+									toAdd.add(mii_);
+									log.debug("Adding content-local MapImageItem");
+								}
 							}
+
+							for (final PlaceBookItem pbi : toAdd)
+								p.addItem(pbi);
 						}
 
-						for (final PlaceBookItem pbi : toAdd)
-							p.addItem(pbi);
+						em.getTransaction().commit();
 					}
-
-					em.getTransaction().commit();
+					else
+						log.error("Fatal error in creating map, boundary for "
+								  + "PlaceBook page was null");
 				}
 				catch (final Throwable e)
 				{

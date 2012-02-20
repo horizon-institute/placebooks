@@ -56,23 +56,33 @@ public abstract class BoundaryGenerator
 
 		if (emptySet)
 		{
-			try
+			if (minLat == Float.POSITIVE_INFINITY || 
+				maxLat == Float.NEGATIVE_INFINITY ||
+				minLon == Float.POSITIVE_INFINITY || 
+				maxLon == Float.NEGATIVE_INFINITY)
 			{
-				Geometry empty = new WKTReader().read(
-								"POLYGON ((" + minLat + " " + minLon + ", "
-											 + minLat + " " + maxLon + ", "
-											 + maxLat + " " + maxLon + ", "
-											 + maxLat + " " + minLon + ", "
-											 + minLat + " " + minLon + "))");
-				log.info("empty=" + empty);
-				if (bounds != null)
-					bounds = empty.union(bounds);
-				else
-					bounds = empty;
+				log.error("Warning: empty bounds to calculate were not valid, ignoring");
 			}
-			catch (final Throwable e)
+			else
 			{
-				log.error(e.toString());
+				try
+				{
+					Geometry empty = new WKTReader().read(
+									"POLYGON ((" + minLat + " " + minLon + ", "
+												 + minLat + " " + maxLon + ", "
+												 + maxLat + " " + maxLon + ", "
+												 + maxLat + " " + minLon + ", "
+												 + minLat + " " + minLon + "))");
+					log.info("empty=" + empty);
+					if (bounds != null)
+						bounds = empty.union(bounds);
+					else
+						bounds = empty;
+				}
+				catch (final Throwable e)
+				{
+					log.error(e.toString());
+				}
 			}
 
 		}

@@ -213,6 +213,12 @@ public class PlaceBookBinder extends BoundaryGenerator
 		root.setAttribute("key", this.getKey());
 		root.setAttribute("owner", this.getOwner().getKey());
 		root.setAttribute("state", this.getState().toString());
+		if (this.getOwner() == null)
+		{
+			log.error("Fatal error: PlaceBookBinder " + this.getKey() + 
+					  " has no owner");
+		}
+
 
 		if (!perms.isEmpty())
 		{

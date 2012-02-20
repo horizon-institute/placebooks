@@ -1,3 +1,4 @@
+/*
 package placebooks.controller;
 
 import java.io.File;
@@ -398,7 +399,7 @@ public class PlaceBooksAdminControllerDebug
 			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
 			 * item.deleteItemData(); }
 			 */
-
+/*
 			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
 			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
 			pm.getTransaction().commit();
@@ -867,3 +868,4 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 }
+*/
