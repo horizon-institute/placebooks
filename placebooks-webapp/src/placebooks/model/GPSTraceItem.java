@@ -63,7 +63,10 @@ public class GPSTraceItem extends PlaceBookItem
 	public GPSTraceItem(final GPSTraceItem g)
 	{
 		super(g);
-		setTrace(new String(g.getTrace()));
+		if (g.getTrace() != null)
+			setTrace(new String(g.getTrace()));
+		else
+			setTrace(null);
 	}
 
 	public GPSTraceItem(final User owner)
@@ -88,8 +91,10 @@ public class GPSTraceItem extends PlaceBookItem
 		try
 		{
 			// Check package dir exists already
-			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
+			final String path = PropertiesSingleton.get(
+				this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" 
+						+ getPlaceBook().getPlaceBookBinder().getKey();
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
@@ -161,7 +166,9 @@ public class GPSTraceItem extends PlaceBookItem
 					 + getKey() + " from URL " + getSourceURL());
 			try
 			{
-				CommunicationHelper.getConnection(getSourceURL()).getInputStream();
+				readTrace(CommunicationHelper.getConnection(getSourceURL())
+											 .getInputStream()
+				);
 			}
 			catch (final Throwable e)
 			{
