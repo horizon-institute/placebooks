@@ -3,6 +3,7 @@ package placebooks.client.ui;
 import placebooks.client.AbstractCallback;
 import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.User;
 import placebooks.client.ui.elements.DropMenu;
@@ -91,6 +92,25 @@ public class PlaceBookPreview extends PlaceBookPlace
 	private PlaceBookBinder placebook;
 	private final String placebookID;
 
+	private final DataStore<PlaceBookBinder> dataStore = new DataStore<PlaceBookBinder>()
+	{
+		@Override
+		protected String getRequestURL(String id)
+		{
+			return getHostURL() + "placebooks/a/placebookbinder/" + id;
+		}
+
+		@Override
+		protected String getStorageID(String id)
+		{
+			if(id == null)
+			{
+				return null;
+			}
+			return "placebook." + id;
+		}
+	};
+	
 	public PlaceBookPreview(final User user, final PlaceBookBinder placebook)
 	{
 		super(user);
@@ -121,7 +141,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		infoPanel.setVisible(true);
 
-		if (placebook.getState() != null && placebook.getState().equals("PUBLISHED"))
+		if ("PUBLISHED".equals(placebook.getState()))
 		{
 			final String url = PlaceBookService.getHostURL() + "placebooks/a/view/" + placebook.getId();
 			facebookLike.setURL(url);
@@ -163,8 +183,14 @@ public class PlaceBookPreview extends PlaceBookPlace
 		}
 		else
 		{
-			PlaceBookService.getPlaceBook(placebookID, new JSONResponse<PlaceBookBinder>()
+			dataStore.get(placebookID, new JSONResponse<PlaceBookBinder>()
 			{
+				@Override
+				public void handleOther(Request request, Response response)
+				{
+					getPlaceController().goTo(new PlaceBookHome(getUser()));
+				}
+
 				@Override
 				public void handleResponse(PlaceBookBinder binder)
 				{

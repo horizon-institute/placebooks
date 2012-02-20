@@ -97,10 +97,14 @@ public abstract class DataStore<T extends JavaScriptObject>
 			serverRequest("Get " + localID, url, new CallbackWrapper(id, cached, callback));
 		}
 	}
-
-	public Shelf getLibrary()
+	
+	public void removeCached(final String id)
 	{
-		return null;
+		String storeId = getStorageID(id);
+		if (stockStore != null && storeId != null)
+		{
+			stockStore.removeItem(storeId);
+		}	
 	}
 
 	public void put(final String id, final T object, final JSONResponse<T> callback)

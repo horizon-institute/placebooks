@@ -106,6 +106,10 @@ public class PlaceBookToolbar extends Composite
 				public void handleOther(final Request request, final Response response)
 				{
 					place.setUser(null);
+					if(response.getStatusCode() == 401)
+					{
+						userStore.removeCached(null);
+					}
 				}
 
 				@Override
@@ -113,7 +117,7 @@ public class PlaceBookToolbar extends Composite
 				{
 					place.setUser(object);
 				}
-			}, true);
+			});
 		}
 	}
 
@@ -226,6 +230,7 @@ public class PlaceBookToolbar extends Composite
 			@Override
 			public void success(final Request request, final Response response)
 			{
+				userStore.removeCached(null);
 				place.getPlaceController().goTo(new PlaceBookHome(null));
 			}
 		});
