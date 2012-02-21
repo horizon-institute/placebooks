@@ -10,7 +10,7 @@ import placebooks.client.ui.elements.DropMenu;
 import placebooks.client.ui.elements.FacebookLikeButton;
 import placebooks.client.ui.elements.GooglePlusOne;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookPagesBook;
+import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.elements.PlaceBookToolbarItem;
 import placebooks.client.ui.elements.ProgressPanel;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
@@ -58,7 +58,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 	private static final PlaceBookPreviewUiBinder uiBinder = GWT.create(PlaceBookPreviewUiBinder.class);
 
 	@UiField
-	PlaceBookPagesBook bookPanel;
+	PlaceBookPages bookPanel;
 
 	@UiField
 	DropMenu dropMenu;
@@ -122,7 +122,7 @@ public class PlaceBookPreview extends PlaceBookPlace
 		this.placebook = null;
 	}
 
-	public PlaceBookPagesBook getCanvas()
+	public PlaceBookPages getCanvas()
 	{
 		return bookPanel;
 	}

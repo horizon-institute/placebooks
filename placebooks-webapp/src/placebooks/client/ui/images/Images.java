@@ -30,6 +30,10 @@ public interface Images extends ClientBundle
 
 	ImageResource listitem_youtube();
 
+	ImageResource page_next();
+
+	ImageResource page_previous();
+	
 	ImageResource pallette_audio();
 
 	ImageResource pallette_folder();

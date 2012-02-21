@@ -1,7 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
-	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="default">
 	<ui:style>
 		.canvasPanel {
 			position: absolute;
@@ -89,12 +91,6 @@
 			padding: 5px;
 		}
 		
-		.imageButton {
-			padding: 0 5px;
-			padding-top: 2px;
-			height: 38px;
-		}
-		
 		.infoPanel {
 			padding: 0px 30px;
 			background: #EEE;
@@ -105,10 +101,6 @@
 			display: -moz-box;
 			-moz-box-orient: horizontal;
 			-moz-box-align: center;			
-		}
-		
-		.imageButton:HOVER {
-			background-color: rgba(255, 255, 255, 0.2);
 		}
 		
 		.spacer {
@@ -168,30 +160,29 @@
 			border-bottom: 1px solid #BBB;
 		}
 	</ui:style>
-	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<p:MousePanel ui:field="backPanel" styleName="{style.body}">
 		<p:PlaceBookToolbar ui:field="toolbar" />
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<p:PlaceBookSaveItem ui:field="saveItem" addStyleNames="{style.spacer}" />
-				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg description="Actions">Actions</ui:msg></p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
-			<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
+			<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />	
 		</g:FlowPanel>
 		<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
-			<g:Label ui:field="newPage" styleName="{style.menuItem}">New Page</g:Label>		
-			<g:Label ui:field="deletePage" styleName="{style.menuItem}">Delete Page</g:Label>
-			<g:Label ui:field="permissions" styleName="{style.menuItem}">Edit Permissions</g:Label>
-			<g:Label ui:field="publish" styleName="{style.menuItem}">Publish</g:Label>		
-			<g:Label ui:field="preview" styleName="{style.menuItem}">Preview</g:Label>		
+			<g:Label ui:field="newPage" styleName="{style.menuItem}"><ui:msg description="New Page">New Page</ui:msg></g:Label>		
+			<g:Label ui:field="deletePage" styleName="{style.menuItem}"><ui:msg description="Delete Page">Delete Page</ui:msg></g:Label>
+			<g:Label ui:field="permissions" styleName="{style.menuItem}"><ui:msg description="Edit Permissions">Edit Permissions</ui:msg></g:Label>
+			<g:Label ui:field="publish" styleName="{style.menuItem}"><ui:msg description="Publish">Publish</ui:msg></g:Label>		
+			<g:Label ui:field="preview" styleName="{style.menuItem}"><ui:msg description="Preview">Preview</ui:msg></g:Label>		
 			<g:FlowPanel styleName="{style.zoomPanel}">
-				<g:Label styleName="{style.zoomLabel}">Zoom</g:Label>
+				<g:Label styleName="{style.zoomLabel}"><ui:msg description="Zoom">Zoom</ui:msg></g:Label>
 				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
 				<g:Label ui:field="zoomLabel">100%</g:Label>
 				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
 			</g:FlowPanel>
-			<g:Label ui:field="deleteBook" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
+			<g:Label ui:field="deleteBook" styleName="{style.menuItem}"><ui:msg description="Delete PlaceBook">Delete PlaceBook</ui:msg></g:Label>			
 		</p:DropMenu>
 		<pal:Palette styleName="{style.palette}" ui:field="palette" />
 		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		

@@ -105,9 +105,9 @@ public class PlaceBookController
 
 	public boolean canAdd(final PlaceBookItem addItem)
 	{
-		if (pages instanceof PlaceBookPagesBook)
+		if (pages instanceof PlaceBookPages)
 		{
-			final PlaceBookPagesBook bookPages = (PlaceBookPagesBook) pages;
+			final PlaceBookPages bookPages = (PlaceBookPages) pages;
 			final PlaceBook page = bookPages.getCurrentPage();
 			return canAdd(page, addItem);
 		}

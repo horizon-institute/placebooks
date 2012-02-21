@@ -448,7 +448,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	{
 		setZoom(zoom + 20);
 	}
-
+	
 	@UiHandler("zoomOut")
 	void handleZoomOut(final ClickEvent event)
 	{

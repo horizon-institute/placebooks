@@ -96,7 +96,7 @@
 				<g:Label ui:field="delete" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
 			</p:DropMenu>		
 		</g:FlowPanel>		
-		<p:PlaceBookPagesBook ui:field="bookPanel" styleName="{style.bookPanel}" />
+		<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />
 		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
 	</g:FlowPanel>
 </ui:UiBinder>
