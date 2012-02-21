@@ -24,7 +24,7 @@ public class Palette extends FlowPanel
 	private static final String NEW_IMAGE_ITEM = "{\"@class\":\"placebooks.model.ImageItem\",\"metadata\":{\"title\":\"Image\"},\"parameters\":{}}";
 	private static final String NEW_VIDEO_ITEM = "{\"@class\":\"placebooks.model.VideoItem\",\"metadata\":{\"title\":\"Video\"},\"parameters\":{}}";
 
-	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"metadata\":{\"title\":\"GPS Route\"},\"parameters\":{}}";
+	private static final String NEW_GPS_ITEM = "{\"@class\":\"placebooks.model.GPSTraceItem\",\"metadata\":{\"title\":\"Map\"},\"parameters\":{}}";
 
 	private PaletteFolder currentFolder = null;
 
