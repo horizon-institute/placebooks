@@ -33,6 +33,7 @@ public abstract class MediaItem extends PlaceBookItemWidget
 		super(item, handler);
 		panel = new SimplePanel();
 		panel.setWidth("100%");
+		panel.setHeight("100%");
 		initWidget(panel);
 	}
 
@@ -89,8 +90,8 @@ public abstract class MediaItem extends PlaceBookItemWidget
 			{
 				setURL(item.getURL());
 			}
-			checkSize();
 		}
+		checkSize();		
 		this.hash = item.getHash();
 	}
 
