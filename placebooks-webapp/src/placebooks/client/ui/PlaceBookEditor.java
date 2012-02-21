@@ -260,16 +260,19 @@ public class PlaceBookEditor extends PlaceBookPlace
 			@Override
 			public void run()
 			{
-				int versionNumber = 0;
-				try
+				if(saveItem.getState() == SaveState.not_saved)
 				{
-					versionNumber = placebook.getParameter("version", 0);
+					int versionNumber = 0;
+					try
+					{
+						versionNumber = placebook.getParameter("version", 0);
+					}
+					catch (final NumberFormatException e)
+					{
+						GWT.log(e.getMessage(), e);
+					}
+					placebook.setParameter("version", versionNumber + 1);
 				}
-				catch (final NumberFormatException e)
-				{
-					GWT.log(e.getMessage(), e);
-				}
-				placebook.setParameter("version", versionNumber + 1);
 				dataStore.put(placebook.getId(), placebook, new JSONResponse<PlaceBookBinder>()
 				{
 					@Override
