@@ -162,7 +162,7 @@ public abstract class MediaItem extends PlaceBookItem
 		attemptPathFix();
 		if(path==null)
 		{
-			RedownloadItem();
+			//RedownloadItem();
 		}
 		return path;
 	}
@@ -323,7 +323,7 @@ public abstract class MediaItem extends PlaceBookItem
 	 */
 	public void writeDataToDisk(final String name, final InputStream is) throws IOException
 	{
-		if (this.path != null)
+		if (this.path != null && (new File(this.path)).exists())
 		{
 			log.info("Cleaning existing file");
 			deleteItemData();
@@ -344,7 +344,8 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 
 		String dir = PropertiesSingleton.get(this.getClass().getClassLoader()).getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-		File tempFile = File.createTempFile(name, "", getSavePath());
+		log.info("name=" + name + "; " + getSavePath().toString());
+		final File tempFile = File.createTempFile(name, "", getSavePath());
 		String tempSaveName = tempFile.getName();
 		try
 		{
@@ -373,7 +374,7 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		finally
 		{
-			File tempCheck = new File(tempSaveName);
+			final File tempCheck = new File(tempSaveName);
 			if(tempCheck.exists())
 			{
 				log.debug("Deleting: " + tempCheck.getAbsolutePath());
