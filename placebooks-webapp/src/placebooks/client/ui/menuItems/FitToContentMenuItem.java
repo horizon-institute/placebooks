@@ -26,6 +26,7 @@ public class FitToContentMenuItem extends MenuItem
 	public void run()
 	{
 		item.getItem().removeParameter("height");
+		item.getItemWidget().refresh();
 		item.getPanel().reflow();
 		controller.markChanged();
 	}

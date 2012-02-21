@@ -350,10 +350,10 @@ public class PlaceBookController
 		else if (dragState == DragState.resizing)
 		{
 			final int y = event.getClientY();
-			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 13;
-			final int canvasHeight = pages.getOffsetHeight();
+			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 10;
+			final int canvasHeight = dragItemFrame.getRootPanel().getParent().getElement().getOffsetHeight();
 			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
-
+			
 			dragItemFrame.getItem().setParameter("height", heightPCT);
 			dragItemFrame.getItemWidget().refresh();
 			dragItemFrame.getPanel().reflow();

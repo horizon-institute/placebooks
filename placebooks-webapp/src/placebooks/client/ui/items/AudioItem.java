@@ -26,30 +26,20 @@ public class AudioItem extends MediaItem
 			}
 		});
 	}
-
-	// @Override
-	// public void refresh()
-	// {
-	// if (getItem().hasParameter("height"))
-	// {
-	// audio.setHeight("100%");
-	// }
-	// else
-	// {
-	// audio.getElement().getStyle().clearHeight();
-	// }
-	// if (url == null || !url.equals(getItem().getURL()))
-	// {
-	// url = getItem().getURL();
-	// audio.setSrc(url);
-	// checkSize();
-	// }
-	// }
+	
+	protected void checkHeightParam()
+	{
+		getMediaWidget().setWidth("100%");
+		if (getItem().hasParameter("height"))
+		{
+			getMediaWidget().setHeight("100%");
+		}
+	}
 
 	@Override
 	protected int getMediaHeight()
 	{
-		return audio.getOffsetHeight();
+		return -1;
 	}
 
 	@Override

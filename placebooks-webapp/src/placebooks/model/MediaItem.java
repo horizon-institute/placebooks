@@ -129,10 +129,9 @@ public abstract class MediaItem extends PlaceBookItem
 	@Override
 	public boolean deleteItemData()
 	{
-		// TODO: check no other items are using this file!
 		final EntityManager em = EMFSingleton.getEntityManager();
-		TypedQuery<MediaItem> q = em.createQuery("SELECT item FROM MediaItem as item WHERE (item.hash = ?1) AND (item.id != :id)", MediaItem.class);
-		q.setParameter(1, this.getHash());
+		TypedQuery<MediaItem> q = em.createQuery("SELECT item FROM MediaItem as item WHERE (item.hash = :hash) AND (item.id != :id)", MediaItem.class);
+		q.setParameter("hash", this.getHash());
 		q.setParameter("id", this.getKey());
 		if(q.getResultList().size()==0)
 		{
