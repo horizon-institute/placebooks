@@ -1603,7 +1603,7 @@ public class PlaceBooksAdminController
 					if (placebook.getMetadataValue("placebookImage") != null)
 					{
 						writer.write("<meta property=\"og:image\" content=\"" + urlbase
-								+ "placebooks/a/admin/serve/imageitem/" + placebook.getMetadataValue("placebookImage")
+								+ "placebooks/a/admin/serve/media/imageitem/" + placebook.getMetadataValue("placebookImage")
 								+ "\"/>");
 					}
 					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
