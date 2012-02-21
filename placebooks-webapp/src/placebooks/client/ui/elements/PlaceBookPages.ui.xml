@@ -34,7 +34,6 @@
 		.pageButton {
 			position: absolute;
 			bottom: 0px;
-			cursor: pointer;
 			background: #ddd;
 			border: 2px solid #eee;
 			border-bottom: 0px;
@@ -48,6 +47,7 @@
 		}
 		
 		.pageEnabled {
+			cursor: pointer;	
 		}
 		
 		.pageEnabled:HOVER {
