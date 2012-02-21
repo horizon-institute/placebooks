@@ -443,7 +443,7 @@ public class PlaceBooksAdminController
 		try
 		{
 			final PlaceBookBinder pb = manager.find(PlaceBookBinder.class, key);
-			if (pb != null)
+			if (pb != null && pb.getState() != PlaceBookBinder.State.PUBLISHED)
 			{
 				if (pb.getOwner() != user)
 				{
