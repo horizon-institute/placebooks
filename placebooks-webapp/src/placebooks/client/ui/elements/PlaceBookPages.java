@@ -98,24 +98,29 @@ public class PlaceBookPages extends Composite
 
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
 		{
-			if (this.left != null)
-			{
-				this.left.setVisible(false);
-			}
-			if (this.right != null)
-			{
-				this.right.setVisible(false);
-			}
-
 			flip.cancel();
-			this.left = left;
-			this.right = right;
+			if(this.left != left)
+			{
+				if (this.left != null)
+				{
+					this.left.setVisible(false);
+				}				
+				this.left = left;
+				left.reflow();	
+			}
 			left.setVisible(true);
-			left.reflow();
-			left.getElement().getStyle().setZIndex(1);
+			left.getElement().getStyle().setZIndex(1);			
+			if(this.right != right)
+			{
+				if (this.right != null)
+				{
+					this.right.setVisible(false);
+				}				
+				this.right = right;
+				right.reflow();			
+			}
 			right.setVisible(true);
-			right.reflow();
-			right.getElement().getStyle().setZIndex(0);
+			right.getElement().getStyle().setZIndex(0);			
 		}
 	}
 
@@ -364,6 +369,8 @@ public class PlaceBookPages extends Composite
 		currentPage.setVisible(true);
 		currentPage.getElement().getStyle().setZIndex(1);
 		
+		currentPage.reflow();
+		
 		if(currentPage.getIndex() == 0)
 		{
 			prevPage.removeStyleName(style.pageEnabled());
@@ -461,9 +468,12 @@ public class PlaceBookPages extends Composite
 		{
 			if (mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
 			{
-				flip.state = FlipState.edgeHighlight;
-				flip.cancel();
-				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+				if(flip.state != FlipState.edgeHighlight)
+				{
+					flip.cancel();
+					flip.state = FlipState.edgeHighlight;
+					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+				}
 				drawFlip(currentPage, Math.max(Math.min(mouseX / pageWidth, 1), -1));
 			}
 			else if (flip.state == FlipState.edgeHighlight)

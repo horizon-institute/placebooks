@@ -2,11 +2,11 @@ package placebooks.client.ui.items;
 
 import placebooks.client.JSONResponse;
 import placebooks.client.model.DataStore;
+import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
@@ -63,6 +63,14 @@ public class MapItem extends PlaceBookItemWidget
 			return "server.info";
 		}
 	};
+
+	@Override
+	public String resize()
+	{
+		String size = super.resize();
+		recenter();
+		return size;
+	}
 
 	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
@@ -126,10 +134,10 @@ public class MapItem extends PlaceBookItemWidget
 		if (markerLayer == null) { return; }
 		markerLayer.clearMarkers();
 
-		for (final PlaceBookPage page : controller.getPages().getPages())
+		for (final PlaceBook page : controller.getPages().getPlaceBook().getPages())
 		{
-			for (final PlaceBookItem item : page.getPlaceBook().getItems())
-			{
+			for (final PlaceBookItem item : page.getItems())
+			{		
 				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
 				{
 					if (item.getGeometry() != null)
@@ -167,8 +175,6 @@ public class MapItem extends PlaceBookItemWidget
 				}
 			});
 		}
-
-		createRoute();
 	}
 
 	private void createMap(final ServerInfo serverInfo)
@@ -280,7 +286,7 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null) { return; }
 		if (!isVisible()) { return; }
-
+	
 		try
 		{
 			map.setCenter(LonLat.create(-1.10f, 52.58f).transform(map.getDisplayProjection(), map.getProjection()), 12);
