@@ -443,9 +443,10 @@ public class PlaceBooksAdminController
 		try
 		{
 			final PlaceBookBinder pb = manager.find(PlaceBookBinder.class, key);
-			if (pb != null && pb.getState() != PlaceBookBinder.State.PUBLISHED)
+			if (pb != null)
 			{
-				if (pb.getOwner() != user)
+				if (pb.getState() != PlaceBookBinder.State.PUBLISHED && 
+					pb.getOwner() != user)
 				{
 					log.debug("This user is not the owner");
 					final PlaceBookBinder.Permission perms = 	
