@@ -3,7 +3,6 @@ package placebooks.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -47,6 +46,7 @@ public abstract class MediaItem extends PlaceBookItem
 	{
 		super(m);
 		this.path = m.getPath();
+		this.hash = m.getHash();
 	}
 
 	public MediaItem(final User owner, final Geometry geom, final URL sourceURL, final String file)
