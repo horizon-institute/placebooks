@@ -54,7 +54,7 @@ public class PlaceBookEntryPreview extends Composite
 
 		if (entry.getPreviewImage() != null)
 		{
-			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/imageitem/"
+			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/imageitem/"
 					+ entry.getPreviewImage());
 		}
 		else

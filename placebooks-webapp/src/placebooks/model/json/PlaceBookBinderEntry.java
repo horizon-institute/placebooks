@@ -28,7 +28,7 @@ public class PlaceBookBinderEntry extends ShelfEntry
 		setOwner(placebookBinder.getOwner().getKey());
 		setTimestamp(placebookBinder.getTimestamp());
 		this.description = placebookBinder.getMetadataValue("description");
-		this.previewImage = placebookBinder.getMetadataValue("placebookBinderImage");
+		this.previewImage = placebookBinder.getMetadataValue("placebookImage");
 		this.numPlaceBooks = placebookBinder.getPlaceBooks().size();
 		this.packagePath = placebookBinder.getPackagePath();
 		this.state = placebookBinder.getState().toString();

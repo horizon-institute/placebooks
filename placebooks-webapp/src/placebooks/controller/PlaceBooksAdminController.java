@@ -1603,7 +1603,7 @@ public class PlaceBooksAdminController
 					if (placebook.getMetadataValue("placebookImage") != null)
 					{
 						writer.write("<meta property=\"og:image\" content=\"" + urlbase
-								+ "placebooks/a/admin/serve/imageitem/" + placebook.getMetadataValue("placebookImage")
+								+ "placebooks/a/admin/serve/media/imageitem/" + placebook.getMetadataValue("placebookImage")
 								+ "\"/>");
 					}
 					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
@@ -1649,6 +1649,13 @@ public class PlaceBooksAdminController
 		{
 			pm.getTransaction().begin();
 			final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
+			for(PlaceBook placebook: p.getPlaceBooks())
+			{
+				for(PlaceBookItem item: placebook.getItems())
+				{
+					item.deleteItemData();
+				}
+			}
 			pm.remove(p);
 			pm.getTransaction().commit();
 		}

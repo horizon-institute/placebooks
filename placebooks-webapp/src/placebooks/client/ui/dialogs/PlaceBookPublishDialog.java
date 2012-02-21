@@ -177,7 +177,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		if (index >= 0 && index < imageItems.size())
 		{
 			final PlaceBookItemFrame frame = imageItems.get(index);
-			placebook.setMetadata("placebookImage", frame.getItem().getKey());
+			placebook.setMetadata("placebookImage", frame.getItem().getHash());
 		}
 
 		placebook.setMetadata("title", title.getText());
