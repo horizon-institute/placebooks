@@ -91,7 +91,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			{
 				setProgressVisible(true, "Uploading File...");
 				uploadButton.setEnabled(false);
-				GWT.log("Uploading File");
+				GWT.log("Uploading " + item.getItem().getKey());
 			}
 		});
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler()

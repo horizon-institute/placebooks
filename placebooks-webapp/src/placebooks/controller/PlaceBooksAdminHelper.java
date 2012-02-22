@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -686,15 +685,6 @@ public final class PlaceBooksAdminHelper
 
 			if (dbPlaceBook != null)
 			{
-				final List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
-				for (final PlaceBookItem item : placebook.getItems())
-				{
-					PlaceBookItem resultItem = updatePlaceBookItem(manager, item, currentUser, updateMedia);
-					resultItem.setPlaceBook(dbPlaceBook);
-					items.add(resultItem);
-				}
-				dbPlaceBook.setItems(items);
-
 				for (final Entry<String, String> entry : placebook.getMetadata().entrySet())
 				{
 					dbPlaceBook.addMetadataEntry(entry.getKey(), entry.getValue());
@@ -706,6 +696,15 @@ public final class PlaceBooksAdminHelper
 			}
 		}
 
+		final List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
+		for (final PlaceBookItem item : placebook.getItems())
+		{
+			PlaceBookItem resultItem = updatePlaceBookItem(manager, item, currentUser, updateMedia);
+			resultItem.setPlaceBook(result);
+			items.add(resultItem);
+		}
+		result.setItems(items);
+		
 		if (result.getOwner() == null)
 		{
 			result.setOwner(currentUser);
@@ -808,6 +807,15 @@ public final class PlaceBooksAdminHelper
 				result = dbBinder;
 			}
 		}
+
+		final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
+		for (final PlaceBook placebook : binder.getPlaceBooks())
+		{
+			PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
+			pbresult.setPlaceBookBinder(result);
+			placebooks.add(pbresult);
+		}
+		result.setPlaceBooks(placebooks);
 
 		if (result.getOwner() == null)
 		{

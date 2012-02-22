@@ -483,6 +483,10 @@ public class PlaceBooksAdminController
 					log.error(e.toString());
 				}
 			}
+			else
+			{
+				res.setStatus(404);
+			}
 		}
 		catch (final Throwable e)
 		{
