@@ -1,6 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
 		.button {
 			margin: 10px 0 0 0;
@@ -17,8 +19,8 @@
 	<g:FlowPanel>
 		<g:Label ui:field="textLabel" />
 		<g:FlowPanel styleName="{style.buttonPanel}">
-			<g:Button ui:field="accept">Ok</g:Button>
-			<g:Button ui:field="cancel">Cancel</g:Button>			
+			<g:Button ui:field="accept"><ui:msg>Ok</ui:msg></g:Button>
+			<g:Button ui:field="cancel"><ui:msg>Cancel</ui:msg></g:Button>			
 		</g:FlowPanel>			
 	</g:FlowPanel>
 </ui:UiBinder> 

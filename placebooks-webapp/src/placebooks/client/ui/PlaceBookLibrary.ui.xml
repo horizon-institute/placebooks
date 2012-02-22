@@ -1,26 +1,27 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
-		.title 
-		{
+		.title {
 			font-style: mako, sans-serif;
 			font-size: 26px;
 			font-weight: bold;
 			margin: 20px auto 10px auto;
 			color: #384967;
 			width: 80%;
-			
 		}
 		
 		.parent {
 			height: 100%;
 		}
-	</ui:style>	
+	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
-		<p:PlaceBookToolbar ui:field="toolbar"/>
-		
-		<g:Label ui:field="titleLabel" styleName="{style.title}">Library</g:Label>
-		<p:PlaceBookShelf ui:field="shelf" />	
+		<p:PlaceBookToolbar ui:field="toolbar" />
+
+		<g:Label ui:field="titleLabel" styleName="{style.title}"><ui:msg>Library</ui:msg></g:Label>
+		<p:PlaceBookShelf ui:field="shelf" />
 	</g:FlowPanel>
 </ui:UiBinder>

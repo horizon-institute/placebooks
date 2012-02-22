@@ -25,8 +25,8 @@
 			<g:ListBox ui:field="permissionsBox"/>
 		</g:FlowPanel>
 		<g:FlowPanel> 	
-			<g:Button ui:field="addUser" styleName="{style.button}">New User</g:Button>
-			<g:Button ui:field="removePermission">Remove</g:Button>
+			<g:Button ui:field="addUser" styleName="{style.button}"><ui:msg>New User</ui:msg></g:Button>
+			<g:Button ui:field="removePermission"><ui:msg>Remove</ui:msg></g:Button>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

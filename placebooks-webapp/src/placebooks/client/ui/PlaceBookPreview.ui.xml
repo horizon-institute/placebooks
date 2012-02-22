@@ -1,6 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
-	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
 		.infoPanel {
 			padding: 0px 30px;
@@ -16,13 +19,13 @@
 			margin-right: 5px;
 		}
 		
-		.author	{
+		.author {
 			margin-right: 5px;
 		}
 		
 		.dropArrow {
 			vertical-align: 20%;
-		} 
+		}
 		
 		.parent {
 			position: absolute;
@@ -41,14 +44,13 @@
 		
 		.actionMenu {
 			font: 16px verdana, arial, sans-serif;
-			padding: 5px;			
-		}
-				
-		.bookPanel {
-			-webkit-box-flex: 1;	
-			position: relative;
+			padding: 5px;
 		}
 		
+		.bookPanel {
+			-webkit-box-flex: 1;
+			position: relative;
+		}
 		
 		.dropMenu {
 			position: absolute;
@@ -68,35 +70,36 @@
 			padding: 3px 12px;
 			cursor: pointer;
 			border-top: 1px solid #FFF;
-			border-bottom: 1px solid #FFF;			
+			border-bottom: 1px solid #FFF;
 		}
 		
 		.menuItem:HOVER {
 			background: #ccc;
 			border-top: 1px solid #BBB;
 			border-bottom: 1px solid #BBB;
-		}		
-	</ui:style>	
+		}
+	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<p:PlaceBookToolbar ui:field="toolbar" />
 			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
 				<g:FlowPanel styleName="{style.spacer}">
 					<g:Label ui:field="titleLabel" styleName="{style.title}" />
-					<g:FlowPanel>			
+					<g:FlowPanel>
 						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
-						<g:Anchor ui:field="authorLabel" styleName="{style.author}"/>
-					</g:FlowPanel>					
+						<g:Anchor ui:field="authorLabel" styleName="{style.author}" />
+					</g:FlowPanel>
 				</g:FlowPanel>
-				<p:GooglePlusOne ui:field="googlePlus"/>			
-				<p:FacebookLikeButton ui:field="facebookLike"/>				
-				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}">Actions</p:PlaceBookToolbarItem>				
+				<p:GooglePlusOne ui:field="googlePlus" />
+				<p:FacebookLikeButton ui:field="facebookLike" />
+				<p:PlaceBookToolbarItem ui:field="actionMenu"
+					addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>
 			</g:FlowPanel>
 			<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
-				<g:Label ui:field="delete" styleName="{style.menuItem}">Delete PlaceBook</g:Label>			
-			</p:DropMenu>		
-		</g:FlowPanel>		
+				<g:Label ui:field="delete" styleName="{style.menuItem}"><ui:msg>Delete PlaceBook</ui:msg></g:Label>
+			</p:DropMenu>
+		</g:FlowPanel>
 		<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />
-		<p:ProgressPanel ui:field="loadingPanel" text="Loading..."/>		
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..." />
 	</g:FlowPanel>
 </ui:UiBinder>

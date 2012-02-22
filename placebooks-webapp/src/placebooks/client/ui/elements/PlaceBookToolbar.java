@@ -19,10 +19,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.UrlBuilder;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -30,6 +35,11 @@ public class PlaceBookToolbar extends Composite
 {
 	interface PlaceBookToolbarUiBinder extends UiBinder<Widget, PlaceBookToolbar>
 	{
+	}
+
+	interface ToolbarStyle extends CssResource
+	{
+		String toolbarMenuItem();
 	}
 
 	private static final PlaceBookToolbarUiBinder uiBinder = GWT.create(PlaceBookToolbarUiBinder.class);
@@ -48,6 +58,12 @@ public class PlaceBookToolbar extends Composite
 
 	@UiField
 	PlaceBookToolbarItem accountItem;
+
+	@UiField
+	Panel languagePanel;
+
+	@UiField
+	ToolbarStyle style;
 
 	@UiField
 	Panel loginPanel;
@@ -75,6 +91,40 @@ public class PlaceBookToolbar extends Composite
 	{
 		super();
 		initWidget(uiBinder.createAndBindUi(this));
+
+		for (final String localeName : LocaleInfo.getAvailableLocaleNames())
+		{
+			if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
+			{
+				final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+				final Label label = new Label(displayName);
+				label.setStyleName(style.toolbarMenuItem());
+				label.addClickHandler(new ClickHandler()
+				{
+					@Override
+					public void onClick(final ClickEvent event)
+					{
+						final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+						urlBuilder.setHash(Window.Location.getHash());
+						urlBuilder.setHost(Window.Location.getHost());
+						urlBuilder.setPath(Window.Location.getPath());
+						if (Window.Location.getPort() != null)
+						{
+							urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+						}
+						urlBuilder.setProtocol(Window.Location.getProtocol());
+						for (final String key : Window.Location.getParameterMap().keySet())
+						{
+							urlBuilder.setParameter(key, Window.Location.getParameter(key));
+						}
+						urlBuilder.setParameter("locale", localeName);
+
+						Window.Location.replace(urlBuilder.buildString());
+					}
+				});
+				languagePanel.add(label);
+			}
+		}
 
 		loginPanel.setVisible(false);
 

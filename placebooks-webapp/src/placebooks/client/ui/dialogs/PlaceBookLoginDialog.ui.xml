@@ -15,9 +15,9 @@
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
 	<g:FlowPanel>
-		<g:Label ui:field="usernameLabel">UserName:</g:Label>
+		<g:Label ui:field="usernameLabel"><ui:msg>UserName</ui:msg>:</g:Label>
 		<g:TextBox ui:field="username"  name="pb_username" />
-		<g:Label>Password:</g:Label>
+		<g:Label><ui:msg>Password</ui:msg>:</g:Label>
 		<g:PasswordTextBox ui:field="password" name="pb_password" />
 		<g:SimplePanel styleName="{style.buttonPanel}"><g:Button styleName="{style.button}" ui:field="submit">Link Everytrail Account</g:Button></g:SimplePanel>
 	</g:FlowPanel>

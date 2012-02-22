@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements"
 	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
-	ui:generateLocales="default">
+	ui:generateLocales="en">
 	<ui:style>
 		.title {
 			margin-top: 30px;
@@ -114,10 +114,10 @@
 						<g:Image resource="{images.splash}" styleName="{style.image}" />
 						<g:FlowPanel styleName="{style.overImage}">
 							<g:Label styleName="{style.overImageTitle}">
-								<ui:msg description="subtitle">CREATE, SHARE, DOWNLOAD AND ENJOY</ui:msg>
+								<ui:msg>CREATE, SHARE, DOWNLOAD AND ENJOY</ui:msg>
 							</g:Label>
 							<g:HTML>
-								<ui:msg description="description">
+								<ui:msg>
 									PlaceBooks enable you to create digital booklets about your
 									favourite places and interests.
 									<br />
@@ -138,15 +138,15 @@
 						<g:Image resource="{images.search}" />
 					</p:MousePanel>
 					<g:TextBox ui:field="search" styleName="{style.search}">
-						<ui:msg description="searchmessage">Search PlaceBooks</ui:msg>
+						<ui:msg>Search PlaceBooks</ui:msg>
 					</g:TextBox>
 				</g:FlowPanel>
 				<g:Label styleName="{style.listTitle}">
-					<ui:msg description="reqtitle">WHAT YOU NEED TO MAKE A PLACEBOOK</ui:msg>
+					<ui:msg>WHAT YOU NEED TO MAKE A PLACEBOOK</ui:msg>
 				</g:Label>
 				<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_chrome}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqchrome">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>
 							<a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">Google Chrome</a>
 						</b>, PlaceBooks is designed to work on Google Chrome. We recommend
@@ -158,7 +158,7 @@
 				</g:FlowPanel>
 				<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_phone}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqphone">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>A smart phone</b>, if you want to track your routes and generate geo-tagged content
 						while you are out and about, either an
 						<a href="http://androidphone.org.uk/guides/what-is-an-android-phone/">Android</a>
@@ -169,7 +169,7 @@
 				</g:FlowPanel>
 				<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_logo}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqapp">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>
 							<a href="#appinstall:">A PlaceBooks App</a>
 						</b>
@@ -179,7 +179,7 @@
 				</g:FlowPanel>
 				<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_everytrail}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqeverytrail">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>
 							<a href="http://www.everytrail.com/">EveryTrail</a>
 						</b>, this allows you to track your routes and generate geo-tagged
@@ -196,7 +196,7 @@
 				</g:FlowPanel>
 				<!--<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_youtube}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqyoutube">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>
 							<a href="http://www.youtube.com">YouTube</a>
 						</b>
@@ -208,7 +208,7 @@
 				</g:FlowPanel>-->
 				<g:FlowPanel styleName="{style.listItem}">
 					<g:Image styleName="{style.listImage}" resource="{images.listitem_video}" />
-					<g:HTML styleName="{style.listText}"><ui:msg description="reqconv">
+					<g:HTML styleName="{style.listText}"><ui:msg>
 						<b>
 							<a href="http://www.ixconverter.com">IXConverter</a>
 						</b>, this free online service allows you download your YouTube videos

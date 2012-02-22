@@ -1,6 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
 		.title {
 			font-style: mako, sans-serif;
@@ -67,12 +69,12 @@
 		<g:FlowPanel styleName="{style.searchBlock}">
 
 			<g:FlowPanel styleName="{style.searchBar}">
-				<g:TextBox ui:field="searchBox" styleName="{style.search}">Search PlaceBooks</g:TextBox>
+				<g:TextBox ui:field="searchBox" styleName="{style.search}"><ui:msg>Search PlaceBooks</ui:msg></g:TextBox>
 				<p:MousePanel styleName="{style.searchButton}" ui:field="searchButton">
 					<g:Image resource="{images.search}" />
 				</p:MousePanel>
 			</g:FlowPanel>
-			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}">Find Nearby PlaceBooks</g:Anchor>
+			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}"><ui:msg>Find Nearby PlaceBooks</ui:msg></g:Anchor>
 		</g:FlowPanel>
 
 		<p:PlaceBookShelf ui:field="shelf" />

@@ -1,17 +1,19 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<g:FlowPanel>
 		<g:FlowPanel>
-			<g:Label>Name:</g:Label>
+			<g:Label><ui:msg>Name</ui:msg>:</g:Label>
 			<g:TextBox ui:field="name" />
-			<g:Label>Email:</g:Label>
+			<g:Label><ui:msg>Email</ui:msg>:</g:Label>
 			<g:TextBox ui:field="email" />		
-			<g:Label>Password:</g:Label>
+			<g:Label><ui:msg>Password</ui:msg>:</g:Label>
 			<g:PasswordTextBox ui:field="password" />
-			<g:Label>Password Confirmation:</g:Label>
+			<g:Label><ui:msg>Password Confirmation</ui:msg>:</g:Label>
 			<g:PasswordTextBox ui:field="passwordConfirm" />
-			<g:SimplePanel><g:Button ui:field="createAccount">Create Account</g:Button></g:SimplePanel>
+			<g:SimplePanel><g:Button ui:field="createAccount"><ui:msg>Create Account</ui:msg></g:Button></g:SimplePanel>
 		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

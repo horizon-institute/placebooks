@@ -6,12 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
-
 import java.math.BigInteger;
-
 import java.net.URL;
-import java.net.URLConnection;
-
 import java.security.MessageDigest;
 
 import javax.persistence.Entity;
@@ -34,9 +30,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.CommunicationHelper;
-
+import placebooks.controller.PropertiesSingleton;
 import placebooks.model.jaxb.GPX10.Gpx;
 import placebooks.model.jaxb.GPX11.GpxType;
 import placebooks.model.jaxb.GPX11.RteType;
