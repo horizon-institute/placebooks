@@ -18,12 +18,12 @@ public class Events extends JavaScriptObject
 		this.on(object);
 	}-*/;
 
-	public final native void register(String type, JavaScriptObject obj, EventHanderFunction handler)
+	public final native void register(String type, JavaScriptObject obj, EventHandlerFunction handler)
 	/*-{
 		this.register(type, obj, handler);
 	}-*/;
 
-	public final native void unregister(String type, JavaScriptObject obj, EventHanderFunction handler)
+	public final native void unregister(String type, JavaScriptObject obj, EventHandlerFunction handler)
 	/*-{
 		this.unregister(type, obj, handler);
 	}-*/;

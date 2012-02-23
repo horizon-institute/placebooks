@@ -435,4 +435,9 @@ public class PlaceBookController
 		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 		dropMenu.getElement().getStyle().setOpacity(0);
 	}
+
+	public void goToPage(PlaceBook page)
+	{
+		pages.goToPage(page);		
+	}
 }

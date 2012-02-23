@@ -23,6 +23,8 @@ import placebooks.client.ui.openlayers.RouteLayer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class MapItem extends PlaceBookItemWidget
@@ -49,6 +51,10 @@ public class MapItem extends PlaceBookItemWidget
 	private RouteLayer routeLayer;
 
 	private String url;
+	
+	private final PopupPanel popup = new PopupPanel();
+	
+	private final Label popupLabel = new Label();
 
 	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
 
@@ -72,6 +78,11 @@ public class MapItem extends PlaceBookItemWidget
 			item.setParameter("height", 5000);
 		}
 
+		popup.add(popupLabel);
+		popup.getElement().getStyle().setZIndex(1600);
+		popup.getElement().getStyle().setBackgroundColor("#FFA");	
+		popup.getElement().getStyle().setProperty("padding", "2px 4px");
+		
 		createMap();
 	}
 
@@ -137,6 +148,32 @@ public class MapItem extends PlaceBookItemWidget
 									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
 									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
 							final Marker marker = Marker.create(getMarker(item), lonlat);
+							marker.getEvents().register("click", marker, EventHandler.createHandler(new EventHandler()
+							{
+								@Override
+								protected void handleEvent(Event event)
+								{
+									controller.goToPage(page);
+								}
+							}));
+							marker.getEvents().register("mouseover", marker, EventHandler.createHandler(new EventHandler()
+							{
+								@Override
+								protected void handleEvent(Event event)
+								{
+									popupLabel.setText(item.getMetadata("title"));
+									popup.setPopupPosition(marker.getIcon().getImageDiv().getAbsoluteLeft(), marker.getIcon().getImageDiv().getAbsoluteTop() - 20);
+									popup.show();
+								}
+							}));		
+							marker.getEvents().register("mouseout", marker, EventHandler.createHandler(new EventHandler()
+							{
+								@Override
+								protected void handleEvent(Event event)
+								{
+									popup.hide();
+								}
+							}));							
 							if (positionItem != null && !item.equals(positionItem))
 							{
 								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);

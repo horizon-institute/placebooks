@@ -4,7 +4,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 public class ClickControl extends JavaScriptObject
 {
-	public static final native ClickControl create(EventHanderFunction eventHandler)
+	public static final native ClickControl create(EventHandlerFunction eventHandler)
 	/*-{
 		$wnd.OpenLayers.Control.Click = $wnd.OpenLayers.Class($wnd.OpenLayers.Control, {
 				defaultHandlerOptions: {
