@@ -155,15 +155,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	@Override
 	public void setPanel(final PlaceBookColumn newPanel)
 	{
-		if (panel == newPanel) { return; }
-		if (panel != null)
+		if (column == newPanel) { return; }
+		if (column != null)
 		{
-			panel.remove(frame);
+			column.remove(frame);
 		}
 		super.setPanel(newPanel);
-		if (panel != null)
+		if (column != null)
 		{
-			panel.add(frame);
+			column.add(frame);
 		}
 	}
 

@@ -22,7 +22,7 @@ public class DeleteItemMenuItem extends MenuItem
 	@Override
 	public void run()
 	{
-		final PlaceBookColumn panel = item.getPanel();
+		final PlaceBookColumn panel = item.getColumn();
 		panel.getPage().remove(item);
 		item.setPanel(null);
 		if (panel != null)

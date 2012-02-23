@@ -156,11 +156,11 @@ public class PlaceBookPage extends Composite
 	{
 		if (item == null) { return; }
 		items.add(item);
-		int columnIndex = item.getItem().getParameter("panel", 0);
+		int columnIndex = item.getItem().getParameter("column", 0);
 		if (columnIndex >= columns.size())
 		{
 			columnIndex = columnIndex % columns.size();
-			item.getItem().setParameter("panel", columnIndex);
+			item.getItem().setParameter("column", columnIndex);
 		}
 		item.setPanel(columns.get(columnIndex));
 	}

@@ -73,7 +73,7 @@ public class PlaceBookController
 	private int offsetx;
 	private int offsety;
 
-	private PlaceBookColumn oldPanel = null;
+	private PlaceBookColumn oldColumn = null;
 
 	private int originx;
 	private int originy;
@@ -272,9 +272,9 @@ public class PlaceBookController
 		final int canvasy = event.getY();// RelativeY(canvas.getElement());
 		for (final PlaceBookPage page : pages.getPages())
 		{
-			for (final PlaceBookColumn panel : page.getColumns())
+			for (final PlaceBookColumn column : page.getColumns())
 			{
-				if (panel.isIn(canvasx, canvasy)) { return panel; }
+				if (column.isIn(canvasx, canvasy)) { return column; }
 			}
 		}
 		return null;
@@ -290,7 +290,7 @@ public class PlaceBookController
 				GWT.log("Drag Start");
 				if (dragItemFrame != null)
 				{
-					dragItemFrame.getPanel().getPage().remove(dragItemFrame);
+					dragItemFrame.getColumn().getPage().remove(dragItemFrame);
 					// TODO pages.remove(dragItemFrame);
 				}
 				dragFrame.setItemWidget(dragItem);
@@ -330,16 +330,16 @@ public class PlaceBookController
 			dragFrame.getRootPanel().getElement().getStyle().setLeft(event.getClientX() - offsetx, Unit.PX);
 			dragFrame.getRootPanel().getElement().getStyle().setTop(event.getClientY() - offsety, Unit.PX);
 
-			final PlaceBookColumn newPanel = getColumn(event);
-			if (oldPanel != newPanel && oldPanel != null)
+			final PlaceBookColumn newColumn = getColumn(event);
+			if (oldColumn != newColumn && oldColumn != null)
 			{
-				oldPanel.reflow();
+				oldColumn.reflow();
 			}
-			oldPanel = newPanel;
+			oldColumn = newColumn;
 
-			if (newPanel != null && canAdd(newPanel.getPage().getPlaceBook(), dragItem.getItem()))
-			{
-				newPanel.reflow(insert, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
+			if (canDrop(newColumn, dragFrame.getItem()))
+			{			
+				newColumn.reflow(insert, event.getRelativeY(newColumn.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
 			}
 			else
@@ -351,16 +351,40 @@ public class PlaceBookController
 		{
 			final int y = event.getClientY();
 			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 10;
-			final int canvasHeight = dragItemFrame.getRootPanel().getParent().getElement().getOffsetHeight();
-			final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
-			
-			dragItemFrame.getItem().setParameter("height", heightPCT);
-			dragItemFrame.getItemWidget().refresh();
-			dragItemFrame.getPanel().reflow();
+			final int maxHeight = dragItemFrame.getColumn().getRemainingHeight() + dragItemFrame.getRootPanel().getOffsetHeight();
+			setHeight(dragItemFrame, Math.min(heightPX, maxHeight));
 		}
 		event.stopPropagation();
 	}
 
+	private boolean canDrop(final PlaceBookColumn column, final PlaceBookItem item)
+	{
+		if(column == null)
+		{
+			return false;
+		}
+		if(!canAdd(column.getPage().getPlaceBook(), item))
+		{
+			return false;
+		}
+		if(column.getRemainingHeight() < (column.getOffsetHeight() * 0.05))
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	private void setHeight(final PlaceBookItemFrame item, final int heightPX)
+	{
+		GWT.log("Set Height: " + heightPX);
+		final int canvasHeight = item.getColumn().getOffsetHeight();
+		final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
+		
+		item.getItem().setParameter("height", heightPCT);
+		item.getItemWidget().refresh();
+		item.getColumn().reflow();
+	}
+	
 	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
@@ -370,24 +394,31 @@ public class PlaceBookController
 			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			insert.removeFromParent();
 
-			final PlaceBookColumn newPanel = getColumn(event);
-			if (oldPanel != newPanel && oldPanel != null)
+			final PlaceBookColumn newColumn = getColumn(event);
+			if (oldColumn != newColumn && oldColumn != null)
 			{
-				oldPanel.reflow();
+				oldColumn.reflow();
 			}
-			oldPanel = newPanel;
+			oldColumn = newColumn;
 
-			if (newPanel != null)
+			if (canDrop(newColumn, dragFrame.getItem()))
 			{
-				GWT.log("Dropped into panel " + newPanel.getIndex());
-				newPanel.reflow(dragItem, event.getRelativeY(newPanel.getElement()), dragFrame.getItemWidget()
-						.getOffsetHeight());
-				newPanel.getPage().getPlaceBook().add(dragItem.getItem());
-				dragItem.getItem().setParameter("panel", newPanel.getIndex());
+				GWT.log("Dropped into column " + newColumn.getIndex());
+				int maxHeight = newColumn.getRemainingHeight();
+				
+				newColumn.reflow(dragItem, event.getRelativeY(newColumn.getElement()));
+				newColumn.getPage().getPlaceBook().add(dragItem.getItem());
+				dragItem.getItem().setParameter("column", newColumn.getIndex());
 				final PlaceBookItemFrame frame = factory.createFrame(this);
 				frame.setItemWidget(dragItem);
-				newPanel.getPage().add(frame);
-				newPanel.reflow();
+				newColumn.getPage().add(frame);
+				newColumn.reflow();
+				
+				if(frame.getItemWidget().getOffsetHeight() > maxHeight)
+				{
+					setHeight(frame, maxHeight);
+				}
+				
 				saveContext.markChanged();
 			}
 			dragFrame.clearItemWidget();

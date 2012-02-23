@@ -97,7 +97,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		for (final PlaceBookItemFrame item : mapItems)
 		{
 			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page "
-					+ (item.getPanel().getPage().getIndex() + 1) + ")", item.getItem().getKey());
+					+ (item.getColumn().getPage().getIndex() + 1) + ")", item.getItem().getKey());
 		}
 	}
 

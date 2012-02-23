@@ -11,7 +11,7 @@ public abstract class PlaceBookItemFrame
 {
 	protected PlaceBookItemWidget itemWidget;
 
-	protected PlaceBookColumn panel;
+	protected PlaceBookColumn column;
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
@@ -31,9 +31,9 @@ public abstract class PlaceBookItemFrame
 		return itemWidget;
 	}
 
-	public PlaceBookColumn getPanel()
+	public PlaceBookColumn getColumn()
 	{
-		return panel;
+		return column;
 	}
 
 	public Panel getRootPanel()
@@ -76,18 +76,18 @@ public abstract class PlaceBookItemFrame
 
 	public void setPanel(final PlaceBookColumn newPanel)
 	{
-		if (panel == newPanel) { return; }
-		if (panel != null)
+		if (column == newPanel) { return; }
+		if (column != null)
 		{
-			panel.remove(this);
-			panel.getInnerPanel().remove(rootPanel);
+			column.remove(this);
+			column.getInnerPanel().remove(rootPanel);
 		}
-		panel = newPanel;
-		if (panel != null)
+		column = newPanel;
+		if (column != null)
 		{
-			panel.add(this);
-			panel.getInnerPanel().add(rootPanel);
-			getItem().setParameter("panel", panel.getIndex());
+			column.add(this);
+			column.getInnerPanel().add(rootPanel);
+			getItem().setParameter("column", column.getIndex());
 		}
 	}
 
@@ -98,9 +98,9 @@ public abstract class PlaceBookItemFrame
 
 	protected void itemWidgetResized()
 	{
-		if (panel != null)
+		if (column != null)
 		{
-			panel.reflow();
+			column.reflow();
 		}
 	}
 }

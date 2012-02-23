@@ -135,13 +135,13 @@ public class PlaceBookColumn extends FlowPanel
 		return left < x && x < right && top < y && y < bottom;
 	}
 
-	void reflow(final PlaceBookItemWidget newItem, final int inserty, final int height)
+	void reflow(final PlaceBookItemWidget newItem, final int inserty)
 	{
 		GWT.log("Reflow");
 		Collections.sort(items, orderComparator);
 
-		newItem.getItem().setParameter("panel", panelIndex);
-
+		newItem.getItem().setParameter("column", panelIndex);
+		
 		int top = 0;
 		int order = 0;
 		boolean inserted = false;
@@ -153,6 +153,7 @@ public class PlaceBookColumn extends FlowPanel
 				order++;
 				inserted = true;
 			}
+					
 			top += item.getRootPanel().getOffsetHeight();
 
 			item.getItem().setParameter("order", order);
@@ -165,6 +166,17 @@ public class PlaceBookColumn extends FlowPanel
 		}
 	}
 
+	int getRemainingHeight()
+	{
+		int height = 0;
+		for (final PlaceBookItemFrame item : items)
+		{
+			height += item.getRootPanel().getOffsetHeight();
+		}
+		
+		return getOffsetHeight() - height;
+	}
+	
 	void reflow(final Widget insert, final int inserty, final int height)
 	{
 		Collections.sort(items, orderComparator);
@@ -172,7 +184,7 @@ public class PlaceBookColumn extends FlowPanel
 		int top = 0;
 		int order = 0;
 
-		insert.setHeight(height + "px");
+		insert.setHeight(Math.min(height, getRemainingHeight()) + "px");
 
 		for (final PlaceBookItemFrame item : items)
 		{
@@ -198,7 +210,7 @@ public class PlaceBookColumn extends FlowPanel
 
 		String heightString;
 
-		if (item.getItem().hasParameter("height") && item.getPanel() != null)
+		if (item.getItem().hasParameter("height") && item.getColumn() != null)
 		{
 			final int height = item.getItem().getParameter("height");
 			final double heightPCT = height * 100 / HEIGHT_PRECISION;
