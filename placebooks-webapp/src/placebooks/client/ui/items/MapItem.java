@@ -6,6 +6,7 @@ import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
+import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.openlayers.Bounds;
@@ -49,20 +50,7 @@ public class MapItem extends PlaceBookItemWidget
 
 	private String url;
 
-	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
-	{
-		@Override
-		protected String getRequestURL(final String id)
-		{
-			return getHostURL() + "placebooks/a/admin/serverinfo";
-		}
-
-		@Override
-		protected String getStorageID(final String id)
-		{
-			return "server.info";
-		}
-	};
+	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
 
 	@Override
 	public String resize()

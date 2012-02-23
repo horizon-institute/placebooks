@@ -1,7 +1,11 @@
 package placebooks.client.ui.dialogs;
 
+import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
+import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.model.ServerInfo;
+import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.PlaceBookItemWidget;
@@ -51,6 +55,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 	@UiField
 	TextArea copyright;
 
+	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
+	
 	private final PlaceBookItemWidget item;
 
 	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemWidget item)
@@ -58,22 +64,31 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 		setWidget(uiBinder.createAndBindUi(this));
 
 		this.item = item;
-
-		if (item.getItem().is(ItemType.IMAGE))
+		
+		setTitle("Upload");
+		
+		infoStore.get(null, new JSONResponse<ServerInfo>()
 		{
-			setTitle("Upload Image");
-			infoLabel.setText("Maximum Image File Size: 1Mb");
-		}
-		else if (item.getItem().is(ItemType.VIDEO))
-		{
-			setTitle("Upload Video");
-			infoLabel.setText("Maximum Video File Size: 25Mb");
-		}
-		else if (item.getItem().is(ItemType.AUDIO))
-		{
-			setTitle("Upload Audio");
-			infoLabel.setText("Maximum Audio File Size: 10Mb");
-		}
+			@Override
+			public void handleResponse(ServerInfo object)
+			{
+				if (item.getItem().is(ItemType.IMAGE))
+				{
+					setTitle("Upload Image");
+					infoLabel.setText("Maximum Image File Size: " + object.getImageSize() + "Mb");
+				}
+				else if (item.getItem().is(ItemType.VIDEO))
+				{
+					setTitle("Upload Video");
+					infoLabel.setText("Maximum Video File Size: " + object.getVideoSize() + "Mb");
+				}
+				else if (item.getItem().is(ItemType.AUDIO))
+				{
+					setTitle("Upload Audio");
+					infoLabel.setText("Maximum Audio File Size: " + object.getAudioSize() + "Mb");
+				}				
+			}
+		});
 
 		itemKey.setName("itemKey");
 

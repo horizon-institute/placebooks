@@ -27,4 +27,19 @@ public class ServerInfo extends JavaScriptObject
 	/*-{
 		return this.serverName;
 	}-*/;
+	
+	public final native int getImageSize()
+	/*-{
+		return this.maxImageSize;
+	}-*/;
+	
+	public final native int getVideoSize()
+	/*-{
+		return this.maxVideoSize;
+	}-*/;
+	
+	public final native int getAudioSize()
+	/*-{
+		return this.maxAudioSize;
+	}-*/;			
 }

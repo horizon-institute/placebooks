@@ -11,6 +11,7 @@ import placebooks.client.Resources;
 import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.ServerInfo;
+import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.images.markers.Markers;
@@ -61,20 +62,7 @@ public class PlaceBookShelf extends Composite
 	{
 	}
 
-	private static DataStore<ServerInfo> infoStore = new DataStore<ServerInfo>()
-	{
-		@Override
-		protected String getRequestURL(final String id)
-		{
-			return getHostURL() + "placebooks/a/admin/serverinfo";
-		}
-
-		@Override
-		protected String getStorageID(final String id)
-		{
-			return "server.info";
-		}
-	};
+	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
 
 	private static PlaceBookShelfUiBinder uiBinder = GWT.create(PlaceBookShelfUiBinder.class);
 
