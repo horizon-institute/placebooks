@@ -212,23 +212,45 @@ public class PlaceBooksAdminController
 	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
 			@RequestParam final String service, final HttpServletResponse res)
 	{
-		final Service serviceImpl = ServiceRegistry.getService(service);
-		if (service != null)
-		{
-			if (!serviceImpl.checkLogin(username, password))
-			{
-				res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-				return;
-			}
-		}
 
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User user = UserManager.getCurrentUser(manager);
+		final User user = authUser(manager, res);
+		if (user == null)
+			return;
+
+		Service serviceImpl = null;
 
 		try
 		{
 			manager.getTransaction().begin();
+	
+			// Login details must be unique to user
+			final TypedQuery<LoginDetails> q_ = 
+				manager.createQuery("SELECT l FROM LoginDetails l WHERE l.service= :service AND l.username= :username AND l.user.id != :userid",
+								LoginDetails.class);
+				q_.setParameter("service", service);
+				q_.setParameter("username", username);
+				q_.setParameter("userid", user.getKey());
+			final Collection<LoginDetails> ll = q_.getResultList();
+			log.debug("Found " + ll.size() + " LoginDetails");
+
+			if (ll.size() > 0)
+			{
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				log.error("LoginDetails already linked to user");
+				return;
+			}			
+
+			serviceImpl = ServiceRegistry.getService(service);
+			if (service != null)
+			{
+				if (!serviceImpl.checkLogin(username, password))
+				{
+					res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					return;
+				}
+			}
+
 			final LoginDetails loginDetails = new LoginDetails(user, service, null, username, password);
 			manager.persist(loginDetails);
 			user.add(loginDetails);
@@ -267,33 +289,39 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 
-		new Thread(new Runnable()
+		if (serviceImpl == null)
+			return;
+		else
 		{
-			@Override
-			public void run()
+
+			new Thread(new Runnable()
 			{
-				final EntityManager manager = EMFSingleton.getEntityManager();
-				Service serviceImpl = ServiceRegistry.getService(service);
-				try
+				@Override
+				public void run()
 				{
-					if(serviceImpl != null)
+					final EntityManager manager = EMFSingleton.getEntityManager();
+					Service serviceImpl = ServiceRegistry.getService(service);
+					try
 					{
-						serviceImpl.sync(manager, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
-								Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
-								Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
-								);
+						if(serviceImpl != null)
+						{
+							serviceImpl.sync(manager, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+									Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+									Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+									);
+						}
+					}
+					catch(Exception e)
+					{
+						log.warn(e.getMessage(), e);
+					}
+					finally
+					{
+						manager.close();
 					}
 				}
-				catch(Exception e)
-				{
-					log.warn(e.getMessage(), e);
-				}
-				finally
-				{
-					manager.close();
-				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 
 	@RequestMapping(value = "/createUserAccount", method = RequestMethod.POST)
