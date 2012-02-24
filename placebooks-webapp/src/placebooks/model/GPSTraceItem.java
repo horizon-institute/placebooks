@@ -83,6 +83,12 @@ public class GPSTraceItem extends PlaceBookItem
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
+		if (trace == null)
+		{
+			log.info("GPSTraceItem " + getKey() + 
+					 " has null trace, possible traceless map");
+			return;
+		}
 		try
 		{
 			// Check package dir exists already
