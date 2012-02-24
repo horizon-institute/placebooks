@@ -8,7 +8,9 @@ import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.images.markers.Markers;
+import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
 import placebooks.client.ui.openlayers.Event;
@@ -128,60 +130,82 @@ public class MapItem extends PlaceBookItemWidget
 		recenter();
 	}
 
+	private int getMapPage()
+	{
+		for(final PlaceBookPage page: controller.getPages().getPages())
+		{
+			for(final PlaceBookItemFrame frame: page.getItems())
+			{
+				if(frame.getItem().equals(getItem()))
+				{
+					return page.getIndex();
+				}
+			}
+		}
+		return -1;
+	}
+	
 	public void refreshMarkers()
 	{
 		if (markerLayer == null) { return; }
 		markerLayer.clearMarkers();
 
+		final int mapPage = getMapPage();
+		
 		for (final PlaceBook page : controller.getPages().getPlaceBook().getPages())
 		{
 			for (final PlaceBookItem item : page.getItems())
-			{		
+			{
+				final String geometry = item.getGeometry();				
 				if (getItem().getKey() != null && getItem().getKey().equals(item.getMetadata("mapItemID")))
 				{
-					if (item.getGeometry() != null)
+					item.removeMetadata("mapItemID");
+					item.setParameter("mapPage", mapPage);
+				}
+							
+				if(geometry != null && item.getParameter("mapPage", -1) == mapPage)
+				{
+					if (geometry.startsWith(POINT_PREFIX))
 					{
-						final String geometry = item.getGeometry();
-						if (geometry.startsWith(POINT_PREFIX))
+						final LonLat lonlat = LonLat
+								.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
+								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
+						final Marker marker = Marker.create(getMarker(item), lonlat);
+						marker.getEvents().register("click", marker, EventHandler.createHandler(new EventHandler()
 						{
-							final LonLat lonlat = LonLat
-									.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
-									.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
-							final Marker marker = Marker.create(getMarker(item), lonlat);
-							marker.getEvents().register("click", marker, EventHandler.createHandler(new EventHandler()
+							@Override
+							protected void handleEvent(Event event)
 							{
-								@Override
-								protected void handleEvent(Event event)
-								{
-									controller.goToPage(page);
-								}
-							}));
-							marker.getEvents().register("mouseover", marker, EventHandler.createHandler(new EventHandler()
-							{
-								@Override
-								protected void handleEvent(Event event)
-								{
-									popupLabel.setText(item.getMetadata("title"));
-									popup.setPopupPosition(marker.getIcon().getImageDiv().getAbsoluteLeft(), marker.getIcon().getImageDiv().getAbsoluteTop() - 20);
-									popup.show();
-								}
-							}));		
-							marker.getEvents().register("mouseout", marker, EventHandler.createHandler(new EventHandler()
-							{
-								@Override
-								protected void handleEvent(Event event)
-								{
-									popup.hide();
-								}
-							}));							
-							if (positionItem != null && !item.equals(positionItem))
-							{
-								marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
+								controller.goToPage(page);
 							}
-							markerLayer.addMarker(marker);
+						}));
+						marker.getEvents().register("mouseover", marker, EventHandler.createHandler(new EventHandler()
+						{
+							@Override
+							protected void handleEvent(Event event)
+							{
+								popupLabel.setText(item.getMetadata("title"));
+								popup.setPopupPosition(marker.getIcon().getImageDiv().getAbsoluteLeft(), marker.getIcon().getImageDiv().getAbsoluteTop() - 20);
+								popup.show();
+							}
+						}));		
+						marker.getEvents().register("mouseout", marker, EventHandler.createHandler(new EventHandler()
+						{
+							@Override
+							protected void handleEvent(Event event)
+							{
+								popup.hide();
+							}
+						}));							
+						if (positionItem != null && !item.equals(positionItem))
+						{
+							marker.getIcon().getImageDiv().getStyle().setOpacity(0.5);
 						}
+						markerLayer.addMarker(marker);
 					}
 				}
+				
+
 			}
 		}
 		recenter();
