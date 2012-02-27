@@ -8,9 +8,7 @@ import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.images.markers.Markers;
-import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
 import placebooks.client.ui.openlayers.Event;
@@ -132,15 +130,17 @@ public class MapItem extends PlaceBookItemWidget
 
 	private int getMapPage()
 	{
-		for(final PlaceBookPage page: controller.getPages().getPages())
+		int index = 0;
+		for(final PlaceBook page: controller.getPages().getPlaceBook().getPages())
 		{
-			for(final PlaceBookItemFrame frame: page.getItems())
+			for(final PlaceBookItem item: page.getItems())
 			{
-				if(frame.getItem().equals(getItem()))
+				if(item.equals(getItem()))
 				{
-					return page.getIndex();
+					return index;
 				}
 			}
+			index++;
 		}
 		return -1;
 	}
