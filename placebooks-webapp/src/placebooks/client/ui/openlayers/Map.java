@@ -69,6 +69,11 @@ public class Map extends JavaScriptObject
 		this.destroy();
 	}-*/;
 
+	public final native LonLat getCenter()
+	/*-{
+		return this.getCenter();
+	}-*/;
+
 	public final native Projection getDisplayProjection()
 	/*-{
 		return this.displayProjection;

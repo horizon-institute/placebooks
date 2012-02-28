@@ -52,14 +52,15 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		setTitle("Locate " + item.getMetadata("title", "Item") + " on Map");
 		onInitialize();
 
-		final String mapID = item.getMetadata("mapItemID");
-		selectMap(mapID);
+		final int mapPage = item.getParameter("mapPage", -1);
+		selectMap(mapPage);
 
-		if (mapID != null)
+		if (mapPage != -1)
 		{
+			final String mapPageString = Integer.toString(mapPage);
 			for (int index = 0; index < mapSelect.getItemCount(); index++)
 			{
-				if (mapID.equals(mapSelect.getValue(index)))
+				if (mapPageString.equals(mapSelect.getValue(index)))
 				{
 					mapSelect.setSelectedIndex(index);
 				}
@@ -74,11 +75,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		final String value = mapSelect.getValue(index);
 		if ("".equals(value))
 		{
-			selectMap(null);
+			selectMap(-1);
 		}
 		else
 		{
-			selectMap(value);
+			selectMap(Integer.parseInt(value));
 		}
 
 		controller.markChanged();
@@ -97,25 +98,25 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		for (final PlaceBookItemFrame item : mapItems)
 		{
 			mapSelect.addItem("On " + item.getItem().getMetadata("title", "Untitled") + " Map (page "
-					+ (item.getColumn().getPage().getIndex() + 1) + ")", item.getItem().getKey());
+					+ (item.getColumn().getPage().getIndex() + 1) + ")", Integer.toString(item.getColumn().getPage().getIndex()));
 		}
 	}
 
-	private void selectMap(final String id)
+	private void selectMap(final int page)
 	{
-		if (id == null)
+		if (page == -1)
 		{
-			item.removeMetadata("mapItemID");
+			item.removeParameter("mapPage");
 		}
 		else
 		{
-			item.setMetadata("mapItemID", id);
+			item.setParameter("mapPage", page);
 		}
 
 		mapPanel.clear();
 
-		mapPanel.setVisible(id != null);
-		mapLabel.setVisible(id != null);
+		mapPanel.setVisible(page != -1);
+		mapLabel.setVisible(page != -1);
 
 		if (item.getGeometry() == null)
 		{
@@ -126,11 +127,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 			mapLabel.setText("Click to Move " + item.getMetadata("title", "Untitled") + " on Map:");
 		}
 
-		if (id != null)
+		if (page != -1)
 		{
 			for (final PlaceBookItemFrame mapItem : mapItems)
 			{
-				if (id.equals(mapItem.getItem().getKey()))
+				if (page == mapItem.getColumn().getPage().getIndex())
 				{
 					map = new MapItem(mapItem.getItem(), controller);
 					map.refreshMarkers();
