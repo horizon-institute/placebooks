@@ -97,19 +97,18 @@ public class PlaceBookPages extends Composite
 		}
 
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
-		{
+		{	
 			flip.cancel();
-			if(this.left != left)
+			if(!left.equals(this.left))
 			{
 				if (this.left != null)
 				{
-					this.left.setVisible(false);
+					this.left.setVisible(false);				
 				}				
 				this.left = left;
 				left.reflow();	
 			}
-			left.setVisible(true);
-			left.getElement().getStyle().setZIndex(1);			
+			
 			if(this.right != right)
 			{
 				if (this.right != null)
@@ -119,6 +118,10 @@ public class PlaceBookPages extends Composite
 				this.right = right;
 				right.reflow();			
 			}
+			
+			left.setVisible(true);	
+			left.getElement().getStyle().setZIndex(1);			
+
 			right.setVisible(true);
 			right.getElement().getStyle().setZIndex(0);			
 		}
