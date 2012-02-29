@@ -718,27 +718,31 @@ public class PlaceBooksAdminController
 
 		final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
 
-		if (p.getOwner() != currentUser)
+		if (p.getState() != PlaceBookBinder.State.PUBLISHED)
 		{
-			log.debug("This user is not the owner");
-			final PlaceBookBinder.Permission perms = 	
-				p.getPermission(currentUser);
-			if (perms == null) 
+
+			if (p.getOwner() != currentUser)
 			{
-				try
+				log.debug("This user is not the owner");
+				final PlaceBookBinder.Permission perms = 	
+					p.getPermission(currentUser);
+				if (perms == null) 
 				{
-					log.info("User doesn't have sufficient permissions");
-					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					res.setContentType("application/json");
-					res.getWriter().write(
-						"User doesn't have sufficient permissions"
-					);
-					return null;
-				}
-				catch (final Exception e)
-				{
-					log.error(e.getMessage(), e);
-					return null;
+					try
+					{
+						log.info("User doesn't have sufficient permissions");
+						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						res.setContentType("application/json");
+						res.getWriter().write(
+							"User doesn't have sufficient permissions"
+						);
+						return null;
+					}
+					catch (final Exception e)
+					{
+						log.error(e.getMessage(), e);
+						return null;
+					}
 				}
 			}
 		}
