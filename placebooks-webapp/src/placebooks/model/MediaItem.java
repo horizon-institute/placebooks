@@ -111,7 +111,8 @@ public abstract class MediaItem extends PlaceBookItem
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
 
-		if (path != null && (new File(path).exists() || new File(path).mkdirs()))
+		if (getPath() != null && path != null && 
+			(new File(path).exists() || new File(path).mkdirs()))
 		{
 			final File dataFile = new File(getPath());
 			final FileInputStream fis = new FileInputStream(dataFile);
@@ -123,6 +124,13 @@ public abstract class MediaItem extends PlaceBookItem
 			IOUtils.copy(fis, fos);
 			fis.close();
 			fos.close();
+		}
+		else
+		{
+			throw new IOException(
+				"An error occurred copying data for PlaceBookItem " 
+				+ this.getKey() + " (hash: " + this.getHash()
+			);
 		}
 	}
 
