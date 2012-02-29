@@ -39,7 +39,7 @@
 			border-bottom: 0px;
 			padding: 0 4px;			
 			z-index: 1600;			
-			box-shadow: 1px 2px 6px rgba(0,0,0, 0.5);			
+			box-shadow: 1px 2px 6px rgba(0,0,0, 0.8);			
 		}	
 		
 		.pageDisabled {
@@ -72,7 +72,7 @@
 		<p:Canvas ui:field="canvas" styleName="{style.canvas}"/>
 		<g:SimplePanel ui:field="leftPanel" styleName="{style.leftPanel}"/>
 		<g:FlowPanel ui:field="pagesPanel" styleName="{style.pagesPanel}" />
-		<p:MousePanel ui:field="prevPage" addStyleNames="{style.pageButton} {style.prevButton}"><g:Image resource="{images.page_previous}" /></p:MousePanel>			
-		<p:MousePanel ui:field="nextPage" addStyleNames="{style.pageButton} {style.nextButton}"><g:Image resource="{images.page_next}" /></p:MousePanel>				
+		<p:MousePanel ui:field="prevPage" addStyleNames="{style.pageButton} {style.prevButton}"><g:Image resource="{images.page_previous}" /></p:MousePanel>
+		<p:MousePanel ui:field="nextPage" addStyleNames="{style.pageButton} {style.nextButton}"><g:Image resource="{images.page_next}" /></p:MousePanel>			
 	</p:MousePanel>
 </ui:UiBinder> 

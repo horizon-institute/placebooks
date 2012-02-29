@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-	<ui:style>
+	<ui:style type="placebooks.client.ui.palette.PaletteItem.PaletteStyle">
 		.panel {
 			padding: 5px;
 			margin: 10px auto;
@@ -22,6 +22,16 @@
 			background: #333;
 			color: #FFF;
 			border-radius: 10px;
+		}
+		
+		.backItem {
+			border-image: url(back.png) 2 4 3 11;
+			-webkit-border-image: url(back.png) 2 4 3 11;
+			border-width: 2px 4px 3px 11px;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 12px;
+			line-height: 19px;			
+			padding: 0 7px;
 		}
 	</ui:style>
 

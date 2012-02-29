@@ -25,7 +25,7 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 		this.palette = palette;
 		if (parent != null)
 		{
-			add(new PaletteBackItem("Back", parent, palette));
+			add(new PaletteBackItem(parent, palette));
 		}
 	}
 

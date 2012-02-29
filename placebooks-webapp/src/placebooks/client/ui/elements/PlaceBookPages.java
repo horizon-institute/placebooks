@@ -377,23 +377,27 @@ public class PlaceBookPages extends Composite
 		if(currentPage.getIndex() == 0)
 		{
 			prevPage.removeStyleName(style.pageEnabled());
-			prevPage.addStyleName(style.pageDisabled());			
+			prevPage.addStyleName(style.pageDisabled());
+			prevPage.setTitle(null);
 		}
 		else
 		{
 			prevPage.removeStyleName(style.pageDisabled());
-			prevPage.addStyleName(style.pageEnabled());			
+			prevPage.addStyleName(style.pageEnabled());
+			prevPage.setTitle("Page " + (currentPage.getIndex()) + "/" + pages.size());
 		}
 		
 		if(currentPage.getIndex() >= pages.size() - 1)
 		{
 			nextPage.removeStyleName(style.pageEnabled());
-			nextPage.addStyleName(style.pageDisabled());			
+			nextPage.addStyleName(style.pageDisabled());
+			nextPage.setTitle(null);
 		}
 		else
 		{
 			nextPage.removeStyleName(style.pageDisabled());
-			nextPage.addStyleName(style.pageEnabled());			
+			nextPage.addStyleName(style.pageEnabled());
+			nextPage.setTitle("Page " + (currentPage.getIndex() + 2) + "/" + pages.size());			
 		}
 	}
 

@@ -3,6 +3,7 @@ package placebooks.client.ui.palette;
 import placebooks.client.ui.elements.MousePanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Image;
@@ -11,6 +12,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PaletteItem
 {
+	interface PaletteStyle extends CssResource
+	{
+		String backItem();
+	}
+	
 	interface PaletteItemUiBinder extends UiBinder<Widget, PaletteItem>
 	{
 	}
@@ -26,6 +32,9 @@ public class PaletteItem
 	@UiField
 	Label text;
 
+	@UiField
+	PaletteStyle style;
+	
 	private String name;
 
 	public PaletteItem(final String name)
