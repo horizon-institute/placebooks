@@ -10,6 +10,7 @@
 	</ui:style>
 	<g:FlowPanel>
 		<g:ListBox ui:field="mapSelect"/>
+		<g:ListBox ui:field="markerSelect"/>		
 		<g:Label ui:field="mapLabel"><ui:msg>Click to Move Item</ui:msg>:</g:Label>
 		<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>
 	</g:FlowPanel>

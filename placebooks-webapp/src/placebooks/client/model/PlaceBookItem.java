@@ -4,6 +4,7 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.ui.images.markers.Markers;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.resources.client.ImageResource;
@@ -98,12 +99,13 @@ public class PlaceBookItem extends JavaScriptObject
 	public final ImageResource getMarkerImage()
 	{
 		int markerID = getParameter("marker", 0);
+		GWT.log("Get marker " + markerID);
 		switch(markerID)
 		{
-			case 1:
+			case 10:
 				return Markers.IMAGES.markera();
 
-			case 2:
+			case 11:
 				return Markers.IMAGES.markerb();
 				
 			default:

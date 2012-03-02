@@ -33,6 +33,9 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	ListBox mapSelect;
 
 	@UiField
+	ListBox markerSelect;
+	
+	@UiField
 	Label mapLabel;
 
 	private MapItem map;
@@ -66,8 +69,34 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 				}
 			}
 		}
+
+		markerSelect.addItem("Default Marker");
+		for(int index = 1; index < 10; index++)
+		{
+			markerSelect.addItem("Marker " + index);
+		}
+		
+		for(int index = 97; index < 123; index++)
+		{
+			markerSelect.addItem("Marker " + (char)index);
+		}
 	}
 
+	@UiHandler("markerSelect")
+	void markerSelected(final ChangeEvent event)
+	{
+		final int index = markerSelect.getSelectedIndex();
+		if(index == 0)
+		{
+			item.removeParameter("marker");
+		}
+		else
+		{
+			item.setParameter("marker", index);
+		}
+		map.refreshMarkers();
+	}
+		
 	@UiHandler("mapSelect")
 	void mapSelected(final ChangeEvent event)
 	{
