@@ -108,6 +108,78 @@ public class PlaceBookItem extends JavaScriptObject
 			case 11:
 				return Markers.IMAGES.markerb();
 				
+			case 12:
+				return Markers.IMAGES.markerc();
+
+			case 13:
+				return Markers.IMAGES.markerd();				
+				
+			case 14:
+				return Markers.IMAGES.markere();
+
+			case 15:
+				return Markers.IMAGES.markerf();
+				
+			case 16:
+				return Markers.IMAGES.markerg();
+
+			case 17:
+				return Markers.IMAGES.markerh();
+
+			case 18:
+				return Markers.IMAGES.markeri();
+
+			case 19:
+				return Markers.IMAGES.markerj();
+				
+			case 20:
+				return Markers.IMAGES.markerk();
+
+			case 21:
+				return Markers.IMAGES.markerl();				
+				
+			case 22:
+				return Markers.IMAGES.markerm();
+
+			case 23:
+				return Markers.IMAGES.markern();
+				
+			case 24:
+				return Markers.IMAGES.markero();
+
+			case 25:
+				return Markers.IMAGES.markerp();		
+
+			case 26:
+				return Markers.IMAGES.markerq();				
+				
+			case 27:
+				return Markers.IMAGES.markerr();
+
+			case 28:
+				return Markers.IMAGES.markers();
+				
+			case 29:
+				return Markers.IMAGES.markert();
+
+			case 30:
+				return Markers.IMAGES.markeru();			
+				
+			case 31:
+				return Markers.IMAGES.markerv();					
+
+			case 32:
+				return Markers.IMAGES.markerw();			
+				
+			case 33:
+				return Markers.IMAGES.markerx();				
+
+			case 34:
+				return Markers.IMAGES.markery();			
+				
+			case 35:
+				return Markers.IMAGES.markerz();				
+				
 			default:
 				return Markers.IMAGES.marker();
 		}
