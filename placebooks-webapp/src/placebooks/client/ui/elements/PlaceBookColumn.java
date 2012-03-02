@@ -175,7 +175,6 @@ public class PlaceBookColumn extends FlowPanel
 		
 		item.getItem().setParameter("height", heightPCT);
 		item.getItemWidget().refresh();
-		item.getColumn().reflow();
 	}
 	
 	private void resizeUploadItems()
@@ -184,21 +183,29 @@ public class PlaceBookColumn extends FlowPanel
 		int height = 0;
 		for(final PlaceBookItemFrame item: items)
 		{
-			height += item.getRootPanel().getOffsetHeight();
-			if(item.getItem().getParameter("uploadResize", 0) == 1)
+			int itemHeight = item.getRootPanel().getOffsetHeight();
+			if(itemHeight > 0)
 			{
-				resizable.add(item);
+				height += itemHeight;
+				if(item.getItem().getParameter("uploadResize", 0) == 1)
+				{			
+					resizable.add(item);
+				}				
 			}
+		}
+		
+		for(final PlaceBookItemFrame item: resizable)
+		{
+			item.getItem().removeParameter("uploadResize");
 		}
 		
 		int remaining = getOffsetHeight() - height;
 		if(remaining < 0 && !resizable.isEmpty())
 		{
 			int offset = remaining / resizable.size();
-			for(final PlaceBookItemFrame item: items)
+			for(final PlaceBookItemFrame item: resizable)
 			{
-				setHeight(item, item.getRootPanel().getOffsetHeight() + offset);
-				item.getItem().removeParameter("uploadResize");
+				setHeight(item, item.getRootPanel().getOffsetHeight() + offset);				
 			}
 		}
 	}

@@ -353,6 +353,7 @@ public class PlaceBookController
 			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 10;
 			final int maxHeight = dragItemFrame.getColumn().getRemainingHeight() + dragItemFrame.getRootPanel().getOffsetHeight();
 			PlaceBookColumn.setHeight(dragItemFrame, Math.min(heightPX, maxHeight));
+			dragItemFrame.getColumn().reflow();
 		}
 		event.stopPropagation();
 	}
@@ -401,12 +402,12 @@ public class PlaceBookController
 				final PlaceBookItemFrame frame = factory.createFrame(this);
 				frame.setItemWidget(dragItem);
 				newColumn.getPage().add(frame);
-				newColumn.reflow();
 				
 				if(frame.getItemWidget().getOffsetHeight() > maxHeight)
 				{
 					PlaceBookColumn.setHeight(frame, maxHeight);
 				}
+				newColumn.reflow();				
 				
 				saveContext.markChanged();
 			}

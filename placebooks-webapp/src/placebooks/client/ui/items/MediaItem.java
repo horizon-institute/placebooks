@@ -118,9 +118,8 @@ public abstract class MediaItem extends PlaceBookItemWidget
 		}
 		else
 		{
-			GWT.log(""+getMediaHeight());
 			loadTimer.cancel();
-			fireResized();
+			fireResized();			
 		}
 	}
 
