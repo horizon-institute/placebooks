@@ -2,6 +2,7 @@ package placebooks.client.model;
 
 import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
+import placebooks.client.ui.images.markers.Markers;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -94,6 +95,23 @@ public class PlaceBookItem extends JavaScriptObject
 														return this.parameters[name];
 														}-*/;
 
+	public final ImageResource getMarkerImage()
+	{
+		int markerID = getParameter("marker", 0);
+		switch(markerID)
+		{
+			case 1:
+				return Markers.IMAGES.markera();
+
+			case 2:
+				return Markers.IMAGES.markerb();
+				
+			default:
+				return Markers.IMAGES.marker();
+		}
+
+	}
+	
 	public final native int getParameter(String name, final int defaultValue)
 	/*-{
 		if ('parameters' in this && name in this.parameters) {

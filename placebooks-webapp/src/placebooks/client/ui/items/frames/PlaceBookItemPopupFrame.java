@@ -17,6 +17,7 @@ import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
 
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -140,9 +141,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public void resize(final String height)
 	{
 		super.resize(height);
-
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+		resize();
 	}
 
 	@Override
@@ -204,6 +203,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	{
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+		
+		if(getItem().hasParameter("mapPage") && column != null)
+		{
+			image.setResource(getItem().getMarkerImage());
+			image.getElement().getStyle().setPosition(Position.ABSOLUTE);
+			image.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() + 3, Unit.PX);
+			image.getElement().getStyle().setZIndex(2);
+			column.add(image);
+		}
 	}
 
 	private void setHighlight(final boolean highlight)

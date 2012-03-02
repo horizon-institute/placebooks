@@ -26,7 +26,8 @@ public class AudioItem extends MediaItem
 			}
 		});
 	}
-	
+
+	@Override
 	protected void checkHeightParam()
 	{
 		getMediaWidget().setWidth("100%");

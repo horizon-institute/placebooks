@@ -107,6 +107,8 @@ public class PlaceBookColumn extends FlowPanel
 	public void reflow()
 	{
 		Collections.sort(items, orderComparator);
+		
+		resizeUploadItems();
 
 		int order = 0;
 		for (final PlaceBookItemFrame item : items)
@@ -137,7 +139,6 @@ public class PlaceBookColumn extends FlowPanel
 
 	void reflow(final PlaceBookItemWidget newItem, final int inserty)
 	{
-		GWT.log("Reflow");
 		Collections.sort(items, orderComparator);
 
 		newItem.getItem().setParameter("column", panelIndex);
@@ -166,6 +167,42 @@ public class PlaceBookColumn extends FlowPanel
 		}
 	}
 
+	static void setHeight(final PlaceBookItemFrame item, final int heightPX)
+	{
+		GWT.log("Set Height: " + heightPX);
+		final int canvasHeight = item.getColumn().getOffsetHeight();
+		final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
+		
+		item.getItem().setParameter("height", heightPCT);
+		item.getItemWidget().refresh();
+		item.getColumn().reflow();
+	}
+	
+	private void resizeUploadItems()
+	{
+		final List<PlaceBookItemFrame> resizable = new ArrayList<PlaceBookItemFrame>();
+		int height = 0;
+		for(final PlaceBookItemFrame item: items)
+		{
+			height += item.getRootPanel().getOffsetHeight();
+			if(item.getItem().getParameter("uploadResize", 0) == 1)
+			{
+				resizable.add(item);
+			}
+		}
+		
+		int remaining = getOffsetHeight() - height;
+		if(remaining < 0 && !resizable.isEmpty())
+		{
+			int offset = remaining / resizable.size();
+			for(final PlaceBookItemFrame item: items)
+			{
+				setHeight(item, item.getRootPanel().getOffsetHeight() + offset);
+				item.getItem().removeParameter("uploadResize");
+			}
+		}
+	}
+	
 	int getRemainingHeight()
 	{
 		int height = 0;

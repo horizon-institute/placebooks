@@ -352,7 +352,7 @@ public class PlaceBookController
 			final int y = event.getClientY();
 			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 10;
 			final int maxHeight = dragItemFrame.getColumn().getRemainingHeight() + dragItemFrame.getRootPanel().getOffsetHeight();
-			setHeight(dragItemFrame, Math.min(heightPX, maxHeight));
+			PlaceBookColumn.setHeight(dragItemFrame, Math.min(heightPX, maxHeight));
 		}
 		event.stopPropagation();
 	}
@@ -372,17 +372,6 @@ public class PlaceBookController
 			return false;
 		}
 		return true;
-	}
-	
-	private void setHeight(final PlaceBookItemFrame item, final int heightPX)
-	{
-		GWT.log("Set Height: " + heightPX);
-		final int canvasHeight = item.getColumn().getOffsetHeight();
-		final int heightPCT = (int) ((heightPX * PlaceBookItemWidget.HEIGHT_PRECISION) / canvasHeight);
-		
-		item.getItem().setParameter("height", heightPCT);
-		item.getItemWidget().refresh();
-		item.getColumn().reflow();
 	}
 	
 	private void handleDragEnd(final MouseEvent<?> event)
@@ -416,7 +405,7 @@ public class PlaceBookController
 				
 				if(frame.getItemWidget().getOffsetHeight() > maxHeight)
 				{
-					setHeight(frame, maxHeight);
+					PlaceBookColumn.setHeight(frame, maxHeight);
 				}
 				
 				saveContext.markChanged();

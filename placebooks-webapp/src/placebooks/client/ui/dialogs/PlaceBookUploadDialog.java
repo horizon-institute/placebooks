@@ -121,6 +121,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 					setProgressVisible(false, null);
 
 					final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, result);
+					item.getItem().removeParameter("height");
+					item.getItem().setParameter("uploadResize", 1);
 					item.update(placebookItem);
 					hide();
 					controller.markChanged();

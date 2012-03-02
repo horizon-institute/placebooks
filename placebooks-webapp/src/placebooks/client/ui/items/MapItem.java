@@ -4,11 +4,9 @@ import placebooks.client.JSONResponse;
 import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
 import placebooks.client.ui.openlayers.Event;
@@ -22,7 +20,6 @@ import placebooks.client.ui.openlayers.RouteLayer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -147,7 +144,7 @@ public class MapItem extends PlaceBookItemWidget
 						final LonLat lonlat = LonLat
 								.createFromPoint(geometry.substring(POINT_PREFIX.length(), geometry.length() - 1))
 								.cloneLonLat().transform(map.getDisplayProjection(), map.getProjection());
-						final Marker marker = Marker.create(getMarker(item), lonlat);
+						final Marker marker = Marker.create(item.getMarkerImage(), lonlat);
 						marker.getEvents().register("click", marker, EventHandler.createHandler(new EventHandler()
 						{
 							@Override
@@ -198,10 +195,7 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void createGeometry()
 	{
-		if(item.getHash() != null)
-		{
-			return;
-		}
+		if (item.getHash() != null) { return; }
 		final Bounds bounds = getLayerBounds();
 		if (bounds != null)
 		{
@@ -214,11 +208,9 @@ public class MapItem extends PlaceBookItemWidget
 			}
 			else
 			{
-				item.setGeometry("LINEARRING (" + clone.getTop() + " " + clone.getLeft() + ", " + 
-												  clone.getTop() + " " + clone.getRight() + "," +
-												  clone.getBottom() + " " + clone.getRight() + "," +
-												  clone.getBottom()	+ " " + clone.getLeft() + "," + 
-												  clone.getTop() + " " + clone.getLeft() + ")");
+				item.setGeometry("LINEARRING (" + clone.getTop() + " " + clone.getLeft() + ", " + clone.getTop() + " "
+						+ clone.getRight() + "," + clone.getBottom() + " " + clone.getRight() + "," + clone.getBottom()
+						+ " " + clone.getLeft() + "," + clone.getTop() + " " + clone.getLeft() + ")");
 			}
 		}
 		else
@@ -322,39 +314,11 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			for (final PlaceBookItem item : page.getItems())
 			{
-				if (item.getKey().equals(getItem().getKey())) { return index; }
+				if (item.getKey() != null && item.getKey().equals(getItem().getKey())) { return index; }
 			}
 			index++;
 		}
 		return -1;
-	}
-
-	private ImageResource getMarker(final PlaceBookItem item)
-	{
-		if (item.is(ItemType.AUDIO))
-		{
-			return Markers.IMAGES.marker_audio();
-		}
-		else if (item.is(ItemType.VIDEO))
-		{
-			return Markers.IMAGES.marker_video();
-		}
-		else if (item.is(ItemType.WEB))
-		{
-			return Markers.IMAGES.marker_web();
-		}
-		else if (item.is(ItemType.TEXT))
-		{
-			return Markers.IMAGES.marker_text();
-		}
-		else if (item.is(ItemType.IMAGE))
-		{
-			return Markers.IMAGES.marker_image();
-		}
-		else
-		{
-			return Markers.IMAGES.marker();
-		}
 	}
 
 	private void recenter()

@@ -5,6 +5,7 @@ import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.dialogs.PlaceBookUploadDialog;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -91,7 +92,7 @@ public abstract class MediaItem extends PlaceBookItemWidget
 				setURL(item.getURL());
 			}
 		}
-		checkSize();		
+		checkSize();
 		this.hash = item.getHash();
 	}
 
@@ -117,6 +118,7 @@ public abstract class MediaItem extends PlaceBookItemWidget
 		}
 		else
 		{
+			GWT.log(""+getMediaHeight());
 			loadTimer.cancel();
 			fireResized();
 		}

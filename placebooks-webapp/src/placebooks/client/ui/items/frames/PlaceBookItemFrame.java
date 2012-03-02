@@ -4,6 +4,7 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -15,6 +16,8 @@ public abstract class PlaceBookItemFrame
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
+	protected final Image image = new Image();
+	
 	public void clearItemWidget()
 	{
 		widgetPanel.clear();
