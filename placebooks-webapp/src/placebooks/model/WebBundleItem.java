@@ -116,7 +116,7 @@ public class WebBundleItem extends PlaceBookItem
 		return WebBundleItem.class.getName();
 	}
 
-	// A thumbnail preview image of the webpage - rendered somehow and stored
+	// A thumbnail preview markerImage of the webpage - rendered somehow and stored
 	// here
 	public BufferedImage getPreview()
 	{

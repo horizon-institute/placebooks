@@ -71,7 +71,7 @@ public class ImageItem extends MediaItem
 			}
 			else
 			{
-				log.warn("Original image '" + getPath() + "' does not exist for ImageItem " + getKey());
+				log.warn("Original markerImage '" + getPath() + "' does not exist for ImageItem " + getKey());
 				if(getSourceURL()!=null)
 				{
 					log.warn("Attempting to redownload from " + getSourceURL());
@@ -80,7 +80,7 @@ public class ImageItem extends MediaItem
 				}
 				else
 				{
-					log.error("Can't locate source image for ImageItem " + getKey());
+					log.error("Can't locate source markerImage for ImageItem " + getKey());
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public class ImageItem extends MediaItem
 
 	protected void createThumbnail() throws IOException
 	{
-		log.debug("Generating thumbnail from image: " + getPath());
+		log.debug("Generating thumbnail from markerImage: " + getPath());
 		File imageFile = new File(getPath());
 		BufferedImage originalImage = ImageIO.read(imageFile);
 

@@ -77,7 +77,7 @@
 		<g:FlowPanel styleName="{style.loading}" ui:field="progress"><g:Image resource='{images.progress3}' /><g:InlineLabel ui:field="progressLabel" styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>
 		<g:FlowPanel ui:field="placebooks" styleName="{style.placebookList}" />
 		<p:MousePanel ui:field="mapToggle" styleName="{style.mapToggle}">
-			<g:Label ui:field="mapToggleText" styleName="{style.mapToggleText}">Hide Map</g:Label>	
+			<g:Label ui:field="mapToggleText" styleName="{style.mapToggleText}"><ui:msg>Hide Map</ui:msg></g:Label>	
 			<g:Image ui:field="mapToggleImage" resource="{images.arrow_right}"/>			
 		</p:MousePanel>
 

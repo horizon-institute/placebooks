@@ -667,7 +667,7 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (!prefix.contentEquals("video") &&
 							!prefix.contentEquals("audio") && 
-							!prefix.contentEquals("image"))
+							!prefix.contentEquals("markerImage"))
 					{
 						throw new Exception("Unsupported file type");
 					}
@@ -729,7 +729,7 @@ public class PlaceBooksAdminControllerDebug
 
 						file = new File(((AudioItem) pbi).getPath());
 					}
-					else if (prefix.contentEquals("image"))
+					else if (prefix.contentEquals("markerImage"))
 					{
 						int maxSize = Integer.parseInt(
 								PropertiesSingleton

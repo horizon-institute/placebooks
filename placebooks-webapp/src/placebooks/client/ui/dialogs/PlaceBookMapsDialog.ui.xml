@@ -7,11 +7,29 @@
 			height: 300px;
 			position: relative;
 		}		
+		
+		.markerPanel {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			height: 300px;
+			width: 50px;
+			overflow-y: scroll;
+		}
+		
+		.parent {
+			position:relative;
+			width: 350px;
+			height: 300px;
+		}
 	</ui:style>
 	<g:FlowPanel>
 		<g:ListBox ui:field="mapSelect"/>
-		<g:ListBox ui:field="markerSelect"/>		
+		<g:CheckBox ui:field="markerShow"><ui:msg>Show Marker next to Item</ui:msg></g:CheckBox>
 		<g:Label ui:field="mapLabel"><ui:msg>Click to Move Item</ui:msg>:</g:Label>
+		<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>
+		<g:FlowPanel ui:field="markerListPanel" styleName="{style.markerPanel}"/>
+		</g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

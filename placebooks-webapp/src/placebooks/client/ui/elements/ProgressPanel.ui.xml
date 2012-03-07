@@ -1,6 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:p="urn:import:placebooks.client.ui.elements"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
 		.progressPanel {
 			position: absolute;
@@ -45,7 +47,7 @@
 	<g:FlowPanel ui:field="progressPanel" styleName="{style.progressPanel}">
 		<g:FlowPanel styleName="{style.progress}">
 			<g:Image resource='{images.progress}' />
-			<g:Label ui:field="progressLabel" styleName="{style.progressLabel}">Progress...</g:Label>
+			<g:Label ui:field="progressLabel" styleName="{style.progressLabel}"><ui:msg>Progress</ui:msg>...</g:Label>
 		</g:FlowPanel>			
 	</g:FlowPanel>
 </ui:UiBinder> 

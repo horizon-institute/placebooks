@@ -1291,7 +1291,7 @@ public class PlaceBooksAdminController
 						acceptsGzip = acceptEncoding != null && MediaHelper.accepts(acceptEncoding, "gzip");
 						contentType += ";charset=UTF-8";
 					}
-					else if (!contentType.startsWith("image"))
+					else if (!contentType.startsWith("markerImage"))
 					{
 						final String accept = req.getHeader("Accept");
 						disposition = accept != null && MediaHelper.accepts(accept, contentType) ? "inline"
@@ -1458,7 +1458,7 @@ public class PlaceBooksAdminController
 					type = split[0];
 
 					String dLimit = null, iden = null;
-					if (type.equals("image"))
+					if (type.equals("markerImage"))
 					{
 						iden = PropertiesSingleton.IDEN_IMAGE_MAX_SIZE;
 						dLimit = "1";
@@ -1512,7 +1512,7 @@ public class PlaceBooksAdminController
 					item = new GPSTraceItem(itemData.getOwner(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
 				}
-				else if (type.equals("image"))
+				else if (type.equals("markerImage"))
 				{
 					item = new ImageItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
 					item.setPlaceBook(placebook);
@@ -1622,7 +1622,7 @@ public class PlaceBooksAdminController
 					// placebook.getKey() + "\"/>");
 					if (placebook.getMetadataValue("placebookImage") != null)
 					{
-						writer.write("<meta property=\"og:image\" content=\"" + urlbase
+						writer.write("<meta property=\"og:markerImage\" content=\"" + urlbase
 								+ "placebooks/a/admin/serve/media/imageitem/"
 								+ placebook.getMetadataValue("placebookImage") + "\"/>");
 					}
@@ -1631,7 +1631,7 @@ public class PlaceBooksAdminController
 							+ placebook.getMetadataValue("description") + "\"/>");
 					writer.write("<meta http-equiv=\"Refresh\" content=\"0; url=" + urlbase + "#preview:"
 							+ placebook.getKey() + "\" />");
-					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
+					writer.write("<link rel=\"icon\" type=\"markerImage/png\" href=\"../../../images/Logo_016.png\" />");
 					writer.write("</head>");
 					writer.write("<body></body>");
 					writer.write("</html>");

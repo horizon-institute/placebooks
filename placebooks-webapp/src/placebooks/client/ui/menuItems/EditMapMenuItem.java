@@ -36,7 +36,7 @@ public class EditMapMenuItem extends MenuItem
 		}
 		else
 		{
-			final PlaceBookMapsDialog mapDialog = new PlaceBookMapsDialog(item.getItem(), mapItems, controller);
+			final PlaceBookMapsDialog mapDialog = new PlaceBookMapsDialog(item.getItemWidget(), mapItems, controller);
 			mapDialog.show();
 		}
 	}

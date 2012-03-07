@@ -16,7 +16,7 @@ public abstract class PlaceBookItemFrame
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
 
-	protected final Image image = new Image();
+	protected final Image markerImage = new Image();
 	
 	public void clearItemWidget()
 	{
@@ -77,15 +77,15 @@ public abstract class PlaceBookItemFrame
 		});
 	}
 
-	public void setPanel(final PlaceBookColumn newPanel)
+	public void setColumn(final PlaceBookColumn newColumn)
 	{
-		if (column == newPanel) { return; }
+		if (column == newColumn) { return; }
 		if (column != null)
 		{
 			column.remove(this);
 			column.getInnerPanel().remove(rootPanel);
 		}
-		column = newPanel;
+		column = newColumn;
 		if (column != null)
 		{
 			column.add(this);

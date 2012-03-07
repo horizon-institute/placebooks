@@ -328,7 +328,7 @@ public class ItemFactory
 		imageItem.setOwner(testUser);
 		imageItem.setGeometry(geom);
 		imageItem.setSourceURL(sourceUrl);
-		//= new ImageItem(testUser, geom, sourceUrl, image);
+		//= new ImageItem(testUser, geom, sourceUrl, markerImage);
 		imageItem.setExternalID("everytrail-" + picture_id);
 		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
@@ -542,7 +542,7 @@ public class ItemFactory
 		imageItem.setOwner(testUser);
 		imageItem.setGeometry(geom);
 		imageItem.setSourceURL(sourceUrl);
-		//= new ImageItem(testUser, geom, sourceUrl, image);
+		//= new ImageItem(testUser, geom, sourceUrl, markerImage);
 		imageItem.setExternalID("peoplescollection-" + picture_id);
 		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
@@ -631,7 +631,7 @@ public class ItemFactory
 		videoItem.setOwner(testUser);
 		videoItem.setGeometry(geom);
 		videoItem.setSourceURL(sourceUrl);
-		//= new ImageItem(testUser, geom, sourceUrl, image);
+		//= new ImageItem(testUser, geom, sourceUrl, markerImage);
 		videoItem.setExternalID("peoplescollection-" + video_id);
 		videoItem.addMetadataEntryIndexed("title", videoItemTitle);
 		videoItem.addMetadataEntryIndexed("description", itemDescription);
@@ -752,7 +752,7 @@ public class ItemFactory
 		audioItem.setOwner(testUser);
 		audioItem.setGeometry(geom);
 		audioItem.setSourceURL(sourceUrl);
-		//= new ImageItem(testUser, geom, sourceUrl, image);
+		//= new ImageItem(testUser, geom, sourceUrl, markerImage);
 		audioItem.setExternalID("peoplescollection-" + audio_id);
 		audioItem.addMetadataEntryIndexed("title", audioItemTitle);
 		audioItem.addMetadataEntryIndexed("description", itemDescription);

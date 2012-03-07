@@ -25,7 +25,7 @@ public class PaletteBackItem extends PaletteItem
 		
 		text.setStyleName(style.backItem());
 		
-		//image.setResource(Resources.IMAGES.back_border());
+		//markerImage.setResource(Resources.IMAGES.back_border());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override

@@ -394,7 +394,7 @@ public abstract class MediaItem extends PlaceBookItem
 	}
 
 	/**
-	 * Attempt to redownload an image from sourceURL, return true of ok false if not
+	 * Attempt to redownload an markerImage from sourceURL, return true of ok false if not
 	 * @return
 	 */
 	public boolean RedownloadItem()

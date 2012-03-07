@@ -107,7 +107,7 @@ public class PlaceBookPage extends Composite
 	public void remove(final PlaceBookItemFrame item)
 	{
 		items.remove(item);
-		item.setPanel(null);
+		item.setColumn(null);
 		page.remove(item.getItem());
 	}
 
@@ -162,7 +162,7 @@ public class PlaceBookPage extends Composite
 			columnIndex = columnIndex % columns.size();
 			item.getItem().setParameter("column", columnIndex);
 		}
-		item.setPanel(columns.get(columnIndex));
+		item.setColumn(columns.get(columnIndex));
 	}
 
 	void clearFlip()

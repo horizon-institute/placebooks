@@ -51,7 +51,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 			sb.appendHtmlConstant("<div>");
 
-			// Add the contact image.
+			// Add the contact markerImage.
 			sb.appendHtmlConstant("<div>");
 			sb.appendHtmlConstant(value.email);
 			sb.appendHtmlConstant("</div>");

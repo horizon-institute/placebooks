@@ -3,22 +3,47 @@ package placebooks.client.ui.items;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class TextItem extends PlaceBookItemWidget
 {
+	private final FlowPanel rootPanel = new FlowPanel();
 	private final SimplePanel textPanel = new SimplePanel();
+	private final Image markerImage = new Image();
 
 	TextItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
 		super(item, handler);
 
-		initWidget(textPanel);
+		rootPanel.add(markerImage);
+		rootPanel.add(textPanel);
+		
+		markerImage.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				controller.goToPage(getItem().getParameter("mapPage"));				
+			}
+		});
+		
+		initWidget(rootPanel);
 	}
 
 	@Override
 	public void refresh()
 	{
+		if(getItem().showMarker())
+		{
+			markerImage.setResource(getItem().getMarkerImage());
+			markerImage.getElement().getStyle().setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
+			markerImage.getElement().getStyle().setProperty("margin", "0 8px 0 0");					
+		}
+		markerImage.setVisible(getItem().showMarker());
 		textPanel.getElement().setInnerHTML(item.getText());
 	}
 

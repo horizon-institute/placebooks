@@ -387,7 +387,7 @@ public final class TileHelper
 				final String url = 
 					buildOpenSpaceQuery(layer[pn], incX[pn], incY[pn], pixelX, 
 										pixelY, new OSRef(i, j), 
-										"image%5C" + fmt, product[pn]
+										"markerImage%5C" + fmt, product[pn]
 					);
 
 				int attempts = 0;

@@ -1,25 +1,33 @@
 package placebooks.client.ui.images.markers;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ClientBundleWithLookup;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface Markers extends ClientBundle
+public interface Markers extends ClientBundleWithLookup
 {
 	public static final Markers IMAGES = GWT.create(Markers.class);
 
 	ImageResource marker();
 
-	ImageResource marker_audio();
+	ImageResource marker1();
+	
+	ImageResource marker2();
+	
+	ImageResource marker3();
+	
+	ImageResource marker4();	
 
-	ImageResource marker_image();
-
-	ImageResource marker_text();
-
-	ImageResource marker_video();
-
-	ImageResource marker_web();
-
+	ImageResource marker5();
+	
+	ImageResource marker6();
+	
+	ImageResource marker7();
+	
+	ImageResource marker8();
+	
+	ImageResource marker9();
+	
 	ImageResource markera();
 
 	ImageResource markerb();

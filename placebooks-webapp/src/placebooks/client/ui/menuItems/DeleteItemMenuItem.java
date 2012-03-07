@@ -24,7 +24,7 @@ public class DeleteItemMenuItem extends MenuItem
 	{
 		final PlaceBookColumn panel = item.getColumn();
 		panel.getPage().remove(item);
-		item.setPanel(null);
+		item.setColumn(null);
 		if (panel != null)
 		{
 			panel.reflow();

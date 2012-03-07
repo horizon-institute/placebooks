@@ -426,6 +426,11 @@ public class PlaceBookController
 		dropMenu.getElement().getStyle().setOpacity(0);
 	}
 
+	public void goToPage(int page)
+	{
+		pages.goToPage(page);		
+	}
+	
 	public void goToPage(PlaceBook page)
 	{
 		pages.goToPage(page);		

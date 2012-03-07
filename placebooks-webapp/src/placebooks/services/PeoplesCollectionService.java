@@ -254,7 +254,7 @@ public class PeoplesCollectionService extends Service
 				{
 					String featureType = feature.GetProperties().GetIcontype();
 					PlaceBookItem addedItem = null;
-					if(featureType.equals("image"))
+					if(featureType.equals("markerImage"))
 					{
 						ImageItem newItem = new ImageItem();
 						ItemFactory.toImageItem(user, feature, trail.GetPropertiesId(), trailListItem.GetProperties().GetTitle(), newItem);

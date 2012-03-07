@@ -135,6 +135,17 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
+		
+		markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		markerImage.getElement().getStyle().setZIndex(2);		
+		markerImage.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				controller.goToPage(getItem().getParameter("mapPage"));
+			}
+		});
 	}
 
 	@Override
@@ -152,14 +163,15 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
-	public void setPanel(final PlaceBookColumn newPanel)
+	public void setColumn(final PlaceBookColumn newColumn)
 	{
-		if (column == newPanel) { return; }
+		if (column == newColumn) { return; }
 		if (column != null)
 		{
 			column.remove(frame);
+			column.remove(markerImage);
 		}
-		super.setPanel(newPanel);
+		super.setColumn(newColumn);
 		if (column != null)
 		{
 			column.add(frame);
@@ -170,6 +182,29 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public void updateFrame()
 	{
 		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));
+		
+//		if(getItem().hasParameter("mapPage") && column != null)
+//		{
+//			markerImage.setResource(getItem().getMarkerImage());
+//			column.add(markerImage);
+//			markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//			markerImage.getElement().getStyle().setZIndex(2);		
+//			markerImage.addClickHandler(new ClickHandler()
+//			{
+//				@Override
+//				public void onClick(ClickEvent event)
+//				{
+//					controller.goToPage(getItem().getParameter("mapPage"));
+//				}
+//			});			
+//			markerImage.setVisible(true);
+//			
+//		}
+//		else
+//		{
+//			markerImage.setVisible(false);
+//		}
+		
 		if (controller.getSelected() == this)
 		{
 			resize();
@@ -204,14 +239,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
 		
-		if(getItem().hasParameter("mapPage") && column != null)
-		{
-			image.setResource(getItem().getMarkerImage());
-			image.getElement().getStyle().setPosition(Position.ABSOLUTE);
-			image.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() + 3, Unit.PX);
-			image.getElement().getStyle().setZIndex(2);
-			column.add(image);
-		}
+		markerImage.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() + 3, Unit.PX);
 	}
 
 	private void setHighlight(final boolean highlight)

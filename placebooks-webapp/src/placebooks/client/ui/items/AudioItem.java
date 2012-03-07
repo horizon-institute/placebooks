@@ -3,6 +3,9 @@ package placebooks.client.ui.items;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.CanPlayThroughEvent;
 import com.google.gwt.event.dom.client.CanPlayThroughHandler;
 import com.google.gwt.media.client.Audio;
@@ -30,7 +33,19 @@ public class AudioItem extends MediaItem
 	@Override
 	protected void checkHeightParam()
 	{
-		getMediaWidget().setWidth("100%");
+		if(getItem().showMarker())
+		{
+			Style style = getMediaWidget().getElement().getStyle();
+			style.setPosition(Position.RELATIVE);			
+			style.setLeft(getItem().getMarkerImage().getWidth() + 3, Unit.PX);
+			style.setRight(0, Unit.PX);			
+		}
+		else
+		{
+			getMediaWidget().setWidth("100%");
+			getMediaWidget().getElement().getStyle().clearPosition();
+		}
+
 		if (getItem().hasParameter("height"))
 		{
 			getMediaWidget().setHeight("100%");

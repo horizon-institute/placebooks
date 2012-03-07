@@ -4,10 +4,10 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.Resources;
 import placebooks.client.ui.images.markers.Markers;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ResourcePrototype;
 
 public class PlaceBookItem extends JavaScriptObject
 {
@@ -96,94 +96,29 @@ public class PlaceBookItem extends JavaScriptObject
 														return this.parameters[name];
 														}-*/;
 
+	public final boolean showMarker()
+	{
+		return hasParameter("mapPage") && getParameter("markerShow", 0) == 1;
+	}
+	
 	public final ImageResource getMarkerImage()
 	{
 		int markerID = getParameter("marker", 0);
-		GWT.log("Get marker " + markerID);
-		switch(markerID)
+
+		if(markerID == 0)
 		{
-			case 10:
-				return Markers.IMAGES.markera();
-
-			case 11:
-				return Markers.IMAGES.markerb();
-				
-			case 12:
-				return Markers.IMAGES.markerc();
-
-			case 13:
-				return Markers.IMAGES.markerd();				
-				
-			case 14:
-				return Markers.IMAGES.markere();
-
-			case 15:
-				return Markers.IMAGES.markerf();
-				
-			case 16:
-				return Markers.IMAGES.markerg();
-
-			case 17:
-				return Markers.IMAGES.markerh();
-
-			case 18:
-				return Markers.IMAGES.markeri();
-
-			case 19:
-				return Markers.IMAGES.markerj();
-				
-			case 20:
-				return Markers.IMAGES.markerk();
-
-			case 21:
-				return Markers.IMAGES.markerl();				
-				
-			case 22:
-				return Markers.IMAGES.markerm();
-
-			case 23:
-				return Markers.IMAGES.markern();
-				
-			case 24:
-				return Markers.IMAGES.markero();
-
-			case 25:
-				return Markers.IMAGES.markerp();		
-
-			case 26:
-				return Markers.IMAGES.markerq();				
-				
-			case 27:
-				return Markers.IMAGES.markerr();
-
-			case 28:
-				return Markers.IMAGES.markers();
-				
-			case 29:
-				return Markers.IMAGES.markert();
-
-			case 30:
-				return Markers.IMAGES.markeru();			
-				
-			case 31:
-				return Markers.IMAGES.markerv();					
-
-			case 32:
-				return Markers.IMAGES.markerw();			
-				
-			case 33:
-				return Markers.IMAGES.markerx();				
-
-			case 34:
-				return Markers.IMAGES.markery();			
-				
-			case 35:
-				return Markers.IMAGES.markerz();				
-				
-			default:
-				return Markers.IMAGES.marker();
+			return Markers.IMAGES.marker();
 		}
-
+		else
+		{
+			char markerPostFix = (char) markerID;
+			ResourcePrototype result = Markers.IMAGES.getResource("marker" + markerPostFix);
+			if(result instanceof ImageResource)
+			{
+				return (ImageResource) result;
+			}
+			return Markers.IMAGES.marker();			
+		}
 	}
 	
 	public final native int getParameter(String name, final int defaultValue)

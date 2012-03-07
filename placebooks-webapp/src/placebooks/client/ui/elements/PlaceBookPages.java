@@ -703,27 +703,36 @@ public class PlaceBookPages extends Composite
 		}
 	}
 
-	public void goToPage(PlaceBook page)
+	public void goToPage(int page)
 	{
-		PlaceBookPage pbPage = getPage(page);
-		if(pbPage != null)
+		goToPage(pages.get(page));
+	}
+	
+	public void goToPage(PlaceBookPage page)
+	{
+		if(page != null)
 		{
-			if(pbPage.getIndex() < currentPage.getIndex())
+			if(page.getIndex() < currentPage.getIndex())
 			{
-				flip.setup(pbPage, currentPage);
+				flip.setup(page, currentPage);
 				flip.target = 1;
 				flip.progress = -1;
 				flip.state = FlipState.flipping;
 				flip.scheduleRepeating(1000 / 60);
 			}
-			else if(pbPage.getIndex() > currentPage.getIndex())
+			else if(page.getIndex() > currentPage.getIndex())
 			{
-				flip.setup(currentPage, pbPage);
+				flip.setup(currentPage, page);
 				flip.target = -1;
 				flip.progress = 1;
 				flip.state = FlipState.flipping;
 				flip.scheduleRepeating(1000 / 60);
 			}
 		}
+	}
+	
+	public void goToPage(PlaceBook page)
+	{
+		goToPage(getPage(page));
 	}
 }
