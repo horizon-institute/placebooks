@@ -380,8 +380,8 @@ public final class TileHelper
 			}
 
 			int m = buf.getHeight() - pixelY;
-			for (int j = (int)bbox[0].getNorthing() - incY[pn]; 
-				 j < (int)bbox[1].getNorthing() - incY[pn]; j += incY[pn])
+			for (int j = (int)bbox[0].getNorthing() + incY[pn]; 
+				 j < (int)bbox[1].getNorthing() + incY[pn]; j += incY[pn])
 			{
 				// %5C = \
 				final String url = 
