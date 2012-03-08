@@ -132,7 +132,7 @@ public final class TileHelper
 				throw new IllegalArgumentException();
 			}
 			bbox_[i] = new OSRef(latlng);
-			log.info("Bounding box unnormalised, bbox["+i+"]="
+			log.debug("Bounding box unnormalised, bbox["+i+"]="
 					 +bbox_[i].getEasting()+","+bbox_[i].getNorthing());
 		}
 
@@ -146,8 +146,8 @@ public final class TileHelper
 
 		for (int i = 0; i < bbox.length; ++i)
 		{
-			log.info("Bounding box NORMALISED, bbox["+i+"]="
-					 +bbox[i].getEasting()+","+bbox[i].getNorthing());
+			log.debug("Bounding box NORMALISED, bbox["+i+"]="
+					  +bbox[i].getEasting()+","+bbox[i].getNorthing());
 		}
 
 
@@ -156,7 +156,7 @@ public final class TileHelper
 		int nBlocks = (int)Math.ceil((Math.abs(bbox[1].getNorthing() 
 									   - bbox[0].getNorthing())) / incY);
 
-		log.info("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
+		log.debug("eBlocks = " + eBlocks + " nBlocks = " + nBlocks);
 
 		if (square)
 		{
@@ -187,7 +187,7 @@ public final class TileHelper
 					}
 				}
 
-				log.info("Squared tiles out");
+				log.debug("Squared tiles out");
 			}
 		}
 
@@ -253,7 +253,7 @@ public final class TileHelper
 	public static final MapMetadata getMap(final Geometry g) 
 		throws IOException, IllegalArgumentException, Exception
 	{
-		log.info("getMap() geometry = " + g);
+		log.debug("getMap() geometry = " + g);
 		String[] layer = {"5"};
 		String[] product = null;
 		int[] incX = {1000};
@@ -264,6 +264,8 @@ public final class TileHelper
 		int[] maxTiles = {100};
 		boolean square = false;
 		int maxAttempts = 10;
+		boolean singleMap = true;
+		String mediaPath = "";
 
 		String[] incX_ = null;
 		String[] incY_ = null;
@@ -323,6 +325,17 @@ public final class TileHelper
 						PropertiesSingleton.IDEN_TILER_SQUARE, "true"
 					)
 			);
+			singleMap = Boolean.parseBoolean(
+				PropertiesSingleton
+					.get(TileHelper.class.getClassLoader())
+					.getProperty(
+						PropertiesSingleton.IDEN_TILER_SINGLE_MAP, "true"
+					)
+			);
+			mediaPath = PropertiesSingleton.get(
+				TileHelper.class.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
+
 		}
 		catch (final Throwable e)
 		{
@@ -361,11 +374,14 @@ public final class TileHelper
 		final int eBlocks = mp.blocks[0];
 		final int nBlocks = mp.blocks[1];
 
-
-		final BufferedImage buf = 
-			new BufferedImage(pixelX * eBlocks, pixelY * nBlocks, 
-							  BufferedImage.TYPE_INT_RGB);
-		final Graphics graphics = buf.createGraphics();
+		BufferedImage buf = null;
+		Graphics graphics = null;
+		if (singleMap)
+		{
+			buf = new BufferedImage(pixelX * eBlocks, pixelY * nBlocks, 
+								    BufferedImage.TYPE_INT_RGB);
+			graphics = buf.createGraphics();
+		}
 
 		int n = 0;
 		int b = 0;
@@ -378,8 +394,11 @@ public final class TileHelper
 						  + ") being exceeded");
 				break;
 			}
+			
+			int m = 0;
+			if (buf != null)
+				m = buf.getHeight() - pixelY;
 
-			int m = buf.getHeight() - pixelY;
 			for (int j = (int)bbox[0].getNorthing() /*+ incY[pn]*/; 
 				 j < (int)bbox[1].getNorthing() /*+ incY[pn]*/; j += incY[pn])
 			{
@@ -414,12 +433,52 @@ public final class TileHelper
 					{
 						Image tile = null;
 						tile = ImageIO.read(
-									new BufferedInputStream(is)
+								new BufferedInputStream(is)
 							   );
+						if (singleMap)
+						{
+							graphics.drawImage(tile, n, m, null);
+							//graphics.drawRect(n, m, pixelX, pixelY);
+							log.debug("Drew tile on single map, at "
+									  + n + ", " + m);
+						}
+						else
+						{			
+							buf = 
+								new BufferedImage(pixelX, pixelY, 
+								 				  BufferedImage.TYPE_INT_RGB);
+							graphics = buf.createGraphics();
+							graphics.drawImage(tile, 0, 0, null);
+							log.debug("Drew individual tile");
+							File mapFile = null;
+							try
+							{
+								if (!new File(mediaPath).exists() && 
+									!new File(mediaPath).mkdirs()) 
+								{
+									throw new IOException("Failed to write file"); 
+								}
 
-						graphics.drawImage(tile, n, m, null);
-						log.info("Drawing tile at " + n + ", " + m);
+								final String name = 
+									Integer.toString(i) + Integer.toString(j)
+									+ Integer.toString(i + incX[pn]) 
+									+ Integer.toString(j + incY[pn]);
+
+
+								mapFile = new File(mediaPath + "/" + name + 
+												   "." + fmt);
+								ImageIO.write(buf, fmt, mapFile);
+								log.debug("Wrote map tile file " 
+										  + mapFile.getAbsolutePath());
+		
+							}
+							catch (final Throwable e)
+							{
+								throw new IOException("Error creating map");
+							}
+						}
 					}
+						
 				} while (!success && attempts < maxAttempts);
 			
 				m -= pixelY;
@@ -431,33 +490,34 @@ public final class TileHelper
 		graphics.dispose();
 
 		File mapFile = null;
-		try
+		if (singleMap)
 		{
-			final String path = PropertiesSingleton.get(
-				TileHelper.class.getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-
-			if (!new File(path).exists() && !new File(path).mkdirs()) 
+			try
 			{
-				throw new IOException("Failed to write file"); 
-			}
-	
-			final String name = 
-				Integer.toString((int)bbox[0].getEasting()) 
-				+ Integer.toString((int)bbox[0].getNorthing())
-				+ Integer.toString((int)bbox[1].getEasting()) 
-				+ Integer.toString((int)bbox[1].getNorthing());
 
-
-			mapFile = new File(path + "/" + name + "." + fmt);
-			ImageIO.write(buf, fmt, mapFile);
-			log.info("Wrote map file " + mapFile.getAbsolutePath());
+				if (!new File(mediaPath).exists() && 
+					!new File(mediaPath).mkdirs()) 
+				{
+					throw new IOException("Failed to write file"); 
+				}
 		
-		}
-		catch (final Throwable e)
-		{
-			log.error(e.toString());
-			throw new IOException("Error creating map");
+				final String name = 
+					Integer.toString((int)bbox[0].getEasting()) 
+					+ Integer.toString((int)bbox[0].getNorthing())
+					+ Integer.toString((int)bbox[1].getEasting()) 
+					+ Integer.toString((int)bbox[1].getNorthing());
+
+
+				mapFile = new File(mediaPath + "/" + name + "." + fmt);
+				ImageIO.write(buf, fmt, mapFile);
+				log.debug("Wrote map file " + mapFile.getAbsolutePath());
+			
+			}
+			catch (final Throwable e)
+			{
+				log.error(e.toString());
+				throw new IOException("Error creating map");
+			}
 		}
 
 		LatLng[] bboxLL = new LatLng[2];
