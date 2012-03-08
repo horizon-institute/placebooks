@@ -42,7 +42,7 @@ public class TextItem extends PlaceBookItem
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
-		log.info("TextItem.appendConfiguration(), text=" + this.getText());
+		log.debug("TextItem.appendConfiguration(), text=" + this.getText());
 		final Element item = getConfigurationHeader(config);
 		final Element text = config.createElement("text");
 		text.appendChild(config.createTextNode(this.getText()));

@@ -121,7 +121,7 @@ public class PlaceBook extends BoundaryGenerator
 		item.setPlaceBook(this);
 	}
 
-	public void addMetadataEntry(final String key, final String value)
+	public void addMetadataEntry(final String key, String value)
 	{
 		if (value == null)
 		{
@@ -129,6 +129,8 @@ public class PlaceBook extends BoundaryGenerator
 		}
 		else
 		{
+			// Strip HTML tags
+			value = value.replaceAll("<(.|\n)*?>", "");
 			metadata.put(key, value);
 		}
 	}
@@ -166,7 +168,7 @@ public class PlaceBook extends BoundaryGenerator
 
 		if (getTimestamp() != null)
 		{
-			log.info("Setting timestamp=" + this.getTimestamp().toString());
+			log.debug("Setting timestamp=" + this.getTimestamp().toString());
 			final Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(
 				config.createTextNode(this.getTimestamp().toString())
@@ -176,7 +178,7 @@ public class PlaceBook extends BoundaryGenerator
 
 		if (getGeometry() != null)
 		{
-			log.info("Setting geometry=" + this.getGeometry().toText());
+			log.debug("Setting geometry=" + this.getGeometry().toText());
 			final Element geometry = config.createElement("geometry");
 			geometry.appendChild(
 				config.createTextNode(this.getGeometry().toText())
@@ -186,7 +188,7 @@ public class PlaceBook extends BoundaryGenerator
 
 		if (!metadata.isEmpty())
 		{
-			log.info("Writing metadata to config");
+			log.debug("Writing metadata to config");
 			final Element sElem = config.createElement("metadata");
 			log.info("metadata set size = " + metadata.size());
 			for (final Map.Entry<String, String> e : metadata.entrySet())
