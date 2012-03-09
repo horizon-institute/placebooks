@@ -222,7 +222,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 		if (!perms.isEmpty())
 		{
-			log.info("Setting perms=" + this.getPermissionsAsString());
+			log.debug("Setting perms=" + this.getPermissionsAsString());
 			final Element permissions = config.createElement("permissions");
 			permissions.appendChild(config.createTextNode(this.getPermissionsAsString()));
 			root.appendChild(permissions);
@@ -230,7 +230,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 		if (getTimestamp() != null)
 		{
-			log.info("Setting timestamp=" + this.getTimestamp().toString());
+			log.debug("Setting timestamp=" + this.getTimestamp().toString());
 			final Element timestamp = config.createElement("timestamp");
 			timestamp.appendChild(config.createTextNode(this.getTimestamp().toString()));
 			root.appendChild(timestamp);
@@ -238,7 +238,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 		if (getGeometry() != null)
 		{
-			log.info("Setting geometry=" + this.getGeometry().toText());
+			log.debug("Setting geometry=" + this.getGeometry().toText());
 			final Element geometry = config.createElement("geometry");
 			geometry.appendChild(config.createTextNode(this.getGeometry().toText()));
 			root.appendChild(geometry);
@@ -246,12 +246,12 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 		if (!metadata.isEmpty())
 		{
-			log.info("Writing metadata to config");
+			log.debug("Writing metadata to config");
 			final Element sElem = config.createElement("metadata");
-			log.info("metadata set size = " + metadata.size());
+			log.debug("metadata set size = " + metadata.size());
 			for (final Map.Entry<String, String> e : metadata.entrySet())
 			{
-				log.info("Metadata element key, value=" + e.getKey().toString() + ", " + e.getValue().toString());
+				log.debug("Metadata element key, value=" + e.getKey().toString() + ", " + e.getValue().toString());
 				final Element elem = config.createElement(e.getKey().toString());
 				elem.appendChild(config.createTextNode(e.getValue().toString()));
 				sElem.appendChild(elem);
@@ -352,7 +352,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		return Collections.unmodifiableMap(parameters);
 	}
 
-	public void addMetadataEntry(final String key, final String value)
+	public void addMetadataEntry(final String key, String value)
 	{
 		if (value == null)
 		{
@@ -360,6 +360,8 @@ public class PlaceBookBinder extends BoundaryGenerator
 		}
 		else
 		{
+			// Strip HTML tags
+			value = value.replaceAll("<(.|\n)*?>", "");
 			metadata.put(key, value);
 		}
 	}

@@ -85,7 +85,7 @@ public class GPSTraceItem extends PlaceBookItem
 	{
 		if (trace == null)
 		{
-			log.info("GPSTraceItem " + getKey() + 
+			log.warn("GPSTraceItem " + getKey() + 
 					 " has null trace, possible traceless map");
 			return;
 		}

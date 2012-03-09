@@ -20,6 +20,8 @@ public class PlaceBookBinderEntry extends ShelfEntry
 
 	private final String permissions;
 
+	private final String activity;
+
 	public PlaceBookBinderEntry(final PlaceBookBinder placebookBinder)
 	{
 		super();
@@ -28,6 +30,7 @@ public class PlaceBookBinderEntry extends ShelfEntry
 		setOwner(placebookBinder.getOwner().getKey());
 		setTimestamp(placebookBinder.getTimestamp());
 		this.description = placebookBinder.getMetadataValue("description");
+		this.activity = placebookBinder.getMetadataValue("activity");
 		this.previewImage = placebookBinder.getMetadataValue("placebookImage");
 		this.numPlaceBooks = placebookBinder.getPlaceBooks().size();
 		this.packagePath = placebookBinder.getPackagePath();
@@ -74,5 +77,10 @@ public class PlaceBookBinderEntry extends ShelfEntry
 	public String getState()
 	{
 		return state;
+	}
+
+	public String getActivity()
+	{
+		return activity;
 	}
 }

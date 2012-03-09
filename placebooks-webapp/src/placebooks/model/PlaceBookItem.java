@@ -155,7 +155,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		{
 			// Strip HTML tags since people seem unable to remove them 
 			// themselves before calling this method
-			key = key.replaceAll("<(.|\n)*?>", "");
+			value = value.replaceAll("<(.|\n)*?>", "");
 			if (key.length() > VALUE_LENGTH_LIMIT)
 			{
 				log.warn("Metadata Key entry too long, truncating: " + key);
@@ -204,7 +204,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	 */
 	protected Element getConfigurationHeader(final Document config)
 	{
-		log.info(getEntityName() + ": getConfigurationHeader");
+		log.debug(getEntityName() + ": getConfigurationHeader");
 		final Element item = config.createElement(getEntityName());
 		item.setAttribute("key", getKey());
 		item.setAttribute("owner", getOwner().getKey());
