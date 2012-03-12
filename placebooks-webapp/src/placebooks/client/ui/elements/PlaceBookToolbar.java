@@ -108,9 +108,13 @@ public class PlaceBookToolbar extends Composite
 						urlBuilder.setHash(Window.Location.getHash());
 						urlBuilder.setHost(Window.Location.getHost());
 						urlBuilder.setPath(Window.Location.getPath());
-						if (Window.Location.getPort() != null)
+						try
 						{
 							urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+						}
+						catch(Exception e)
+						{
+							
 						}
 						urlBuilder.setProtocol(Window.Location.getProtocol());
 						for (final String key : Window.Location.getParameterMap().keySet())
