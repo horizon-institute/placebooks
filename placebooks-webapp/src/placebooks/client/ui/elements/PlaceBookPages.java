@@ -35,10 +35,10 @@ public class PlaceBookPages extends Composite
 	interface PageStyle extends CssResource
 	{
 		String page();
-		
-		String pageEnabled();
-		
+
 		String pageDisabled();
+
+		String pageEnabled();
 	}
 
 	interface PlaceBookPanelUiBinder extends UiBinder<Widget, PlaceBookPages>
@@ -97,33 +97,33 @@ public class PlaceBookPages extends Composite
 		}
 
 		public void setup(final PlaceBookPage left, final PlaceBookPage right)
-		{	
+		{
 			flip.cancel();
-			if(!left.equals(this.left))
+			if (!left.equals(this.left))
 			{
 				if (this.left != null)
 				{
-					this.left.setVisible(false);				
-				}				
+					this.left.setVisible(false);
+				}
 				this.left = left;
-				left.reflow();	
+				left.reflow();
 			}
-			
-			if(this.right != right)
+
+			if (this.right != right)
 			{
 				if (this.right != null)
 				{
 					this.right.setVisible(false);
-				}				
+				}
 				this.right = right;
-				right.reflow();			
+				right.reflow();
 			}
-			
-			left.setVisible(true);	
-			left.getElement().getStyle().setZIndex(1);			
+
+			left.setVisible(true);
+			left.getElement().getStyle().setZIndex(1);
 
 			right.setVisible(true);
-			right.getElement().getStyle().setZIndex(0);			
+			right.getElement().getStyle().setZIndex(0);
 		}
 	}
 
@@ -152,13 +152,13 @@ public class PlaceBookPages extends Composite
 
 	@UiField
 	PageStyle style;
-	
+
 	@UiField
 	Panel nextPage;
 
 	@UiField
 	Panel prevPage;
-	
+
 	private double bookWidth;
 	private double pageWidth;
 	private double pageHeight;
@@ -171,6 +171,12 @@ public class PlaceBookPages extends Composite
 
 	private Flip flip = new Flip();
 
+	protected final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
+
+	private PlaceBookBinder placebook;
+
+	protected PlaceBookController controller;
+
 	public PlaceBookPages()
 	{
 		Window.addResizeHandler(new ResizeHandler()
@@ -180,111 +186,10 @@ public class PlaceBookPages extends Composite
 			{
 				resized();
 			}
-		});		
+		});
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	protected final List<PlaceBookPage> pages = new ArrayList<PlaceBookPage>();
-
-	private PlaceBookBinder placebook;
-	protected PlaceBookController controller;
-
-	public Iterable<PlaceBookPage> getPages()
-	{
-		return pages;
-	}
-
-	public PlaceBookBinder getPlaceBook()
-	{
-		return placebook;
-	}
-
-	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
-	{
-		this.placebook = newPlaceBook;
-		this.controller = controller;
-		getPagePanel().clear();
-		pages.clear();
-
-		int pageIndex = 0;
-		for (final PlaceBook page : newPlaceBook.getPages())
-		{
-			final PlaceBookPage pagePanel = new PlaceBookPage(page, controller, pageIndex, getDefaultColumnCount());
-
-			pageIndex++;
-
-			add(pagePanel);
-		}
-
-		if (pageIndex == 0)
-		{
-			createPage();
-		}
-
-		if (pages.size() > 0)
-		{
-			setPage(pages.get(0));
-		}
-		
-		resized();
-	}
-
-	public void update(final PlaceBookBinder newPlaceBook)
-	{
-		this.placebook = newPlaceBook;
-
-		for (final PlaceBook page : newPlaceBook.getPages())
-		{
-			final PlaceBookPage pageUI = getPage(page);
-			if (pageUI != null)
-			{
-				pageUI.update(page);
-			}
-			else
-			{
-				GWT.log("Page not matched!");
-			}
-		}
-	}
-
-	protected void add(final PlaceBookPage page)
-	{
-		pages.add(page);
-		getPagePanel().add(page);
-		page.setStyleName(style.page());
-		page.setVisible(false);		
-	}
-
-	protected int getDefaultColumnCount()
-	{
-		return 2;
-	}
-
-	protected void remove(final PlaceBookPage page)
-	{
-		pages.remove(page);
-		getPagePanel().remove(page);
-	}
-
-	protected Panel getPagePanel()
-	{
-		return pagesPanel;
-	}
-	
-	private PlaceBookPage getPage(final PlaceBook page)
-	{
-		for (final PlaceBookPage pbPage : pages)
-		{
-			if (page.getId().equals(pbPage.getPlaceBook().getId()))
-			{
-				return pbPage;
-			}
-			else if (page.hasMetadata("tempID")
-					&& page.getMetadata("tempID").equals(pbPage.getPlaceBook().getMetadata("tempID"))) { return pbPage; }
-		}
-		return null;
-	}
-	
 	public void createPage()
 	{
 		int index = 0;
@@ -336,6 +241,49 @@ public class PlaceBookPages extends Composite
 		return currentPage.getPlaceBook();
 	}
 
+	public Iterable<PlaceBookPage> getPages()
+	{
+		return pages;
+	}
+
+	public PlaceBookBinder getPlaceBook()
+	{
+		return placebook;
+	}
+
+	public void goToPage(final int page)
+	{
+		goToPage(pages.get(page));
+	}
+
+	public void goToPage(final PlaceBook page)
+	{
+		goToPage(getPage(page));
+	}
+
+	public void goToPage(final PlaceBookPage page)
+	{
+		if (page != null)
+		{
+			if (page.getIndex() < currentPage.getIndex())
+			{
+				flip.setup(page, currentPage);
+				flip.target = 1;
+				flip.progress = -1;
+				flip.state = FlipState.flipping;
+				flip.scheduleRepeating(1000 / 60);
+			}
+			else if (page.getIndex() > currentPage.getIndex())
+			{
+				flip.setup(currentPage, page);
+				flip.target = -1;
+				flip.progress = 1;
+				flip.state = FlipState.flipping;
+				flip.scheduleRepeating(1000 / 60);
+			}
+		}
+	}
+
 	public void resized()
 	{
 		final double height = getOffsetHeight();
@@ -371,10 +319,10 @@ public class PlaceBookPages extends Composite
 		currentPage = page;
 		currentPage.setVisible(true);
 		currentPage.getElement().getStyle().setZIndex(1);
-		
+
 		currentPage.reflow();
-		
-		if(currentPage.getIndex() == 0)
+
+		if (currentPage.getIndex() == 0)
 		{
 			prevPage.removeStyleName(style.pageEnabled());
 			prevPage.addStyleName(style.pageDisabled());
@@ -386,8 +334,8 @@ public class PlaceBookPages extends Composite
 			prevPage.addStyleName(style.pageEnabled());
 			prevPage.setTitle("Page " + (currentPage.getIndex()) + "/" + pages.size());
 		}
-		
-		if(currentPage.getIndex() >= pages.size() - 1)
+
+		if (currentPage.getIndex() >= pages.size() - 1)
 		{
 			nextPage.removeStyleName(style.pageEnabled());
 			nextPage.addStyleName(style.pageDisabled());
@@ -397,7 +345,55 @@ public class PlaceBookPages extends Composite
 		{
 			nextPage.removeStyleName(style.pageDisabled());
 			nextPage.addStyleName(style.pageEnabled());
-			nextPage.setTitle("Page " + (currentPage.getIndex() + 2) + "/" + pages.size());			
+			nextPage.setTitle("Page " + (currentPage.getIndex() + 2) + "/" + pages.size());
+		}
+	}
+
+	public void setPlaceBook(final PlaceBookBinder newPlaceBook, final PlaceBookController controller)
+	{
+		this.placebook = newPlaceBook;
+		this.controller = controller;
+		getPagePanel().clear();
+		pages.clear();
+
+		int pageIndex = 0;
+		for (final PlaceBook page : newPlaceBook.getPages())
+		{
+			final PlaceBookPage pagePanel = new PlaceBookPage(page, controller, pageIndex, getDefaultColumnCount());
+
+			pageIndex++;
+
+			add(pagePanel);
+		}
+
+		if (pageIndex == 0)
+		{
+			createPage();
+		}
+
+		if (pages.size() > 0)
+		{
+			setPage(pages.get(0));
+		}
+
+		resized();
+	}
+
+	public void update(final PlaceBookBinder newPlaceBook)
+	{
+		this.placebook = newPlaceBook;
+
+		for (final PlaceBook page : newPlaceBook.getPages())
+		{
+			final PlaceBookPage pageUI = getPage(page);
+			if (pageUI != null)
+			{
+				pageUI.update(page);
+			}
+			else
+			{
+				GWT.log("Page not matched!");
+			}
 		}
 	}
 
@@ -408,61 +404,31 @@ public class PlaceBookPages extends Composite
 		if (!dragged)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			final int mouseY = event.getRelativeY(pagesPanel.getElement());
 			// Make sure the mouse pointer is inside of the book
-			if (mouseX < pageWidth)
+			if (currentPage.getIndex() > 0 && mouseIsOverLeftEdge(mouseX, mouseY))
 			{
-				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
-				{
-					prevPage(null);
-				}
-				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
-				{
-					nextPage(null);
-				}
+				prevPage(null);
+			}
+			else if (currentPage.getIndex() + 1 < pages.size() && mouseIsOverRightEdge(mouseX, mouseY))
+			{
+				nextPage(null);
 			}
 		}
 	}
-	
-	@UiHandler("nextPage")
-	void nextPage(final ClickEvent event)
-	{
-		if(currentPage.getIndex() + 1 >= pages.size()) 
-		{
-			return;
-		}
-		flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
-		flip.target = -1;
-		flip.progress = 1;
-		flip.state = FlipState.flipping;
-		flip.scheduleRepeating(1000 / 60);
-	}
 
-	@UiHandler("prevPage")
-	void prevPage(final ClickEvent event)
-	{
-		if(currentPage.getIndex() == 0) 
-		{
-			return;
-		}		
-		flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
-		flip.target = 1;
-		flip.progress = -1;
-		flip.state = FlipState.flipping;
-		flip.scheduleRepeating(1000 / 60);
-	}
-
-	
 	@UiHandler("rootPanel")
 	void flip(final MouseMoveEvent event)
 	{
 		final int mouseX = event.getRelativeX(pagesPanel.getElement());
+		final int mouseY = event.getRelativeY(pagesPanel.getElement());
 		if (pages.size() <= 1) { return; }
 		if (flip.state == FlipState.dragging)
 		{
 			drawFlip(flip.left, Math.max(Math.min(mouseX / pageWidth, 1), -1));
 
 			final int distanceX = Math.abs(startX - mouseX);
-			final int distanceY = Math.abs(startY - event.getRelativeY(pagesPanel.getElement()));
+			final int distanceY = Math.abs(startY - mouseY);
 
 			if (!dragged && distanceX + distanceY > 10)
 			{
@@ -473,9 +439,9 @@ public class PlaceBookPages extends Composite
 		}
 		else if (flip.state != FlipState.flipping)
 		{
-			if (mouseX > (pageWidth - margin) && mouseX < pageWidth && currentPage.getIndex() + 1 < pages.size())
+			if (mouseIsOverRightEdge(mouseX, mouseY) && currentPage.getIndex() + 1 < pages.size())
 			{
-				if(flip.state != FlipState.edgeHighlight)
+				if (flip.state != FlipState.edgeHighlight)
 				{
 					flip.cancel();
 					flip.state = FlipState.edgeHighlight;
@@ -517,31 +483,75 @@ public class PlaceBookPages extends Composite
 		if (flip.state != FlipState.flipping)
 		{
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			final int mouseY = event.getRelativeY(pagesPanel.getElement());
 			// Make sure the mouse pointer is inside of the book
-			if (mouseX < pageWidth)
+			if (mouseIsOverLeftEdge(mouseX, mouseY) && currentPage.getIndex() - 1 >= 0)
 			{
-				if (mouseX < margin && currentPage.getIndex() - 1 >= 0)
-				{
-					// We are on the left side, drag the previous page
-					flip.state = FlipState.dragging;
-					flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
-					startX = mouseX;
-					startY = event.getRelativeY(pagesPanel.getElement());
-					dragged = false;
-					event.preventDefault();
-				}
-				else if (mouseX > (pageWidth - margin) && currentPage.getIndex() + 1 < pages.size())
-				{
-					// We are on the right side, drag the current page
-					flip.state = FlipState.dragging;
-					flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
-					startX = mouseX;
-					startY = event.getRelativeY(pagesPanel.getElement());
-					dragged = false;
-					event.preventDefault();
-				}
+				// We are on the left side, drag the previous page
+				flip.state = FlipState.dragging;
+				flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
+				startX = mouseX;
+				startY = mouseY;
+				dragged = false;
+				event.preventDefault();
+			}
+			else if (mouseIsOverRightEdge(mouseX, mouseY) && currentPage.getIndex() + 1 < pages.size())
+			{
+				// We are on the right side, drag the current page
+				flip.state = FlipState.dragging;
+				flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+				startX = mouseX;
+				startY = mouseY;
+				dragged = false;
+				event.preventDefault();
 			}
 		}
+	}
+
+	@UiHandler("nextPage")
+	void nextPage(final ClickEvent event)
+	{
+		if (currentPage.getIndex() + 1 >= pages.size()) { return; }
+		flip.setup(currentPage, pages.get(currentPage.getIndex() + 1));
+		flip.target = -1;
+		flip.progress = 1;
+		flip.state = FlipState.flipping;
+		flip.scheduleRepeating(1000 / 60);
+	}
+
+	@UiHandler("prevPage")
+	void prevPage(final ClickEvent event)
+	{
+		if (currentPage.getIndex() == 0) { return; }
+		flip.setup(pages.get(currentPage.getIndex() - 1), currentPage);
+		flip.target = 1;
+		flip.progress = -1;
+		flip.state = FlipState.flipping;
+		flip.scheduleRepeating(1000 / 60);
+	}
+
+	protected void add(final PlaceBookPage page)
+	{
+		pages.add(page);
+		getPagePanel().add(page);
+		page.setStyleName(style.page());
+		page.setVisible(false);
+	}
+
+	protected int getDefaultColumnCount()
+	{
+		return 2;
+	}
+
+	protected Panel getPagePanel()
+	{
+		return pagesPanel;
+	}
+
+	protected void remove(final PlaceBookPage page)
+	{
+		pages.remove(page);
+		getPagePanel().remove(page);
 	}
 
 	private void drawFlip(final PlaceBookPage page, final double progress)
@@ -643,8 +653,9 @@ public class PlaceBookPages extends Composite
 		{
 			flip.state = FlipState.flipping;
 			final int mouseX = event.getRelativeX(pagesPanel.getElement());
+			final int mouseY = event.getRelativeY(pagesPanel.getElement());
 
-			if (mouseX > (pageWidth - margin))
+			if (mouseIsOverRightEdge(mouseX, mouseY))
 			{
 				flip.state = FlipState.edgeHighlight;
 			}
@@ -665,6 +676,39 @@ public class PlaceBookPages extends Composite
 				}
 			}
 		}
+	}
+
+	private PlaceBookPage getPage(final PlaceBook page)
+	{
+		for (final PlaceBookPage pbPage : pages)
+		{
+			if (page.getId().equals(pbPage.getPlaceBook().getId()))
+			{
+				return pbPage;
+			}
+			else if (page.hasMetadata("tempID")
+					&& page.getMetadata("tempID").equals(pbPage.getPlaceBook().getMetadata("tempID"))) { return pbPage; }
+		}
+		return null;
+	}
+
+	private boolean mouseIsOverLeftEdge(final int mouseX, final int mouseY)
+	{
+		if (mouseY > 0 && mouseY < pagesPanel.getOffsetHeight() && mouseX < margin)
+		{
+			GWT.log("Left : " + mouseX + ", " + mouseY);
+		}
+		return mouseY > 0 && mouseY < pagesPanel.getOffsetHeight() && mouseX < margin;
+	}
+
+	private boolean mouseIsOverRightEdge(final int mouseX, final int mouseY)
+	{
+		if (mouseY > 0 && mouseY < pagesPanel.getOffsetHeight() && mouseX > (pageWidth - margin) && mouseX < pageWidth)
+		{
+			GWT.log("Right : " + mouseX + ", " + mouseY);
+		}
+		return mouseY > 0 && mouseY < pagesPanel.getOffsetHeight() && mouseX > (pageWidth - margin)
+				&& mouseX < pageWidth;
 	}
 
 	private void setPosition(final double left, final double top, final double width, final double height)
@@ -701,38 +745,5 @@ public class PlaceBookPages extends Composite
 			final PlaceBookPage page = pages.get(index);
 			page.setIndex(index);
 		}
-	}
-
-	public void goToPage(int page)
-	{
-		goToPage(pages.get(page));
-	}
-	
-	public void goToPage(PlaceBookPage page)
-	{
-		if(page != null)
-		{
-			if(page.getIndex() < currentPage.getIndex())
-			{
-				flip.setup(page, currentPage);
-				flip.target = 1;
-				flip.progress = -1;
-				flip.state = FlipState.flipping;
-				flip.scheduleRepeating(1000 / 60);
-			}
-			else if(page.getIndex() > currentPage.getIndex())
-			{
-				flip.setup(currentPage, page);
-				flip.target = -1;
-				flip.progress = 1;
-				flip.state = FlipState.flipping;
-				flip.scheduleRepeating(1000 / 60);
-			}
-		}
-	}
-	
-	public void goToPage(PlaceBook page)
-	{
-		goToPage(getPage(page));
 	}
 }
