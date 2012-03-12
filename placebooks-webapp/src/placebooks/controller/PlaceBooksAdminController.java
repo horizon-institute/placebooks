@@ -780,13 +780,40 @@ public class PlaceBooksAdminController
 	{
 		log.info("Publish PlacebookBinder: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
-		if (authUser(manager, res) == null) { return; }
+		final User user = authUser(manager, res);
+		if (user == null)
+			return;
 
 		try
 		{
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
 			final PlaceBookBinder placebookBinder = mapper.readValue(json, PlaceBookBinder.class);
+
+			final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, placebookBinder.getKey());
+
+			if (dbBinder.getOwner() != user)
+			{
+				log.debug("This user is not the owner");
+				final PlaceBookBinder.Permission perms = placebookBinder.getPermission(user);
+				if (perms == null)
+				{
+					try
+					{
+						log.info("User doesn't have sufficient permissions");
+						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						res.setContentType("application/json");
+						res.getWriter().write("User doesn't have sufficient permissions");
+						return;
+					}
+					catch (final Exception e)
+					{
+						log.error(e.getMessage(), e);
+						return;
+					}
+				}
+			}
+
 
 			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 			log.debug("Saved PlacebookBinder:" + mapper.writeValueAsString(result));
