@@ -1277,9 +1277,17 @@ public class PlaceBooksAdminController
 
 					boolean acceptsGzip = false;
 					String disposition = "inline";
+					String contentType = null;
+					try
+					{
+						final MagicMatch match = Magic.getMagicMatch(serveFile, false);
+						contentType = match.getMimeType();
+					}
+					catch (final Throwable e)
+					{
+						log.debug(e.toString());
+					}
 
-					final MagicMatch match = Magic.getMagicMatch(serveFile, false);
-					String contentType = match.getMimeType();
 					if (contentType == null)
 					{
 						contentType = "application/octet-stream";
@@ -1374,7 +1382,7 @@ public class PlaceBooksAdminController
 				}
 				catch (final Exception ex)
 				{
-					log.error(ex.getMessage());
+					log.error("Exception in serving file: " + ex.toString());
 					res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				}
 			}
