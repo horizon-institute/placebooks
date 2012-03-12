@@ -190,9 +190,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	public void checkAuthorized(final PlaceBookBinder binder)
 	{
-		GWT.log("User: " + getUser());
-		GWT.log("State: " + binder.getState());	
-		
 		if (getUser() == null)
 		{
 			if ("PUBLISHED".equals(binder.getState()))
@@ -205,8 +202,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 			}
 		}
 
-		GWT.log("User: " + getUser().getEmail());
-		GWT.log("Binder: " + binder.getOwner().getEmail());		
 		if(getUser().getEmail().equals(binder.getOwner().getEmail()))
 		{
 			return;
@@ -214,7 +209,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 		if(binder.getPermissions().containsKey(getUser().getEmail()))
 		{
-			GWT.log("" + binder.getPermissions().get(getUser().getEmail()));
 			if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R_W"))
 			{
 				return;
