@@ -129,6 +129,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 	public void setPlaceBook(final PlaceBookBinder placebook)
 	{
+		if (isUserSet())
+		{
+			checkAuthorized(placebook);
+		}
+		
 		this.placebook = placebook;
 		bookPanel.setPlaceBook(placebook, controller);
 
@@ -159,6 +164,29 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		bookPanel.resized();
 	}
+	
+	public void checkAuthorized(final PlaceBookBinder binder)
+	{
+		if ("PUBLISHED".equals(binder.getState()))
+		{
+			return;
+		}
+		if(binder.getPermissions().containsKey(getUser().getEmail()))
+		{
+			return;
+		}
+		getPlaceController().goTo(new PlaceBookHome(getUser()));
+	}
+	
+	@Override
+	public void setUser(User user)
+	{
+		super.setUser(user);
+		if(placebook != null)
+		{
+			checkAuthorized(placebook);
+		}
+	}	
 
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)

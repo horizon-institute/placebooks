@@ -56,7 +56,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		@Override
 		public PlaceBookEditor getPlace(final String token)
 		{
-			return new PlaceBookEditor(null, token);
+			return new PlaceBookEditor(token);
 		}
 
 		@Override
@@ -153,6 +153,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 		this.placebookID = placebookID;
 		this.placebook = null;
 	}
+	
+	public PlaceBookEditor(final String placebookID)
+	{
+		this.placebookID = placebookID;
+		this.placebook = null;
+	}
 
 	public PlaceBookController getController()
 	{
@@ -182,21 +188,60 @@ public class PlaceBookEditor extends PlaceBookPlace
 		saveItem.markSaved();
 	}
 
+	public void checkAuthorized(final PlaceBookBinder binder)
+	{
+		GWT.log("User: " + getUser());
+		GWT.log("State: " + binder.getState());	
+		
+		if (getUser() == null)
+		{
+			if ("PUBLISHED".equals(binder.getState()))
+			{
+				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));
+			}
+			else
+			{
+				getPlaceController().goTo(new PlaceBookHome(getUser()));
+			}
+		}
+
+		GWT.log("User: " + getUser().getEmail());
+		GWT.log("Binder: " + binder.getOwner().getEmail());		
+		if(getUser().getEmail().equals(binder.getOwner().getEmail()))
+		{
+			return;
+		}
+
+		if(binder.getPermissions().containsKey(getUser().getEmail()))
+		{
+			GWT.log("" + binder.getPermissions().get(getUser().getEmail()));
+			if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R_W"))
+			{
+				return;
+			}
+			else if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R"))
+			{
+				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));				
+			}
+		}
+	}
+	
+	@Override
+	public void setUser(User user)
+	{
+		super.setUser(user);
+		if(placebook != null)
+		{
+			checkAuthorized(placebook);
+		}
+	}
+
 	public void setPlaceBook(final PlaceBookBinder newPlacebook)
 	{
 		if (placebook != null)
 		{
 			final int currentVersion = placebook.getParameter("version", 1);
 			final int newVersion = newPlacebook.getParameter("version", 1);
-
-			// TODO Check auth
-			if (getUser() == null)
-			{
-				if ("PUBLISHED".equals(placebook.getState()))
-				{
-					getPlaceController().goTo(new PlaceBookPreview(getUser(), newPlacebook));
-				}
-			}
 
 			GWT.log("Current: " + currentVersion + ", new: " + newVersion);
 
@@ -211,6 +256,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 				return;
 			}
 		}
+		
+		if (isUserSet())
+		{
+			checkAuthorized(newPlacebook);
+		}
+		
 		placebook = newPlacebook;
 
 		bookPanel.setPlaceBook(newPlacebook, controller);

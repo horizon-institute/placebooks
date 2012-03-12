@@ -13,12 +13,20 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	@UiField
 	PlaceBookToolbar toolbar;
 
+	private boolean userSet = false;
+	
 	private User user;
 	private PlaceController placeController;
 
+	protected PlaceBookPlace()
+	{
+		
+	}
+	
 	protected PlaceBookPlace(final User user)
 	{
 		this.user = user;
+		userSet = true;
 	}
 
 	public PlaceController getPlaceController()
@@ -46,6 +54,11 @@ public abstract class PlaceBookPlace extends Place implements Activity
 	public void onStop()
 	{
 	}
+	
+	protected boolean isUserSet()
+	{
+		return userSet;
+	}
 
 	public void setPlaceController(final PlaceController controller)
 	{
@@ -54,6 +67,7 @@ public abstract class PlaceBookPlace extends Place implements Activity
 
 	public void setUser(final User user)
 	{
+		userSet = true;
 		this.user = user;
 		toolbar.setUser(user);
 	}
