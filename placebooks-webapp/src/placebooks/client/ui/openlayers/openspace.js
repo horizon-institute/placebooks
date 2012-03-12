@@ -26,7 +26,8 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 												maxExtent:		new OpenLayers.Bounds( 0, 0, 800000, 1300000 ),
 												resolutions:	new Array( 1000, 500, 200, 100, 50, 25, 10, 4, 2.5 ),
 												products:		new Array( "OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "25KR", "25K"),
-												tileSize: 		new OpenLayers.Size(200 , 200)
+												tile200:		new OpenLayers.Size( 200, 200 ),
+												tile250:		new OpenLayers.Size( 250, 250 )
 											}
 										)
 								)
@@ -35,6 +36,9 @@ OpenLayers.Layer.UKOrdnanceSurvey = OpenLayers.Class(OpenLayers.Layer.WMS,
 		
 	moveTo:		function( bounds, zoomChanged, dragging )
 				{
+
+					this.setTileSize( resolution == 4 ? this.tile250 : this.tile200 );
+		
 					var	resolution = this.getResolution();
 					var index = this.options.resolutions.indexOf(resolution);
 					var product = this.options.products[index];
