@@ -207,7 +207,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 			return;
 		}
 
-		if(binder.getPermissions() != null && binder.getPermissions().containsKey(getUser().getEmail()))
+		if(binder.getPermissions().keySet().size() > 0 && binder.getPermissions().containsKey(getUser().getEmail()))
 		{
 			if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R_W"))
 			{
