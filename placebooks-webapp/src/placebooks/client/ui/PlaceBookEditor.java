@@ -190,22 +190,22 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	public void checkAuthorized(final PlaceBookBinder binder)
 	{
-		if (getUser() == null)
-		{
-			if ("PUBLISHED".equals(binder.getState()))
-			{
-				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));
-			}
-			else
-			{
-				getPlaceController().goTo(new PlaceBookHome(getUser()));
-			}
-		}
-
-		if(getUser().getEmail().equals(binder.getOwner().getEmail()))
-		{
-			return;
-		}
+//		if (getUser() == null)
+//		{
+//			if ("PUBLISHED".equals(binder.getState()))
+//			{
+//				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));
+//			}
+//			else
+//			{
+//				getPlaceController().goTo(new PlaceBookHome(getUser()));
+//			}
+//		}
+//
+//		if(getUser().getEmail().equals(binder.getOwner().getEmail()))
+//		{
+//			return;
+//		}
 //
 //		if(binder.getPermissions() != null && binder.getPermissions().keySet().size() > 0 && binder.getPermissions().containsKey(getUser().getEmail()))
 //		{
