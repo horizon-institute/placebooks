@@ -9,7 +9,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
+
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -1305,14 +1307,25 @@ public class PlaceBooksAdminController
 					boolean acceptsGzip = false;
 					String disposition = "inline";
 					String contentType = null;
+/*					eu.medsea.mimeutil.MimeUtil m = new eu.medsea.mimeutil.MimeUtil();
+					final Collection c = m.getMimeTypes(serveFile);
+					log.debug("Size = " + c.size());
+					java.util.Iterator itr = c.iterator();
+					while(itr.hasNext()) {
+						eu.medsea.mimeutil.MimeType mt = (eu.medsea.mimeutil.MimeType) itr.next();
+						log.debug("Media type: " + mt.getMediaType());
+						log.debug("Sub Type: " + mt.getSubType());
+					}
+*/
 					try
 					{
 						final MagicMatch match = Magic.getMagicMatch(serveFile, false);
 						contentType = match.getMimeType();
+						log.debug("Mime Type detected as " + contentType);
 					}
 					catch (final Throwable e)
 					{
-						log.debug(e.toString());
+						log.debug("Problem with mime type: " + e.toString());
 					}
 
 					if (contentType == null)
