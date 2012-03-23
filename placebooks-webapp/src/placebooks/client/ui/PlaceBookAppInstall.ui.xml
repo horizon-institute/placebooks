@@ -9,7 +9,7 @@
 To install the Android PlaceBooks App you need to:
 <ol>
 <li>Connect your android phone to your computer and mount the SD card.</li>
-<li>Download <a href="PlaceBooks.apk">Placebooks.apk</a> and copy it to your phone's SD card.</li>
+<li>Download <a href="http://cs.swan.ac.uk/~csmarkd/Placebooks%20android%20app%202.0/PlaceBooks.apk">Placebooks.apk</a> and copy it to your phone's SD card.</li>
 <li>Unmount the SD card from the computer.</li>
 <li>On the phone, go to the Android Market and install an app called 'App Installer'</li>
 <li>Open App Installer and install PlaceBooks.apk from the SD card (you may have to check 'allow apps to be installed from sd card' in your settings)</li>
