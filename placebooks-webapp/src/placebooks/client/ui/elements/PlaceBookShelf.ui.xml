@@ -21,25 +21,19 @@
 		{
 			overflow: auto;
 			left: 0px;
-			top: 0px;
+			top: 20px;
 			bottom: 0px;
-			padding-top: 10px;
 			padding-left: 10px;
+			position: absolute;
 		}
 		
 		.mapPanel
 		{
 			position: absolute;
-			top: 0px;
+			top: 20px;
 			bottom: 0px;
 			right: 0px;
 			left: 200px;
-		}
-		
-		.content 
-		{
-			padding-top: 30px;
-			position: relative;
 		}
 		
 		.mapToggle
@@ -48,12 +42,6 @@
 			top: 0px;
 			right: 0px;
 			height: 20px;
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-align: center;
-			display: -moz-box;
-			-moz-box-orient: horizontal;
-			-moz-box-align: center;			
 			padding: 0 10px;
 			cursor: default;
 			color: #777;
@@ -64,6 +52,10 @@
 		.mapToggleText
 		{
 			padding-right: 5px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-o-user-select: none;
+			user-select: none;
 		}
 		
 		.mapToggle:HOVER
@@ -73,11 +65,11 @@
 		}		
 	</ui:style>	
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
-	<g:FlowPanel styleName="{style.content}">		
+	<g:FlowPanel>		
 		<g:FlowPanel styleName="{style.loading}" ui:field="progress"><g:Image resource='{images.progress3}' /><g:InlineLabel ui:field="progressLabel" styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>
 		<g:FlowPanel ui:field="placebooks" styleName="{style.placebookList}" />
 		<p:MousePanel ui:field="mapToggle" styleName="{style.mapToggle}">
-			<g:Label ui:field="mapToggleText" styleName="{style.mapToggleText}"><ui:msg>Hide Map</ui:msg></g:Label>	
+			<g:InlineLabel ui:field="mapToggleText" styleName="{style.mapToggleText}"><ui:msg>Hide Map</ui:msg></g:InlineLabel>	
 			<g:Image ui:field="mapToggleImage" resource="{images.arrow_right}"/>			
 		</p:MousePanel>
 

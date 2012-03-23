@@ -6,7 +6,8 @@
 			padding: 5px;
 			margin: 10px auto;
 			text-align: center;
-			border-radius: 10px;			
+			border-radius: 10px;
+			display: inline-block;
 		}
 		
 		.panel:HOVER {
@@ -30,13 +31,15 @@
 			border-width: 2px 4px 3px 11px;
 			font-family: Verdana, Arial, sans-serif;
 			font-size: 12px;
-			line-height: 19px;			
+			line-height: 19px;
 			padding: 0 7px;
 		}
 	</ui:style>
 
-	<p:MousePanel styleName="{style.panel}" ui:field="panel">
-		<g:Image ui:field="image"/>
-		<g:Label styleName="{style.text}" ui:field="text"></g:Label>
-	</p:MousePanel>
+	<g:FlowPanel>
+		<p:MousePanel styleName="{style.panel}" ui:field="panel">
+			<g:Image ui:field="image" />
+				<g:Label styleName="{style.text}" ui:field="text" />
+		</p:MousePanel>
+	</g:FlowPanel>
 </ui:UiBinder> 

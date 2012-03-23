@@ -31,13 +31,7 @@
 			bottom: 0px;
 			width: 120px;
 			background: #556;
-			overflow: auto;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-box-align: center;
-			display: -moz-box;
-			-moz-box-orient: vertical;
-			-moz-box-align: center;			
+			overflow: auto;	
 			z-index: 1700;
 		}
 		
@@ -67,6 +61,7 @@
 			font: 18px/40px verdana, arial, sans-serif;
 			width: 300px;
 			margin-right: 20px;
+			float: left;
 		}
 		
 		.account {
@@ -83,45 +78,31 @@
 			overflow: hidden;
 		}
 		
-		.floatLeft {
+		.saveItem {
 			float: left;
+			line-height: 40px;
 		}
 		
 		.actionMenu {
 			font: 16px verdana, arial, sans-serif;
 			padding: 5px;
+			margin-top: 10px;
+			float: right;
 		}
 		
 		.infoPanel {
 			padding: 0px 30px;
 			background: #EEE;
+			height: 47px;
 			border-bottom: 1px solid #CCC;
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-align: center;
-			display: -moz-box;
-			-moz-box-orient: horizontal;
-			-moz-box-align: center;			
 		}
 		
-		.spacer {
-			-webkit-box-flex: 1;
-			-moz-box-flex: 1;			
-		}
-		
+
 		.zoomPanel {
-			padding: 0px 12px;	
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-align: center;
-			display: -moz-box;
-			-moz-box-orient: horizontal;
-			-moz-box-align: center;	
+			padding: 0px 12px;		
 		}
 		
 		.zoomLabel {
-			-webkit-box-flex: 1;
-			-moz-box-flex: 1;			
 			padding-right: 10px;
 		}
 		
@@ -166,7 +147,7 @@
 		<g:FlowPanel styleName="{style.canvasPanel}">
 			<g:FlowPanel styleName="{style.infoPanel}">
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
-				<p:PlaceBookSaveItem ui:field="saveItem" addStyleNames="{style.spacer}" />
+				<g:SimplePanel styleName="{style.saveItem}"><p:PlaceBookSaveItem ui:field="saveItem"/></g:SimplePanel>
 				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />	
@@ -178,10 +159,10 @@
 			<g:Label ui:field="publish" styleName="{style.menuItem}"><ui:msg>Publish</ui:msg></g:Label>		
 			<g:Label ui:field="preview" styleName="{style.menuItem}"><ui:msg>Preview</ui:msg></g:Label>		
 			<g:FlowPanel styleName="{style.zoomPanel}">
-				<g:Label styleName="{style.zoomLabel}"><ui:msg>Zoom</ui:msg></g:Label>
-				<g:Label ui:field="zoomOut" styleName="{style.zoomButton}">-</g:Label>
-				<g:Label ui:field="zoomLabel">100%</g:Label>
-				<g:Label ui:field="zoomIn" styleName="{style.zoomButton}">+</g:Label>
+				<g:InlineLabel styleName="{style.zoomLabel}"><ui:msg>Zoom</ui:msg></g:InlineLabel>
+				<g:InlineLabel ui:field="zoomOut" styleName="{style.zoomButton}">-</g:InlineLabel>
+				<g:InlineLabel ui:field="zoomLabel">100%</g:InlineLabel>
+				<g:InlineLabel ui:field="zoomIn" styleName="{style.zoomButton}">+</g:InlineLabel>
 			</g:FlowPanel>
 			<g:Label ui:field="deleteBook" styleName="{style.menuItem}"><ui:msg>Delete PlaceBook</ui:msg></g:Label>			
 		</p:DropMenu>

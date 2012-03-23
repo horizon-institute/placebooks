@@ -17,11 +17,19 @@
 		.parent {
 			height: 100%;
 		}
+		
+		.shelf {
+			position: absolute;
+			top: 100px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<p:PlaceBookToolbar ui:field="toolbar" />
 
 		<g:Label ui:field="titleLabel" styleName="{style.title}"><ui:msg>Library</ui:msg></g:Label>
-		<p:PlaceBookShelf ui:field="shelf" />
+		<p:PlaceBookShelf ui:field="shelf" styleName="{style.shelf}"/>
 	</g:FlowPanel>
 </ui:UiBinder>

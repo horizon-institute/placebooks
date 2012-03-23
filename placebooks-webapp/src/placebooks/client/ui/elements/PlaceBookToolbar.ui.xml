@@ -16,12 +16,6 @@
 			background: -webkit-linear-gradient(top, #2d2d2d, #111);
 			background: -moz-linear-gradient(top, #2d2d2d, #111);			
 			border-bottom: 1px solid #84817a;
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-algin: center;
-			display: -moz-box;
-			-moz-box-orient: horizontal;
-			-moz-box-algin: center;	
 			width: 100%;		
 		}
 		
@@ -38,6 +32,7 @@
 		.left {
 			text-transform: uppercase;	
 			margin-left: 50px;
+			float: left;
 		}
 		
 		.toolbarMenuItem {
@@ -55,11 +50,7 @@
 			margin-right: 50px;
 			display: -webkit-box;
 			display: -moz-box;			
-		}
-		
-		.spacer {
-			-webkit-box-flex: 1;
-			-moz-box-flex: 1;			
+			float: right;
 		}
 	</ui:style>	
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
@@ -68,7 +59,6 @@
 		<p:PlaceBookToolbarItem ui:field="homeItem" addStyleNames="{style.left}"><ui:msg>PlaceBooks</ui:msg></p:PlaceBookToolbarItem>
 		<p:PlaceBookToolbarItem ui:field="createItem" addStyleNames="{style.left}" image="{images.toolbar_create}"><ui:msg>Create</ui:msg></p:PlaceBookToolbarItem>
 		<p:PlaceBookToolbarItem ui:field="libraryItem" addStyleNames="{style.left}" image="{images.toolbar_library}"><ui:msg>My Library</ui:msg></p:PlaceBookToolbarItem>
-		<g:FlowPanel styleName="{style.spacer}"/>
 		<g:FlowPanel styleName="{style.toolbarLogin}" ui:field="loginPanel">
 			<p:PlaceBookToolbarItem ui:field="loginLabel"><ui:msg>Login</ui:msg></p:PlaceBookToolbarItem>		
 			<g:InlineLabel> | </g:InlineLabel>

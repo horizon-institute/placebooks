@@ -87,14 +87,12 @@
 		
 		.height {
 			height: 100%;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-box-align: stretch;
 		}
 		
 		.content {
 			overflow-y: auto;
 			-webkit-box-flex: 1;
+			height: 100%;
 		}
 		
 		.innerContent {

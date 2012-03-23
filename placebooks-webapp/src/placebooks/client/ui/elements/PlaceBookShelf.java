@@ -189,7 +189,6 @@ public class PlaceBookShelf extends Composite
 			mapToggleText.setText("Hide Map");
 			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
 			placebooks.getElement().getStyle().clearRight();
-			placebooks.getElement().getStyle().clearTop();
 			placebooks.getElement().getStyle().clearPaddingLeft();
 			placebooks.getElement().getStyle().clearPaddingRight();
 			placebooks.setWidth("190px");
@@ -201,7 +200,6 @@ public class PlaceBookShelf extends Composite
 			mapToggleText.setText("Show Map");
 			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
 			placebooks.getElement().getStyle().setRight(0, Unit.PX);
-			placebooks.getElement().getStyle().setTop(20, Unit.PX);
 			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
 			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);
 			placebooks.getElement().getStyle().clearWidth();
@@ -232,16 +230,10 @@ public class PlaceBookShelf extends Composite
 
 				Collections.sort(entries, shelfControl);
 
-				int index = 0;
 				int markerIndex = 1;
 				for (final PlaceBookEntry entry : entries)
 				{
 					final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(shelfControl.place, entry);
-					if (index % 5 == 0)
-					{
-						widget.getElement().getStyle().setProperty("clear", "left");
-					}
-					index++;
 
 					if (entry.getCenter() != null)
 					{
@@ -315,6 +307,7 @@ public class PlaceBookShelf extends Composite
 	void toggleMapVisible(final ClickEvent event)
 	{
 		setMapVisible(!mapVisible);
+		event.preventDefault();
 	}
 
 	private void createMap()
