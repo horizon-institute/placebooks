@@ -6,7 +6,6 @@ import placebooks.client.PlaceBookService;
 import placebooks.client.model.DataStore;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.User;
 import placebooks.client.ui.dialogs.PlaceBookConfirmDialog;
 import placebooks.client.ui.dialogs.PlaceBookPermissionsDialog;
@@ -21,7 +20,6 @@ import placebooks.client.ui.items.frames.PlaceBookItemPopupFrame;
 import placebooks.client.ui.palette.Palette;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -190,34 +188,34 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 	public void checkAuthorized(final PlaceBookBinder binder)
 	{
-//		if (getUser() == null)
-//		{
-//			if ("PUBLISHED".equals(binder.getState()))
-//			{
-//				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));
-//			}
-//			else
-//			{
-//				getPlaceController().goTo(new PlaceBookHome(getUser()));
-//			}
-//		}
-//
-//		if(getUser().getEmail().equals(binder.getOwner().getEmail()))
-//		{
-//			return;
-//		}
-//
-//		if(binder.getPermissions() != null && binder.getPermissions().keySet().size() > 0 && binder.getPermissions().containsKey(getUser().getEmail()))
-//		{
-//			if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R_W"))
-//			{
-//				return;
-//			}
-//			else if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R"))
-//			{
-//				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));				
-//			}
-//		}
+		if (getUser() == null)
+		{
+			if ("PUBLISHED".equals(binder.getState()))
+			{
+				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));
+			}
+			else
+			{
+				getPlaceController().goTo(new PlaceBookHome(getUser()));
+			}
+		}
+
+		if(binder.getOwner() == null || getUser().getEmail().equals(binder.getOwner().getEmail()))
+		{
+			return;
+		}
+
+		if(binder.getPermissions() != null && binder.getPermissions().keySet().size() > 0 && binder.getPermissions().containsKey(getUser().getEmail()))
+		{
+			if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R_W"))
+			{
+				return;
+			}
+			else if(binder.getPermissions().get(getUser().getEmail()).isString().stringValue().equals("R"))
+			{
+				getPlaceController().goTo(new PlaceBookPreview(getUser(), binder));				
+			}
+		}
 	}
 	
 	@Override
@@ -299,6 +297,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 		controller = new PlaceBookController(bookPanel, factory, saveItem);
 		controller.setupUIElements(backPanel);
 
+		palette.setControllers(controller, getPlaceController());
+		
 		saveItem.setState(SaveState.saved);
 		saveItem.setRunnable(new Runnable()
 		{
@@ -341,17 +341,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 		toolbar.setPlace(this);
 
 		title.setMaxLength(64);
-
-		updatePalette();
-		final Timer timer = new Timer()
-		{
-			@Override
-			public void run()
-			{
-				updatePalette();
-			}
-		};
-		timer.scheduleRepeating(120000);
 
 		panel.setWidget(editor);
 
@@ -403,28 +392,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 				}.schedule(20);
 			}
 		}.schedule(10);
-	}
-
-	public void updatePalette()
-	{
-		PlaceBookService.getPaletteItems(new AbstractCallback()
-		{
-			@Override
-			public void failure(final Request request, final Response response)
-			{
-				if (response.getStatusCode() == 401)
-				{
-					getPlaceController().goTo(new PlaceBookHome());
-				}
-			}
-
-			@Override
-			public void success(final Request request, final Response response)
-			{
-				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				palette.setPalette(items, controller);
-			}
-		});
 	}
 
 	@UiHandler("newPage")
