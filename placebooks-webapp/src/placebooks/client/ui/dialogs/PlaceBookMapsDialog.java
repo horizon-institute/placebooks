@@ -133,8 +133,15 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 				final ImageResource marker = selectionModel.getSelectedObject();
 				try
 				{
-					final int markerIndex = marker.getName().charAt(6);
-					item.getItem().setParameter("marker", markerIndex);
+					if(marker.getName().equals("marker"))
+					{
+						item.getItem().removeParameter("marker");						
+					}
+					else
+					{
+						final int markerIndex = marker.getName().charAt(6);
+						item.getItem().setParameter("marker", markerIndex);						
+					}
 				}
 				catch (final Exception e)
 				{
