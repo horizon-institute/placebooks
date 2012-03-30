@@ -1,8 +1,9 @@
 package placebooks.client.ui.palette;
 
+import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.PlaceBookInteractionHandler;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 
@@ -10,24 +11,29 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PalettePlaceBookItem extends PaletteItem
 {
 	private final PlaceBookItem item;
+	private final PlaceBookController controller;
 
-	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookInteractionHandler dragHandler)
+	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookController dragHandler)
 	{
-		super();
+		super(placeBookItem.getMetadata("title", "Unnamed"));
 
 		this.item = placeBookItem;
+		this.controller = dragHandler;
+	}
 
-		text.setText(placeBookItem.getMetadata("title", "Unnamed"));
-
-		panel.getElement().getStyle().setCursor(Cursor.MOVE);
+	@Override
+	public Widget createWidget()
+	{
+		final Widget result = super.createWidget();
 
 		if (item.is(ItemType.IMAGE) && item.getKey() != null)
 		{
-			image.setUrl(item.getURL());
+			image.setUrl(item.getThumbURL());
 			image.setHeight("auto");
 			image.setWidth("64px");
 		}
@@ -35,28 +41,55 @@ public class PalettePlaceBookItem extends PaletteItem
 		{
 			image.setResource(item.getIcon());
 		}
+
+		if (controller.canAdd(item))
+		{
+			panel.getElement().getStyle().setCursor(Cursor.MOVE);
+		}
+		else
+		{
+			image.getElement().getStyle().setOpacity(0.5);
+		}
+
+		image.addMouseDownHandler(new MouseDownHandler()
+		{
+			@Override
+			public void onMouseDown(final MouseDownEvent event)
+			{
+				event.preventDefault();
+			}
+		});
+
 		panel.addMouseDownHandler(new MouseDownHandler()
 		{
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				if(dragHandler.canAdd(item))
+				if (controller.canAdd(item))
 				{
-					dragHandler.setupDrag(event, createItem(), null);
+					controller.setupDrag(event, createItem(), null);
 				}
 			}
 		});
+		return result;
 	}
 
 	private PlaceBookItemWidget createItem()
 	{
-		final PlaceBookItem newItem = PlaceBookItem.parse(new JSONObject(item).toString());
+		final PlaceBookItem newItem = PlaceBookService.parse(PlaceBookItem.class, new JSONObject(item).toString());
 		if (newItem.getKey() != null)
 		{
-			newItem.setMetadata("originalItemID", newItem.getKey());
 			newItem.setKey(null);
 		}
+		if (item.getKey() != null)
+		{
+			newItem.setMetadata("originalItemID", item.getKey());
+		}
+		if (newItem.getMetadata("originalItemID") == null)
+		{
+			newItem.removeMetadata("originalItemID");
+		}
 		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
-		return PlaceBookItemWidgetFactory.createItemWidget(newItem, true);
+		return PlaceBookItemWidgetFactory.createItemWidget(newItem, controller);
 	}
 }

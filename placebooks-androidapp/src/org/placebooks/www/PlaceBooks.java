@@ -86,6 +86,7 @@ public class PlaceBooks extends Activity{
 	        }
 	            
 	        
+<<<<<<< HEAD
 	        
 	        //Get the app's shared preferences - check if a user connected their account to the app
 	        SharedPreferences loginAppPreferences = this.getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
@@ -94,6 +95,77 @@ public class PlaceBooks extends Activity{
 	        
 	        
 	        if (strUserName != ""){
+=======
+	        /*
+	         * Sign in button pressed (action listener for button)
+	         */
+	        btnLogin.setOnClickListener(new OnClickListener() {
+	        	public void onClick(View v){
+			        if (oc.isOnline(PlaceBooks.this)){
+   
+	        				// Check Login	
+	        		         username = etUsername.getText().toString();
+	        		         password = etPassword.getText().toString();
+	        		      
+	        		         
+	        		        if(username.length() > 0 && password.length() >0){
+	        	        		
+	        		        	//progress dialog for logging in (gives user feedback)
+	        		        	myDialog = ProgressDialog.show( PlaceBooks.this, " " , " Logging in.. ", true);				   	 
+	        		        	
+	        		        	new Thread() {
+	        		        	public void run() {
+	        		        	try{
+		        		           final HttpClient httpClient = new DefaultHttpClient();
+		                   		   final HttpPost httpPost = new HttpPost("http://www.placebooks.org/placebooks/j_spring_security_check");
+		
+		                   		   
+		                   		   try
+		                   		   {
+		                   		    final List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		                   		    parameters.add(new BasicNameValuePair("j_username", username));
+		                   		    parameters.add(new BasicNameValuePair("j_password", password));
+		                   		    httpPost.setEntity(new UrlEncodedFormEntity(parameters));
+		
+		                   		    final HttpResponse response = httpClient.execute(httpPost);
+		
+		                   		    Log.i("placebooks", "Status Code: " + response.getStatusLine().getStatusCode());
+		                   		                                     		    
+		                   		    for (final Header header : response.getAllHeaders())
+		                   		    {
+		                   		     Log.i("placebooks", header.getName() + "=" + header.getValue());
+		                   		    }
+		
+		                   		    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		                   		    response.getEntity().writeTo(bos);
+		                   		    Log.i("placebooks", "Content: " + bos.toString());
+		                   		    
+		        		        	
+			                   		 if(response.getStatusLine().getStatusCode() == 200){ 
+			                   		 	//login successful 
+			                   			//write credentials to shared preferences (only need the username since password has been confirmed)
+			                   			saveCredentials(username, password);
+			                   			
+			                   			//take user to their bookshelf
+		             		        	Intent intent = new Intent();
+		             	        		intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");
+		             	        		intent.putExtra("username", username);  //pass the username variable along as an extra in the Intent object, and then retrieve it from the newly launched Activity in the Shelf class
+		             	        		//intent.putExtra("password", password);
+		             	        		startActivity(intent);	
+		             	        		endThisActivity(); //end placebooks activity
+			                   		 }	
+			                   		 else{
+			                            myDialog.dismiss();
+			                         	invalidCredentials();
+			                        	 
+			                   		 }
+			                   		 
+	    
+	                                 }
+	                                 catch (final Exception e)
+	                                 {
+	                                   Log.e("placebooks", e.getMessage(), e);
+>>>>>>> upstream/master
 	
 			     Intent intent = new Intent();
 			     intent.setClassName("org.placebooks.www", "org.placebooks.www.Shelf");

@@ -1,0 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.mapPanel {
+			width: 300px;
+			height: 300px;
+			position: relative;
+		}		
+		
+		.markerPanel {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			height: 300px;
+			width: 50px;
+			overflow-y: scroll;
+		}
+		
+		.parent {
+			position:relative;
+			width: 350px;
+			height: 300px;
+			margin: 5px 0;
+		}
+		
+		.mapLabel {
+			text-align: center;
+		}
+		
+		.check {
+			float: right;
+		}
+	</ui:style>
+	<g:FlowPanel>
+		<g:ListBox ui:field="mapSelect"/>
+		<g:CheckBox ui:field="markerShow" styleName="{style.check}"><ui:msg>Show Marker next to Item</ui:msg></g:CheckBox>
+		<g:FlowPanel ui:field="mapRootPanel">
+		<g:FlowPanel styleName="{style.parent}">
+		<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>
+		<g:FlowPanel ui:field="markerListPanel" styleName="{style.markerPanel}"/>
+		</g:FlowPanel>
+		<g:Label ui:field="mapLabel" styleName="{style.mapLabel}"><ui:msg>Click on the Map to Move Item</ui:msg></g:Label>						
+		</g:FlowPanel>
+	</g:FlowPanel>
+</ui:UiBinder> 

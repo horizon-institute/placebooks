@@ -1,9 +1,10 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:pw="urn:import:placebooks.client.ui.widget" xmlns:p="urn:import:placebooks.client.ui" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
 	<ui:style>
-		.title 
-		{
+		.title {
 			font-style: mako, sans-serif;
 			font-size: 26px;
 			font-weight: bold;
@@ -11,16 +12,16 @@
 			color: #384967;
 		}
 		
-		.search
-		{
+		.search {
 			font-size: 20px;
-			width: 730px;
-			vertical-align: top;
-			margin-top: 5px;
+			position: absolute;
+			left: 0px;
+			top: 2px;
+			right: 60px;
+	
 		}
 		
-		.searchButton
-		{
+		.searchButton {
 			margin-top: 2px;
 			background-color: #346;
 			padding: 3px 15px;
@@ -29,32 +30,53 @@
 			border-radius: 3px;
 		}
 		
-		.searchButton:HOVER
-		{
+		.searchButton:HOVER {
 			background-color: #457;
 			border: 1px outset #569;
-		}		
+		}
 		
-		.searchBlock
-		{
+		.searchBlock {
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
-			margin-bottom: 20px;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
 		}
-	</ui:style>	
-	<ui:with field='res' type='placebooks.client.resources.Resources'/>	
-	<g:FlowPanel>
-		<p:PlaceBookToolbar ui:field="toolbar"/>
 		
+		.searchBar {
+			margin: 0 auto;
+			width: 80%;
+			position: relative;
+		}
+		
+		.parent {
+			height: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+		}
+		
+		.nearbyLink {
+ 			margin: 0 auto;
+			width: 80%;
+			display: block;
+}
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
+	<g:FlowPanel styleName="{style.parent}">
+		<p:PlaceBookToolbar ui:field="toolbar" />
+
 		<g:FlowPanel styleName="{style.searchBlock}">
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel><pw:MousePanel styleName="{style.searchButton}" ui:field="searchButton" ><g:Image resource="{res.search_025}" /></pw:MousePanel><g:TextBox ui:field="search" styleName="{style.search}">Search PlaceBooks</g:TextBox></g:FlowPanel>
+
+			<g:FlowPanel styleName="{style.searchBar}">
+				<g:TextBox ui:field="searchBox" styleName="{style.search}"><ui:msg>Search PlaceBooks</ui:msg></g:TextBox>
+				<p:MousePanel styleName="{style.searchButton}" ui:field="searchButton">
+					<g:Image resource="{images.search}" />
+				</p:MousePanel>
+			</g:FlowPanel>
+			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}"><ui:msg>Find Nearby PlaceBooks</ui:msg></g:Anchor>
 		</g:FlowPanel>
-		</g:FlowPanel>
-		
-		<g:FlowPanel styleName="{res.style.content}">		
-			<g:FlowPanel ui:field="placebooks"></g:FlowPanel>	
-		</g:FlowPanel>
+
+		<p:PlaceBookShelf ui:field="shelf" />
 	</g:FlowPanel>
 </ui:UiBinder>

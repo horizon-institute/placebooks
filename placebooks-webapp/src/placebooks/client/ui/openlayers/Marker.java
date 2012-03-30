@@ -1,9 +1,15 @@
 package placebooks.client.ui.openlayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.resources.client.ImageResource;
 
 public class Marker extends JavaScriptObject
 {
+	public final static Marker create(final ImageResource image, final LonLat lonLat)
+	{
+		return create(image.getSafeUri().asString(), lonLat, image.getHeight(), image.getWidth());
+	}
+
 	public final static native Marker create(String markerURL, LonLat lonLat, int iconHeight, int iconWidth)
 	/*-{
 		var size = new $wnd.OpenLayers.Size(iconWidth, iconHeight);
@@ -20,7 +26,7 @@ public class Marker extends JavaScriptObject
 	/*-{
 		return this.events;
 	}-*/;
-	
+
 	public final native Icon getIcon()
 	/*-{
 		return this.icon;

@@ -1,31 +1,33 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class FitToContentMenuItem extends MenuItem
 {
-	private final SaveContext context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public FitToContentMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public FitToContentMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Fit to Content");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
 	public boolean isEnabled()
 	{
-		return item.getItem().hasParameter("height");
+		return item.getItem().hasParameter("height") && !item.getItem().is(ItemType.GPS);
 	}
 
 	@Override
 	public void run()
 	{
 		item.getItem().removeParameter("height");
-		item.getPanel().reflow();
-		context.markChanged();
+		item.getItemWidget().refresh();
+		item.getColumn().reflow();
+		controller.markChanged();
 	}
 }

@@ -64,13 +64,14 @@ public class WebBundleItem extends PlaceBookItem
 		try
 		{
 			final File from = new File(getWebBundlePath());
-			final File to = new File(getPlaceBook().getPackagePath() 
+			final File to = new File(getPlaceBook().getPlaceBookBinder().getPackagePath() 
 									 + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(getWebBundle()));
+			filename.appendChild(config.createTextNode(getPlaceBook().getPlaceBookBinder().getPackagePath() 
+									 + "/" + getKey() + "/" + getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -88,22 +89,25 @@ public class WebBundleItem extends PlaceBookItem
 	}
 
 	@Override
-	public void deleteItemData()
+	public boolean deleteItemData()
 	{
 		try
 		{
 			FileUtils.deleteDirectory(new File(webBundlePath));
+			return true;
 		}
 		catch (final Exception e)
 		{
 			log.error(e.toString());
 		}
+
+		return false;
 	}
 
 	public String generateWebBundlePath()
 	{
 		return PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + getKey();
+				.getProperty(PropertiesSingleton.IDEN_WEBBUNDLE, "") + "/" + getKey();
 	}
 
 	@Override
@@ -112,7 +116,7 @@ public class WebBundleItem extends PlaceBookItem
 		return WebBundleItem.class.getName();
 	}
 
-	// A thumbnail preview image of the webpage - rendered somehow and stored
+	// A thumbnail preview markerImage of the webpage - rendered somehow and stored
 	// here
 	public BufferedImage getPreview()
 	{

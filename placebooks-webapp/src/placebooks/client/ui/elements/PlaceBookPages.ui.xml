@@ -1,0 +1,78 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	<ui:style type="placebooks.client.ui.elements.PlaceBookPages.PageStyle">
+		.pagesPanel {
+			position: absolute;
+		}
+		
+		.canvas {
+			position: absolute;
+			pointer-events: none;
+			z-index: 1500;
+		}
+		
+		.page {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			bottom: 0px;
+			right: 0px;
+			overflow: hidden;
+			background: -webkit-linear-gradient(left, rgba(226,226,226,1) 0%,rgba(250,250,250,1) 5%,rgba(238,238,238,1) 80%);
+			background: -moz-linear-gradient(left, rgba(226,226,226,1) 0%,rgba(250,250,250,1) 5%,rgba(238,238,238,1) 80%);
+			box-shadow: 1px 1px 2px 1px #ccc;
+		}
+		
+		.leftPanel {
+			position: absolute;
+			background: -webkit-linear-gradient(left, rgba(250,250,250,1) 35%,rgba(238,238,238,1) 73%, rgba(250,250,250,1) 90%, rgba(215,215,215, 1) 100%);
+			background: -moz-linear-gradient(left, rgba(250,250,250,1) 35%,rgba(238,238,238,1) 73%, rgba(250,250,250,1) 90%, rgba(215,215,215, 1) 100%);			
+			box-shadow: 1px 1px 2px 1px #ccc;			
+		}
+		
+		.pageButton {
+			position: absolute;
+			bottom: 0px;
+			background: #ddd;
+			border: 2px solid #eee;
+			border-bottom: 0px;
+			padding: 0 4px;			
+			z-index: 1600;			
+			box-shadow: 1px 2px 6px rgba(0,0,0, 0.8);			
+		}	
+		
+		.pageDisabled {
+			opacity: 0.5;
+		}
+		
+		.pageEnabled {
+			cursor: pointer;	
+		}
+		
+		.pageEnabled:HOVER {
+			background: #eee;
+			border-color: #fff;
+		}	
+				
+		.prevButton {
+			left: 0px;
+			border-left: 0px;
+			border-top-right-radius: 10px;			
+		}	
+		
+		.nextButton {
+			right: 0px;
+			border-right: 0px;
+			border-top-left-radius: 10px;
+		}
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
+	<p:MousePanel ui:field="rootPanel">
+		<p:Canvas ui:field="canvas" styleName="{style.canvas}"/>
+		<g:SimplePanel ui:field="leftPanel" styleName="{style.leftPanel}"/>
+		<g:FlowPanel ui:field="pagesPanel" styleName="{style.pagesPanel}" />
+		<p:MousePanel ui:field="prevPage" addStyleNames="{style.pageButton} {style.prevButton}"><g:Image resource="{images.page_previous}" /></p:MousePanel>
+		<p:MousePanel ui:field="nextPage" addStyleNames="{style.pageButton} {style.nextButton}"><g:Image resource="{images.page_next}" /></p:MousePanel>			
+	</p:MousePanel>
+</ui:UiBinder> 

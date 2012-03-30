@@ -1,32 +1,23 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ImageItem extends PlaceBookItemWidget
+public class ImageItem extends MediaItem
 {
 	private final Image image = new Image();
 
-	private final Timer loadTimer = new Timer()
+	ImageItem(final PlaceBookItem item, final PlaceBookController handler)
 	{
-		@Override
-		public void run()
-		{
-			checkSize();
-		}
-	};
-
-	ImageItem(final PlaceBookItem item)
-	{
-		super(item);
-		initWidget(image);
+		super(item, handler);
 		image.getElement().getStyle().setProperty("margin", "0 auto");
 		image.getElement().getStyle().setDisplay(Display.BLOCK);
 
@@ -48,32 +39,40 @@ public class ImageItem extends PlaceBookItemWidget
 				event.stopPropagation();
 			}
 		});
+
+		refresh();
 	}
 
 	@Override
-	public void refresh()
+	protected void checkHeightParam()
 	{
 		if (getItem().hasParameter("height"))
 		{
-			image.setWidth("auto");
+			getMediaWidget().setWidth("auto");
+			getMediaWidget().setHeight("100%");
 		}
 		else
 		{
-			image.setWidth("100%");
+			getMediaWidget().setWidth("100%");
+			getMediaWidget().setHeight("auto");
 		}
-		image.setUrl(getItem().getURL());
 	}
 
-	private void checkSize()
+	@Override
+	protected int getMediaHeight()
 	{
-		if (image.getHeight() == 0)
-		{
-			loadTimer.schedule(1000);
-		}
-		else
-		{
-			loadTimer.cancel();
-			fireResized();
-		}
+		return image.getHeight();
+	}
+
+	@Override
+	protected Widget getMediaWidget()
+	{
+		return image;
+	}
+
+	@Override
+	protected void setURL(final String url)
+	{
+		image.setUrl(url);
 	}
 }

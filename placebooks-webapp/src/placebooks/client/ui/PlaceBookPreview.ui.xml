@@ -1,0 +1,105 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.infoPanel {
+			padding: 0px 30px;
+			background: #EEE;
+			border-bottom: 1px solid #CCC;
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
+		}
+		
+		.title {
+			font-size: 18px;
+			margin-right: 5px;
+		}
+		
+		.author {
+			margin-right: 5px;
+		}
+		
+		.dropArrow {
+			vertical-align: 20%;
+		}
+		
+		.parent {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+		}
+		
+		.spacer {
+			-webkit-box-flex: 1;
+			padding: 7px 0;
+		}
+		
+		.actionMenu {
+			font: 16px verdana, arial, sans-serif;
+			padding: 5px;
+		}
+		
+		.bookPanel {
+			-webkit-box-flex: 1;
+			position: relative;
+		}
+		
+		.dropMenu {
+			position: absolute;
+			z-index: 3000;
+			padding: 0px;
+			-moz-transition: opacity .5s linear, visibility .5s linear;
+			-webkit-transition: opacity .5s linear, visibility .5s linear;
+			transition: opacity .5s linear, visibility .5s linear;
+			background: #FFF;
+			-moz-box-shadow: 3px 3px 4px #222;
+			-webkit-box-shadow: 3px 3px 4px #222;
+			box-shadow: 3px 3px 6px #222;
+			border: 1px solid #DDD;
+		}
+		
+		.menuItem {
+			padding: 3px 12px;
+			cursor: pointer;
+			border-top: 1px solid #FFF;
+			border-bottom: 1px solid #FFF;
+		}
+		
+		.menuItem:HOVER {
+			background: #ccc;
+			border-top: 1px solid #BBB;
+			border-bottom: 1px solid #BBB;
+		}
+	</ui:style>
+	<g:FlowPanel styleName="{style.parent}">
+		<g:FlowPanel styleName="printHidden">
+			<p:PlaceBookToolbar ui:field="toolbar" />
+			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
+				<g:FlowPanel styleName="{style.spacer}">
+					<g:Label ui:field="titleLabel" styleName="{style.title}" />
+					<g:FlowPanel>
+						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
+						<g:Anchor ui:field="authorLabel" styleName="{style.author}" />
+					</g:FlowPanel>
+				</g:FlowPanel>
+				<p:GooglePlusOne ui:field="googlePlus" />
+				<p:FacebookLikeButton ui:field="facebookLike" />
+				<p:PlaceBookToolbarItem ui:field="actionMenu"
+					addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>
+			</g:FlowPanel>
+			<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
+				<g:Label ui:field="delete" styleName="{style.menuItem}"><ui:msg>Delete PlaceBook</ui:msg></g:Label>
+			</p:DropMenu>
+		</g:FlowPanel>
+		<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />
+		<p:ProgressPanel ui:field="loadingPanel" text="Loading..." />
+	</g:FlowPanel>
+</ui:UiBinder>

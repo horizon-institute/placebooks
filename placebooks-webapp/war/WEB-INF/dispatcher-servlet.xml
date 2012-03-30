@@ -19,6 +19,6 @@
 	</bean>
 	
 	<bean class="placebooks.controller.PlaceBooksAdminController"/>
-	<bean class="placebooks.controller.PlaceBooksAdminControllerDebug" />
+	<!--bean class="placebooks.controller.PlaceBooksAdminControllerDebug" /-->
 </beans>
 

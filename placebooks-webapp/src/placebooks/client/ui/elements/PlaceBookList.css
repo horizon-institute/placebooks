@@ -1,0 +1,9 @@
+.listItem {
+	margin: 2px 5px;
+	padding: 3px 5px;
+	border-radius: 5px;
+}
+
+.listItem:HOVER {
+	background: #ccc;
+}

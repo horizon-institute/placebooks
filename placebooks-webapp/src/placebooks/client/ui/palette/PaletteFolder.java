@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.Resources;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 {
@@ -19,18 +20,26 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 
 	public PaletteFolder(final String name, final PaletteFolder parent, final Palette palette)
 	{
-		super();
+		super(name);
 		this.parent = parent;
 		this.palette = palette;
-
-		text.setText(name);
-
 		if (parent != null)
 		{
-			add(new PaletteBackItem("Back", parent, palette));
+			add(new PaletteBackItem(parent, palette));
 		}
+	}
 
-		image.setResource(Resources.INSTANCE.folder());
+	public void add(final PaletteItem item)
+	{
+		children.add(item);
+	}
+
+	@Override
+	public Widget createWidget()
+	{
+		final Widget result = super.createWidget();
+
+		image.setResource(Resources.IMAGES.pallette_folder());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -39,11 +48,8 @@ public class PaletteFolder extends PaletteItem implements Iterable<PaletteItem>
 				palette.setPaletteFolder(PaletteFolder.this);
 			}
 		});
-	}
 
-	public void add(final PaletteItem item)
-	{
-		children.add(item);
+		return result;
 	}
 
 	public PaletteFolder getFolder(final String name)

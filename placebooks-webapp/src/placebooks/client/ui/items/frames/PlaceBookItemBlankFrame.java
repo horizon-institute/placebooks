@@ -1,34 +1,22 @@
 package placebooks.client.ui.items.frames;
 
-import placebooks.client.resources.Resources;
-
-import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.SimplePanel;
+import placebooks.client.Resources;
+import placebooks.client.ui.elements.PlaceBookController;
 
 public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 {
 	public static PlaceBookItemFrameFactory FACTORY = new PlaceBookItemFrameFactory()
 	{
 		@Override
-		public PlaceBookItemFrame createFrame()
+		public PlaceBookItemFrame createFrame(final PlaceBookController handler)
 		{
 			return new PlaceBookItemBlankFrame();
-		}
-
-		@Override
-		public boolean getEditable()
-		{
-			return false;
 		}
 	};
 
 	public PlaceBookItemBlankFrame()
 	{
-		rootPanel = new SimplePanel();
-		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
-		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
-		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
-		rootPanel.add(widgetPanel);
+		rootPanel = widgetPanel;
+		widgetPanel.setStyleName(Resources.STYLES.style().widgetPanel());
 	}
 }

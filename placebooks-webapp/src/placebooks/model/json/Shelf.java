@@ -2,44 +2,94 @@ package placebooks.model.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import placebooks.model.PlaceBook;
+import placebooks.model.PlaceBookBinder;
+import placebooks.model.PlaceBookItem;
 
 public class Shelf
 {
 	private static final Logger log = Logger.getLogger(Shelf.class.getName());
 
 	@JsonProperty
-	private Collection<PlaceBookEntry> entries = 
-		new ArrayList<PlaceBookEntry>();
+	private Collection<ShelfEntry> entries = new ArrayList<ShelfEntry>();
 
 	public Shelf()
 	{
 	}
 
-	public Shelf(final Collection<PlaceBook> pbs)
+	public Shelf(final Collection<? extends ShelfEntry> entries)
 	{
-		log.info("Creating JSON Shelf...");
+		this.entries.clear();
+		this.entries.addAll(entries);
+	}
 
-		for (final PlaceBook pb : pbs)
+	public Shelf(final Iterable<PlaceBookBinder> placebookBinders)
+	{
+		log.info("Creating JSON Shelf for PlaceBookBinders...");
+
+		for (final PlaceBookBinder pb : placebookBinders)
 		{
-			for (final Map.Entry<String, String> e : 
-				 pb.getMetadata().entrySet())
-			{
-				log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
-			}
+			// for (final Map.Entry<String, String> e :
+			// pb.getMetadata().entrySet())
+			// {
+			// log.info("Shelf entry: " + e.getKey() + " => " + e.getValue());
+			// }
 
-			final PlaceBookEntry entry = new PlaceBookEntry(pb);
+			final ShelfEntry entry = new PlaceBookBinderEntry(pb);
 			entries.add(entry);
 		}
 	}
 
+	public Shelf(final PlaceBook ps[])
+	{
+		log.info("Creating JSON Shelf for PlaceBooks...");
 
-	public void setEntries(final Collection<PlaceBookEntry> entries)
+		for (final PlaceBook p : ps)
+		{
+			final ShelfEntry entry = new PlaceBookEntry(p);
+			entries.add(entry);
+		}
+	}
+
+	public Shelf(final PlaceBookBinder pbs[])
+	{
+		log.info("Creating JSON Shelf for PlaceBookBinders...");
+
+		for (final PlaceBookBinder pb : pbs)
+		{
+			// StringBuilder logString = new StringBuilder();
+			// for (final Map.Entry<String, String> e : pb.getMetadata().entrySet())
+			// {
+			// logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
+			// }
+			// log.debug("Shelf entries: " + logString.toString());
+			final ShelfEntry entry = new PlaceBookBinderEntry(pb);
+			entries.add(entry);
+		}
+	}
+
+	public Shelf(final PlaceBookItem ps[])
+	{
+		log.info("Creating JSON Shelf for PlaceBookItems...");
+
+		for (final PlaceBookItem p : ps)
+		{
+			// StringBuilder logString = new StringBuilder();
+			// for (final Map.Entry<String, String> e : p.getMetadata().entrySet())
+			// {
+			// logString.append("[" + e.getKey() + "] => [" + e.getValue() + "] ");
+			// }
+			// log.debug("Shelf entries: " + logString.toString());
+			final ShelfEntry entry = new PlaceBookItemEntry(p);
+			entries.add(entry);
+		}
+	}
+
+	public void setEntries(final Collection<ShelfEntry> entries)
 	{
 		this.entries.clear();
 		this.entries.addAll(entries);

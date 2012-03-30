@@ -14,8 +14,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -42,7 +42,8 @@ public class User
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "owner", cascade = ALL)
-	private Collection<PlaceBook> placebooks = new HashSet<PlaceBook>();
+	private Collection<PlaceBookBinder> placebookBinders = 
+		new HashSet<PlaceBookBinder>();
 
 	User()
 	{
@@ -61,9 +62,9 @@ public class User
 		loginDetails.add(loginDetail);
 	}
 
-	public void add(final PlaceBook placebook)
+	public void add(final PlaceBookBinder placebookBinder)
 	{
-		placebooks.add(placebook);
+		placebookBinders.add(placebookBinder);
 	}
 
 	public void add(final User friend)
@@ -81,6 +82,11 @@ public class User
 		return friends;
 	}
 
+	public Iterable<LoginDetails> getLoginDetails()
+	{
+		return loginDetails;
+	}
+	
 	public String getKey()
 	{
 		return id;
@@ -105,14 +111,14 @@ public class User
 		return passwordHash;
 	}
 
-	public Iterable<PlaceBook> getPlacebooks()
+	public Iterable<PlaceBookBinder> getPlacebookBinders()
 	{
-		return placebooks;
+		return placebookBinders;
 	}
 
-	public void remove(final PlaceBook placebook)
+	public void remove(final PlaceBookBinder placebookBinder)
 	{
-		placebooks.remove(placebook);
+		placebookBinders.remove(placebookBinder);
 	}
 
 	public void remove(final User friend)
@@ -120,6 +126,11 @@ public class User
 		friends.remove(friend);
 	}
 
+	public void remove(final LoginDetails loginDetails)
+	{
+		this.loginDetails.remove(loginDetails);
+	}
+	
 	public void setName(final String name)
 	{
 		this.name = name;

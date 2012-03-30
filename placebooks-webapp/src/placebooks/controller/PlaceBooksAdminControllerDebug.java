@@ -1,3 +1,4 @@
+/*
 package placebooks.controller;
 
 import java.io.File;
@@ -26,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import placebooks.model.PlaceBookBinder;
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
 import placebooks.model.ImageItem;
-import placebooks.model.LoginDetails;
 import placebooks.model.MapImageItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookItem;
@@ -37,11 +38,11 @@ import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.WebBundleItem;
+import placebooks.services.EverytrailService;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailTripsResponse;
 import placebooks.utils.InitializeDatabase;
-
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTripsResponse;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -114,7 +115,7 @@ public class PlaceBooksAdminControllerDebug
 			pbi.setOwner(itemData.getOwner());
 			pbi.setGeometry(itemData.getGeometry());
 			pbi.setSourceURL(itemData.getSourceURL());
-			final TileHelper.MapMetadata md = TileHelper.getMap(pbi);
+			final MapMetadata md = TileHelper.getMap(pbi);
 			((MapImageItem)pbi).setPath((md.getFile()).getPath());
 			pbi.setGeometry(md.getBoundingBox());
 
@@ -398,7 +399,7 @@ public class PlaceBooksAdminControllerDebug
 			 * for (PlaceBook pb : pbs) { for (PlaceBookItem item : pb.getItems())
 			 * item.deleteItemData(); }
 			 */
-
+/*
 			pm.createQuery("DELETE FROM PlaceBook p").executeUpdate();
 			pm.createQuery("DELETE FROM PlaceBookItem p").executeUpdate();
 			pm.getTransaction().commit();
@@ -419,6 +420,7 @@ public class PlaceBooksAdminControllerDebug
 		return new ModelAndView("message", "text", "Deleted all PlaceBooks");
 	}
 
+	
 	@RequestMapping(value = "/admin/delete_placebook/{key}", 
 			method = RequestMethod.GET)
 			public ModelAndView deletePlaceBook(@PathVariable("key") final String key)
@@ -531,22 +533,22 @@ public class PlaceBooksAdminControllerDebug
 
 	}
 
-
-	@RequestMapping(value = "/admin/publish_placebook/{key}",
-			method = RequestMethod.GET)
-			public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
-	{
-		final EntityManager em = EMFSingleton.getEntityManager();
-		final PlaceBook p = em.find(PlaceBook.class, key);
-		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
-		em.close();
-
-		log.info("Published PlaceBook, old key = " + key + ", new key = " 
-				+ p_.getKey());
-
-		return new ModelAndView("message", "text", 
-				"Published PlaceBook, new key = " + key);
-	}
+//
+//	@RequestMapping(value = "/admin/publish_placebook/{key}",
+//			method = RequestMethod.GET)
+//			public ModelAndView publishPlaceBook(@PathVariable("key") final String key)
+//	{
+//		final EntityManager em = EMFSingleton.getEntityManager();
+//		final PlaceBook p = em.find(PlaceBook.class, key);
+//		final PlaceBook p_ = PlaceBooksAdminHelper.publishPlaceBook(em, p);
+//		em.close();
+//
+//		log.info("Published PlaceBook, old key = " + key + ", new key = " 
+//				+ p_.getKey());
+//
+//		return new ModelAndView("message", "text", 
+//				"Published PlaceBook, new key = " + key);
+//	}
 
 	@RequestMapping(value = "/admin/reset", method = RequestMethod.GET)
 	public ModelAndView reset(final HttpServletRequest req, final HttpServletResponse res)
@@ -559,7 +561,8 @@ public class PlaceBooksAdminControllerDebug
 	public ModelAndView testEverytrailLogin(final HttpServletRequest req)
 	{
 		log.info("Logging into everytrail as " + req.getParameter("username") + "...");
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		return new ModelAndView("message", "text", "Log in status: " + response.getStatus() + "<br/>Log in value: "
 				+ response.getValue() + "<br/>");
@@ -570,12 +573,13 @@ public class PlaceBooksAdminControllerDebug
 	{
 		ModelAndView returnView;
 
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
-			final EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(response.getValue());
+			final EverytrailPicturesResponse picturesResponse = service.pictures(response.getValue());
 			log.debug(picturesResponse.getStatus());
 			returnView = new ModelAndView("message", "text", "Logged in and got picutre list: <br /><pre>"
 					+ picturesResponse.getStatus() + "</pre><br/>");
@@ -593,12 +597,13 @@ public class PlaceBooksAdminControllerDebug
 	{
 		ModelAndView returnView;
 
-		final EverytrailLoginResponse response = EverytrailHelper.UserLogin(req.getParameter("username"),
+		final EverytrailService service = new EverytrailService();
+		final EverytrailLoginResponse response = service.userLogin(req.getParameter("username"),
 				req.getParameter("password"));
 		log.debug("logged in");
 		if (response.getStatus().equals("success"))
 		{
-			final EverytrailTripsResponse tripsResponse = EverytrailHelper.Trips(response.getValue());
+			final EverytrailTripsResponse tripsResponse = service.trips(response.getValue());
 			log.debug(tripsResponse.getStatus());
 			returnView = new ModelAndView("message", "text", "Logged in and got trip list: <br /><pre>"
 					+ tripsResponse.getStatus() + "</pre><br/>");
@@ -662,14 +667,12 @@ public class PlaceBooksAdminControllerDebug
 					}
 					else if (!prefix.contentEquals("video") &&
 							!prefix.contentEquals("audio") && 
-							!prefix.contentEquals("image"))
+							!prefix.contentEquals("markerImage"))
 					{
 						throw new Exception("Unsupported file type");
 					}
 
-					final String path = 
-						PropertiesSingleton
-						.get(this.getClass().getClassLoader())
+					final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 						.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 					if (!new File(path).exists() && !new File(path).mkdirs()) 
@@ -687,12 +690,8 @@ public class PlaceBooksAdminControllerDebug
 					if (prefix.contentEquals("video"))
 					{
 						int maxSize = Integer.parseInt(
-								PropertiesSingleton
-								.get(PlaceBooksAdminHelper.class.getClassLoader())
-								.getProperty(
-										PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, 
-										"20"
-								)
+								PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+								.getProperty(PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, "20")
 						);
 						if ((item.getSize() / MEGABYTE) > maxSize)
 							throw new Exception("File too big");
@@ -730,7 +729,7 @@ public class PlaceBooksAdminControllerDebug
 
 						file = new File(((AudioItem) pbi).getPath());
 					}
-					else if (prefix.contentEquals("image"))
+					else if (prefix.contentEquals("markerImage"))
 					{
 						int maxSize = Integer.parseInt(
 								PropertiesSingleton
@@ -869,3 +868,4 @@ public class PlaceBooksAdminControllerDebug
 	}
 
 }
+*/

@@ -1,0 +1,20 @@
+.innerPanel {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	overflow: hidden;
+	margin: 5px;
+}
+
+.panelEdge {
+	border-left: 1px dashed #ccc;
+}
+
+.panel {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	overflow: visible;
+}

@@ -10,13 +10,26 @@ public class LonLat extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Parse a string containing a space separated coordinate.
+	 * Parse a string containing a space separated coordinate in the format LON LAT.
 	 */
 	public final static LonLat create(final String pointString)
 	{
 		final String[] coords = pointString.split(" ");
 		final float lon = Float.parseFloat(coords[0]);
 		final float lat = Float.parseFloat(coords[1]);
+
+		final LonLat lonlat = LonLat.create(lon, lat);
+		return lonlat;
+	}
+
+	/**
+	 * Parse a string containing a space separated coordinate in the format LAT LON.
+	 */
+	public final static LonLat createFromPoint(final String pointString)
+	{
+		final String[] coords = pointString.split(" ");
+		final float lon = Float.parseFloat(coords[1]);
+		final float lat = Float.parseFloat(coords[0]);
 
 		final LonLat lonlat = LonLat.create(lon, lat);
 		return lonlat;

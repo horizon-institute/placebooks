@@ -1,0 +1,53 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.progressPanel {
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			top: 0px;
+			bottom: 0px;
+			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
+			background: -moz-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));			
+			display: -webkit-box;
+			-webkit-box-pack: center;
+			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-pack: center;
+			-moz-box-align: center;			
+			cursor: wait;
+			z-index: 1000;
+		}
+		
+		.progress {
+			display: -webkit-box;
+			-webkit-box-align: center;
+			display: -moz-box;
+			-moz-box-align: center;
+			background: #555;
+			border: 1px solid #333;
+			border-radius: 5px;
+			padding: 5px;
+			cursor: wait;			
+		}
+		
+		.progressLabel {
+			color: white;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 18px;
+			padding-left: 15px;
+			vertical-align: top;
+			cursor: wait;			
+		}	
+	</ui:style>	
+	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<g:FlowPanel ui:field="progressPanel" styleName="{style.progressPanel}">
+		<g:FlowPanel styleName="{style.progress}">
+			<g:Image resource='{images.progress}' />
+			<g:Label ui:field="progressLabel" styleName="{style.progressLabel}"><ui:msg>Progress</ui:msg>...</g:Label>
+		</g:FlowPanel>			
+	</g:FlowPanel>
+</ui:UiBinder> 

@@ -3,24 +3,21 @@ package placebooks.client.ui.items.frames;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookInteractionHandler;
-import placebooks.client.ui.PlaceBookInteractionHandler.DragState;
-import placebooks.client.ui.PlaceBookPanel;
+import placebooks.client.Resources;
+import placebooks.client.ui.elements.PlaceBookColumn;
+import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.PlaceBookController.DragState;
 import placebooks.client.ui.items.PlaceBookItemWidget;
-import placebooks.client.ui.menuItems.AddMapMenuItem;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
+import placebooks.client.ui.menuItems.EditMapMenuItem;
 import placebooks.client.ui.menuItems.EditTitleMenuItem;
 import placebooks.client.ui.menuItems.FitToContentMenuItem;
 import placebooks.client.ui.menuItems.HideTrailMenuItem;
 import placebooks.client.ui.menuItems.MenuItem;
-import placebooks.client.ui.menuItems.MoveMapMenuItem;
-import placebooks.client.ui.menuItems.RemoveMapMenuItem;
-import placebooks.client.ui.menuItems.SetSourceURLMenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
 
-import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,45 +28,17 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 {
 	public static class Factory extends PlaceBookItemFrameFactory
 	{
-		private PlaceBookInteractionHandler interactionHandler;
-
-		public Factory()
-		{
-
-		}
-
 		@Override
-		public PlaceBookItemFrame createFrame()
+		public PlaceBookItemFrame createFrame(final PlaceBookController handler)
 		{
-			return new PlaceBookItemPopupFrame(interactionHandler);
-		}
-
-		@Override
-		public boolean getEditable()
-		{
-			return true;
-		}
-
-		public void setInteractionHandler(final PlaceBookInteractionHandler interactionHandler)
-		{
-			this.interactionHandler = interactionHandler;
+			return new PlaceBookItemPopupFrame(handler);
 		}
 	}
-
-	private final PlaceBookItemWidget.ChangeHandler changeHandler = new PlaceBookItemWidget.ChangeHandler()
-	{
-		@Override
-		public void itemChanged()
-		{
-			interactionHandler.getContext().markChanged();
-		}
-	};
 
 	private final PlaceBookItemWidget.FocusHandler focusHandler = new PlaceBookItemWidget.FocusHandler()
 	{
@@ -78,11 +47,11 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		{
 			if (focussed)
 			{
-				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);
+				controller.setSelected(PlaceBookItemPopupFrame.this);
 			}
 			else
 			{
-				interactionHandler.setSelected(null);
+				controller.setSelected(null);
 			}
 		}
 	};
@@ -107,19 +76,17 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 	};
 
-	private final PlaceBookInteractionHandler interactionHandler;
+	private final PlaceBookController controller;
 
 	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
-	public PlaceBookItemPopupFrame(final PlaceBookInteractionHandler interactHandler)
+	public PlaceBookItemPopupFrame(final PlaceBookController controller)
 	{
 		super();
-		rootPanel = new SimplePanel();
-		rootPanel.setStyleName(Resources.INSTANCE.style().widgetPanel());
+		rootPanel = widgetPanel;
+		widgetPanel.setStyleName(Resources.STYLES.style().widgetPanel());
 		createFrame();
-		this.interactionHandler = interactHandler;
-		widgetPanel.getElement().getStyle().setMargin(5, Unit.PX);
-		widgetPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+		this.controller = controller;
 		widgetPanel.addDomHandler(highlightOn, MouseOverEvent.getType());
 		widgetPanel.addDomHandler(highlightOff, MouseOutEvent.getType());
 
@@ -133,8 +100,8 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			{
 				final int x = menuButton.getElement().getAbsoluteLeft() + menuButton.getElement().getClientWidth();
 				final int y = menuButton.getElement().getAbsoluteTop() + menuButton.getElement().getClientHeight();
-				interactionHandler.setSelected(PlaceBookItemPopupFrame.this);
-				interactionHandler.showMenu(menuItems, x, y, true);
+				controller.setSelected(PlaceBookItemPopupFrame.this);
+				controller.showMenu(menuItems, x, y, true);
 				event.stopPropagation();
 			}
 		}, ClickEvent.getType());
@@ -144,7 +111,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				interactionHandler.setupDrag(event, getItemWidget(), PlaceBookItemPopupFrame.this);
+				controller.setupDrag(event, getItemWidget(), PlaceBookItemPopupFrame.this);
 			}
 		}, MouseDownEvent.getType());
 
@@ -153,34 +120,39 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 			@Override
 			public void onMouseDown(final MouseDownEvent event)
 			{
-				interactionHandler.setupResize(event, PlaceBookItemPopupFrame.this);
+				controller.setupResize(event, PlaceBookItemPopupFrame.this);
 			}
 		}, MouseDownEvent.getType());
-		rootPanel.add(widgetPanel);
 
-		menuItems.add(new AddMapMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
-		menuItems
-				.add(new DeleteItemMenuItem(interactionHandler.getContext(), interactionHandler.getCanvas(), this));
-		menuItems.add(new FitToContentMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new HideTrailMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new EditTitleMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new MoveMapMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new RemoveMapMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new SetSourceURLMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new ShowTrailMenuItem(interactionHandler.getContext(), this));
-		menuItems.add(new UploadMenuItem(this));
-		
+		menuItems.add(new EditMapMenuItem(controller, this));
+		menuItems.add(new DeleteItemMenuItem(controller, this));
+		menuItems.add(new FitToContentMenuItem(controller, this));
+		menuItems.add(new HideTrailMenuItem(controller, this));
+		menuItems.add(new EditTitleMenuItem(controller, this));
+		// menuItems.add(new SetSourceURLMenuItem(controller, this));
+		menuItems.add(new ShowTrailMenuItem(controller, this));
+		menuItems.add(new UploadMenuItem(controller, this));
+
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
+		
+		markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		markerImage.getElement().getStyle().setZIndex(2);		
+		markerImage.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				controller.goToPage(getItem().getParameter("mapPage"));
+			}
+		});
 	}
 
 	@Override
 	public void resize(final String height)
 	{
 		super.resize(height);
-
-		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
-		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 25, Unit.PX);
+		resize();
 	}
 
 	@Override
@@ -188,42 +160,61 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	{
 		super.setItemWidget(itemWidget);
 		itemWidget.setFocusHandler(focusHandler);
-		itemWidget.setChangeHandler(changeHandler);
 	}
 
-	// @Override
-	// protected void onLoad()
-	// {
-	// super.onLoad();
-	// ((Panel) getParent()).add(frame);
-	// }
-
 	@Override
-	public void setPanel(final PlaceBookPanel newPanel)
+	public void setColumn(final PlaceBookColumn newColumn)
 	{
-		if (panel == newPanel) { return; }
-		if (panel != null)
+		if (column == newColumn) { return; }
+		if (column != null)
 		{
-			panel.remove(frame);
+			column.remove(frame);
+			column.remove(markerImage);
 		}
-		super.setPanel(newPanel);
-		if (panel != null)
+		super.setColumn(newColumn);
+		if (column != null)
 		{
-			panel.add(frame);
+			column.add(frame);
 		}
 	}
 
 	@Override
 	public void updateFrame()
 	{
-		if (interactionHandler.getSelected() == this)
+		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));
+		
+//		if(getItem().hasParameter("mapPage") && column != null)
+//		{
+//			markerImage.setResource(getItem().getMarkerImage());
+//			column.add(markerImage);
+//			markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//			markerImage.getElement().getStyle().setZIndex(2);		
+//			markerImage.addClickHandler(new ClickHandler()
+//			{
+//				@Override
+//				public void onClick(ClickEvent event)
+//				{
+//					controller.goToPage(getItem().getParameter("mapPage"));
+//				}
+//			});			
+//			markerImage.setVisible(true);
+//			
+//		}
+//		else
+//		{
+//			markerImage.setVisible(false);
+//		}
+		
+		if (controller.getSelected() == this)
 		{
+			resize();
 			frame.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setOpacity(1);
 			frame.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 		}
-		else if (highlighted && interactionHandler.getState() == DragState.waiting)
+		else if (highlighted && controller.getState() == DragState.waiting)
 		{
+			resize();
 			rootPanel.getElement().getStyle().setZIndex(20);
 			frame.getElement().getStyle().setZIndex(10);
 			frame.getElement().getStyle().setOpacity(0.8);
@@ -241,6 +232,14 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	void add(final MenuItem menuItem)
 	{
 		menuItems.add(menuItem);
+	}
+
+	private void resize()
+	{
+		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
+		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
+		
+		markerImage.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() + 3, Unit.PX);
 	}
 
 	private void setHighlight(final boolean highlight)

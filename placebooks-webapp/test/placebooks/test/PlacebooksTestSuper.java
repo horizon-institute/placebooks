@@ -9,16 +9,11 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
-
-import placebooks.client.PlaceBookService;
 import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
 import placebooks.controller.UserManager;
-import placebooks.model.EverytrailLoginResponse;
 import placebooks.model.User;
+import placebooks.services.EverytrailService;
+import placebooks.services.model.EverytrailLoginResponse;
 
 /**
  * @author pszmp
@@ -26,13 +21,22 @@ import placebooks.model.User;
  */
 public class PlacebooksTestSuper
 {
-	protected static String test_username = "placebooks_everytrail_test";
-	protected static String test_password = "testPass1!";		
+	protected static EverytrailService everytrailService = new EverytrailService();
+	
+	protected static String test_user_email = "everytrail_test@live.co.uk";
+	protected static String test_everytrail_username = "placebooks_everytrail_test";
+	protected static String test_everytrail_password = "testPass1!";		
 	protected static String test_user_id = "275539";
 	protected static String test_trip_id = "1017230";
 
+	protected static String test_peoplescollection_username = "placebooksTest";
+	protected static String test_peoplescollection_password = "testPass1!";		
+	protected static int test_peoplescollection_trail_id = 789;
+	protected static int test_peoplescollection_item_id = 41981;
+	protected static String test_peoplescollection_item_title = "Llanddewi Brefi YFC Annual Dinner, 1975";
+	
 	protected static final Logger log = 
-		Logger.getLogger(EverytrailHelperTest.class.getName());
+		Logger.getLogger(EverytrailServiceTest.class.getName());
 	
 	final EntityManager em = EMFSingleton.getEntityManager();
 
@@ -50,12 +54,19 @@ public class PlacebooksTestSuper
 	 * Log in using the hard coded test user details and return the user ID on success.
 	 * @return String test_user_id
 	 */
-	protected String logInEverytrailTestUser()
+	protected String logInEverytrailTestUser(EverytrailService service)
 	{
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(test_username, test_password);
+		EverytrailLoginResponse loginResponse =  service.userLogin(test_everytrail_username, test_everytrail_password);
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(test_user_id, loginResponse.getValue());
 		return loginResponse.getValue();
+	}
+	
+	
+	protected User getTestUser()
+	{
+		User testUser = UserManager.getUser(em, test_user_email);
+		return testUser;
 	}
 	
 	

@@ -1,10 +1,10 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookPanel;
+import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -12,9 +12,17 @@ public abstract class PlaceBookItemFrame
 {
 	protected PlaceBookItemWidget itemWidget;
 
-	protected PlaceBookPanel panel;
+	protected PlaceBookColumn column;
 	protected Panel rootPanel;
 	protected final SimplePanel widgetPanel = new SimplePanel();
+
+	protected final Image markerImage = new Image();
+	
+	public void clearItemWidget()
+	{
+		widgetPanel.clear();
+		this.itemWidget = null;
+	}
 
 	public PlaceBookItem getItem()
 	{
@@ -26,9 +34,9 @@ public abstract class PlaceBookItemFrame
 		return itemWidget;
 	}
 
-	public PlaceBookPanel getPanel()
+	public PlaceBookColumn getColumn()
 	{
-		return panel;
+		return column;
 	}
 
 	public Panel getRootPanel()
@@ -38,16 +46,16 @@ public abstract class PlaceBookItemFrame
 
 	public void resize(final String height)
 	{
-		if (height.equals(itemWidget.getElement().getStyle().getHeight())) { return; }
-		itemWidget.getElement().getStyle().setProperty("height", height);
+		final String clientHeight = itemWidget.resize();
+		if (clientHeight != null && height.equals(""))
+		{
+			rootPanel.getElement().getStyle().setProperty("height", clientHeight);
+			return;
+		}
+		if (height.equals(rootPanel.getElement().getStyle().getHeight())) { return; }
+		rootPanel.getElement().getStyle().setProperty("height", height);
 	}
 
-	public void clearItemWidget()
-	{
-		widgetPanel.clear();
-		this.itemWidget = null;
-	}
-	
 	public void setItemWidget(final PlaceBookItemWidget itemWidget)
 	{
 		this.itemWidget = itemWidget;
@@ -55,7 +63,6 @@ public abstract class PlaceBookItemFrame
 		widgetPanel.clear();
 		if (itemWidget.getParent() != null)
 		{
-			GWT.log("Item has parent");
 			itemWidget.removeFromParent();
 		}
 		widgetPanel.add(itemWidget);
@@ -70,20 +77,20 @@ public abstract class PlaceBookItemFrame
 		});
 	}
 
-	public void setPanel(final PlaceBookPanel newPanel)
+	public void setColumn(final PlaceBookColumn newColumn)
 	{
-		if (panel == newPanel) { return; }
-		if (panel != null)
+		if (column == newColumn) { return; }
+		if (column != null)
 		{
-			panel.remove(this);
-			panel.getInnerPanel().remove(rootPanel);
+			column.remove(this);
+			column.getInnerPanel().remove(rootPanel);
 		}
-		panel = newPanel;
-		if (panel != null)
+		column = newColumn;
+		if (column != null)
 		{
-			panel.add(this);
-			panel.getInnerPanel().add(rootPanel);
-			getItem().setParameter("panel", panel.getIndex());
+			column.add(this);
+			column.getInnerPanel().add(rootPanel);
+			getItem().setParameter("column", column.getIndex());
 		}
 	}
 
@@ -94,9 +101,9 @@ public abstract class PlaceBookItemFrame
 
 	protected void itemWidgetResized()
 	{
-		if (panel != null)
+		if (column != null)
 		{
-			panel.reflow();
+			column.reflow();
 		}
 	}
 }

@@ -1,11 +1,13 @@
 package placebooks.client.model;
 
-import placebooks.client.resources.Resources;
+import placebooks.client.PlaceBookService;
+import placebooks.client.Resources;
+import placebooks.client.ui.images.markers.Markers;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ResourcePrototype;
 
 public class PlaceBookItem extends JavaScriptObject
 {
@@ -27,10 +29,6 @@ public class PlaceBookItem extends JavaScriptObject
 			return typeName;
 		}
 	}
-
-	public static final native PlaceBookItem parse(final String json) /*-{
-																		return eval('(' + json + ')');
-																		}-*/;
 
 	public static final native JsArray<PlaceBookItem> parseArray(final String json) /*-{
 																					return eval('(' + json + ')');
@@ -56,25 +54,25 @@ public class PlaceBookItem extends JavaScriptObject
 	{
 		if (is(ItemType.TEXT))
 		{
-			return Resources.INSTANCE.text();
+			return Resources.IMAGES.pallette_text();
 		}
 		else if (is(ItemType.IMAGE))
 		{
-			return Resources.INSTANCE.picture();
+			return Resources.IMAGES.pallette_image();
 		}
 		else if (is(ItemType.VIDEO))
 		{
-			return Resources.INSTANCE.movies();
+			return Resources.IMAGES.pallette_video();
 		}
 		else if (is(ItemType.AUDIO))
 		{
-			return Resources.INSTANCE.music();
+			return Resources.IMAGES.pallette_audio();
 		}
 		else if (is(ItemType.GPS))
 		{
-			return Resources.INSTANCE.map();
+			return Resources.IMAGES.pallette_map();
 		}
-		else if (is(ItemType.WEB)) { return Resources.INSTANCE.web_page(); }
+		else if (is(ItemType.WEB)) { return Resources.IMAGES.pallette_web(); }
 		return null;
 	}
 
@@ -98,6 +96,31 @@ public class PlaceBookItem extends JavaScriptObject
 														return this.parameters[name];
 														}-*/;
 
+	public final boolean showMarker()
+	{
+		return hasParameter("mapPage") && getParameter("markerShow", 0) == 1;
+	}
+	
+	public final ImageResource getMarkerImage()
+	{
+		int markerID = getParameter("marker", 0);
+
+		if(markerID == 0)
+		{
+			return Markers.IMAGES.marker();
+		}
+		else
+		{
+			char markerPostFix = (char) markerID;
+			ResourcePrototype result = Markers.IMAGES.getResource("marker" + markerPostFix);
+			if(result instanceof ImageResource)
+			{
+				return (ImageResource) result;
+			}
+			return Markers.IMAGES.marker();			
+		}
+	}
+	
 	public final native int getParameter(String name, final int defaultValue)
 	/*-{
 		if ('parameters' in this && name in this.parameters) {
@@ -120,26 +143,32 @@ public class PlaceBookItem extends JavaScriptObject
 											return this.text;
 											}-*/;
 
+	public final String getThumbURL()
+	{
+		final String shortClass = getShortClassName();
+		if (isMedia(shortClass))
+		{
+			if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/thumb/"
+					+ getHash(); }
+		}
+
+		return getURL();
+	}
+
 	public final String getURL()
 	{
 		final String shortClass = getShortClassName();
 		String key = getKey();
+		if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass
+				+ "/" + getHash(); }
+
 		if (key == null)
 		{
 			key = getMetadata("originalItemID", null);
 		}
-		if (key != null && isMedia(shortClass))
-		{
-			if (getHash() != null)
-			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key + "?"
-						+ getHash();
-			}
-			else
-			{
-				return GWT.getHostPageBaseURL() + "placebooks/a/admin/serve/" + getShortClassName() + "/" + key;
-			}
-		}
+
+		if (key != null && isMedia(shortClass)) { return PlaceBookService.getHostURL()
+				+ "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key; }
 
 		return getSourceURL();
 	}

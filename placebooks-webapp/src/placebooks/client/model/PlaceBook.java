@@ -7,11 +7,6 @@ import com.google.gwt.core.client.JsArray;
 
 public class PlaceBook extends JavaScriptObject
 {
-	public static final native PlaceBook parse(final String json)
-	/*-{
-		return eval('(' + json + ')');
-	}-*/;
-
 	protected PlaceBook()
 	{
 	}
@@ -31,6 +26,11 @@ public class PlaceBook extends JavaScriptObject
 		return this.geom;
 	}-*/;
 
+	public final native String getId()
+	/*-{
+		return this.id;
+	}-*/;
+
 	public final Iterable<PlaceBookItem> getItems()
 	{
 		return new Iterable<PlaceBookItem>()
@@ -42,11 +42,6 @@ public class PlaceBook extends JavaScriptObject
 			}
 		};
 	}
-
-	public final native String getKey()
-	/*-{
-		return this.id;
-	}-*/;
 
 	public final native String getMetadata(String name)
 	/*-{
@@ -62,13 +57,13 @@ public class PlaceBook extends JavaScriptObject
 		return defaultValue;
 	}-*/;
 
-	public final native User getOwner() /*-{
-										return this.owner;
-										}-*/;
-
 	public final native boolean hasMetadata(String name) /*-{
 															return 'metadata' in this && name in this.metadata;
 															}-*/;
+
+	// public final native User getOwner() /*-{
+	// return this.owner;
+	// }-*/;
 
 	public final native void remove(PlaceBookItem item) /*-{
 															var idx = this.items.indexOf(item);
@@ -76,6 +71,13 @@ public class PlaceBook extends JavaScriptObject
 															this.items.splice(idx, 1);
 															}
 															}-*/;
+
+	public final native void removeMetadata(String name)
+	/*-{
+		if (('metadata' in this)) {
+			delete this.metadata[name];
+		}
+	}-*/;
 
 	public final native void setKey(String text) /*-{
 													this.id = text;
@@ -90,8 +92,6 @@ public class PlaceBook extends JavaScriptObject
 		this.metadata[name] = value;
 	}-*/;
 
-	public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
-
 	private final native JsArray<PlaceBookItem> getItemsInternal()
 	/*-{
 		if(!('items' in this))
@@ -101,9 +101,5 @@ public class PlaceBook extends JavaScriptObject
 		return this.items;
 	}-*/;
 
-	// @Persistent
-	// private Date timestamp;
-
-	// @Persistent(dependent="true")
-	// private PlaceBookIndex index;
+	// public final native void setOwner(final User user) /*-{ this.owner = user; }-*/;
 }

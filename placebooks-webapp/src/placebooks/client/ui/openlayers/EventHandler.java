@@ -2,23 +2,23 @@ package placebooks.client.ui.openlayers;
 
 public abstract class EventHandler
 {
-	public native static EventHanderFunction createHandler(EventHandler self)
+	public native static EventHandlerFunction createHandler(EventHandler self)
 	/*-{
-		var handler = function(event)
+		var controller = function(event)
 		{
 			self.@placebooks.client.ui.openlayers.EventHandler::handleEvent(Lplacebooks/client/ui/openlayers/Event;)(event);
 		}
-		return handler;
+		return controller;
 	}-*/;
 
-	private EventHanderFunction handler;
+	private EventHandlerFunction handler;
 
 	public EventHandler()
 	{
 		this.handler = createHandler(this);
 	}
 
-	public EventHanderFunction getFunction()
+	public EventHandlerFunction getFunction()
 	{
 		return handler;
 	}

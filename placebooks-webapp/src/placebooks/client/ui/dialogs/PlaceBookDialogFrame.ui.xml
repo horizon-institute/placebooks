@@ -1,0 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements">
+	<ui:style type='placebooks.client.ui.dialogs.PlaceBookDialogFrame.DialogStyle'>
+		.dialog {
+			background-color: #fff;
+			border: 5px solid #222;
+			border-radius: 10px;
+			z-index: 2001;
+			-moz-box-shadow: 3px 3px 4px #666;
+			-webkit-box-shadow: 3px 3px 4px #666;
+			box-shadow: 3px 3px 6px #666;	
+		}
+		
+		.dialogGlass {
+			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
+			background: -moz-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));			
+			z-index: 2000;
+		}	
+	
+		.title {
+			background-color: #222;
+			padding: 10px;
+			font-weight: bold;
+			color: #FFF;
+		}
+		
+		.content {
+			padding: 10px;
+		}
+		
+		.error {
+			background-color: #900;
+			padding: 10px;
+			font-weight: bold;
+			color: #FFF;			
+		}	
+		
+	</ui:style>
+	<g:FlowPanel>
+		<g:Label ui:field="titleLabel" styleName="{style.title}" />
+		<g:Label ui:field="errorLabel" styleName="{style.error}" />		
+		<g:SimplePanel ui:field="content" styleName="{style.content}" />
+		<p:ProgressPanel ui:field="progress"/>
+	</g:FlowPanel>
+</ui:UiBinder> 

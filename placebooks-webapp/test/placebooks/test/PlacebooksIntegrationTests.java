@@ -7,28 +7,32 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Set;
-import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
-import placebooks.client.PlaceBookService;
-import placebooks.model.PlaceBook;
-import placebooks.controller.EMFSingleton;
-import placebooks.controller.EverytrailHelper;
+import placebooks.controller.CommunicationHelper;
 import placebooks.controller.ItemFactory;
-import placebooks.controller.PlaceBooksAdminControllerDebug;
+import placebooks.controller.PropertiesSingleton;
 import placebooks.controller.UserManager;
-import placebooks.model.EverytrailLoginResponse;
-import placebooks.model.EverytrailPicturesResponse;
-import placebooks.model.EverytrailTracksResponse;
+import placebooks.controller.YouTubeHelper;
 import placebooks.model.GPSTraceItem;
+import placebooks.model.IUpdateableExternal;
 import placebooks.model.ImageItem;
 import placebooks.model.LoginDetails;
+import placebooks.model.PlaceBook;
 import placebooks.model.TextItem;
 import placebooks.model.User;
+import placebooks.model.VideoItem;
+import placebooks.services.EverytrailService;
+import placebooks.services.PeoplesCollectionService;
+import placebooks.services.model.EverytrailLoginResponse;
+import placebooks.services.model.EverytrailPicturesResponse;
+import placebooks.services.model.EverytrailTripsResponse;
+
+import com.google.gdata.data.youtube.VideoFeed;
 
 /**
  * @author pszmp
@@ -44,7 +48,7 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	public void setUp() throws Exception
 	{
 		// Populate the database with test data
-		//InitializeDatabase.main(null);		
+		//InitializeDatabase.main(null);	
 	}
 
 	/**
@@ -55,20 +59,20 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 	{
 	}
 
-	@Test
+	//@Test
 	public void testToImageItemFromEverytrail()
 	{
-		User testUser = logInPlacebooksTestUser();
+		User testUser = getTestUser();
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		EverytrailLoginResponse loginResponse =  everytrailService.userLogin(details.getUsername(), details.getPassword());
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(details.getUserID(), loginResponse.getValue());
 
-		EverytrailPicturesResponse picturesResponse = EverytrailHelper.Pictures(loginResponse.getValue());
+		EverytrailPicturesResponse picturesResponse = everytrailService.pictures(loginResponse.getValue());
 
 		HashMap<String, Node> pictures = picturesResponse.getPicturesMap();
-		assertEquals(36, pictures.size());
+		assertEquals(42, pictures.size());
 		HashMap<String, String> pictureTrip = picturesResponse.getPictureTrips();
 		HashMap<String, String> tripNames = picturesResponse.getTripNames();
 
@@ -83,10 +87,10 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		//assertEquals(479, imageItem.getImage().getHeight());
 
 		//ItemFactory.toImageItem(testUser, n, imageItem, pictureTrip.get(id), tripNames.get(pictureTrip.get(id)));
-		imageItem.saveUpdatedItem();
+		((IUpdateableExternal) imageItem).saveUpdatedItem();
 	}
 
-	@Test
+	//@Test
 	public void testToGPSTraceItem()
 	{
 		//Log user in after getting details from db
@@ -94,27 +98,32 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
 		// Check login is ok then use the userid 
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		EverytrailLoginResponse loginResponse =  everytrailService.userLogin(details.getUsername(), details.getPassword());
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(details.getUserID(), loginResponse.getValue());
 
 
 
-		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks("1017230");
+		EverytrailTripsResponse tracksResponse = everytrailService.trips("1017230");
 		assertEquals("success", tracksResponse.getStatus());
-		assertEquals(2, tracksResponse.getTracks().size());
+		assertEquals(2, tracksResponse.getTrips().size());
 
 		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null);
 
-		Node trackToUse = tracksResponse.getTracks().lastElement();
-		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
+		Node trackToUse = tracksResponse.getTrips().lastElement();
+		try {
+			ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		gpsTrace.saveUpdatedItem();
 	}
 
-	/*	@Test
+	//@Test
 	public void testToVideoItemFromYouTube()
 	{
-		User testUser = UserManager.getUser(pm, "placebooks.test@gmail.com");
+		User testUser = UserManager.getUser(em, "placebooks.test@gmail.com");
 		LoginDetails details = testUser.getLoginDetails("YouTube");		
 
 		VideoFeed feed = YouTubeHelper.UserVideos(details.getUsername());
@@ -122,19 +131,21 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		VideoItem videoItem = ItemFactory.toVideoItem(testUser, feed.getEntries().get(0));
 		log.debug(videoItem.getSourceURL());
 		//assertEquals(800, videoItem.getSourceURL());	
-	}*/
-
-	@Test
-	public void testGetEverytrailData() throws Exception
-	{
-		//User testUser = logInPlacebooksTestUser();
-		PlaceBooksAdminControllerDebug pacd = new PlaceBooksAdminControllerDebug();
-		pacd.getEverytrailData();
 	}
 
-	@Test void testCreatePlaceBookWithItems() throws Exception
+
+	//@Test
+	public void testGetEverytrailDataForAUser() throws Exception
 	{
-		User u = logInPlacebooksTestUser();
+		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
+		EverytrailService service = new EverytrailService();
+		service.sync(em, user, true, -4.051070, 52.482382, 0.1);
+	}
+
+	//@Test
+	public void testCreatePlaceBookWithItems() throws Exception
+	{
+		User u = getTestUser();
 		PlaceBook p = new PlaceBook();
 		p.setOwner(u);
 		TextItem t = new TextItem();
@@ -144,30 +155,31 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		em.persist(p);
 	}
 	
-	@Test void testEveryTrailTrackPackage() throws Exception
+	//@Test
+	public void testEveryTrailTripPackage() throws Exception
 	{
 		//Log user in after getting details from db
-		User testUser = logInPlacebooksTestUser();
+		User testUser = getTestUser();
 		LoginDetails details = testUser.getLoginDetails("Everytrail");		
 
 		// Check login is ok then use the userid 
-		EverytrailLoginResponse loginResponse =  EverytrailHelper.UserLogin(details.getUsername(), details.getPassword());
+		EverytrailLoginResponse loginResponse =  everytrailService.userLogin(details.getUsername(), details.getPassword());
 		assertEquals("success", loginResponse.getStatus());
 		assertEquals(details.getUserID(), loginResponse.getValue());
 
 
 
-		EverytrailTracksResponse tracksResponse = EverytrailHelper.Tracks("1017230");
+		EverytrailTripsResponse tracksResponse = everytrailService.trips("1017230");
 		assertEquals("success", tracksResponse.getStatus());
-		assertEquals(2, tracksResponse.getTracks().size());
+		assertEquals(2, tracksResponse.getTrips().size());
 
 		GPSTraceItem gpsTrace = new GPSTraceItem(testUser, null, null);
 
-		Node trackToUse = tracksResponse.getTracks().lastElement();
+		Node trackToUse = tracksResponse.getTrips().lastElement();
 		ItemFactory.toGPSTraceItem(testUser, trackToUse, gpsTrace, "1", "Test");
 		gpsTrace.saveUpdatedItem();
 		
-		User u = logInPlacebooksTestUser();
+		User u = getTestUser();
 		PlaceBook p = new PlaceBook();
 		p.setOwner(u);
 		TextItem t = new TextItem();
@@ -177,6 +189,39 @@ public class PlacebooksIntegrationTests extends PlacebooksTestSuper
 		em.persist(p);
 		p.addItem(gpsTrace);
 		em.persist(p);
+	}
+
+	//@Test
+	public void testGetPeoplesCollectionDataForAUser() throws Exception
+	{
+		User user = UserManager.getUser(em,  "markdavies_@hotmail.com");
+		final PeoplesCollectionService service = new PeoplesCollectionService();
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
+	}
+
+	@Test
+	public void testSyncPeoplesCollectionData() throws Exception
+	{
+		User user = UserManager.getUser(em,  "everytrail_test@live.co.uk");
+		final PeoplesCollectionService service = new PeoplesCollectionService();
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
+		
+		//Now try replacing the data with some other items
+		final LoginDetails oldLoginDetails = user.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
+		user.remove(oldLoginDetails);
+		User otherUser = UserManager.getUser(em,  "azc@Cs.Nott.AC.UK");
+		final LoginDetails newLoginDetails = otherUser.getLoginDetails(PeoplesCollectionService.SERVICE_NAME);
+		user.add(newLoginDetails);
+		service.sync(em, user, true, Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")),
+				Double.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0"))
+		);
 	}
 	
 }

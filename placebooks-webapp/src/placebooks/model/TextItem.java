@@ -9,8 +9,6 @@ import javax.persistence.Lob;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.apache.commons.lang.StringUtils;
-
 import placebooks.controller.EMFSingleton;
 import placebooks.controller.ItemFactory;
 import placebooks.controller.SearchHelper;
@@ -44,7 +42,7 @@ public class TextItem extends PlaceBookItem
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
-		log.info("TextItem.appendConfiguration(), text=" + this.getText());
+		log.debug("TextItem.appendConfiguration(), text=" + this.getText());
 		final Element item = getConfigurationHeader(config);
 		final Element text = config.createElement("text");
 		text.appendChild(config.createTextNode(this.getText()));
@@ -59,8 +57,9 @@ public class TextItem extends PlaceBookItem
 	}
 
 	@Override
-	public void deleteItemData()
+	public boolean deleteItemData()
 	{
+		return true;
 	}
 
 	@Override
@@ -116,6 +115,7 @@ public class TextItem extends PlaceBookItem
 	public void setText(final String text)
 	{
 		this.text = text;
+		index.clear();
 		index.addAll(SearchHelper.getIndex(text.replaceAll("\\<.*?\\>","")));
 	}
 

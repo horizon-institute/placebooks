@@ -1,0 +1,32 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.parent {
+			display: -webkit-box;
+			display: -moz-box;
+		}
+		
+		.list {
+			margin: 0 5px;
+		}
+		
+		.button {
+			display: block;
+
+		}
+	</ui:style>
+	<g:FlowPanel styleName="{style.parent}">
+		<g:FlowPanel styleName="{style.list}" ui:field="listPanel"/>
+		<g:FlowPanel ui:field="editPanel">
+			<g:Label>User's Email:</g:Label>
+			<g:TextBox ui:field="emailBox" />
+			<g:Label>Permissions:</g:Label>
+			<g:ListBox ui:field="permissionsBox"/>
+		</g:FlowPanel>
+		<g:FlowPanel> 	
+			<g:Button ui:field="addUser" styleName="{style.button}"><ui:msg>New User</ui:msg></g:Button>
+			<g:Button ui:field="removePermission"><ui:msg>Remove</ui:msg></g:Button>
+		</g:FlowPanel>
+	</g:FlowPanel>
+</ui:UiBinder> 

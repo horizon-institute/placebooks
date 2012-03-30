@@ -11,6 +11,11 @@ public class User extends JavaScriptObject
 	{
 	}
 
+	public final native String getEmail()
+	/*-{
+		return this.email;
+	}-*/;
+
 	public final Iterable<LoginDetails> getLoginDetails()
 	{
 		return new Iterable<LoginDetails>()

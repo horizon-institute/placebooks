@@ -111,6 +111,7 @@ public class Shelf extends Activity/*extends ListActivity*/{
 		        oc = new OnlineCheck();	
 		        
 
+<<<<<<< HEAD
 		        onlineButton.setOnClickListener(new OnClickListener() {
 		            @Override
 		            public void onClick(View v) {
@@ -173,6 +174,54 @@ public class Shelf extends Activity/*extends ListActivity*/{
 		        TextView shelfTitle = (TextView)findViewById(R.id.shelfTitle);
 		        if (shelfOwner!=null){
 		        	shelfTitle.setText(("  " + shelfOwner + "'s " + "Book Shelf").toUpperCase());
+=======
+		        OnlineCheck oc = new OnlineCheck();		       
+		        /*
+		         * If the user name and password are correct then it will get the json file from online and display the placebooks. The user can then download their shelf or a single placebook at a time. If the user has no Internet
+		         * then the code will attempt to read the json file from the sdcard. If the user has no placebooks on the sdcard then a message will be displayed saying that there have been no placebooks downloaded.
+		        */       
+		        if (oc.isOnline(this)){
+		        	
+		        	//Toast msg = Toast.makeText(this, "cinr= " + cinr, Toast.LENGTH_LONG);
+					//msg.show();
+		        	
+		        	json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+			        TextView tv = new TextView(this);
+			        tv.setText("Reading the cached shelf But I DO have an Internet connection.");
+			        ll.addView(tv);
+		        	
+		/*   TAKEN OUT FOR TIME BEING TO TEST GPS LOCATION
+		 *      	
+					String url =  "http://www.placebooks.org/placebooks/placebooks/a/admin/shelf/"+ username;
+				    System.out.println("URL ===== " + url);
+					json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+				          										  
+				    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
+				    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+				          	
+				    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+					TextView tv = new TextView(Shelf.this);
+					tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
+					ll.addView(tv);
+		*/			
+					
+		        	/*
+		        	 * Still working on
+		        	 * new GetShelfTask().execute();
+		        	 */
+		
+		        }
+		        else if (!oc.isOnline(this)) {		//do a check if there is a shelf file on the sdcard
+		        	//if the json file is empty or does not exist then the listview will display an error message otherwise it will display the contents in the json shelf file
+			        json = JSONfunctions.getJSONfromSDCard("sdcard/placebooks/unzipped/" + username+ "_shelf" + ".json");			///sdcard/placebooks/unzipped/" + "packages/shelfstuart.json
+		        	LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+			        TextView tv = new TextView(this);
+			        tv.setText("Reading the cached shelf because cannot connect to Internet at this time. If the shelf is blank then your memory card does not have your shelf file. Please try again with Internet access.");
+			        ll.addView(tv);
+			        
+			        
+>>>>>>> upstream/master
 		        }
 		        else{
 		        	//leave empty
@@ -385,10 +434,18 @@ public class Shelf extends Activity/*extends ListActivity*/{
 	 /*
 	  * Download the zip file package
 	  */
+<<<<<<< HEAD
 	 public void downloadPlaceBook(String packageKey, String downloadPath) {
 
 		 String url = packageUrl + packageKey;
 		 new DownloadFileAsync(downloadPath).execute(url);	
+=======
+	 public void downloadPlaceBook(String theKey, String downloadPath) {
+		 String dlPath = downloadPath;
+	     //String url = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/" + theKey;
+		 String url = "http://www.placebooks.org/placebooks/placebooks/a/admin/package/" + theKey;
+		 new DownloadFileAsync(dlPath).execute(url);	
+>>>>>>> upstream/master
 		
 	    }
 	 		
@@ -576,6 +633,56 @@ public class Shelf extends Activity/*extends ListActivity*/{
 			   
 			   	  
 			   
+<<<<<<< HEAD
+=======
+	/*		   
+			   private class GetShelfTask extends AsyncTask<String, Void, Boolean> {
+
+				   @Override
+				       protected void onPreExecute() {
+				           super.onPreExecute();
+				           // show a progress dialog indicating that its loading
+      		        		myDialog = ProgressDialog.show( Shelf.this, " " , " Logging in.. ", true);	
+
+				       }
+
+				       @Override
+				       protected Boolean doInBackground(String... params) {
+				               // give your code that has to be loaded.
+       		        	//	new Thread() {
+	        		    //    	public void run() {
+	        		        		
+				    	   
+				    	    String url =  "http://www.placebooks.org/placebooks/placebooks/a/admin/shelf/"+ username;
+						    System.out.println("URL ===== " + url);
+							json = JSONfunctions.getJSONfromURL(url);		//email address that the user enters (stuart@tropic.org.uk) (ktg@cs.nott.ac.uk/)
+						          										  
+						    //also need to update the shelf.xml file on the sd card with the latest version when you have an Internet connection
+						    DownloadFromUrl(url, username+ "_shelf" + ".json"); 	
+						          	
+						    LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+							TextView tv = new TextView(Shelf.this);
+							tv.setText("Reading the shelf from the Internet. Also updating the cached shelf.");	
+							ll.addView(tv);	
+	        		        		
+	        		        		
+  
+	 	        		//        	}
+	 	        		//            }.start();    
+	        		        	
+       		        	
+				    	   return true;
+				       }
+
+				       @Override
+				       protected void onPostExecute(Boolean success) {
+				           super.onPostExecute(success);
+				           //dismiss your progress dialog
+                           	myDialog.dismiss();     
+
+				       }
+				   }
+>>>>>>> upstream/master
 			   
 
 }	//End of public shelf

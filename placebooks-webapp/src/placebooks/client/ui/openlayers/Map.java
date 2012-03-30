@@ -7,13 +7,31 @@ import com.google.gwt.dom.client.Element;
 
 public class Map extends JavaScriptObject
 {
-	public static Map create(final Element div)
+	public static Map create(final Element div, final boolean controls)
 	{
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg4623().getText());
 		JavaScriptInjector.inject(ScriptResources.INSTANCE.espg900913().getText());
 
+		if (controls) { return createControlsMap(div); }
 		return createMap(div);
 	}
+
+	private final static native Map createControlsMap(final Element div)
+	/*-{
+		return new $wnd.OpenLayers.Map(div, {
+			controls : [
+						new $wnd.OpenLayers.Control.Navigation(),
+							new $wnd.OpenLayers.Control.PanZoomBar(),
+	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
+	//						new $wnd.OpenLayers.Control.Attribution()
+					],
+			units: "m",
+			maxResolution: 156543.0339,
+			maxExtent: new $wnd.OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
+			projection: new $wnd.OpenLayers.Projection("EPSG:900913"),
+			displayProjection: new $wnd.OpenLayers.Projection("EPSG:4326")					
+		});
+	}-*/;
 
 	private final static native Map createMap(final Element div)
 	/*-{
@@ -46,9 +64,24 @@ public class Map extends JavaScriptObject
 		this.addLayer(layer);
 	}-*/;
 
+	public final native void destroy()
+	/*-{
+		this.destroy();
+	}-*/;
+
+	public final native LonLat getCenter()
+	/*-{
+		return this.getCenter();
+	}-*/;
+
 	public final native Projection getDisplayProjection()
 	/*-{
 		return this.displayProjection;
+	}-*/;
+
+	public final native Element getDiv()
+	/*-{
+		return this.div;
 	}-*/;
 
 	public final native Events getEvents()
@@ -87,9 +120,19 @@ public class Map extends JavaScriptObject
 		this.raiseLayer(layer);
 	}-*/;
 
+	public final native void raiseLayer(Layer layer, int delta)
+	/*-{
+		return this.raiseLayer(layer, delta);
+	}-*/;
+
 	public final native void removeLayer(Layer layer)
 	/*-{
 		this.removeLayer(layer);
+	}-*/;
+
+	public final native void render()
+	/*-{
+		this.render(this.div);
 	}-*/;
 
 	public final native void setCenter(final LonLat lonLat)
@@ -105,5 +148,10 @@ public class Map extends JavaScriptObject
 	public final native void zoomToExtent(final Bounds extent)
 	/*-{
 		this.zoomToExtent(extent);
+	}-*/;
+
+	public final native void zoomToMaxExtent()
+	/*-{
+		this.zoomToMaxExtent();
 	}-*/;
 }

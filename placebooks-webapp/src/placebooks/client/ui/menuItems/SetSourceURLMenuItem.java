@@ -1,7 +1,7 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.resources.Resources;
-import placebooks.client.ui.PlaceBookEditor.SaveContext;
+import placebooks.client.Resources;
+import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,14 +14,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class SetSourceURLMenuItem extends MenuItem
 {
-	private final SaveContext context;
+	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
-	public SetSourceURLMenuItem(final SaveContext context, final PlaceBookItemFrame item)
+	public SetSourceURLMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
 		super("Set URL");
 		this.item = item;
-		this.context = context;
+		this.controller = controller;
 	}
 
 	@Override
@@ -31,7 +31,8 @@ public class SetSourceURLMenuItem extends MenuItem
 		textBox.setWidth("300px");
 		textBox.setValue(item.getItem().getSourceURL());
 
-		final PopupPanel dialogBox = new PopupPanel(false, true);
+		final PopupPanel dialogBox = new PopupPanel(true, true);
+		dialogBox.getElement().getStyle().setZIndex(2000);
 
 		final Button closeButton = new Button("Set URL", new ClickHandler()
 		{
@@ -44,7 +45,7 @@ public class SetSourceURLMenuItem extends MenuItem
 				{
 					item.getItem().setSourceURL(textBox.getValue());
 					item.getItemWidget().refresh();
-					context.markChanged();
+					controller.markChanged();
 				}
 			}
 		});
@@ -53,8 +54,8 @@ public class SetSourceURLMenuItem extends MenuItem
 		panel.add(textBox);
 		panel.add(closeButton);
 
-		dialogBox.setGlassStyleName(Resources.INSTANCE.style().glassPanel());
-		dialogBox.setStyleName(Resources.INSTANCE.style().popupPanel());
+		dialogBox.setGlassStyleName(Resources.STYLES.style().glassPanel());
+		dialogBox.setStyleName(Resources.STYLES.style().popupPanel());
 		dialogBox.setGlassEnabled(true);
 		dialogBox.setAnimationEnabled(true);
 		dialogBox.setWidget(panel);

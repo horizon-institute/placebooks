@@ -24,7 +24,7 @@ public class YouTubeHelperTest
 	protected static String test_password = "testPass1!";		
 
 	protected static final Logger log = 
-		Logger.getLogger(EverytrailHelperTest.class.getName());
+		Logger.getLogger(EverytrailServiceTest.class.getName());
 	
 
 	/**

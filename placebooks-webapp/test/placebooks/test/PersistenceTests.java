@@ -129,7 +129,7 @@ public class PersistenceTests
 			manager.persist(placebook);
 			manager.getTransaction().commit();
 
-			assert owner.getPlacebooks().iterator().hasNext();
+			assert owner.getPlacebookBinders().iterator().hasNext();
 	
 			manager.getTransaction().begin();
 			manager.remove(placebook);		
@@ -164,7 +164,7 @@ public class PersistenceTests
 			manager.persist(dbPlacebook);
 
 			ObjectMapper mapper = new ObjectMapper();			
-			final PlaceBook jsonPlacebook = mapper.readValue("{\"id\":\"" + dbPlacebook.getKey() + "\", \"owner\":{\"id\":\"808180862fdee365012fdee365ac0000\", \"email\":\"ktg@cs.nott.ac.uk\", \"name\":\"Kevin Glover\", \"friends\":[]}, \"timestamp\":null, \"geom\":null, \"items\":[{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":1}},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"panel\":2}, \"text\":\"New Text Block\"}], \"metadata\":{}, \"index\":null}", PlaceBook.class);
+			final PlaceBook jsonPlacebook = mapper.readValue("{\"id\":\"" + dbPlacebook.getKey() + "\", \"owner\":{\"id\":\"808180862fdee365012fdee365ac0000\", \"email\":\"ktg@cs.nott.ac.uk\", \"name\":\"Kevin Glover\", \"friends\":[]}, \"timestamp\":null, \"geom\":null, \"items\":[{\"@class\":\"placebooks.model.ImageItem\", \"sourceURL\":\"http://farm6.static.flickr.com/5104/5637692627_a6bdf5fccb_z.jpg\", \"metadata\":{}, \"parameters\":{\"order\":0, \"column\":1}},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"column\":2}, \"text\":\"New Text Block\"},{\"@class\":\"placebooks.model.TextItem\", \"sourceURL\":\"http://www.google.com\", \"metadata\":{}, \"parameters\":{\"order\":0, \"column\":2}, \"text\":\"New Text Block\"}], \"metadata\":{}, \"index\":null}", PlaceBook.class);
 						
 			for(Entry<String, String> entry: jsonPlacebook.getMetadata().entrySet())
 			{

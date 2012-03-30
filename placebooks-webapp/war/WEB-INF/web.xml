@@ -4,8 +4,12 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    version="2.5"> 
 
-    <description>PlaceBooks</description>
-    <display-name>PlaceBooks web interface and backend</display-name>
+    <display-name>PlaceBooks</display-name>
+    <description>PlaceBooks Web Interface and Backend</description>
+
+	<session-config>
+		<session-timeout>600</session-timeout>
+	</session-config>
 
 	<welcome-file-list>
     	<welcome-file>index.html</welcome-file>

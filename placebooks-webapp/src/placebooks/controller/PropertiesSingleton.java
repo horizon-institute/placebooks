@@ -14,10 +14,18 @@ public final class PropertiesSingleton
 	public static final String EVERYTRAIL_API_USER = "everytrail.api_user";
 	public static final String IDEN_AUDIO_MAX_SIZE = "audioitem.size_limit";
 
+	public static final String VIDEOITEM_FFMPEG_TRANSCODE = "videoitem.ffmpeg_transcode";
+	
 	public static final String IDEN_CONFIG = "config.name";
 	public static final String IDEN_IMAGE_MAX_SIZE = "imageitem.size_limit";
 	public static final String IDEN_MEDIA = "media.dir";
+	public static final String IDEN_THUMBS = "thumbs.dir";
 
+	public static final String IDEN_SEARCH_LAT = "search.lat";
+	public static final String IDEN_SEARCH_LON = "search.lon";
+	public static final String IDEN_SEARCH_RADIUS = "search.radius";
+	public static final String IDEN_SEARCH_TERMS = "search.terms";
+	
 	public static final String IDEN_OPENSPACE_APIKEY = "openspace.apikey";
 	public static final String IDEN_OPENSPACE_BASEURL = "openspace.baseurl";
 	public static final String IDEN_OPENSPACE_HOST = "openspace.host";
@@ -31,6 +39,11 @@ public final class PropertiesSingleton
 
 	public static final String IDEN_TILER_PIXEL_X = "tiler.x_pixels";
 	public static final String IDEN_TILER_PIXEL_Y = "tiler.y_pixels";
+	public static final String IDEN_TILER_MAX_TILES = "tiler.max_tiles";
+	public static final String IDEN_TILER_SQUARE = "tiler.square";
+	public static final String IDEN_TILER_SINGLE_MAP = "tiler.single_map";	
+	public static final String IDEN_TILER_MAX_ATTEMPTS = "tiler.max_attempts";	
+	public static final String IDEN_TILER_PRODUCT = "tiler.product";
 
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
 	public static final String IDEN_VIDEO_MAX_SIZE = "videoitem.size_limit";
@@ -42,6 +55,8 @@ public final class PropertiesSingleton
 	public static final String PROXY_ACTIVE = "proxy.active";
 	public static final String PROXY_HOST = "proxy.host";
 	public static final String PROXY_PORT = "proxy.port";
+
+	public static final String IDEN_SERVER_NAME = "server.name";
 
 	private static long lastModified = 0;
 

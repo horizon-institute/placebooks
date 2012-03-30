@@ -3,6 +3,7 @@ placebooks-androidapp/bin
 thumbs.db
 .settings
 .buildpath
+.classpath
 .DS_Store
 datanucleus.log
 *.bak
@@ -10,4 +11,7 @@ datanucleus.log
 build.properties
 .project
 .gwt
-placebooks.properties
+placebooks-webapp/src/personal-placebooks.properties
+placebooks-webapp/src/server-placebooks.properties
+placebooks-webapp/src/dev-server-placebooks.properties
+placebooks-webapp/build
