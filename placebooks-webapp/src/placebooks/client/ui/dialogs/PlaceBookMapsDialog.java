@@ -206,7 +206,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	private void onInitialize()
 	{
 		mapSelect.clear();
-		mapSelect.addItem("Not On Any Map", "");
+		mapSelect.addItem("Item is Not Currently on a Map", "");
 
 		mapPanel.clear();
 

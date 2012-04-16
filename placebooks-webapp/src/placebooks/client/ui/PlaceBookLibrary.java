@@ -70,6 +70,16 @@ public class PlaceBookLibrary extends PlaceBookPlace
 		super(user);
 	}
 
+	private String getState(PlaceBookEntry entry)
+	{
+		String result = entry.getState();
+		if(result == null)
+		{
+			result = "0";
+		}
+		return result;
+	}
+	
 	@Override
 	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
 	{
@@ -86,7 +96,13 @@ public class PlaceBookLibrary extends PlaceBookPlace
 			@Override
 			public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
 			{
-				// TODO Auto-generated method stub
+				String state1 = getState(o1);
+				String state2 = getState(o2);				
+				
+				if(!state1.equals(state2))
+				{
+					return state2.compareTo(state1);
+				}
 				return 0;
 			}
 

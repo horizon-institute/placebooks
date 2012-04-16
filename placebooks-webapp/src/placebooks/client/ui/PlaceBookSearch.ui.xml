@@ -39,27 +39,33 @@
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
+			height: 40px;
 		}
 		
 		.searchBar {
 			margin: 0 auto;
 			width: 80%;
 			position: relative;
+			height: 35px;
 		}
 		
 		.parent {
 			height: 100%;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
 		}
 		
 		.nearbyLink {
  			margin: 0 auto;
 			width: 80%;
 			display: block;
-}
+		}
+		
+		.shelf {
+			position: absolute;
+			top: 122px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
@@ -77,6 +83,6 @@
 			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}"><ui:msg>Find Nearby PlaceBooks</ui:msg></g:Anchor>
 		</g:FlowPanel>
 
-		<p:PlaceBookShelf ui:field="shelf" />
+		<p:PlaceBookShelf ui:field="shelf" styleName="{style.shelf}" />
 	</g:FlowPanel>
 </ui:UiBinder>

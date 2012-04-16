@@ -15,7 +15,7 @@ public class EditMapMenuItem extends MenuItem
 
 	public EditMapMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		super("Locate on Map");
+		super("Edit Location");
 		this.item = item;
 		this.controller = controller;
 	}

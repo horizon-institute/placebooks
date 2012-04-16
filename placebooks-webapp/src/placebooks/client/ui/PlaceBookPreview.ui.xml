@@ -9,9 +9,6 @@
 			padding: 0px 30px;
 			background: #EEE;
 			border-bottom: 1px solid #CCC;
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-align: center;
 		}
 		
 		.title {
@@ -33,12 +30,9 @@
 			left: 0px;
 			right: 0px;
 			bottom: 0px;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
 		}
 		
-		.spacer {
-			-webkit-box-flex: 1;
+		.titleBlock {
 			padding: 7px 0;
 		}
 		
@@ -48,8 +42,11 @@
 		}
 		
 		.bookPanel {
-			-webkit-box-flex: 1;
-			position: relative;
+			position: absolute;
+			top: 92px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
 		}
 		
 		.dropMenu {
@@ -78,22 +75,27 @@
 			border-top: 1px solid #BBB;
 			border-bottom: 1px solid #BBB;
 		}
+		
+		.right {
+			float: right;
+			padding-top: 15px;
+		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<p:PlaceBookToolbar ui:field="toolbar" />
 			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
-				<g:FlowPanel styleName="{style.spacer}">
+				<p:PlaceBookToolbarItem ui:field="actionMenu"
+					addStyleNames="{style.actionMenu} {style.right}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>				
+				<p:GooglePlusOne ui:field="googlePlus" styleName="{style.right}" />
+				<p:FacebookLikeButton ui:field="facebookLike" styleName="{style.right}" />
+				<g:FlowPanel styleName="{style.titleBlock}">
 					<g:Label ui:field="titleLabel" styleName="{style.title}" />
 					<g:FlowPanel>
 						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
 						<g:Anchor ui:field="authorLabel" styleName="{style.author}" />
 					</g:FlowPanel>
-				</g:FlowPanel>
-				<p:GooglePlusOne ui:field="googlePlus" />
-				<p:FacebookLikeButton ui:field="facebookLike" />
-				<p:PlaceBookToolbarItem ui:field="actionMenu"
-					addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>
+				</g:FlowPanel>				
 			</g:FlowPanel>
 			<p:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
 				<g:Label ui:field="delete" styleName="{style.menuItem}"><ui:msg>Delete PlaceBook</ui:msg></g:Label>

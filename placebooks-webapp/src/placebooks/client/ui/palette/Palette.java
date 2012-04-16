@@ -76,17 +76,16 @@ public class Palette extends FlowPanel
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
-				setPalette(items);
-			}
-
-			@Override
-			public void onError(Request request, Throwable throwable)
-			{
-				setPalette(null);
-				super.onError(request, throwable);
-			}
-			
+				try
+				{
+					final JsArray<PlaceBookItem> items = PlaceBookItem.parseArray(response.getText());
+					setPalette(items);
+				}
+				catch(Exception e)
+				{
+					GWT.log(e.getMessage(), e);
+				}
+			}			
 		});
 	}	
 

@@ -17,36 +17,23 @@
 			width: 150px;
 			text-align: center;
 			border-radius: 16px;
-			display: -webkit-inline-box;
-			display: -moz-inline-box;
-			-webkit-box-orient: vertical;
-			-webkit-box-align: center;
-			-moz-box-orient: vertical;
-			-moz-box-align: center;			
+			display: inline-block;
 			vertical-align: top;		
 		}
 		
 		.textPanel {
-			display: -webkit-box;
-			-webkit-box-orient: horizontal;
-			-webkit-box-align: start;
-			display: -moz-box;
-			-moz-box-orient: horizontal;
-			-moz-box-align: start;			
+			display: inline-block;
 			max-width: 132px;
+			vertical-align: top;
 		}
 		
-		.textInnerPanel {
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-box-align: center;
-			display: -moz-box;
-			-moz-box-orient: vertical;
-			-moz-box-align: center;			
-		}
-
 		.placebookEntry:HOVER {
 			background-color: #DDD;
+		}
+
+		.marker {
+			display: inline-block;
+			margin-right: 5px;
 		}
 		
 		.title {
@@ -56,14 +43,14 @@
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
 	<ui:with field='markers' type='placebooks.client.ui.images.markers.Markers'/>	
-	<p:MousePanel styleName="{style.placebookEntry}" ui:field="container">
-		<g:Image resource="{images.placebook128}" ui:field="image" />
-		<g:FlowPanel styleName="{style.textPanel}">
-			<g:Image ui:field="markerImage" resource="{markers.markera}" />
-			<g:FlowPanel styleName="{style.textInnerPanel}">			
-				<g:Label styleName="{style.title}" ui:field="title" />
-				<g:Label styleName="{style.author}" ui:field="author" />
-				<g:Label styleName="{style.author}" ui:field="distance" />				
+	<p:MousePanel ui:field="container" styleName="{style.placebookEntry}">
+		<g:Image ui:field="image" resource="{images.placebook128}"/>
+		<g:FlowPanel>
+			<g:Image ui:field="markerImage" resource="{markers.markera}" styleName="{style.marker}" />
+			<g:FlowPanel styleName="{style.textPanel}">			
+				<g:Label ui:field="title" styleName="{style.title}" />
+				<g:Label ui:field="author" styleName="{style.author}" />
+				<g:Label ui:field="distance" styleName="{style.author}" />				
 			</g:FlowPanel>			
 		</g:FlowPanel>
 	</p:MousePanel>
