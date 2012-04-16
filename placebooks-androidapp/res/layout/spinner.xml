@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="@android:color/white"
+>
+
+    <RelativeLayout
+		 android:layout_width="fill_parent"
+	  	 android:layout_height="wrap_content"
+	  	 android:layout_gravity="bottom"
+		 android:paddingTop="5dip"
+	     android:paddingBottom="5dip"
+	     android:background="@layout/headergradient"
+	     android:fadingEdge="none"
+		>
+	  <ImageView 
+			   android:id="@+id/imgShelfTitle"
+			   android:layout_width="wrap_content"
+			   android:layout_height="wrap_content"
+	       	   android:layout_marginLeft="0dip"
+			   android:src="@drawable/nearbybooks"		   
+		   />
+		   
+	       <ImageButton
+	        android:id="@+id/logoutButton"
+	        android:layout_width="35dp"
+	        android:layout_height="35dp"
+			android:src="@drawable/logout"
+			android:layout_alignParentRight="true"
+	        android:layout_marginRight="8dp"        
+	        />
+	     
+	  </RelativeLayout>
+
+	<TextView
+        android:id="@+id/textViewDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance" 
+        android:textColor="#000000"
+      	android:textSize="16sp"
+      	android:textStyle="bold"
+        />
+    
+    <Spinner
+        android:id="@+id/spinnerDistance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/prompt"
+        />
+
+    <TextView
+        android:id="@+id/textViewActivities"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Activity"
+        android:textColor="#000000"
+      	android:textSize="16sp"
+      	android:textStyle="bold"
+         />
+
+    <Spinner
+        android:id="@+id/spinnerActivity"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/prompt2"  
+         />
+   
+   <View
+        android:id="@+id/viewSpace"
+        android:layout_width="wrap_content"
+        android:layout_height="10pt"
+
+         />
+   
+  <Button
+      android:id="@+id/searchButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Search" 
+      android:gravity="center_vertical"
+      />
+  
+	
+</LinearLayout>

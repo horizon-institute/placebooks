@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:id="@+id/shelfll"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:orientation="vertical"
+	android:layout_gravity="top"
+	android:background="#f3f3f3"
+	
+	>
+	<RelativeLayout
+	 android:layout_width="wrap_content"
+  	 android:layout_height="wrap_content"
+  	 android:layout_gravity="bottom"
+	>
+	
+	<Button
+        android:id="@+id/offlineButton"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="45dip"
+        android:layout_weight="1.0"
+        android:text="Go Offline"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible"
+        />
+        <Button
+        android:id="@+id/onlineButton"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="45dip"
+        android:layout_weight="1.0"
+        android:text="Go Online"
+        android:layout_alignParentRight="true"
+        android:visibility="visible"
+        />
+        
+        <TextView
+		android:id="@+id/shelfTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Person's Book Shelf"
+        android:textColor="#000000"
+        android:maxLines="1"
+        android:textStyle="bold"
+	    android:layout_alignParentLeft="true"
+	    android:layout_centerVertical="true"
+	    android:textSize="16sp"
+	  	/>
+	</RelativeLayout>
+<GridView 
+    android:id="@+id/gridview"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:columnWidth="90dp"
+    android:numColumns="auto_fit"
+    android:verticalSpacing="35dp"
+    android:horizontalSpacing="10dp"
+    android:stretchMode="columnWidth"
+    android:gravity="center"
+    android:background="@android:color/white">
+</GridView>
+
+</LinearLayout>

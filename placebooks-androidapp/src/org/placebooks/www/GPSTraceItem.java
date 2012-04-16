@@ -1,14 +1,9 @@
 package org.placebooks.www;
 
-import android.text.format.Time;
-import java.util.*;
-import com.vividsolutions.jts.geom.Geometry;
-
 public class GPSTraceItem extends Item {
 	
-	private String name; //name of trace - we will put this as data
-	//private StringBuilder gpxData;
-	
+	private String name; //name of trace (e.g my trip) - we will put this as data
+	private String gpxFilename;
 	
 	
 	public void setName(String name){
@@ -18,15 +13,13 @@ public class GPSTraceItem extends Item {
 	public String getName(){
 		return name;
 	}
-	/*
-	public void setGpxData(StringBuilder gpx){
-		this.gpxData = gpx;
-	}
-	public StringBuilder getGpxData(){
-		return gpxData;
-	}
-	*/
 	
+	public String getGpxFilename(){
+		return gpxFilename;
+	}
 	
+	public void setGpxFilename(String fname){
+		this.gpxFilename = fname;
+	}
 
 }

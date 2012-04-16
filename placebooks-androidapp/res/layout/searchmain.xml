@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+>
+  
+    <!-- 
+	 <RelativeLayout
+		 android:layout_width="fill_parent"
+	  	 android:layout_height="wrap_content"
+	  	 android:layout_gravity="bottom"
+		 android:paddingTop="5dip"
+	     android:paddingBottom="5dip"
+	     android:background="@layout/headergradient"
+	     android:fadingEdge="none"
+		>
+	  <ImageView 
+			   android:id="@+id/imgShelfTitle"
+			   android:layout_width="wrap_content"
+			   android:layout_height="wrap_content"
+	       	   android:layout_marginLeft="0dip"
+			   android:src="@drawable/nearbybooks"		   
+		   />
+		   
+	       <ImageButton
+	        android:id="@+id/logoutButton"
+	        android:layout_width="35dp"
+	        android:layout_height="35dp"
+			android:src="@drawable/logout"
+			android:layout_alignParentRight="true"
+	        android:layout_marginRight="8dp"        
+	        />
+	     
+	  </RelativeLayout>
+	  -->
+	  
+	<ViewAnimator
+		android:id="@+id/animator"
+		android:layout_width="fill_parent"
+		android:layout_height="0dip"
+		android:layout_weight="1"
+	/>
+
+</LinearLayout>

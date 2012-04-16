@@ -1,10 +1,11 @@
 package org.placebooks.www;
 
-//import java.util.*;
 
 public class ImageItem extends Item {
+	
 	private String filename;
-	private String URL;
+	private String url;
+	private int imageHeight;
 
 
 	public String getFilename() {
@@ -12,20 +13,29 @@ public class ImageItem extends Item {
 	}
 	
 	public String getURL() {
-		return URL;
+		return url;
 	}
-	public void setURL(String uRL) {
-		this.URL = uRL;
+	
+	public int getImageHeight(){
+		return imageHeight;
+	}
+	
+	public void setURL(String url) {
+		this.url = url;
 	}
 
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+	
+	public void setImageHeight(int height){
+		this.imageHeight = height;
+	}
 
 	@Override
 	public String toString() {
 
-		return "\nFilename=" + filename + "\nURL=" + URL + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
+		return "\nFilename=" + filename + "\nurl=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
 		
 	}
 }

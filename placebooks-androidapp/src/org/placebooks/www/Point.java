@@ -15,7 +15,8 @@ public class Point implements Comparable<Point>{
 	public String itemKey;
 	//public Geometry geometry;		//Every item will have a geometry (point or if it is a mapimageitem then a polygon)
 	public Coordinate[] co;
-//	public StringBuilder gpxData;
+	public String gpxFilename;
+	public int height;
 
 	
 	// without coordinates without url
@@ -27,7 +28,17 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 	}
 	
-	//with coordinates without url
+	// without coordinates without url with imageHeight
+	public Point(String data, int panel, int order, String type, String itemKey, int height){
+		this.data = data;
+		this.panel = panel;
+		this.order = order;
+		this.type = type;
+		this.itemKey = itemKey;
+		this.height = height;
+	}
+	
+	// without coordinates without url
 	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co){
 		this.data = data;
 		this.panel = panel;
@@ -37,18 +48,32 @@ public class Point implements Comparable<Point>{
 		this.co = co;
 	}
 	
-	//with gpsData , without coordinates without url
-/*	public Point(String data, int panel, int order, String type, String itemKey, StringBuilder gpxData){
+	// without coordinates without url with imageHeight
+	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, int height){
 		this.data = data;
 		this.panel = panel;
 		this.order = order;
 		this.type = type;
 		this.itemKey = itemKey;
-		this.gpxData = gpxData;
-}
-	*/
+		this.co = co;
+		this.height = height;
+	}
 	
-	//without coordinates, with url
+	
+	//with coordinates without url with gpx (so for GPX)
+	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, String gpxFilename){
+		this.data = data;
+		this.panel = panel;
+		this.order = order;
+		this.type = type;
+		this.itemKey = itemKey;
+		this.co = co;
+		this.gpxFilename = gpxFilename;
+		
+	}
+	
+	
+	//without coordinates, with url - WEB BUNDLE
 	public Point(String data, int panel, int order, String type, String itemKey, String url){
 		this.data = data;
 		this.panel = panel;
@@ -57,7 +82,8 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 		this.url = url;
 	}
-	
+
+	/*
 	//with coordinates and with url
 	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, String url){
 		this.data = data;
@@ -69,7 +95,7 @@ public class Point implements Comparable<Point>{
 		this.url = url;
 		
 	}
-
+*/
 
 	
 	/*
@@ -96,10 +122,13 @@ public class Point implements Comparable<Point>{
 	public Coordinate[] getGeometryCoordinates(){
 		return co;
 	}
-/*	public StringBuilder getGpxData(){
-		return gpxData;
+	public String getGpxFilename(){
+		return gpxFilename;
 	}
-*/	
+	public int getImageHeight(){
+		return height;
+	}
+	
 	/*
 	 * Setter methods
 	 */
@@ -115,10 +144,10 @@ public class Point implements Comparable<Point>{
 	public void setOrder(int o){
 		this.order = o;
 	}
-/*	public void setGpxData(StringBuilder gpxData){
-		this.gpxData = gpxData;
+	public void setGpxFilename(String gpxFilename){
+		this.gpxFilename = gpxFilename;
 	}
-*/	
+	
 	
 	/*
 	 * Compare a given order number with this object.

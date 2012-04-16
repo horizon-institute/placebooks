@@ -1,12 +1,15 @@
 package org.placebooks.www;
 
 import com.vividsolutions.jts.geom.Coordinate;
+
+import java.io.File;
 import java.util.*;
 
 import android.app.Application;
+import android.os.Environment;
 
 /*
- * My Custom Application App. Extends android.app.Application
+ * My Custom Application. Extends android.app.Application
  * This class is used to guarantee that this application context
  * will exist as a single instance across the whole PlaceBoooks app.
  * Therefore this class is ideal for storing variables and methods that
@@ -14,53 +17,91 @@ import android.app.Application;
  */
 public class CustomApp extends Application {
 
-	//Geotagged Images - the key arraylist links with the coordinate arraylists
-	private ArrayList<String> alPlacebookKey = new ArrayList<String>();
-	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
-	private ArrayList<Coordinate[]> alGeoImageCoordinates = new ArrayList<Coordinate[]>();
+	private String root;
+	private String authenticationUrl;
+	private String shelfUrl;
+	private String unzippedDir;
+	private String unzippedRoot;
+	private String packageUrl;
+    private String configFilename;
+
 	
 	 @Override
 	    public void onCreate() {
 	        super.onCreate();
+	        
+	        //Set the root
+	        setRoot(Environment.getExternalStorageDirectory() + File.separator + "PlaceBooks");
+	        //Set the authentication url
+	        setAuthenticationUrl("http://horizac1.miniserver.com/placebooks/j_spring_security_check");
+	        //Set the book shelf url
+	        setShelfUrl("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/");
+	        //Set the unzipped dir
+	        setUnzippedDir(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped");
+	        //Set the unzipped root
+	        setUnzippedRoot(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped/");
+	        //Set the url for downloading a package
+	        setPackageUrl("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/");   //Package Url for Dev Server is = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/"
+	        //Set the confi file name to whatever it is called in the package
+	        setConfigFilename("config.xml");
+	        
 	    }
 	 
-	 public ArrayList<String> getAlPlacebookKey(){
-		 return alPlacebookKey;
-	 }
-	 public void setAlPlacebookKey(String key){
-		 this.alPlacebookKey.add(key);
-	 }
-	 public void destroyAlPlacebookKey(){
-		 this.alPlacebookKey = null;
-		 this.alPlacebookKey.clear();
-	 }
-	 public boolean checkPlacebookKey(String key){
-		 if(this.alPlacebookKey.contains(key))
-			 return true;
-		 else
-			 return false;
+	 
+	 public String getRoot(){
+		    return root;
 	 }
 	 
-	 public ArrayList<String> getAlGeoImageFilename(){
-		 return alGeoImageFilename;
-	 }
-	 public void setAlGeoImageFilename(String filename){
-		 this.alGeoImageFilename.add(filename);
-	 }
-	 public void destroyAlGeoImageFilename(){
-		 this.alGeoImageFilename = null;
-		 this.alGeoImageFilename.clear();
+	 public void setRoot(String root){
+		    this.root = root;
 	 }
 	 
-	 public ArrayList<Coordinate[]> getAlGeoImageCoordinates(){
-		 return alGeoImageCoordinates;
+	 public String getAuthenticationUrl(){
+		 return authenticationUrl;
 	 }
-	 public void setAlGeoImageCoordinates(Coordinate[] co){
-		 this.alGeoImageCoordinates.add(co);
+	 
+	 public void setAuthenticationUrl(String url){
+		this.authenticationUrl = url; 
 	 }
-	 public void destroyAlGeoImageCoordinates(){
-		 this.alGeoImageCoordinates = null;
-		 this.alGeoImageCoordinates.clear();
+	 
+	 public String getShelfUrl(){
+		 return shelfUrl;
+	 }
+	 
+	 public void setShelfUrl(String url){
+		 this.shelfUrl = url;
+	 }
+	 
+	 public String getUnzippedRoot(){
+		 return unzippedRoot;
+	 }
+	 
+	 public String getUnzippedDir(){
+		 return unzippedDir;
+	 }
+	 
+	 public void setUnzippedDir(String uDir){
+		 this.unzippedDir = uDir;
+	 }
+	 
+	 public void setUnzippedRoot(String uRoot){
+		 this.unzippedRoot = uRoot;
+	 }
+	 
+	 public String getPackageUrl(){
+		 return packageUrl;
+	 }
+	 
+	 public void setPackageUrl(String packageUrl){
+		 this.packageUrl = packageUrl;
+	 }
+	 
+	 public String getConfigFilename(){
+		 return configFilename;
+	 }
+	 
+	 public void setConfigFilename(String filename){
+		 this.configFilename = filename;
 	 }
 	 
 

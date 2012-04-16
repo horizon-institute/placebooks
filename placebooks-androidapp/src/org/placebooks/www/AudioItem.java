@@ -3,7 +3,6 @@ package org.placebooks.www;
 public class AudioItem extends Item {
 	
 	private String filename;
-
 	
 	public String getFilename() {
 		return filename;

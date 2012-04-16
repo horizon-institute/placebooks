@@ -1,35 +1,25 @@
 package org.placebooks.www;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ScrollView;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.Display;
 import android.graphics.BitmapFactory;
-import android.webkit.WebView;
-import android.webkit.WebSettings;
-import android.widget.*;
-import android.widget.LinearLayout.LayoutParams;
-import java.util.*;
-//import android.view.SurfaceHolder;
-//import com.google.android.maps.MapView;
-//import com.google.android.maps.Overlay.PixelCalculator;
-import android.view.MotionEvent;
-import android.view.View.OnClickListener;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import android.widget.*;
+
+import java.util.*;
+
 
 
 public class MapCanvas extends ImageView {
 	
 	private Context mContext;
-//	private String directory;
-	//pixel lat/lon values for the YAH marker
+	//The phones current longitude and latitude
+	private double longitude;
+	private double latitude;
+
 	private int px_lat;
 	private int px_lon;
 	//Arraylists for pixel lat/lons for the gps trail
@@ -42,6 +32,14 @@ public class MapCanvas extends ImageView {
 		mContext = c.getApplicationContext();
 	}
 
+	
+	public void setLatitude(double la){
+		this.latitude = la;
+	}
+	
+	public void setLongitude(double lo){
+		this.longitude = lo;
+	}
 	
 	public void setLat(int lat){
 		px_lat = lat;
@@ -56,10 +54,7 @@ public class MapCanvas extends ImageView {
 	}
 	public void setGpsLon(ArrayList<Integer> alLon){
 		this.gpsLonPx = alLon;
-	}
-
-	
-		
+	}		
 
 	
 	//doDrawing (draw when changes have been made)
@@ -71,6 +66,7 @@ public class MapCanvas extends ImageView {
         // y increases from top to bottom
         // x increases from left to right
       
+		
 		Paint yahPen = new Paint();
 		yahPen.setStrokeWidth(3);
 		yahPen.setColor(0xFF097286);		
@@ -79,8 +75,8 @@ public class MapCanvas extends ImageView {
 		trailPen.setStyle(Paint.Style.STROKE); 
 		//calculate stroke with for current density
 		//trailPen.setStrokeWidth(1 /getResources().getDisplayMetrics().density);
-		trailPen.setStrokeWidth(4);
-		trailPen.setColor(Color.BLACK);	//color.RED 0xffff0000
+		trailPen.setStrokeWidth(6);
+		trailPen.setColor(Color.BLUE);	//color.RED 0xffff0000
 		
 		Paint mediaPen = new Paint();
 		mediaPen.setStyle(Paint.Style.STROKE);
@@ -93,12 +89,18 @@ public class MapCanvas extends ImageView {
 			canvas.drawLine(gpsLonPx.get(i), gpsLatPx.get(i), gpsLonPx.get(i-1), gpsLatPx.get(i-1), trailPen);			
 		}
 		
-		//draw the YAH dot
-		canvas.drawCircle(px_lon, px_lat, 10, yahPen);
-		System.out.println("pixel lon== " +px_lon + "pixel lat== " +px_lat);
 		
+		if(longitude != 0.00 && latitude != 0.00){
+			//draw the YAH dot
+			//canvas.drawCircle(px_lon, px_lat, 10, yahPen);
+			//System.out.println("pixel lon== " +px_lon + "pixel lat== " +px_lat);
+			Bitmap yah = BitmapFactory.decodeResource(getResources(), R.drawable.yah_marker_30) ;
+			canvas.drawBitmap(yah ,px_lon-20, px_lat-50,  null) ; //marker is 30px and drawn downwards so we need to take this into account
+			//-10 and -30 seem to be the best for plotting our marker (taking into account it is 30x30px and how android draws it on the screen
+		}
 		
 		invalidate();	
+		
 				
 	}	//end of onDraw()
 	

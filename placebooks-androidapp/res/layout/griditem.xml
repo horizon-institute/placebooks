@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:id="@+id/GridItem"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"
+   android:orientation="vertical"
+	android:layout_x="201px"
+	android:layout_y="15px"
+	android:gravity="center_horizontal"
+	android:layout_gravity="top"
+	
+	>
+   
+   <ImageButton android:id="@+id/icon_redbutton"
+      android:clickable="true"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="invisible"
+      android:src="@drawable/placebook_red"
+      android:background="@android:color/white">
+   </ImageButton>
+   
+   <ImageButton android:id="@+id/icon_greenbutton"
+      android:clickable="true"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="invisible"
+      android:src="@drawable/placebook_green"
+      android:background="@android:color/white">
+   </ImageButton>
+   
+   
+   
+   <TextView android:id="@+id/icon_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="TextView"
+      android:gravity="center_horizontal"
+      android:textColor="#000000"
+      android:maxLines="2">
+   </TextView>
+   
+</LinearLayout>
+

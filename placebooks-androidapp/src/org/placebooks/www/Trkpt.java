@@ -1,16 +1,12 @@
 package org.placebooks.www;
 
-import java.util.*;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 @Root
 public class Trkpt {
 	
-   // private ArrayList<Geometry> coordinates;
     	
 	@Attribute
 	public Double lat;	
@@ -23,6 +19,9 @@ public class Trkpt {
 	
 	@Element(required=false)
 	public String time;
+	
+	@Element(required=false)
+	public String speed;
 	
 	
 	
