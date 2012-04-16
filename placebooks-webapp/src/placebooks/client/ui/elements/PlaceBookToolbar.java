@@ -60,6 +60,9 @@ public class PlaceBookToolbar extends Composite
 	PlaceBookToolbarItem accountItem;
 
 	@UiField
+	PlaceBookToolbarItem languageItem;
+	
+	@UiField
 	Panel languagePanel;
 
 	@UiField
@@ -92,42 +95,86 @@ public class PlaceBookToolbar extends Composite
 		super();
 		initWidget(uiBinder.createAndBindUi(this));
 
-		for (final String localeName : LocaleInfo.getAvailableLocaleNames())
+		String[] languageNames = LocaleInfo.getAvailableLocaleNames();
+		if(languageNames.length <= 3)
 		{
-			if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
+			for (final String localeName : LocaleInfo.getAvailableLocaleNames())
 			{
-				final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
-				final Label label = new Label(displayName);
-				label.setStyleName(style.toolbarMenuItem());
-				label.addClickHandler(new ClickHandler()
+				if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
 				{
-					@Override
-					public void onClick(final ClickEvent event)
+					final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+					languageItem.setText(displayName);
+					languageItem.addClickHandler(new ClickHandler()
 					{
-						final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
-						urlBuilder.setHash(Window.Location.getHash());
-						urlBuilder.setHost(Window.Location.getHost());
-						urlBuilder.setPath(Window.Location.getPath());
-						try
+						@Override
+						public void onClick(final ClickEvent event)
 						{
-							urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+							final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+							urlBuilder.setHash(Window.Location.getHash());
+							urlBuilder.setHost(Window.Location.getHost());
+							urlBuilder.setPath(Window.Location.getPath());
+							try
+							{
+								urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+							}
+							catch(Exception e)
+							{
+								
+							}
+							urlBuilder.setProtocol(Window.Location.getProtocol());
+							for (final String key : Window.Location.getParameterMap().keySet())
+							{
+								urlBuilder.setParameter(key, Window.Location.getParameter(key));
+							}
+							urlBuilder.setParameter("locale", localeName);
+	
+							Window.Location.replace(urlBuilder.buildString());
 						}
-						catch(Exception e)
+					});
+				}
+			}			
+			languagePanel.setVisible(false);
+		}
+		else
+		{
+			for (final String localeName : LocaleInfo.getAvailableLocaleNames())
+			{
+				if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
+				{
+					final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+					final Label label = new Label(displayName);
+					label.setStyleName(style.toolbarMenuItem());
+					label.addClickHandler(new ClickHandler()
+					{
+						@Override
+						public void onClick(final ClickEvent event)
 						{
-							
+							final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+							urlBuilder.setHash(Window.Location.getHash());
+							urlBuilder.setHost(Window.Location.getHost());
+							urlBuilder.setPath(Window.Location.getPath());
+							try
+							{
+								urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+							}
+							catch(Exception e)
+							{
+								
+							}
+							urlBuilder.setProtocol(Window.Location.getProtocol());
+							for (final String key : Window.Location.getParameterMap().keySet())
+							{
+								urlBuilder.setParameter(key, Window.Location.getParameter(key));
+							}
+							urlBuilder.setParameter("locale", localeName);
+	
+							Window.Location.replace(urlBuilder.buildString());
 						}
-						urlBuilder.setProtocol(Window.Location.getProtocol());
-						for (final String key : Window.Location.getParameterMap().keySet())
-						{
-							urlBuilder.setParameter(key, Window.Location.getParameter(key));
-						}
-						urlBuilder.setParameter("locale", localeName);
-
-						Window.Location.replace(urlBuilder.buildString());
-					}
-				});
-				languagePanel.add(label);
+					});
+					languagePanel.add(label);
+				}
 			}
+			languageItem.setVisible(false);
 		}
 
 		loginPanel.setVisible(false);
