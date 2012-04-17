@@ -168,6 +168,10 @@ public class PlaceBookPreview extends PlaceBookPlace
 	public void checkAuthorized(final PlaceBookBinder binder)
 	{
 		if ("PUBLISHED".equals(binder.getState()))
+		{	
+			return;
+		}
+		if(binder.getOwner() != null && binder.getOwner().getEmail().equals(getUser().getEmail()))
 		{
 			return;
 		}
