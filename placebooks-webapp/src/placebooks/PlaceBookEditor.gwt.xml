@@ -14,9 +14,9 @@
 	
 	<source path="client" />
 
-	<extend-property name="locale" values="cy"/>	
-	<extend-property name="locale" values="en" />
+	<extend-property name="locale" values="en,cy"/>	
 	<set-property-fallback name="locale" value="en" />
+	<set-property name="locale" value="en,cy"/>
 	
 	<entry-point class="placebooks.client.PlaceBookEditor" />
 </module>
