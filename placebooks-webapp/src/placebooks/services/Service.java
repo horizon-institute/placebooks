@@ -23,13 +23,37 @@ public abstract class Service
 	
 	public abstract boolean checkLogin(final String username, final String password);
 	
+	public String getAuthenticationURL(final EntityManager manager, final User user, final String callbackURL)
+	{
+		return null;
+	}
+	
+	protected boolean shouldSync(LoginDetails details)
+	{
+		if(details.getLastSync() != null)
+		{
+			log.info("Last sync of " + this.getInfo().getName()  + ": " + details.getLastSync());
+			final Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND,0);
+			if(calendar.getTime().before(details.getLastSync()))
+			{
+				log.debug("Not syncing " + this.getInfo().getName()  + " automatically as last sync date was today.");
+				return false;
+			}		
+		}		
+		return true;
+	}
+	
 	public void sync(EntityManager manager, final User user, boolean force, double lon, double lat, double radius)
 	{
-		final LoginDetails details = user.getLoginDetails(getName());
+		final LoginDetails details = user.getLoginDetails(this.getInfo().getName());
 
 		if (details == null)
 		{
-			log.error("Service for " + this.getName() + " import failed, login details null");
+			log.error("Service for " + this.getInfo().getName() + " import failed, login details null");
 			return;
 		}
 		
@@ -39,19 +63,9 @@ public abstract class Service
 			return;			
 		}
 		
-		if(!force && details.getLastSync() != null)
+		if(!force && !shouldSync(details))
 		{
-			log.info("Last sync of " + getName()  + ": " + details.getLastSync());
-			final Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND,0);
-			if(calendar.getTime().before(details.getLastSync()))
-			{
-				log.debug("Not syncing " + getName()  + " automatically as last sync date was today.");
-				return;
-			}		
+			return;
 		}
 
 		log.info(details.getService() +  " sync starting");
@@ -75,15 +89,15 @@ public abstract class Service
 			details.setSyncInProgress(false);
 			manager.merge(details);
 			manager.getTransaction().commit();
-			log.info("Synced " + getName() +": " + details.getLastSync());			
+			log.info("Synced " + this.getInfo().getName() +": " + details.getLastSync());			
 		}
 	}
 	
-	public abstract String getName();
+	public abstract ServiceInfo getInfo();
 	
 	public int cleanupItems(EntityManager manager, ArrayList<String> itemsToKeep, User user)
 	{
-		log.debug("Starting cleanup for " + getName() + " " + itemsToKeep.size() + " items to keep");
+		log.debug("Starting cleanup for " + this.getInfo().getName() + " " + itemsToKeep.size() + " items to keep");
 		int deletedItems = 0;
 		try
 		{
@@ -94,7 +108,7 @@ public abstract class Service
 			Collection<PlaceBookItem> items = q.getResultList();
 			for(PlaceBookItem placebookitem: items)
 			{
-				if(placebookitem.getMetadataValue("source").equals(getName()))
+				if(placebookitem.getMetadataValue("source").equals(this.getInfo().getName()))
 				{
 					if(itemsToKeep.contains(placebookitem.getExternalID()))
 					{
@@ -115,7 +129,7 @@ public abstract class Service
 			if (manager.getTransaction().isActive())
 			{
 				manager.getTransaction().rollback();
-				log.error("Rolling " + getName() +" cleanup back");
+				log.error("Rolling " + this.getInfo().getName() +" cleanup back");
 			}
 		}	
 		return deletedItems;

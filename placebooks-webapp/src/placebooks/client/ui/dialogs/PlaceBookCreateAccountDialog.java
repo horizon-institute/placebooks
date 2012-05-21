@@ -2,6 +2,7 @@ package placebooks.client.ui.dialogs;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBookService;
+import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,7 +17,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 {
-
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface CreateAccountUiBinder extends UiBinder<Widget, PlaceBookCreateAccountDialog>
 	{
 	}
@@ -42,7 +44,7 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 
 	public PlaceBookCreateAccountDialog()
 	{
-		setTitle("Create Account");
+		setTitle(uiMessages.createAccount());
 		setWidget(uiBinder.createAndBindUi(this));
 		createAccount.setEnabled(false);
 	}

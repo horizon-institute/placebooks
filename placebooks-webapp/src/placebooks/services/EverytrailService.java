@@ -49,7 +49,7 @@ import placebooks.services.model.EverytrailTripsResponse;
  */
 public class EverytrailService extends Service
 {
-	public final static String SERVICE_NAME = "Everytrail";
+	public final static ServiceInfo SERVICE_INFO = new ServiceInfo("Everytrail", "http://www.everytrail.com/", false);
 
 	private final static String apiBaseUrl = "http://www.everytrail.com/api/";
 
@@ -686,7 +686,7 @@ public class EverytrailService extends Service
 					final String externalId = "everytrail-" + tripId + "-textItem";
 					descriptionItem.setExternalID(externalId);
 					descriptionItem.setText(tripDescription);
-					descriptionItem.addMetadataEntry("source", SERVICE_NAME);
+					descriptionItem.addMetadataEntry("source", SERVICE_INFO.getName());
 					descriptionItem.addMetadataEntryIndexed("trip_name", tripName);	
 					descriptionItem.addMetadataEntryIndexed("title", tripName);
 					descriptionItem.addMetadataEntry("trip", tripId);	
@@ -749,9 +749,9 @@ public class EverytrailService extends Service
 	}
 
 	@Override
-	public String getName()
+	public ServiceInfo getInfo()
 	{
-		return SERVICE_NAME;
+		return SERVICE_INFO;
 	}
 
 	@Override

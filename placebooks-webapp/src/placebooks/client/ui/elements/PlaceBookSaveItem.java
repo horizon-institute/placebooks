@@ -3,11 +3,15 @@ package placebooks.client.ui.elements;
 import java.util.Date;
 
 import placebooks.client.Resources;
+import placebooks.client.ui.UIMessages;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 
 public class PlaceBookSaveItem extends PlaceBookToolbarItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	public enum SaveState
 	{
 		not_saved, save_error, saved, saving
@@ -84,25 +88,25 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 		switch (state)
 		{
 			case saved:
-				setText("Saved");
+				setText(uiMessages.saved());
 				hideImage();
 				setEnabled(false);
 				break;
 
 			case not_saved:
-				setText("Save");
+				setText(uiMessages.save());
 				hideImage();
 				setEnabled(true);
 				break;
 
 			case saving:
-				setText("Saving");
+				setText(uiMessages.saving());
 				setImage(Resources.IMAGES.progress2());
 				setEnabled(false);
 				break;
 
 			case save_error:
-				setText("Error Saving");
+				setText(uiMessages.saveError());
 				setImage(Resources.IMAGES.error());
 				setEnabled(true);
 				markChanged();

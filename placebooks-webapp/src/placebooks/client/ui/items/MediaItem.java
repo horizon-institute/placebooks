@@ -2,9 +2,11 @@ package placebooks.client.ui.items;
 
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookUploadDialog;
 import placebooks.client.ui.elements.PlaceBookController;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +20,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public abstract class MediaItem extends PlaceBookItemWidget
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	private final Panel panel;
 	private String hash = null;
 	private final Image markerImage = new Image();
@@ -80,7 +84,7 @@ public abstract class MediaItem extends PlaceBookItemWidget
 				uploadPanel.setWidth("100%");
 				uploadPanel.getElement().getStyle().setBackgroundColor("#000");
 				uploadPanel.getElement().getStyle().setProperty("textAlign", "center");
-				final Button button = new Button("Upload", new ClickHandler()
+				final Button button = new Button(uiMessages.upload(), new ClickHandler()
 				{
 					@Override
 					public void onClick(final ClickEvent event)
@@ -89,17 +93,22 @@ public abstract class MediaItem extends PlaceBookItemWidget
 						dialog.show();
 					}
 				});
+				String type = null;
 				if (item.is(ItemType.IMAGE))
 				{
-					button.setText("Upload Image");
+					type = uiMessages.image();
 				}
 				else if (item.is(ItemType.VIDEO))
 				{
-					button.setText("Upload Video");
+					type = uiMessages.video();
 				}
 				else if (item.is(ItemType.AUDIO))
 				{
-					button.setText("Upload Audio");
+					type = uiMessages.audio();
+				}
+				if(type != null)
+				{
+					button.setText(uiMessages.upload(type));
 				}
 
 				uploadPanel.add(button);

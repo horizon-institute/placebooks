@@ -14,6 +14,7 @@ import placebooks.client.model.ServerInfo;
 import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.openlayers.Bounds;
@@ -44,6 +45,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookShelf extends Composite
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	public static abstract class ShelfControl implements Comparator<PlaceBookEntry>
 	{
 		private final PlaceBookPlace place;
@@ -186,7 +189,7 @@ public class PlaceBookShelf extends Composite
 
 		if (mapVisible)
 		{
-			mapToggleText.setText("Hide Map");
+			mapToggleText.setText(uiMessages.mapHide());
 			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
 			placebooks.getElement().getStyle().clearRight();
 			placebooks.getElement().getStyle().clearPaddingLeft();
@@ -197,7 +200,7 @@ public class PlaceBookShelf extends Composite
 		}
 		else
 		{
-			mapToggleText.setText("Show Map");
+			mapToggleText.setText(uiMessages.mapShow());
 			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
 			placebooks.getElement().getStyle().setRight(0, Unit.PX);
 			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
@@ -254,7 +257,7 @@ public class PlaceBookShelf extends Composite
 							}
 							catch (final Exception e)
 							{
-								GWT.log(e.getMessage());
+								GWT.log(e.getMessage(), e);
 							}
 						}
 					}

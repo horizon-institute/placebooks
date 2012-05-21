@@ -9,6 +9,7 @@ import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -33,6 +34,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPublishDialog extends PlaceBookDialog
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface PlaceBookPublishUiBinder extends UiBinder<Widget, PlaceBookPublishDialog>
 	{
 	}
@@ -93,9 +96,9 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookPages canvas)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
-		setTitle("Publish PlaceBook");
+		setTitle(uiMessages.publishPlaceBook());
 		title.setMaxLength(64);
-		title.setText(canvas.getPlaceBook().getMetadata("title", "No Title"));
+		title.setText(canvas.getPlaceBook().getMetadata("title", uiMessages.noTitle()));
 		description.setText(canvas.getPlaceBook().getMetadata("description", ""));
 		location.setText(canvas.getPlaceBook().getMetadata("location", ""));
 
@@ -135,7 +138,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 						.is(ItemType.AUDIO)) && frame.getItem().getHash() == null)
 				{
 					allowPublish = false;
-					setError("Cannot publish while there are items which require uploading");
+					setError(uiMessages.uploadRequired());
 				}
 			}
 		}

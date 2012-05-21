@@ -1,9 +1,14 @@
 package placebooks.client.model;
 
+import placebooks.client.ui.UIMessages;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class PlaceBookEntry extends JavaScriptObject
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	protected PlaceBookEntry()
 	{
 	}
@@ -37,7 +42,7 @@ public class PlaceBookEntry extends JavaScriptObject
 		}
 		else
 		{
-			return "No Title (" + getKey() + ")";
+			return uiMessages.noTitle() + " (" + getKey() + ")";
 		}
 	}
 

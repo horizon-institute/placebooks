@@ -361,7 +361,7 @@ public class GPSTraceItem extends PlaceBookItem
 	/* (non-Javadoc)
 	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
-	public void updateItem(IUpdateableExternal updateItem)
+	public void updateItem(PlaceBookItem updateItem)
 	{
 		GPSTraceItem item = (GPSTraceItem) updateItem;
 		super.updateItem(item);

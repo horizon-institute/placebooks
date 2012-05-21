@@ -77,15 +77,15 @@ public class TextItem extends PlaceBookItem
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
-	public IUpdateableExternal saveUpdatedItem()
+	public PlaceBookItem saveUpdatedItem()
 	{
-		IUpdateableExternal returnItem = this;
+		PlaceBookItem returnItem = this;
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		IUpdateableExternal item;
+		PlaceBookItem item;
 		try
 		{
 			pm.getTransaction().begin();
-			item = ItemFactory.GetExistingItem(this, pm);
+			item = ItemFactory.getExistingItem(this, pm);
 			if(item != null)
 			{
 				
@@ -120,7 +120,7 @@ public class TextItem extends PlaceBookItem
 	}
 
 	@Override
-	public void updateItem(IUpdateableExternal item)
+	public void updateItem(PlaceBookItem item)
 	{
 		super.updateItem(item);
 		if(item instanceof TextItem)

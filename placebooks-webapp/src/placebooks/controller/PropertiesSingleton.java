@@ -55,6 +55,10 @@ public final class PropertiesSingleton
 	public static final String PROXY_ACTIVE = "proxy.active";
 	public static final String PROXY_HOST = "proxy.host";
 	public static final String PROXY_PORT = "proxy.port";
+	
+	public static final String DROPBOX_APIKEY = "dropbox.apikey";
+	public static final String DROPBOX_APISECRET = "dropbox.apisecret";
+	public static final String DROPBOX_ACCESSTYPE = "dropbox.accesstype";
 
 	public static final String IDEN_SERVER_NAME = "server.name";
 

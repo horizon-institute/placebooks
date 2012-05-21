@@ -30,30 +30,30 @@ public class InitializeDatabase
 			final User userm = new User("Mark Paxton", "mcp@cs.nott.ac.uk", encoder.encodePassword("test", null));
 			final User userd = new User("Mark Davies", "markdavies_@hotmail.com", encoder.encodePassword("test", null));
 
-			final LoginDetails markdPcwLoginDetails = new LoginDetails(userd, PeoplesCollectionService.SERVICE_NAME, "swnymor",
+			final LoginDetails markdPcwLoginDetails = new LoginDetails(userd, PeoplesCollectionService.SERVICE_INFO.getName(), "swnymor",
 					"swnymor", "password");
 			userd.add(markdPcwLoginDetails);
 
 			final User alan = new User("Alan Chamberlain", "azc@Cs.Nott.AC.UK", encoder.encodePassword("test", null));
 
-			final LoginDetails alanPcwLoginDetails = new LoginDetails(alan, PeoplesCollectionService.SERVICE_NAME, "alan_chamberlain",
+			final LoginDetails alanPcwLoginDetails = new LoginDetails(alan, PeoplesCollectionService.SERVICE_INFO.getName(), "alan_chamberlain",
 					"alan_chamberlain", "g2veji");
 			alan.add(alanPcwLoginDetails);
 			
 			
 			final User userTest = new User("Everytrail Test User", "everytrail_test@live.co.uk",
 					encoder.encodePassword("testPass!", null));
-			final LoginDetails etLoginDetails = new LoginDetails(userTest, EverytrailService.SERVICE_NAME, "275539",
+			final LoginDetails etLoginDetails = new LoginDetails(userTest, EverytrailService.SERVICE_INFO.getName(), "275539",
 					"placebooks_everytrail_test", "testPass1!");
 			userTest.add(etLoginDetails);
-			final LoginDetails pcwLoginDetails = new LoginDetails(userTest, PeoplesCollectionService.SERVICE_NAME, "placebooksTest",
+			final LoginDetails pcwLoginDetails = new LoginDetails(userTest, PeoplesCollectionService.SERVICE_INFO.getName(), "placebooksTest",
 					"placebooksTest", "testPass1!");
 			userTest.add(pcwLoginDetails);
 	
 			final User userTest2 = new User("Test User", "placebooks.test@gmail.com", encoder.encodePassword("testPass!", null));
 			//final LoginDetails ytLoginDetails = new LoginDetails(userTest2, "YouTube", "", "placebooksTest", "testPass1!");
-			final LoginDetails user2etLoginDetails = new LoginDetails(userTest2, EverytrailService.SERVICE_NAME, "", "Placebooks", "testPass1!");
-			final LoginDetails user2pcwLoginDetails = new LoginDetails(userTest2, PeoplesCollectionService.SERVICE_NAME, "", "PlacebooksTest", "testPass1!");
+			final LoginDetails user2etLoginDetails = new LoginDetails(userTest2, EverytrailService.SERVICE_INFO.getName(), "", "Placebooks", "testPass1!");
+			final LoginDetails user2pcwLoginDetails = new LoginDetails(userTest2, PeoplesCollectionService.SERVICE_INFO.getName(), "", "PlacebooksTest", "testPass1!");
 			//userTest2.add(ytLoginDetails);
 			userTest2.add(user2etLoginDetails);
 			userTest2.add(user2pcwLoginDetails);

@@ -196,15 +196,15 @@ public abstract class MediaItem extends PlaceBookItem
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
-	public IUpdateableExternal saveUpdatedItem()
+	public PlaceBookItem saveUpdatedItem()
 	{
-		IUpdateableExternal returnItem = this;
+		PlaceBookItem returnItem = this;
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		IUpdateableExternal item;
+		PlaceBookItem item;
 		try
 		{
 			pm.getTransaction().begin();
-			item = ItemFactory.GetExistingItem(this, pm);
+			item = ItemFactory.getExistingItem(this, pm);
 			if (item != null)
 			{
 
@@ -244,7 +244,7 @@ public abstract class MediaItem extends PlaceBookItem
 	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
 	 */
 	@Override
-	public void updateItem(final IUpdateableExternal item)
+	public void updateItem(final PlaceBookItem item)
 	{
 		super.updateItem(item);
 		if (item instanceof MediaItem)

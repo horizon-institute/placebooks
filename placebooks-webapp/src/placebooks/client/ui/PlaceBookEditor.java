@@ -48,6 +48,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEditor extends PlaceBookPlace
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	@Prefix("edit")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookEditor>
 	{
@@ -266,7 +268,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 		else
 		{
 			Window.setTitle("PlaceBooks Editor");
-			title.setText("No Title");
+			title.setText(uiMessages.noTitle());
 		}
 
 		loadingPanel.setVisible(false);

@@ -2,15 +2,21 @@ package placebooks.client.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.JSONResponse;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.DataStore;
 import placebooks.client.model.LoginDetails;
+import placebooks.client.model.ServerInfo;
+import placebooks.client.model.ServerInfoDataStore;
+import placebooks.client.model.ServiceInfo;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.DatePrinter;
 import placebooks.client.ui.elements.EnabledButtonCell;
 
@@ -26,6 +32,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,9 +46,11 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	{
 	}
 
-	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
+	private static final UIMessages uiConstants = GWT.create(UIMessages.class);
+	
+	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
 
-	private static final String[] SERVICES = { "Everytrail", "PeoplesCollection" };
+	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
 
 	private static final ProvidesKey<LoginDetails> keyProvider = new ProvidesKey<LoginDetails>()
 	{
@@ -60,6 +69,8 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 	private CellTable<LoginDetails> cellTable;
 	private User user;
+
+	private ServerInfo info;
 
 	private final DataStore<User> userStore = new DataStore<User>()
 	{
@@ -99,7 +110,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				return object.getService();
 			}
 		};
-		cellTable.addColumn(serviceColumn, "Service");
+		cellTable.addColumn(serviceColumn, uiConstants.service());
 
 		// Username.
 		final Column<LoginDetails, String> userNameColumn = new Column<LoginDetails, String>(new TextCell())
@@ -110,7 +121,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 				return object.getUsername();
 			}
 		};
-		cellTable.addColumn(userNameColumn, "Username");
+		cellTable.addColumn(userNameColumn, uiConstants.username());
 
 		// Last Update
 		final Column<LoginDetails, String> lastUpdateColumn = new Column<LoginDetails, String>(new TextCell())
@@ -120,19 +131,19 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			{
 				if (object.isSyncInProgress())
 				{
-					return "Sync In Progress";
+					return uiConstants.syncInProgress();
 				}
 				else if (object.getLastSync() == 0)
 				{
-					return "Never Synced";
+					return uiConstants.neverSynced();
 				}
 				else
 				{
-					return "Last Synced: " + DatePrinter.formatDate(new Date((long) object.getLastSync()));
+					return uiConstants.lastSynced(DatePrinter.formatDate(new Date((long) object.getLastSync())));
 				}
 			}
 		};
-		cellTable.addColumn(lastUpdateColumn, "Status");
+		cellTable.addColumn(lastUpdateColumn, uiConstants.status());
 
 		final EnabledButtonCell<LoginDetails> syncCell = new EnabledButtonCell<LoginDetails>()
 		{
@@ -140,7 +151,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			@Override
 			public String getText(final LoginDetails object)
 			{
-				return "Sync Now";
+				return uiConstants.syncNow();
 			}
 
 			@Override
@@ -196,10 +207,13 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	{
 		this.user = user;
 
-		final List<String> serviceList = new ArrayList<String>();
-		for (final String service : SERVICES)
+		final Map<String, ServiceInfo> services = new HashMap<String, ServiceInfo>();
+		if (info != null)
 		{
-			serviceList.add(service);
+			for (final ServiceInfo service : info.getServices())
+			{
+				services.put(service.getName(), service);
+			}
 		}
 
 		boolean syncing = false;
@@ -210,7 +224,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			{
 				syncing = true;
 			}
-			serviceList.remove(details.getService());
+			services.remove(details.getService());
 			list.add(details);
 		}
 
@@ -229,49 +243,62 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 		buttonPanel.clear();
 		cellTable.setRowData(list);
 
-		for (final String service : serviceList)
+		for (final ServiceInfo service : services.values())
 		{
-			buttonPanel.add(new Button("Link " + service + " Account", new ClickHandler()
+			if (service.isOAuth())
 			{
-
-				@Override
-				public void onClick(final ClickEvent arg0)
+				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
 				{
-					final PlaceBookLoginDialog account = new PlaceBookLoginDialog("Link " + service + " Account",
-							"Link Account", service + " Username:");
-					account.addClickHandler(new ClickHandler()
+					@Override
+					public void onClick(final ClickEvent arg0)
 					{
-
-						@Override
-						public void onClick(final ClickEvent event)
+						Window.Location.replace(PlaceBookService.getHostURL() + "placebooks/a/oauth?service=" + service.getName());
+					}
+				}));
+			}
+			else
+			{
+				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
+				{
+					@Override
+					public void onClick(final ClickEvent arg0)
+					{
+						final PlaceBookLoginDialog account = new PlaceBookLoginDialog(uiConstants.linkAccount(service.getName()),
+								uiConstants.linkAccount(), service.getName() + " " + uiConstants.username() + ":");
+						account.addClickHandler(new ClickHandler()
 						{
-							account.setProgress(true);
-							PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(), service,
-															new JSONResponse<Shelf>()
-															{
 
-																@Override
-																public void handleError(final Request request,
-																		final Response response,
-																		final Throwable throwable)
+							@Override
+							public void onClick(final ClickEvent event)
+							{
+								account.setProgress(true);
+								PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(),
+																service.getName(), new JSONResponse<Shelf>()
 																{
-																	account.setError(service + " Login Failed");
-																	account.setProgress(false);
-																}
 
-																@Override
-																public void handleResponse(final Shelf shelf)
-																{
-																	account.hide();
-																	setUser(shelf.getUser());
-																}
-															});
-						}
-					});
+																	@Override
+																	public void handleError(final Request request,
+																			final Response response,
+																			final Throwable throwable)
+																	{
+																		account.setError(uiConstants.loginFailed(service.getName()));
+																		account.setProgress(false);
+																	}
 
-					account.show();
-				}
-			}));
+																	@Override
+																	public void handleResponse(final Shelf shelf)
+																	{
+																		account.hide();
+																		setUser(shelf.getUser());
+																	}
+																});
+							}
+						});
+
+						account.show();
+					}
+				}));
+			}
 		}
 
 		center();
@@ -286,6 +313,19 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			public void handleResponse(final User object)
 			{
 				setUser(object);
+			}
+		}, true);
+		infoStore.get(null, new JSONResponse<ServerInfo>()
+		{
+
+			@Override
+			public void handleResponse(final ServerInfo object)
+			{
+				if (object != null)
+				{
+					info = object;
+				}
+				setUser(user);
 			}
 		}, true);
 	}

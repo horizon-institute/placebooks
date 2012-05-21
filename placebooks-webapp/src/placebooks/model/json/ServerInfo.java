@@ -1,7 +1,12 @@
 package placebooks.model.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import placebooks.controller.PlaceBooksAdminHelper;
 import placebooks.controller.PropertiesSingleton;
+import placebooks.services.ServiceInfo;
+import placebooks.services.ServiceRegistry;
 
 public class ServerInfo
 {
@@ -16,6 +21,8 @@ public class ServerInfo
 	private final int maxImageSize;
 	private final int maxVideoSize;
 	private final int maxAudioSize;
+	
+	private final List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
 	public ServerInfo()
 	{
@@ -36,6 +43,10 @@ public class ServerInfo
 		this.maxAudioSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, "10"));
 
+		for(ServiceInfo info: ServiceRegistry.getServices())
+		{
+			services.add(info);
+		}
 	}
 
 	public final String getOpenSpaceBaseURL()

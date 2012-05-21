@@ -3,6 +3,7 @@ package placebooks.client.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -28,6 +29,8 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PlaceBookPermissionsDialog extends PlaceBookDialog
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface PlaceBookPermissionsDialogUiBinder extends UiBinder<Widget, PlaceBookPermissionsDialog>
 	{
 	}
@@ -60,15 +63,15 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 			sb.appendHtmlConstant("<div>");
 			if (value.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
 			{
-				sb.appendEscaped("Owner");
+				sb.appendEscaped(uiMessages.owner());
 			}
 			else if (value.permission.equals("R_W"))
 			{
-				sb.appendEscaped("Read + Write");
+				sb.appendEscaped(uiMessages.readwrite());				
 			}
 			else
 			{
-				sb.appendEscaped("Read");
+				sb.appendEscaped(uiMessages.read());
 			}
 
 			sb.appendHtmlConstant("</div></div>");
@@ -105,12 +108,12 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 	public PlaceBookPermissionsDialog(final PlaceBookController controller)
 	{
-		setTitle("Edit Permissions");
+		setTitle(uiMessages.editPermissions());
 		this.controller = controller;
 		setWidget(uiBinder.createAndBindUi(this));
 
-		permissionsBox.addItem("Read");
-		permissionsBox.addItem("Read + Write");
+		permissionsBox.addItem(uiMessages.read());
+		permissionsBox.addItem(uiMessages.readwrite());
 
 		cellList = new CellList<Permission>(new PermissionsCell(), keyProvider);
 		cellList.setWidth("100%");

@@ -42,7 +42,8 @@ import placebooks.services.model.PeoplesCollectionTrailsResponse;
  */
 public class PeoplesCollectionService extends Service
 {
-	public final static String SERVICE_NAME = "PeoplesCollection";
+	public final static ServiceInfo SERVICE_INFO = new ServiceInfo("PeoplesCollection", "http://www.peoplescollectionwales.com", false);	
+
 	private static final String apiBaseUrl = "http://www.peoplescollectionwales.com/mobile";
 
 
@@ -51,9 +52,9 @@ public class PeoplesCollectionService extends Service
 
 
 	@Override
-	public String getName()
+	public ServiceInfo getInfo()
 	{
-		return SERVICE_NAME;
+		return SERVICE_INFO;
 	}
 
 	/**

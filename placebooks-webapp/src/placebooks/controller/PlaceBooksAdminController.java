@@ -9,9 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +34,6 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.map.introspect.VisibilityChecker;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
@@ -326,6 +323,43 @@ public class PlaceBooksAdminController
 
 		return "redirect:/index.html";
 	}
+	
+	@RequestMapping("/oauth")
+	public String oauth(final HttpServletRequest request, @RequestParam final String service)
+	{		
+		log.info(service);
+		final Service serv = ServiceRegistry.getService(service);
+		if(serv != null)
+		{
+			log.info(serv.getInfo().getName());
+			final EntityManager manager = EMFSingleton.getEntityManager();
+			final User user = UserManager.getCurrentUser(manager);
+			
+			String result = serv.getAuthenticationURL(manager, user, null);
+			log.info(result);
+			
+			if(result != null)
+			{
+				return "redirect:" + result;
+			}
+		}
+		
+		final String referrer = request.getHeader("referer");
+		log.info(referrer);
+		if(referrer != null)
+		{
+			return "redirect:" + referrer;			
+		}
+		return "redirect:/index.html";		
+	}
+	
+	@RequestMapping("/oauthCallback")
+	public String oauthCallback(@RequestParam final String oauth_token, @RequestParam final String uid)
+	{
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		
+		return "redirect:/index.html";		
+	}
 
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
 	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
@@ -348,16 +382,6 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
-
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						final EntityManager manager = EMFSingleton.getEntityManager();
-						ServiceRegistry.updateServices(manager, user);
-					}
-				}).start();
 			}
 			else
 			{
@@ -371,6 +395,18 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
+				
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						final EntityManager manager = EMFSingleton.getEntityManager();
+						log.info("Updating Services");
+						ServiceRegistry.updateServices(manager, user);
+						manager.close();
+					}
+				}).start();				
 			}
 		}
 		finally
@@ -466,6 +502,18 @@ public class PlaceBooksAdminController
 		}
 
 		manager.close();
+		
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final EntityManager manager = EMFSingleton.getEntityManager();
+				log.info("Updating Services");
+				ServiceRegistry.updateServices(manager, user);
+				manager.close();
+			}
+		}).start();	
 	}
 
 	@RequestMapping(value = "/placebookbinder/{key}", method = RequestMethod.GET)
@@ -788,9 +836,7 @@ public class PlaceBooksAdminController
 
 		try
 		{
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.getSerializationConfig().setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-			final PlaceBookBinder placebookBinder = mapper.readValue(json, PlaceBookBinder.class);
+			final PlaceBookBinder placebookBinder = jsonMapper.readValue(json, PlaceBookBinder.class);
 
 			final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, placebookBinder.getKey());
 
@@ -818,8 +864,8 @@ public class PlaceBooksAdminController
 
 
 			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
-			log.debug("Saved PlacebookBinder:" + mapper.writeValueAsString(result));
-			log.info("Published PlacebookBinder:" + mapper.writeValueAsString(result));
+			log.debug("Saved PlacebookBinder:" + jsonMapper.writeValueAsString(result));
+			log.info("Published PlacebookBinder:" + jsonMapper.writeValueAsString(result));
 
 			final PlaceBookBinder published = PlaceBooksAdminHelper.publishPlaceBookBinder(manager, result);
 

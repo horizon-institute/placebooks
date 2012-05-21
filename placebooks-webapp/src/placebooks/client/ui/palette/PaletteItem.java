@@ -46,6 +46,7 @@ public class PaletteItem
 	{
 		final Widget result = uiBinder.createAndBindUi(this);
 		text.setText(name);
+		text.setTitle(name);
 		return result;
 	}
 

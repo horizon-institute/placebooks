@@ -10,6 +10,7 @@ import placebooks.client.ui.PlaceBookEditor;
 import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.PlaceBookLibrary;
 import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookAccountsDialog;
 import placebooks.client.ui.dialogs.PlaceBookCreateAccountDialog;
 import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
@@ -33,6 +34,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookToolbar extends Composite
 {
+	private static final UIMessages uiConstants = GWT.create(UIMessages.class);
+	
 	interface PlaceBookToolbarUiBinder extends UiBinder<Widget, PlaceBookToolbar>
 	{
 	}
@@ -273,7 +276,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (user == null)
 		{
-			final PlaceBookLoginDialog loginDialog = new PlaceBookLoginDialog("Login", "Login", "Email:");
+			final PlaceBookLoginDialog loginDialog = new PlaceBookLoginDialog(uiConstants.login(), uiConstants.login(), uiConstants.email() + ":");
 			loginDialog.addClickHandler(new ClickHandler()
 			{
 				@Override
@@ -294,7 +297,7 @@ public class PlaceBookToolbar extends Composite
 																.equals("{\"detailMessage\":\"Bad credentials\"}"))
 														{
 															loginDialog
-																	.setError("Login not recognised. Check username and password.");
+																	.setError(uiConstants.loginFail());
 														}
 														else if (response.getText().startsWith("{\"detailMessage\":"))
 														{
@@ -303,12 +306,12 @@ public class PlaceBookToolbar extends Composite
 														}
 														else
 														{
-															loginDialog.setError("Error logging in");
+															loginDialog.setError(uiConstants.loginError());
 														}
 													}
 													else
 													{
-														loginDialog.setError("Error logging in");
+														loginDialog.setError(uiConstants.loginError());
 													}
 													loginDialog.center();
 												}
@@ -345,7 +348,7 @@ public class PlaceBookToolbar extends Composite
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
 		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
-		account.setTitle("Linked Accounts");
+		account.setTitle(uiConstants.linkedAccounts());
 		account.show();
 	}
 

@@ -26,7 +26,6 @@ import org.w3c.dom.NodeList;
 
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
-import placebooks.model.IUpdateableExternal;
 import placebooks.model.ImageItem;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.TextItem;
@@ -54,15 +53,50 @@ public class ItemFactory
 {
 	private static final Logger log = Logger.getLogger(ItemFactory.class.getName());
 
+	
+	public static PlaceBookItem createItem(final EntityManager manager, final String externalID, final String mimeType)
+	{
+		// TODO Check supported mimeTypes
+		PlaceBookItem item = ItemFactory.GetExistingItem(externalID, manager);
+		if(item == null)
+		{
+			if(mimeType.startsWith("image/"))
+			{
+				item = new ImageItem();
+			}
+			else if(mimeType.startsWith("video/"))
+			{
+				item = new VideoItem();
+			}
+			else if(mimeType.startsWith("audio/"))
+			{
+				item = new AudioItem();
+			}
+			else if(mimeType.startsWith("text/"))
+			{
+				item = new TextItem();
+			}
+			
+			if(item != null)
+			{
+				item.addMetadataEntry("mimeType", mimeType);
+				item.setExternalID(externalID);
+				manager.persist(item);
+			}
+		}
+
+		return item;
+	}
+	
 	/**
 	 * Gets the item with the external id or null if there is none.
 	 * n.b. assumes ther's only one of these in the db.
 	 * @param externalId
 	 * @return IUpdateableExternal item or null
 	 */
-	public static IUpdateableExternal GetExistingItem(IUpdateableExternal itemToSave, EntityManager em)
+	public static PlaceBookItem getExistingItem(PlaceBookItem itemToSave, EntityManager em)
 	{
-		IUpdateableExternal item = null;
+		PlaceBookItem item = null;
 		log.debug("Querying externalID " +  itemToSave.getExternalID());
 		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
 		q.setParameter(1, itemToSave.getExternalID());
@@ -71,7 +105,7 @@ public class ItemFactory
 			Collection<PlaceBookItem> l = q.getResultList();
 			if(l.size()==1)
 			{
-				item = (IUpdateableExternal) l.iterator().next();
+				item = l.iterator().next();
 			}
 			else if(l.size()>1)
 			{
@@ -95,7 +129,43 @@ public class ItemFactory
 		return item;
 	}
 
+	public static PlaceBookItem GetExistingItem(String externalID, EntityManager em)
+	{
+		PlaceBookItem item = null;
+		log.debug("Querying externalID " +  externalID);
+		TypedQuery<PlaceBookItem> q = em.createQuery("SELECT placebookitem FROM PlaceBookItem as placebookitem where (placebookitem.externalID = ?1) AND (placebookitem.placebook is null)", PlaceBookItem.class);
+		q.setParameter(1, externalID);
+		try
+		{
+			Collection<PlaceBookItem> l = q.getResultList();
+			if(l.size()==1)
+			{
+				item = l.iterator().next();
+			}
+			else if(l.size()>1)
+			{
+				log.warn("Removing duplicate items for " + externalID);
+				for(PlaceBookItem o : l)
+				{
+					log.debug("Removing: " + o.getKey());
+					em.remove(o);
+				}
+				em.flush();
+			}
 
+		}
+		catch (final NoResultException ex)
+		{
+			log.error(ex.toString());
+			item = null;
+		}
+
+
+		return item;
+	}
+
+	
+	
 	/**
 	 * Convert an Everytrail track to a GPSTraceItem
 	 * @param owner User creating this item
@@ -110,7 +180,7 @@ public class ItemFactory
 		//log.debug(tripItem.getTextContent());
 
 		gpsItem.setGeometry(null);
-		gpsItem.addMetadataEntry("source", EverytrailService.SERVICE_NAME);
+		gpsItem.addMetadataEntry("source", EverytrailService.SERVICE_INFO.getName());
 
 		if(tripId!=null)
 		{
@@ -332,7 +402,7 @@ public class ItemFactory
 		imageItem.setExternalID("everytrail-" + picture_id);
 		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
-		imageItem.addMetadataEntry("source", EverytrailService.SERVICE_NAME);
+		imageItem.addMetadataEntry("source", EverytrailService.SERVICE_INFO.getName());
 	}
 
 
@@ -412,7 +482,7 @@ public class ItemFactory
 		String trailId = Integer.toString(trail.GetPropertiesId());
 
 		gpsItem.setGeometry(trail.GetGeometry());
-		gpsItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+		gpsItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_INFO.getName());
 
 		if(trail!=null)
 		{
@@ -546,7 +616,7 @@ public class ItemFactory
 		imageItem.setExternalID("peoplescollection-" + picture_id);
 		imageItem.addMetadataEntryIndexed("title", imageItemTitle);
 		imageItem.addMetadataEntryIndexed("description", itemDescription);
-		imageItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+		imageItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_INFO.getName());
 	}
 
 
@@ -635,7 +705,7 @@ public class ItemFactory
 		videoItem.setExternalID("peoplescollection-" + video_id);
 		videoItem.addMetadataEntryIndexed("title", videoItemTitle);
 		videoItem.addMetadataEntryIndexed("description", itemDescription);
-		videoItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+		videoItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_INFO.getName());
 	}
 
 
@@ -672,7 +742,7 @@ public class ItemFactory
 		textItem.setExternalID("peoplescollection-" + feature.GetPropertiesId());
 		textItem.addMetadataEntryIndexed("title", feature.GetProperties().GetTitle());
 		textItem.addMetadataEntryIndexed("description", feature.GetProperties().GetMarkup());
-		textItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+		textItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_INFO.getName());
 	}
 
 
@@ -756,7 +826,7 @@ public class ItemFactory
 		audioItem.setExternalID("peoplescollection-" + audio_id);
 		audioItem.addMetadataEntryIndexed("title", audioItemTitle);
 		audioItem.addMetadataEntryIndexed("description", itemDescription);
-		audioItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_NAME);
+		audioItem.addMetadataEntry("source", PeoplesCollectionService.SERVICE_INFO.getName());
 	}
 
 	/**

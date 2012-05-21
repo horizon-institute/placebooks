@@ -7,6 +7,7 @@ import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 
@@ -30,7 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookUploadDialog extends PlaceBookDialog
 {
-
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface UploadDialogUiBinder extends UiBinder<Widget, PlaceBookUploadDialog>
 	{
 	}
@@ -65,28 +67,35 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 
 		this.item = item;
 		
-		setTitle("Upload");
+		setTitle(uiMessages.upload());
 		
 		infoStore.get(null, new JSONResponse<ServerInfo>()
 		{
 			@Override
 			public void handleResponse(ServerInfo object)
 			{
+				String type = null;
+				int size = 0;
 				if (item.getItem().is(ItemType.IMAGE))
 				{
-					setTitle("Upload Image");
-					infoLabel.setText("Maximum Image File Size: " + object.getImageSize() + "Mb");
+					type = uiMessages.image();
+					size = object.getImageSize();
 				}
 				else if (item.getItem().is(ItemType.VIDEO))
 				{
-					setTitle("Upload Video");
-					infoLabel.setText("Maximum Video File Size: " + object.getVideoSize() + "Mb");
+					type = uiMessages.video();
+					size = object.getVideoSize();
 				}
 				else if (item.getItem().is(ItemType.AUDIO))
 				{
-					setTitle("Upload Audio");
-					infoLabel.setText("Maximum Audio File Size: " + object.getAudioSize() + "Mb");
-				}				
+					type = uiMessages.audio();
+					size = object.getAudioSize();
+				}
+				if(type != null)
+				{
+					setTitle(uiMessages.upload(type));
+					infoLabel.setText(uiMessages.maxSize(type, size));
+				}
 			}
 		});
 
@@ -104,7 +113,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 			@Override
 			public void onSubmit(final SubmitEvent event)
 			{
-				setProgressVisible(true, "Uploading File...");
+				setProgressVisible(true, uiMessages.uploading());
 				uploadButton.setEnabled(false);
 				GWT.log("Uploading " + item.getItem().getKey());
 			}
@@ -129,7 +138,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog
 				}
 				catch (final Exception e)
 				{
-					setError("Upload Failed");
+					setError(uiMessages.uploadFailed());
 					refresh();
 				}
 			}

@@ -40,7 +40,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS)
-public abstract class PlaceBookItem implements IUpdateableExternal
+public abstract class PlaceBookItem
 {
 	protected static final Logger log = Logger.getLogger(PlaceBookItem.class.getName());
 
@@ -254,7 +254,6 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 
 	public abstract String getEntityName();
 
-	@Override
 	public String getExternalID()
 	{
 		return externalID;
@@ -333,21 +332,15 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		return (!parameters.isEmpty());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
-	 */
-	@Override
-	public IUpdateableExternal saveUpdatedItem()
+	public PlaceBookItem saveUpdatedItem()
 	{
-		IUpdateableExternal returnItem = this;
+		PlaceBookItem returnItem = this;
 		final EntityManager em = EMFSingleton.getEntityManager();
-		IUpdateableExternal item;
+		PlaceBookItem item;
 		try
 		{
 			em.getTransaction().begin();
-			item = ItemFactory.GetExistingItem(this, em);
+			item = ItemFactory.getExistingItem(this, em);
 			if (item != null)
 			{
 
@@ -436,8 +429,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 		return null;
 	}
 
-	@Override
-	public final void update(IUpdateableExternal item)
+	public final void update(PlaceBookItem item)
 	{
 		if (this == item) { return; }
 
@@ -452,7 +444,7 @@ public abstract class PlaceBookItem implements IUpdateableExternal
 	 * 
 	 * @param item
 	 */
-	protected void updateItem(IUpdateableExternal updateItem)
+	protected void updateItem(PlaceBookItem updateItem)
 	{
 		PlaceBookItem item = (PlaceBookItem) updateItem;
 		parameters.clear();

@@ -199,7 +199,7 @@ public class FileHelper
 					return false;
 				}
 			});
-			if (files.length > 0)
+			if (files != null && files.length > 0)
 			{
 				itemPath = files[0].getPath();
 			}

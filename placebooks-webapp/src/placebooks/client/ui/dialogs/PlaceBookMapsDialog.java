@@ -3,6 +3,7 @@ package placebooks.client.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
@@ -56,6 +57,8 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		}
 	}
 
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	private static final MarkerTemplates MARKER_TEMPLATES = GWT.create(MarkerTemplates.class);
 
 	private static PlaceBookMapsDialogUiBinder uiBinder = GWT.create(PlaceBookMapsDialogUiBinder.class);
@@ -94,7 +97,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		this.controller = controller;
 		this.item = item;
 		this.mapItems = mapItems;
-		setTitle("Locate " + item.getItem().getMetadata("title", "Item") + " on Map");
+		setTitle(uiMessages.locateOnMap(item.getItem().getMetadata("title", "Item")));
 		onInitialize();
 
 		final int mapPage = item.getItem().getParameter("mapPage", -1);
@@ -206,7 +209,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	private void onInitialize()
 	{
 		mapSelect.clear();
-		mapSelect.addItem("Item is Not Currently on a Map", "");
+		mapSelect.addItem(uiMessages.itemNotOnMap(), "");
 
 		mapPanel.clear();
 
@@ -215,12 +218,12 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 			String title = item.getItem().getMetadata("title");
 			if (title == null || title.equals("Map"))
 			{
-				mapSelect.addItem(	"On Map on Page " + (item.getColumn().getPage().getIndex() + 1),
+				mapSelect.addItem(uiMessages.onMap(item.getColumn().getPage().getIndex() + 1),
 									Integer.toString(item.getColumn().getPage().getIndex()));
 			}
 			else
 			{
-				mapSelect.addItem(	"On " + title + " Map (page " + (item.getColumn().getPage().getIndex() + 1) + ")",
+				mapSelect.addItem(uiMessages.onMap(title, item.getColumn().getPage().getIndex() + 1),
 									Integer.toString(item.getColumn().getPage().getIndex()));
 			}
 		}
@@ -244,11 +247,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 		if (item.getItem().getGeometry() == null)
 		{
-			mapLabel.setText("Click on the Map to Place " + item.getItem().getMetadata("title", "Untitled"));
+			mapLabel.setText(uiMessages.clickMapPlace(item.getItem().getMetadata("title", "Untitled")));
 		}
 		else
 		{
-			mapLabel.setText("Click on the Map to Move " + item.getItem().getMetadata("title", "Untitled"));
+			mapLabel.setText(uiMessages.clickMapMove(item.getItem().getMetadata("title", "Untitled")));
 		}
 
 		if (page != -1)
