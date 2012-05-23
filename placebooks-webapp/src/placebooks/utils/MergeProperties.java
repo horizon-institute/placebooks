@@ -2,10 +2,13 @@ package placebooks.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Properties;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import org.apache.tapestry.util.text.LocalizedProperties;
 import org.mortbay.log.Log;
@@ -25,7 +28,7 @@ public class MergeProperties
 			{
 				try
 				{
-					properties.load(new FileReader(file));
+					properties.load(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 				}
 				catch (final Exception e)
 				{
@@ -63,7 +66,7 @@ public class MergeProperties
 				final LocalizedProperties langProps = new LocalizedProperties(properties.getPropertyMap());
 				try
 				{
-					langProps.load(new FileReader(file));
+					langProps.load(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 
 					final File newFile = new File(dir.getAbsolutePath() + "/LocalizableResource_" + langCode
 							+ ".properties");
@@ -71,8 +74,8 @@ public class MergeProperties
 
 					Log.info("----" + langCode + "----");
 
-					final FileWriter fileWriter = new FileWriter(newFile);
-					final BufferedWriter writer = new BufferedWriter(fileWriter);
+					final FileOutputStream fileOS = new FileOutputStream(newFile);
+					final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fileOS, "UTF-8"));
 					for (final Object key : langProps.getPropertyMap().keySet())
 					{
 						Log.info(key + "=" + langProps.getPropertyMap().get(key));
