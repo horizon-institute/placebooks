@@ -300,7 +300,7 @@ public class PlaceBookShelf extends Composite
 		}
 
 		progress.setVisible(true);
-		progressLabel.setText(string);
+		progressLabel.setText(string.toUpperCase());
 		mapPanel.setVisible(false);
 		mapToggle.setVisible(false);
 

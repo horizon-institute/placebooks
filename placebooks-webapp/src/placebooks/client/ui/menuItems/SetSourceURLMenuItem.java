@@ -1,9 +1,11 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.Resources;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -14,12 +16,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class SetSourceURLMenuItem extends MenuItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
 	public SetSourceURLMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		super("Set URL");
+		super(uiMessages.setURL());
 		this.item = item;
 		this.controller = controller;
 	}
@@ -34,7 +38,7 @@ public class SetSourceURLMenuItem extends MenuItem
 		final PopupPanel dialogBox = new PopupPanel(true, true);
 		dialogBox.getElement().getStyle().setZIndex(2000);
 
-		final Button closeButton = new Button("Set URL", new ClickHandler()
+		final Button closeButton = new Button(uiMessages.setURL(), new ClickHandler()
 		{
 
 			@Override

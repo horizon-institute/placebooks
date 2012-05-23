@@ -6,6 +6,7 @@ import java.util.List;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
+import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -32,6 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPages extends Composite
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface PageStyle extends CssResource
 	{
 		String page();
@@ -332,7 +335,7 @@ public class PlaceBookPages extends Composite
 		{
 			prevPage.removeStyleName(style.pageDisabled());
 			prevPage.addStyleName(style.pageEnabled());
-			prevPage.setTitle("Page " + (currentPage.getIndex()) + "/" + pages.size());
+			prevPage.setTitle(uiMessages.page(currentPage.getIndex(), pages.size()));
 		}
 
 		if (currentPage.getIndex() >= pages.size() - 1)
@@ -345,7 +348,7 @@ public class PlaceBookPages extends Composite
 		{
 			nextPage.removeStyleName(style.pageDisabled());
 			nextPage.addStyleName(style.pageEnabled());
-			nextPage.setTitle("Page " + (currentPage.getIndex() + 2) + "/" + pages.size());
+			nextPage.setTitle(uiMessages.page(currentPage.getIndex() + 2, pages.size()));
 		}
 	}
 

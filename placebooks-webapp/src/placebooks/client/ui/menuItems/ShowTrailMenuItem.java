@@ -1,16 +1,21 @@
 package placebooks.client.ui.menuItems;
 
+import com.google.gwt.core.client.GWT;
+
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class ShowTrailMenuItem extends MenuItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
 	public ShowTrailMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		super("Show Trail");
+		super(uiMessages.showTrail());
 
 		this.item = item;
 		this.controller = controller;

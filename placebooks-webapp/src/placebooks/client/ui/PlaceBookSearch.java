@@ -33,6 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookSearch extends PlaceBookPlace
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	@Prefix("search")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookSearch>
 	{
@@ -143,7 +145,15 @@ public class PlaceBookSearch extends PlaceBookPlace
 	{
 		final Widget widget = uiBinder.createAndBindUi(this);
 
-		Window.setTitle("PlaceBooks Search - " + searchString);
+		if(searchString.trim().isEmpty())
+		{
+			Window.setTitle(uiMessages.placebooksSearch());			
+		}
+		else
+		{
+			Window.setTitle(uiMessages.placebooksSearch() + " - " + searchString);
+		}
+
 
 		searchBox.setText(searchString);
 
@@ -180,7 +190,7 @@ public class PlaceBookSearch extends PlaceBookPlace
 	private void search()
 	{
 		searchString = searchBox.getText();
-		shelf.showProgress("SEARCHING");
+		shelf.showProgress(uiMessages.searching());
 		if (searchString.equals("location:current"))
 		{
 			nearbyLink.setVisible(false);

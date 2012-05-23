@@ -31,6 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookHome extends PlaceBookPlace
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	@Prefix("home")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookHome>
 	{
@@ -78,7 +80,7 @@ public class PlaceBookHome extends PlaceBookPlace
 		final Widget widget = uiBinder.createAndBindUi(this);
 		toolbar.setPlace(this);
 
-		Window.setTitle("PlaceBooks");
+		Window.setTitle(uiMessages.placebooks());
 
 		PlaceBookService.getRandomPlaceBooks(2, new AbstractCallback()
 		{
@@ -114,7 +116,7 @@ public class PlaceBookHome extends PlaceBookPlace
 	{
 		if (search.getText().equals(""))
 		{
-			search.setText("Search PlaceBooks");
+			search.setText(uiMessages.searchPlaceBooks());
 			search.getElement().getStyle().clearColor();
 		}
 	}
@@ -122,7 +124,7 @@ public class PlaceBookHome extends PlaceBookPlace
 	@UiHandler("search")
 	void handleFocus(final FocusEvent event)
 	{
-		if (search.getText().equals("Search PlaceBooks"))
+		if (search.getText().equals(uiMessages.searchPlaceBooks()))
 		{
 			search.setText("");
 			search.getElement().getStyle().setColor("#000");
@@ -146,7 +148,7 @@ public class PlaceBookHome extends PlaceBookPlace
 
 	private void search()
 	{
-		if (search.getText().equals("Search PlaceBooks"))
+		if (search.getText().equals(uiMessages.searchPlaceBooks()))
 		{
 			getPlaceController().goTo(new PlaceBookSearch(getUser(), ""));
 		}

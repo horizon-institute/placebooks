@@ -5,6 +5,7 @@ import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.ui.PlaceBookEditor;
 import placebooks.client.ui.PlaceBookPlace;
 import placebooks.client.ui.PlaceBookPreview;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.openlayers.Marker;
 
 import com.google.gwt.core.client.GWT;
@@ -28,6 +29,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandlers, HasMouseOutHandlers
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	interface PlaceBookEntryWidgetUiBinder extends UiBinder<Widget, PlaceBookEntryWidget>
 	{
 	}
@@ -61,17 +64,17 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		if (isPublished())
 		{
 			image.setResource(Resources.IMAGES.placebook_published());
-			setTitle("View " + entry.getTitle() + "(published)");
+			setTitle(uiMessages.viewPlaceBookPublished(entry.getTitle()));
 		}
 		else
 		{
 			image.setResource(Resources.IMAGES.placebook128());
-			setTitle("Edit " + entry.getTitle());
+			setTitle(uiMessages.editPlaceBook(entry.getTitle()));
 		}
 
 		if (entry.getOwnerName() != null)
 		{
-			author.setText("by " + entry.getOwnerName());
+			author.setText(uiMessages.by(entry.getOwnerName()));
 			author.setVisible(true);
 		}
 		else
@@ -83,7 +86,7 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 		{
 			final double milesDist = ((entry.getDistance() * Math.PI) / 180.0) * 3966.8;
 			final NumberFormat fmt = NumberFormat.getDecimalFormat();
-			distance.setText(fmt.format(milesDist) + " miles");
+			distance.setText(uiMessages.distance(fmt.format(milesDist)));
 			distance.setVisible(true);
 		}
 		else

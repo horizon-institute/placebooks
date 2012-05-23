@@ -1,20 +1,25 @@
 package placebooks.client.ui.menuItems;
 
+import com.google.gwt.core.client.GWT;
+
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 public class DeleteItemMenuItem extends MenuItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);	
+	
 	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
 	public DeleteItemMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		super("Delete");
+		super(uiMessages.delete());
 		this.item = item;
 		this.controller = controller;
 	}

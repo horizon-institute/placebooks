@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookLibrary extends PlaceBookPlace
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	@Prefix("browse")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookLibrary>
 	{
@@ -85,7 +87,7 @@ public class PlaceBookLibrary extends PlaceBookPlace
 	{
 		final Widget library = uiBinder.createAndBindUi(this);
 
-		Window.setTitle("PlaceBooks Library");
+		Window.setTitle(uiMessages.placebooksLibrary());
 
 		toolbar.setPlace(this);
 

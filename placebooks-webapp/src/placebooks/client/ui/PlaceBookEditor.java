@@ -178,7 +178,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@Override
 	public String mayStop()
 	{
-		if (saveItem.getState() != SaveState.saved) { return "The current PlaceBook has unsaved changes. Are you sure you want to leave?"; }
+		if (saveItem.getState() != SaveState.saved) { return uiMessages.unsavedChanges(); }
 		return super.mayStop();
 	}
 
@@ -262,12 +262,12 @@ public class PlaceBookEditor extends PlaceBookPlace
 
 		if (newPlacebook.hasMetadata("title"))
 		{
-			Window.setTitle(newPlacebook.getMetadata("title") + " - PlaceBooks Editor");
+			Window.setTitle(newPlacebook.getMetadata("title") + " - " + uiMessages.placebooksEditor());
 			title.setText(newPlacebook.getMetadata("title"));
 		}
 		else
 		{
-			Window.setTitle("PlaceBooks Editor");
+			Window.setTitle(uiMessages.placebooksEditor());
 			title.setText(uiMessages.noTitle());
 		}
 
@@ -337,8 +337,6 @@ public class PlaceBookEditor extends PlaceBookPlace
 				});
 			}
 		});
-
-		Window.setTitle("PlaceBooks Editor");
 
 		toolbar.setPlace(this);
 
@@ -416,9 +414,8 @@ public class PlaceBookEditor extends PlaceBookPlace
 	void deletePlaceBook(final ClickEvent event)
 	{
 		GWT.log("Delete Click");
-		final PlaceBookConfirmDialog dialog = new PlaceBookConfirmDialog(
-				"You will not be able to get your placebook back after deleting it. Are you sure?");
-		dialog.setTitle("Confirm Delete");
+		final PlaceBookConfirmDialog dialog = new PlaceBookConfirmDialog(uiMessages.confirmDeleteMessage());
+		dialog.setTitle(uiMessages.confirmDelete());
 		dialog.setConfirmHandler(new ClickHandler()
 		{
 			@Override

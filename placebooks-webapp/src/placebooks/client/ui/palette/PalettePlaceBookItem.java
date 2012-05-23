@@ -3,10 +3,12 @@ package placebooks.client.ui.palette;
 import placebooks.client.PlaceBookService;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.PlaceBookItemWidget;
 import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -15,12 +17,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PalettePlaceBookItem extends PaletteItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);	
+	
 	private final PlaceBookItem item;
 	private final PlaceBookController controller;
 
 	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookController dragHandler)
 	{
-		super(placeBookItem.getMetadata("title", "Unnamed"));
+		super(placeBookItem.getMetadata("title", uiMessages.unnamed()));
 
 		this.item = placeBookItem;
 		this.controller = dragHandler;

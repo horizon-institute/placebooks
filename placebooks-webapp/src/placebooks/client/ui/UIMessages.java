@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.client.LocalizableResource.DefaultLocale;
 import com.google.gwt.i18n.client.LocalizableResource.Generate;
 import com.google.gwt.i18n.client.LocalizableResource.GenerateKeys;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 @DefaultLocale("en")
 @GenerateKeys("com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator")
@@ -153,4 +154,85 @@ public interface UIMessages extends Messages
 
 	@DefaultMessage("Map")
 	public String map();
+
+	@DefaultMessage("Delete")
+	public String delete();
+
+	@DefaultMessage("Edit Location")
+	public String editLocation();
+
+	@DefaultMessage("Edit Title")
+	public String editTitle();
+
+	@DefaultMessage("Set Title")
+	public SafeHtml setTitle();
+
+	@DefaultMessage("Fit to Content")
+	public String fitToContent();
+
+	@DefaultMessage("Hide Trail")
+	public String hideTrail();
+
+	@DefaultMessage("Set URL")
+	public String setURL();
+
+	@DefaultMessage("Show Trail")
+	public String showTrail();
+
+	@DefaultMessage("The current PlaceBook has unsaved changes. Are you sure you want to leave?")
+	public String unsavedChanges();
+
+	@DefaultMessage("PlaceBooks Editor")
+	public String placebooksEditor();
+
+	@DefaultMessage("You will not be able to get your placebook back after deleting it. Are you sure?")
+	public String confirmDeleteMessage();
+
+	@DefaultMessage("Confirm Delete")
+	public String confirmDelete();
+
+	@DefaultMessage("PlaceBooks")
+	public String placebooks();
+
+	@DefaultMessage("Search PlaceBooks")
+	public String searchPlaceBooks();
+
+	@DefaultMessage("PlaceBooks Library")
+	public String placebooksLibrary();
+
+	@DefaultMessage("PlaceBooks Search")
+	public String placebooksSearch();
+
+	@DefaultMessage("Searching")
+	public String searching();
+
+	@DefaultMessage("Page {0}/{1}")
+	public String page(int index, int size);
+
+	@DefaultMessage("Create New PlaceBook")
+	public String createNewPlaceBook();
+
+	@DefaultMessage("Start editing a new placebook")
+	public String createNewPlaceBookDesc();
+
+	@DefaultMessage("No Description")
+	public String noDesc();
+
+	@DefaultMessage("Edit PlaceBook {0}")
+	public String editPlaceBook(String title);
+
+	@DefaultMessage("by {0}")
+	public String by(String ownerName);
+
+	@DefaultMessage("{0} miles")
+	public String distance(String format);
+
+	@DefaultMessage("View PlaceBook {0} (published)")
+	public String viewPlaceBookPublished(String title);
+
+	@DefaultMessage("Back")
+	public String back();
+
+	@DefaultMessage("Unnamed")
+	public String unnamed();
 }

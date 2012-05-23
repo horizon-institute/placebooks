@@ -352,14 +352,6 @@ public class PlaceBooksAdminController
 		}
 		return "redirect:/index.html";		
 	}
-	
-	@RequestMapping("/oauthCallback")
-	public String oauthCallback(@RequestParam final String oauth_token, @RequestParam final String uid)
-	{
-		final EntityManager entityManager = EMFSingleton.getEntityManager();
-		
-		return "redirect:/index.html";		
-	}
 
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
 	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)

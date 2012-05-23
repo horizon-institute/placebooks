@@ -35,6 +35,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookPreview extends PlaceBookPlace
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+	
 	@Prefix("preview")
 	public static class Tokenizer implements PlaceTokenizer<PlaceBookPreview>
 	{
@@ -152,11 +154,11 @@ public class PlaceBookPreview extends PlaceBookPlace
 
 		if (placebook.hasMetadata("title"))
 		{
-			Window.setTitle("PlaceBooks - " + placebook.getMetadata("title"));
+			Window.setTitle(uiMessages.placebooks() + " - " + placebook.getMetadata("title"));
 		}
 		else
 		{
-			Window.setTitle("PlaceBooks");
+			Window.setTitle(uiMessages.placebooks());
 		}
 
 		refresh();
