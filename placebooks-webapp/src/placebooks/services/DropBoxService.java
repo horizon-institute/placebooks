@@ -42,8 +42,6 @@ public class DropBoxService extends Service
 	@Override
 	public boolean checkLogin(final String username, final String password)
 	{
-		// TODO Auto-generated method stub
-
 		return false;
 	}
 
@@ -95,7 +93,6 @@ public class DropBoxService extends Service
 	protected void search(final EntityManager em, final User user, final double lon, final double lat,
 			final double radius)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
@@ -116,12 +113,9 @@ public class DropBoxService extends Service
 	{
 		try
 		{
-			log.info("Starting Dropbox sync");
 			final DropboxAPI<WebAuthSession> api = getDropboxAPI();
 			if (details.getUsername() == null)
 			{
-				log.info("Finish Dropbox auth");
-
 				finishAuthentication(manager, api, details);
 			}
 			else
@@ -130,45 +124,32 @@ public class DropBoxService extends Service
 				api.getSession().setAccessTokenPair(authTokens);
 			}
 
-			//final String hash = details.getMetadata("hash");
-			final String cursor = details.getMetadata("cursor");			
-
-			//log.info(hash);
-			log.info(cursor);			
-
-			//final Entry entry = api.metadata("", 0, hash, true, null);
-			
+			final String cursor = details.getMetadata("cursor");
 			DeltaPage<Entry> delta = api.delta(cursor);
-			while(true)
+			while (true)
 			{
-				for(DeltaEntry<Entry> entry: delta.entries)
+				for (final DeltaEntry<Entry> entry : delta.entries)
 				{
 					handleEntry(manager, user, details, api, entry);
 				}
-				
-				if(delta.hasMore)
+
+				if (delta.hasMore)
 				{
-					delta = api.delta(cursor);					
+					delta = api.delta(cursor);
 				}
 				else
 				{
 					break;
 				}
-			}		
-
-			//final ObjectMapper jsonMapper = new ObjectMapper();
-			//log.info(jsonMapper.writeValueAsString(entry));
+			}
 
 			details.setMetadata("cursor", delta.cursor);
-
-			//for (final Entry subEntry : entry.contents)
-			//{
-			//	handleEntry(manager, user, details, api, subEntry);
-			//}
 		}
 		catch (final DropboxUnlinkedException e)
 		{
-			// TODO Dropbox auth failed/refused - delete logindetails
+			// Dropbox auth failed/refused - delete logindetails
+			manager.remove(details);
+			user.remove(details);
 		}
 		catch (final DropboxServerException e)
 		{
@@ -250,9 +231,9 @@ public class DropBoxService extends Service
 			if (entry.metadata == null)
 			{
 				final PlaceBookItem item = ItemFactory.GetExistingItem("dropbox" + entry.lcPath, manager);
-				if(item != null)
+				if (item != null)
 				{
-					manager.getTransaction().begin();					
+					manager.getTransaction().begin();
 					item.deleteItemData();
 					manager.remove(item);
 					manager.getTransaction().commit();
@@ -260,13 +241,14 @@ public class DropBoxService extends Service
 			}
 			else
 			{
-				if(!entry.metadata.isDir)
+				if (!entry.metadata.isDir)
 				{
 					manager.getTransaction().begin();
-					final PlaceBookItem item = ItemFactory.createItem(manager, "dropbox" + entry.lcPath, entry.metadata.mimeType);
+					final PlaceBookItem item = ItemFactory.createItem(	manager, "dropbox" + entry.lcPath,
+																		entry.metadata.mimeType);
 					if (item != null)
 					{
-						if(entry.metadata.isDeleted)
+						if (entry.metadata.isDeleted)
 						{
 							item.deleteItemData();
 							manager.remove(item);
@@ -277,12 +259,14 @@ public class DropBoxService extends Service
 							item.addMetadataEntryIndexed("title", entry.metadata.fileName());
 							item.addMetadataEntry("source", DropBoxService.SERVICE_INFO.getName());
 							item.addMetadataEntry("dbhash", entry.metadata.hash);
-							final String path = "Dropbox" + entry.metadata.path.substring(0, entry.metadata.path.lastIndexOf("/"));
+							final String path = "Dropbox"
+									+ entry.metadata.path.substring(0, entry.metadata.path.lastIndexOf("/"));
 							item.addMetadataEntry("path", path);
-		
+
 							if (item instanceof MediaItem)
 							{
-								((MediaItem) item).writeDataToDisk(entry.metadata.fileName(), api.getFileStream(entry.metadata.path, null));
+								((MediaItem) item).writeDataToDisk(	entry.metadata.fileName(),
+																	api.getFileStream(entry.metadata.path, null));
 								// ((MediaItem)item).
 							}
 							else if (item instanceof TextItem)
@@ -298,21 +282,21 @@ public class DropBoxService extends Service
 								{
 									IOUtils.copy(inputStream, writer);
 								}
-		
+
 								log.info("Text: " + writer.toString());
-								
+
 								((TextItem) item).setText(writer.toString());
 							}
-							manager.merge(item);					
-						}					
+							manager.merge(item);
+						}
 					}
-					manager.getTransaction().commit();					
-				}			
+					manager.getTransaction().commit();
+				}
 			}
 		}
 		catch (final Exception e)
 		{
-			if(manager.getTransaction().isActive())
+			if (manager.getTransaction().isActive())
 			{
 				manager.getTransaction().rollback();
 			}
