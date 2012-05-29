@@ -72,6 +72,11 @@ public class Palette extends FlowPanel
 		timer.scheduleRepeating(6000);
 	}
 
+	public void stop()
+	{
+		timer.cancel();
+	}
+	
 	public void setPaletteFolder(final PaletteFolder folder)
 	{
 		currentFolder = folder;

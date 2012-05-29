@@ -185,6 +185,7 @@ public class PlaceBookEditor extends PlaceBookPlace
 	@Override
 	public void onStop()
 	{
+		palette.stop();
 		saveItem.markSaved();
 	}
 

@@ -8,6 +8,7 @@ import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.place.shared.Place;
+import com.google.gwt.place.shared.PlaceChangeEvent;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.user.client.Window;
@@ -32,6 +33,25 @@ public class PlaceBookEditor implements EntryPoint
 		// Start ActivityManager for the main widget with our ActivityMapper
 		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
 		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
+
+		final GoogleAnalytics analytics = new GoogleAnalytics("UA-32206649-1");
+		
+		eventBus.addHandler(PlaceChangeEvent.TYPE, new PlaceChangeEvent.Handler()
+		{
+			@Override
+			public void onPlaceChange(final PlaceChangeEvent event)
+			{
+				try
+				{
+					analytics.trackPage();					
+				}
+				catch(Exception e)
+				{
+					GWT.log(e.getMessage(), e);
+				}
+			}
+		});
+
 		activityManager.setDisplay(appWidget);
 
 		appWidget.setHeight("100%");
