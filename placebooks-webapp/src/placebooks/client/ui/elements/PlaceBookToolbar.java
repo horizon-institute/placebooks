@@ -234,7 +234,7 @@ public class PlaceBookToolbar extends Composite
 		{
 			loginPanel.setVisible(false);
 			accountItem.setVisible(true);
-			accountItem.setHTML(user.getName());
+			accountItem.setHTML(user.getName() + " ▾");
 		}
 		else
 		{

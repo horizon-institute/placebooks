@@ -148,7 +148,7 @@
 			<g:FlowPanel styleName="{style.infoPanel}">
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<g:SimplePanel styleName="{style.saveItem}"><p:PlaceBookSaveItem ui:field="saveItem"/></g:SimplePanel>
-				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>				
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg> ▾</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />	
 		</g:FlowPanel>
