@@ -52,7 +52,6 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
-import placebooks.model.TextItem;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -552,16 +551,6 @@ public class PlaceBooksAdminController
 				}
 				try
 				{
-					for(PlaceBook p: pb.getPlaceBooks())
-					{
-						for(PlaceBookItem pi: p.getItems())
-						{
-							if(pi instanceof TextItem)
-							{
-								log.info(pi.getKey() + ": " + ((TextItem)pi).getText());
-							}
-						}
-					}
 					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), pb);
 					res.flushBuffer();
