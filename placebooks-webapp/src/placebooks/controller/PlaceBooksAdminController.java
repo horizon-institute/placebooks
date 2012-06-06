@@ -52,6 +52,7 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
+import placebooks.model.TextItem;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -230,8 +231,8 @@ public class PlaceBooksAdminController
 			log.info("User " + user.getName());
 			try
 			{
+				res.setContentType("application/json; charset=UTF-8");
 				jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
-				res.setContentType("application/json");
 				res.flushBuffer();
 			}
 			catch (final Exception e)
@@ -356,7 +357,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
 	public void currentUser(final HttpServletRequest req, final HttpServletResponse res)
 	{
-		res.setContentType("application/json");
+		res.setContentType("application/json; charset=UTF-8");
 		final EntityManager entityManager = EMFSingleton.getEntityManager();
 		try
 		{
@@ -379,8 +380,8 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
+					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), user);
-					res.setContentType("application/json");
 					res.flushBuffer();
 				}
 				catch (final IOException e)
@@ -448,6 +449,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
 	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
+		
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = authUser(manager, res);
 		if (user == null) { return; }
@@ -465,6 +467,8 @@ public class PlaceBooksAdminController
 
 		log.info("Converting " + pbs.size() + " PlaceBookItems to JSON");
 		log.info("User " + user.getName());
+		
+		res.setContentType("application/json; charset=UTF-8");		
 		try
 		{
 			final Writer sos = res.getWriter();
@@ -485,7 +489,6 @@ public class PlaceBooksAdminController
 			}
 			sos.write("]");
 
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final Exception e)
@@ -535,7 +538,7 @@ public class PlaceBooksAdminController
 							{
 								log.info("User doesn't have sufficient permissions");
 								res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-								res.setContentType("application/json");
+								res.setContentType("application/json; charset=UTF-8");
 								res.getWriter().write("User doesn't have sufficient permissions");
 								return;
 							}
@@ -549,8 +552,18 @@ public class PlaceBooksAdminController
 				}
 				try
 				{
+					for(PlaceBook p: pb.getPlaceBooks())
+					{
+						for(PlaceBookItem pi: p.getItems())
+						{
+							if(pi instanceof TextItem)
+							{
+								log.info(pi.getKey() + ": " + ((TextItem)pi).getText());
+							}
+						}
+					}
+					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), pb);
-					res.setContentType("application/json");
 					res.flushBuffer();
 				}
 				catch (final IOException e)
@@ -594,8 +607,8 @@ public class PlaceBooksAdminController
 				log.info("User " + user.getName());
 				try
 				{
+					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
-					res.setContentType("application/json");
 					res.flushBuffer();
 				}
 				catch (final Exception e)
@@ -663,8 +676,8 @@ public class PlaceBooksAdminController
 			{
 				try
 				{
+					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), new UserShelf(pbs, user));
-					res.setContentType("application/json");
 					res.flushBuffer();
 				}
 				catch (final IOException e)
@@ -710,8 +723,8 @@ public class PlaceBooksAdminController
 			log.info("Converting " + result.size() + " PlaceBooks to JSON");
 			try
 			{
+				res.setContentType("application/json; charset=UTF-8");
 				jsonMapper.writeValue(res.getWriter(), new Shelf(result));
-				res.setContentType("application/json");
 				res.flushBuffer();
 			}
 			catch (final Exception e)
@@ -731,8 +744,8 @@ public class PlaceBooksAdminController
 		final ServerInfo si = new ServerInfo();
 		try
 		{
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), si);
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final IOException e)
@@ -764,7 +777,7 @@ public class PlaceBooksAdminController
 					{
 						log.info("User doesn't have sufficient permissions");
 						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-						res.setContentType("application/json");
+						res.setContentType("application/json; charset=UTF-8");
 						res.getWriter().write("User doesn't have sufficient permissions");
 						return null;
 					}
@@ -842,7 +855,7 @@ public class PlaceBooksAdminController
 					{
 						log.info("User doesn't have sufficient permissions");
 						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-						res.setContentType("application/json");
+						res.setContentType("application/json; charset=UTF-8");
 						res.getWriter().write("User doesn't have sufficient permissions");
 						return;
 					}
@@ -861,8 +874,8 @@ public class PlaceBooksAdminController
 
 			final PlaceBookBinder published = PlaceBooksAdminHelper.publishPlaceBookBinder(manager, result);
 
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), published);
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final Throwable e)
@@ -906,7 +919,7 @@ public class PlaceBooksAdminController
 						{
 							log.info("User doesn't have sufficient permissions");
 							res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-							res.setContentType("application/json");
+							res.setContentType("application/json; charset=UTF-8");
 							res.getWriter().write("User doesn't have sufficient permissions");
 							return;
 						}
@@ -921,8 +934,8 @@ public class PlaceBooksAdminController
 
 			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), result);
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final Throwable e)
@@ -961,8 +974,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), new Shelf(pbs));
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final IOException e)
@@ -1005,8 +1018,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), new Shelf(ps));
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final IOException e)
@@ -1046,8 +1059,8 @@ public class PlaceBooksAdminController
 
 		try
 		{
+			res.setContentType("application/json; charset=UTF-8");			
 			jsonMapper.writeValue(res.getWriter(), new Shelf(pbs));
-			res.setContentType("application/json");
 			res.flushBuffer();
 		}
 		catch (final IOException e)
@@ -1647,7 +1660,7 @@ public class PlaceBooksAdminController
 			log.error(e.toString(), e);
 			try
 			{
-				res.setContentType("application/json");
+				res.setContentType("application/json; charset=UTF-8");
 				res.setStatus(500);
 				res.getWriter().write(e.getMessage());
 				res.getWriter().flush();
@@ -1757,7 +1770,7 @@ public class PlaceBooksAdminController
 				if (res != null)
 				{
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					res.setContentType("application/json");
+					res.setContentType("application/json; charset=UTF-8");
 					res.getWriter().write("User not logged in");
 				}
 				return null;
