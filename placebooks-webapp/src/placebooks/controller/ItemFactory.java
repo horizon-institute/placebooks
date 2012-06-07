@@ -53,6 +53,7 @@ public class ItemFactory
 {
 	private static final Logger log = Logger.getLogger(ItemFactory.class.getName());
 
+	public static final String ALTERNATE_EVERYTRAIL_GPX_URL = "http://www.everytrail.com/downloadGPX.php?trip_id=";
 	
 	public static PlaceBookItem createItem(final EntityManager manager, final String externalID, final String mimeType)
 	{
@@ -198,6 +199,7 @@ public class ItemFactory
 
 
 		String tripGpxUrlString = "";
+		String tripGpxUrlStringAlternate = "";
 		URL tripGpxUrl = null;
 
 		//Then look at the properties in the child nodes to get url, title, description, etc.
@@ -211,6 +213,7 @@ public class ItemFactory
 			{
 				log.debug("Trip GPX URL found, length: " + item.getTextContent().length());
 				tripGpxUrlString = item.getTextContent();
+				tripGpxUrlStringAlternate = ALTERNATE_EVERYTRAIL_GPX_URL + tripId.toString();
 			}
 			/*//Don't really need this
 			if (itemName.equals("kml"))
@@ -256,10 +259,17 @@ public class ItemFactory
 				log.info("Other exception for " + tripGpxUrlString + ": " + e.getMessage(), e);
 			}
 			tryCount++;
-			if(tryCount>3)
+			if(tryCount == 3)
+			{
+				tripGpxUrl = new URL(tripGpxUrlStringAlternate);
+				gpsItem.setSourceURL(tripGpxUrl);
+				log.error("Attempting alternative Gpx, " + tripGpxUrlStringAlternate);
+			}
+			else
 			{
 				keepTrying = false;
-				log.error("Giving up getting " + tripGpxUrlString);		
+				log.error("Giving up getting " + tripGpxUrlString +
+						  " and alternative " + tripGpxUrlStringAlternate);
 			}
 		}
 	}
