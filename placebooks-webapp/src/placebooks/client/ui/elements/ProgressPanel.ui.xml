@@ -13,19 +13,20 @@
 			background: -webkit-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));
 			background: -moz-radial-gradient(center,rgba(85, 85, 85, 0.5),rgba(0, 0, 0, 0.5));			
 			cursor: wait;
-			z-index: 1000;
+			z-index: 2000;
 		}
 		
 		.progress {
 			position: absolute;
-			top: 50%;
-			margin: 0 auto;
-			left: 45%;
 			background: #555;
 			border: 1px solid #333;
 			border-radius: 5px;
 			padding: 5px;
-			cursor: wait;			
+			cursor: wait;		
+		}
+
+		.progressImage {
+			vertical-align: middle;
 		}
 		
 		.progressLabel {
@@ -33,15 +34,15 @@
 			font-family: Verdana, Arial, sans-serif;
 			font-size: 18px;
 			padding-left: 15px;
-			vertical-align: top;
-			cursor: wait;			
+			cursor: wait;
+			vertical-align: middle;						
 		}	
 	</ui:style>	
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
 	<g:FlowPanel ui:field="progressPanel" styleName="{style.progressPanel}">
-		<g:FlowPanel styleName="{style.progress}">
-			<g:Image resource='{images.progress}' />
-			<g:Label ui:field="progressLabel" styleName="{style.progressLabel}"><ui:msg>Progress</ui:msg>...</g:Label>
+		<g:FlowPanel ui:field="progressText" styleName="{style.progress}">
+			<g:Image resource="{images.progress}" styleName="{style.progressImage}"/>
+			<g:InlineLabel ui:field="progressLabel" styleName="{style.progressLabel}"><ui:msg>Progress</ui:msg>...</g:InlineLabel>
 		</g:FlowPanel>			
 	</g:FlowPanel>
 </ui:UiBinder> 
