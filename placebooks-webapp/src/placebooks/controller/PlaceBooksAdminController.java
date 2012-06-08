@@ -52,6 +52,7 @@ import placebooks.model.LoginDetails;
 import placebooks.model.MediaItem;
 import placebooks.model.PlaceBook;
 import placebooks.model.PlaceBookBinder;
+import placebooks.model.TextItem;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookItem;
 import placebooks.model.User;
@@ -323,34 +324,28 @@ public class PlaceBooksAdminController
 
 		return "redirect:/index.html";
 	}
-	
+
 	@RequestMapping("/oauth")
 	public String oauth(final HttpServletRequest request, @RequestParam final String service)
-	{		
+	{
 		log.info(service);
 		final Service serv = ServiceRegistry.getService(service);
-		if(serv != null)
+		if (serv != null)
 		{
 			log.info(serv.getInfo().getName());
 			final EntityManager manager = EMFSingleton.getEntityManager();
 			final User user = UserManager.getCurrentUser(manager);
-			
+
 			String result = serv.getAuthenticationURL(manager, user, null);
 			log.info(result);
-			
-			if(result != null)
-			{
-				return "redirect:" + result;
-			}
+
+			if (result != null) { return "redirect:" + result; }
 		}
-		
+
 		final String referrer = request.getHeader("referer");
 		log.info(referrer);
-		if(referrer != null)
-		{
-			return "redirect:" + referrer;			
-		}
-		return "redirect:/index.html";		
+		if (referrer != null) { return "redirect:" + referrer; }
+		return "redirect:/index.html";
 	}
 
 	@RequestMapping(value = "/currentUser", method = RequestMethod.GET)
@@ -387,7 +382,7 @@ public class PlaceBooksAdminController
 				{
 					log.error(e.getMessage(), e);
 				}
-				
+
 				new Thread(new Runnable()
 				{
 					@Override
@@ -398,7 +393,7 @@ public class PlaceBooksAdminController
 						ServiceRegistry.updateServices(manager, user);
 						manager.close();
 					}
-				}).start();				
+				}).start();
 			}
 		}
 		finally
@@ -448,7 +443,7 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
 	public void getPaletteItemsJSON(final HttpServletResponse res)
 	{
-		
+
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = authUser(manager, res);
 		if (user == null) { return; }
@@ -466,8 +461,8 @@ public class PlaceBooksAdminController
 
 		log.info("Converting " + pbs.size() + " PlaceBookItems to JSON");
 		log.info("User " + user.getName());
-		
-		res.setContentType("application/json; charset=UTF-8");		
+
+		res.setContentType("application/json; charset=UTF-8");
 		try
 		{
 			final Writer sos = res.getWriter();
@@ -496,7 +491,7 @@ public class PlaceBooksAdminController
 		}
 
 		manager.close();
-		
+
 		new Thread(new Runnable()
 		{
 			@Override
@@ -507,7 +502,7 @@ public class PlaceBooksAdminController
 				ServiceRegistry.updateServices(manager, user);
 				manager.close();
 			}
-		}).start();	
+		}).start();
 	}
 
 	@RequestMapping(value = "/placebookbinder/{key}", method = RequestMethod.GET)
@@ -551,6 +546,16 @@ public class PlaceBooksAdminController
 				}
 				try
 				{
+					for (PlaceBook p : pb.getPlaceBooks())
+					{
+						for (PlaceBookItem pi : p.getItems())
+						{
+							if (pi instanceof TextItem)
+							{
+								log.info(pi.getKey() + ": " + ((TextItem) pi).getText());
+							}
+						}
+					}
 					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), pb);
 					res.flushBuffer();
@@ -856,7 +861,6 @@ public class PlaceBooksAdminController
 				}
 			}
 
-
 			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
 			log.debug("Saved PlacebookBinder:" + jsonMapper.writeValueAsString(result));
 			log.info("Published PlacebookBinder:" + jsonMapper.writeValueAsString(result));
@@ -1048,7 +1052,7 @@ public class PlaceBooksAdminController
 
 		try
 		{
-			res.setContentType("application/json; charset=UTF-8");			
+			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), new Shelf(pbs));
 			res.flushBuffer();
 		}
@@ -1347,16 +1351,14 @@ public class PlaceBooksAdminController
 					boolean acceptsGzip = false;
 					String disposition = "inline";
 					String contentType = null;
-/*					eu.medsea.mimeutil.MimeUtil m = new eu.medsea.mimeutil.MimeUtil();
-					final Collection c = m.getMimeTypes(serveFile);
-					log.debug("Size = " + c.size());
-					java.util.Iterator itr = c.iterator();
-					while(itr.hasNext()) {
-						eu.medsea.mimeutil.MimeType mt = (eu.medsea.mimeutil.MimeType) itr.next();
-						log.debug("Media type: " + mt.getMediaType());
-						log.debug("Sub Type: " + mt.getSubType());
-					}
-*/
+					/*
+					 * eu.medsea.mimeutil.MimeUtil m = new eu.medsea.mimeutil.MimeUtil(); final
+					 * Collection c = m.getMimeTypes(serveFile); log.debug("Size = " + c.size());
+					 * java.util.Iterator itr = c.iterator(); while(itr.hasNext()) {
+					 * eu.medsea.mimeutil.MimeType mt = (eu.medsea.mimeutil.MimeType) itr.next();
+					 * log.debug("Media type: " + mt.getMediaType()); log.debug("Sub Type: " +
+					 * mt.getSubType()); }
+					 */
 					try
 					{
 						final MagicMatch match = Magic.getMagicMatch(serveFile, false);
@@ -1670,6 +1672,31 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	private boolean hasPermission(User user, PlaceBookBinder placebook)
+	{
+		if (placebook == null) { return false; }
+
+		if (placebook.getState() == PlaceBookBinder.State.PUBLISHED) { return true; }
+
+		if (user == null)
+		{
+			return false;
+		}
+		
+		if (placebook.getOwner() == user)
+		{
+			return true;
+		}
+		
+		final PlaceBookBinder.Permission perms = placebook.getPermission(user);
+		if (perms == null)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	@RequestMapping(value = "/view/{key}", method = RequestMethod.GET)
 	public void viewPlaceBook(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
@@ -1677,24 +1704,23 @@ public class PlaceBooksAdminController
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		try
 		{
-			final PlaceBook placebook = manager.find(PlaceBook.class, key);
-			if (placebook != null)
+			String urlbase;
+			if (req.getServerPort() != 80)
+			{
+				urlbase = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()
+						+ req.getContextPath() + "/";
+			}
+			else
+			{
+				urlbase = req.getScheme() + "://" + req.getServerName() + req.getContextPath() + "/";
+			}
+
+			final PlaceBookBinder placebook = manager.find(PlaceBookBinder.class, key);
+			final User user = UserManager.getCurrentUser(manager);
+			if (hasPermission(user, placebook))
 			{
 				try
 				{
-					// if (placebook.getState() != State.PUBLISHED) { return; }
-
-					String urlbase;
-					if (req.getServerPort() != 80)
-					{
-						urlbase = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()
-								+ req.getContextPath() + "/";
-					}
-					else
-					{
-						urlbase = req.getScheme() + "://" + req.getServerName() + req.getContextPath() + "/";
-					}
-
 					final PrintWriter writer = res.getWriter();
 					writer.write("<!doctype html>");
 					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
@@ -1706,8 +1732,6 @@ public class PlaceBooksAdminController
 					writer.write("<meta property=\"og:title\" content=\"" + placebook.getMetadataValue("title")
 							+ "\"/>");
 					writer.write("<meta property=\"og:type\" content=\"article\"/>");
-					// writer.write("<meta property=\"og:url\" content=\"" + urlbase + "#preview:" +
-					// placebook.getKey() + "\"/>");
 					if (placebook.getMetadataValue("placebookImage") != null)
 					{
 						writer.write("<meta property=\"og:markerImage\" content=\"" + urlbase
@@ -1719,7 +1743,7 @@ public class PlaceBooksAdminController
 							+ placebook.getMetadataValue("description") + "\"/>");
 					writer.write("<meta http-equiv=\"Refresh\" content=\"0; url=" + urlbase + "#preview:"
 							+ placebook.getKey() + "\" />");
-					writer.write("<link rel=\"icon\" type=\"markerImage/png\" href=\"../../../images/Logo_016.png\" />");
+					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
 					writer.write("</head>");
 					writer.write("<body></body>");
 					writer.write("</html>");
@@ -1728,7 +1752,37 @@ public class PlaceBooksAdminController
 				}
 				catch (final IOException e)
 				{
-					log.error(e.toString());
+					log.error(e.toString(), e);
+				}
+
+			}
+			else
+			{
+				try
+				{
+					log.info("User doesn't have sufficient permissions");
+					final PrintWriter writer = res.getWriter();
+					writer.write("<!doctype html>");
+					writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
+					writer.write(" xmlns:og=\"http://ogp.me/ns#\"");
+					writer.write(" xmlns:fb=\"http://www.facebook.com/2008/fbml\">");
+					writer.write("<head>");
+					writer.write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
+					writer.write("<title>PlaceBooks</title>");
+					writer.write("<meta property=\"og:type\" content=\"article\"/>");
+					writer.write("<meta property=\"og:site_name\" content=\"PlaceBooks\"/>");
+					writer.write("<meta http-equiv=\"Refresh\" content=\"0; url=" + urlbase + "\"/>");
+					writer.write("<link rel=\"icon\" type=\"image/png\" href=\"../../../images/Logo_016.png\" />");
+					writer.write("</head>");
+					writer.write("<body></body>");
+					writer.write("</html>");
+					writer.flush();
+					writer.close();
+					return;
+				}
+				catch (Exception e)
+				{
+					log.error(e.toString(), e);
 				}
 			}
 		}
