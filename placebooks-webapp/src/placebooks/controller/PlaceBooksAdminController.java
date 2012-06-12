@@ -24,9 +24,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicMatch;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -70,6 +67,10 @@ import placebooks.services.ServiceRegistry;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+
+import eu.medsea.mimeutil.MimeUtil2;
+import eu.medsea.mimeutil.MimeType;
+
 
 @Controller
 public class PlaceBooksAdminController
@@ -1180,15 +1181,6 @@ public class PlaceBooksAdminController
 	public void serveMedia(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("hash") final String hash)
 	{
-		try
-		{
-			Magic.initialize();
-			log.debug("Magic initialised");
-		}
-		catch (final Throwable e)
-		{
-			log.error("Error initialising Magic: " + e.toString());
-		}
 		
 		String itemPath = "";
 		if (type.equalsIgnoreCase("imageitem"))
@@ -1364,19 +1356,33 @@ public class PlaceBooksAdminController
 
 
 					log.debug("Attempting MimeType match...");
-					try
+					final MimeUtil2 mimeMagic = new MimeUtil2();
+					mimeMagic.registerMimeDetector(
+						"eu.medsea.mimeutil.detector.MagicMimeMimeDetector"
+					);
+					
+					final Object[] ms = 
+						mimeMagic.getMimeTypes(serveFile, 
+									   new MimeType("application/octet-stream"))
+						  		 .toArray();
+	
+					if (ms.length == 1)
 					{
-
-						final MagicMatch match = Magic.getMagicMatch(serveFile, false);
-						contentType = match.getMimeType();
-						log.debug("Mime Type detected as " + contentType);
+						contentType = ms[0].toString();
+						log.info("MimeType matched as " + contentType);
 					}
-					catch (final Throwable e)
+
+					else if (ms.length > 1)
 					{
-						log.debug("Problem with mime type: " + e.toString());
+						log.error("MimeUtil2 gave too many matches: ");
+						for (int i = 0; i < ms.length; ++i)
+							log.error(" " + ms[i].toString());
 					}
-
-
+						
+					mimeMagic.unregisterMimeDetector(
+						"eu.medsea.mimeutil.detector.MagicMimeMimeDetector"
+					);
+					
 					if (contentType == null)
 					{
 						contentType = "application/octet-stream";
