@@ -1180,6 +1180,16 @@ public class PlaceBooksAdminController
 	public void serveMedia(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("hash") final String hash)
 	{
+		try
+		{
+			Magic.initialize();
+			log.debug("Magic initialised");
+		}
+		catch (final Throwable e)
+		{
+			log.error("Error initialising Magic: " + e.toString());
+		}
+		
 		String itemPath = "";
 		if (type.equalsIgnoreCase("imageitem"))
 		{
@@ -1351,16 +1361,12 @@ public class PlaceBooksAdminController
 					boolean acceptsGzip = false;
 					String disposition = "inline";
 					String contentType = null;
-					/*
-					 * eu.medsea.mimeutil.MimeUtil m = new eu.medsea.mimeutil.MimeUtil(); final
-					 * Collection c = m.getMimeTypes(serveFile); log.debug("Size = " + c.size());
-					 * java.util.Iterator itr = c.iterator(); while(itr.hasNext()) {
-					 * eu.medsea.mimeutil.MimeType mt = (eu.medsea.mimeutil.MimeType) itr.next();
-					 * log.debug("Media type: " + mt.getMediaType()); log.debug("Sub Type: " +
-					 * mt.getSubType()); }
-					 */
+
+
+					log.debug("Attempting MimeType match...");
 					try
 					{
+
 						final MagicMatch match = Magic.getMagicMatch(serveFile, false);
 						contentType = match.getMimeType();
 						log.debug("Mime Type detected as " + contentType);
@@ -1369,6 +1375,7 @@ public class PlaceBooksAdminController
 					{
 						log.debug("Problem with mime type: " + e.toString());
 					}
+
 
 					if (contentType == null)
 					{
