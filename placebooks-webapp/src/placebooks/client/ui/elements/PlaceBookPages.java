@@ -574,7 +574,6 @@ public class PlaceBookPages extends Composite
 		final double verticalOutdent = margin * strength;
 
 		// The maximum widths of the three shadows used
-		final double paperShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(1 - progress, 0.5), 0);
 		final double rightShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 		final double leftShadowWidth = (pageWidth * 0.5) * Math.max(Math.min(strength, 0.5), 0);
 
@@ -607,6 +606,7 @@ public class PlaceBookPages extends Composite
 		context.lineTo(foldX + rightShadowWidth, 0);
 		context.lineTo(foldX + rightShadowWidth, pageHeight);
 		context.lineTo(foldX, pageHeight);
+		context.closePath();
 		context.fill();
 
 		// Left side drop shadow
@@ -625,11 +625,11 @@ public class PlaceBookPages extends Composite
 		context.fill();
 
 		// Gradient applied to the folded paper (highlights & shadows)
-		final CanvasGradient foldGradient = context.createLinearGradient(foldX - paperShadowWidth, 0, foldX, 0);
+		final CanvasGradient foldGradient = context.createLinearGradient(foldX - foldWidth, 0, foldX, 0);
 		foldGradient.addColorStop(0.35, "#fafafa");
 		foldGradient.addColorStop(0.73, "#eeeeee");
 		foldGradient.addColorStop(0.9, "#fafafa");
-		foldGradient.addColorStop(1.0, "#e2e2e2");
+		foldGradient.addColorStop(1.0, "#d7d7d7");
 
 		context.setFillStyle(foldGradient);
 		context.setStrokeStyle("rgba(0,0,0,0.06)");
