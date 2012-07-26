@@ -257,7 +257,6 @@
 						</g:HTML>
 					</g:FlowPanel>
 				</g:FlowPanel>
-				<g:Image styleName="{style.pcw_logo}" resource="{images.pcw_logo}" />	
 				<g:HTML styleName="{style.previewPanel}">
 					<video style="width: 100%; padding: 5px; padding-right: 0; box-sizing: border-box;" controls="controls" >
 						<source src="screen recording3.mp4" type="video/mp4" />
