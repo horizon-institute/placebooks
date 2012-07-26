@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:f="urn:import:placebooks.client.ui.forms" ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
 	ui:generateLocales="en">
 	<ui:style>
@@ -13,7 +13,7 @@
 			display: -webkit-box;
 			-moz-box-pack: end;
 			-webkit-box-pack: end;
-		}		
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />	
 	<g:FlowPanel>

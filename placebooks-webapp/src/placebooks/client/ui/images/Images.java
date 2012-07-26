@@ -26,6 +26,8 @@ public interface Images extends ClientBundle
 
 	ImageResource listitem_phone();
 
+	ImageResource pcw_logo();
+	
 	ImageResource listitem_video();
 
 	ImageResource listitem_youtube();

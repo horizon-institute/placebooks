@@ -13,6 +13,7 @@
 			<g:PasswordTextBox ui:field="password" />
 			<g:Label><ui:msg>Password Confirmation</ui:msg>:</g:Label>
 			<g:PasswordTextBox ui:field="passwordConfirm" />
+			<g:FlowPanel><g:CheckBox ui:field="terms"><ui:msg>I accept the <a href="http://www.peoplescollectionwales.com/Terms">Terms and Conditions</a></ui:msg></g:CheckBox></g:FlowPanel>
 			<g:SimplePanel><g:Button ui:field="createAccount"><ui:msg>Create Account</ui:msg></g:Button></g:SimplePanel>
 		</g:FlowPanel>
 	</g:FlowPanel>

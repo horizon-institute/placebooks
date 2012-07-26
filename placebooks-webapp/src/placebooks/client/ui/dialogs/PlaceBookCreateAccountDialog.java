@@ -7,10 +7,13 @@ import placebooks.client.ui.UIMessages;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,6 +39,9 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 
 	@UiField
 	PasswordTextBox password;
+	
+	@UiField
+	CheckBox terms;
 
 	@UiField
 	PasswordTextBox passwordConfirm;
@@ -47,6 +53,15 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 		setTitle(uiMessages.createAccount());
 		setWidget(uiBinder.createAndBindUi(this));
 		createAccount.setEnabled(false);
+		
+		terms.addValueChangeHandler(new ValueChangeHandler<Boolean>()
+		{
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event)
+			{
+				checkValid(null);
+			}
+		});
 	}
 
 	public String getEmail()
@@ -67,6 +82,12 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 	@UiHandler(value = { "name", "email", "password", "passwordConfirm" })
 	void checkValid(final KeyUpEvent event)
 	{
+		if(!terms.getValue())
+		{
+			createAccount.setEnabled(false);
+			return;			
+		}
+		
 		if (name.getText().trim().equals(""))
 		{
 			createAccount.setEnabled(false);
@@ -93,7 +114,7 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 
 		createAccount.setEnabled(true);
 	}
-
+	
 	@UiHandler("createAccount")
 	void createAccount(final ClickEvent event)
 	{
