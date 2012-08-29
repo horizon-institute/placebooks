@@ -103,6 +103,11 @@ public class PlaceBookController
 		insert.setStyleName(STYLES.style().insert());
 	}
 
+	public PlaceBookSaveItem getSaveItem()
+	{
+		return saveContext;
+	}
+	
 	public boolean canAdd(final PlaceBookItem addItem)
 	{
 		if (pages instanceof PlaceBookPages)

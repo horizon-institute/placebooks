@@ -1,6 +1,8 @@
 package placebooks.client.ui.elements;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import placebooks.client.Resources;
 import placebooks.client.ui.UIMessages;
@@ -21,6 +23,8 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 
 	private static final int saveDelay = 2000;
 
+	private final List<PlaceBookSaveStateListener> listeners = new ArrayList<PlaceBookSaveStateListener>(); 
+	
 	private long lastChange;
 	private long lastSave;
 	private long saveAttempt;
@@ -41,6 +45,16 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 			}
 		}
 	};
+	
+	public void add(PlaceBookSaveStateListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	public void remove(PlaceBookSaveStateListener listener)
+	{
+		listeners.remove(listener);
+	}
 
 	public SaveState getState()
 	{
@@ -114,6 +128,11 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 
 			default:
 				break;
+		}
+		
+		for(PlaceBookSaveStateListener listener: listeners)
+		{
+			listener.saveStateChanged(state);
 		}
 	}
 }
