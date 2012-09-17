@@ -86,10 +86,18 @@ public abstract class Service
 		finally
 		{
 			manager.getTransaction().begin();			
-			details.setSyncInProgress(false);
-			manager.merge(details);
-			manager.getTransaction().commit();
-			log.info("Synced " + this.getInfo().getName() +": " + details.getLastSync());			
+			log.info("Synced " + this.getInfo().getName() +": " + details.getLastSync());
+			if(user.contains(details))
+			{
+				details.setSyncInProgress(false);
+				manager.merge(details);				
+			}
+			else
+			{
+				manager.remove(details);
+			}
+			manager.getTransaction().commit();			
+			
 		}
 	}
 	

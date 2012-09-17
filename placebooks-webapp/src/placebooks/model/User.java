@@ -135,4 +135,9 @@ public class User
 	{
 		this.name = name;
 	}
+
+	public boolean contains(LoginDetails details)
+	{
+		return this.loginDetails.contains(details);
+	}
 }

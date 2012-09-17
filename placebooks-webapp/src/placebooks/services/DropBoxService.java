@@ -147,9 +147,10 @@ public class DropBoxService extends Service
 		}
 		catch (final DropboxUnlinkedException e)
 		{
-			// Dropbox auth failed/refused - delete logindetails
-			manager.remove(details);
+			manager.getTransaction().begin();
 			user.remove(details);
+			manager.merge(user);			
+			manager.getTransaction().commit();
 		}
 		catch (final DropboxServerException e)
 		{
