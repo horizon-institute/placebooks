@@ -20,13 +20,13 @@ public class ProgressPanel extends Composite implements HasText
 
 	@UiField
 	Label progressLabel;
-	
+
 	@UiField
 	Panel progressPanel;
 
 	@UiField
 	Panel progressText;
-	
+
 	public ProgressPanel()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
@@ -45,24 +45,24 @@ public class ProgressPanel extends Composite implements HasText
 		progressLabel.setText(text);
 	}
 
+	@Override
+	public void setVisible(final boolean visible)
+	{
+		super.setVisible(visible);
+		if (visible)
+		{
+			centerText();
+		}
+	}
+
 	private void centerText()
 	{
 		final Widget widget = progressPanel.getParent();
-	    int left = (widget.getOffsetWidth() - progressText.getOffsetWidth()) >> 1;
-	    int top = (widget.getOffsetHeight() - progressText.getOffsetHeight()) >> 1;
-	    GWT.log("LEFT = " + widget.getOffsetWidth() + " - " + progressText.getOffsetWidth() + " / 2 = " + left);
-	    GWT.log("TOP = " + widget.getOffsetHeight() + " - " + progressText.getOffsetHeight() + " / 2 = " + top);		    
-	    progressText.getElement().getStyle().setTop(top, Unit.PX);
-	    progressText.getElement().getStyle().setLeft(left, Unit.PX);		
-	}
-	
-	@Override
-	public void setVisible(boolean visible)
-	{
-		super.setVisible(visible);
-		if(visible)
-		{
-		    centerText();
-		}		
+		final int left = (widget.getOffsetWidth() - progressText.getOffsetWidth()) >> 1;
+		final int top = (widget.getOffsetHeight() - progressText.getOffsetHeight()) >> 1;
+		GWT.log("LEFT = " + widget.getOffsetWidth() + " - " + progressText.getOffsetWidth() + " / 2 = " + left);
+		GWT.log("TOP = " + widget.getOffsetHeight() + " - " + progressText.getOffsetHeight() + " / 2 = " + top);
+		progressText.getElement().getStyle().setTop(top, Unit.PX);
+		progressText.getElement().getStyle().setLeft(left, Unit.PX);
 	}
 }

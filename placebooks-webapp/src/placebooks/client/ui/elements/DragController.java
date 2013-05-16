@@ -1,9 +1,13 @@
 package placebooks.client.ui.elements;
 
+import org.wornchaos.client.logger.Log;
+
+import placebooks.client.controllers.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.frames.PlaceBookItemDragFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import placebooks.client.ui.items.frames.PlaceBookItemFrameFactory;
@@ -25,7 +29,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class PlaceBookController
+public class DragController
 {
 	public interface DragStartHandler
 	{
@@ -61,7 +65,7 @@ public class PlaceBookController
 
 	private final PlaceBookItemDragFrame dragFrame = new PlaceBookItemDragFrame();
 
-	private PlaceBookItemWidget dragItem;
+	private PlaceBookItemView dragItem;
 	private PlaceBookItemFrame dragItemFrame;
 
 	private DragState dragState = DragState.waiting;
@@ -78,22 +82,20 @@ public class PlaceBookController
 	private int originx;
 	private int originy;
 
-	private final PlaceBookSaveItem saveContext;
+	private final PlaceBookController controller;
 
 	private PlaceBookItemFrame selected;
 
-	public PlaceBookController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory)
-	{
-		this(pages, factory, null);
-	}
+	private final boolean editable;
 
-	public PlaceBookController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
-			final PlaceBookSaveItem saveContext)
+	public DragController(final PlaceBookPages pages, final PlaceBookItemFrameFactory factory,
+			final PlaceBookController controller, final boolean editable)
 	{
 		STYLES.style().ensureInjected();
 		this.pages = pages;
-		this.saveContext = saveContext;
+		this.controller = controller;
 		this.factory = factory;
+		this.editable = editable;
 
 		dropMenu.setStyleName(STYLES.style().dropMenu());
 
@@ -103,16 +105,11 @@ public class PlaceBookController
 		insert.setStyleName(STYLES.style().insert());
 	}
 
-	public PlaceBookSaveItem getSaveItem()
-	{
-		return saveContext;
-	}
-	
 	public boolean canAdd(final PlaceBookItem addItem)
 	{
 		if (pages instanceof PlaceBookPages)
 		{
-			final PlaceBookPages bookPages = (PlaceBookPages) pages;
+			final PlaceBookPages bookPages = pages;
 			final PlaceBook page = bookPages.getCurrentPage();
 			return canAdd(page, addItem);
 		}
@@ -121,17 +118,23 @@ public class PlaceBookController
 
 	public boolean canEdit()
 	{
-		return saveContext != null;
+		return editable;
 	}
 
 	public PlaceBookItemFrame createFrame(final PlaceBookItem item)
 	{
-		return factory.createFrame(item, this);
+		final PlaceBookItemController itemController = new PlaceBookItemController(item, controller, editable);
+		return factory.createFrame(itemController, this);
 	}
 
 	public PlaceBookPages getPages()
 	{
 		return pages;
+	}
+
+	public PlaceBookController getSaveItem()
+	{
+		return controller;
 	}
 
 	// public void refreshMap()
@@ -155,14 +158,24 @@ public class PlaceBookController
 		return dragState;
 	}
 
+	public void goToPage(final int page)
+	{
+		pages.goToPage(page);
+	}
+
+	public void goToPage(final PlaceBook page)
+	{
+		pages.goToPage(page);
+	}
+
 	public void markChanged()
 	{
-		saveContext.markChanged();
+		controller.markChanged();
 	}
 
 	public void setSelected(final PlaceBookItemFrame selectedItem)
 	{
-		final PlaceBookItemFrame oldSelection = this.selected;
+		final PlaceBookItemFrame oldSelection = selected;
 		selected = selectedItem;
 		if (oldSelection != null)
 		{
@@ -178,17 +191,17 @@ public class PlaceBookController
 	/**
 	 * On mouse down
 	 */
-	public void setupDrag(final MouseEvent<?> event, final PlaceBookItemWidget item, final PlaceBookItemFrame itemFrame)
+	public void setupDrag(final MouseEvent<?> event, final PlaceBookItemView item, final PlaceBookItemFrame itemFrame)
 	{
 		if (item == null) { return; }
 		if (dragState == DragState.waiting)
 		{
 			// pages.add(insert);
 			dragState = DragState.dragInit;
-			this.dragItem = item;
+			dragItem = item;
 			originx = event.getClientX();
 			originy = event.getClientY();
-			this.dragItemFrame = itemFrame;
+			dragItemFrame = itemFrame;
 		}
 	}
 
@@ -197,7 +210,7 @@ public class PlaceBookController
 		if (dragState == DragState.waiting)
 		{
 			dragState = DragState.resizeInit;
-			this.dragItemFrame = frame;
+			dragItemFrame = frame;
 			originx = event.getClientX();
 			originy = event.getClientY();
 		}
@@ -271,6 +284,14 @@ public class PlaceBookController
 		return true;
 	}
 
+	private boolean canDrop(final PlaceBookColumn column, final PlaceBookItem item)
+	{
+		if (column == null) { return false; }
+		if (!canAdd(column.getPage().getPlaceBook(), item)) { return false; }
+		if (column.getRemainingHeight() < (column.getOffsetHeight() * 0.05)) { return false; }
+		return true;
+	}
+
 	private PlaceBookColumn getColumn(final MouseEvent<?> event)
 	{
 		final int canvasx = event.getX();// RelativeX(canvas.getElement());
@@ -292,7 +313,7 @@ public class PlaceBookController
 			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
 			if (distance > DRAG_DISTANCE)
 			{
-				GWT.log("Drag Start");
+				Log.info("Drag Start");
 				if (dragItemFrame != null)
 				{
 					dragItemFrame.getColumn().getPage().remove(dragItemFrame);
@@ -303,7 +324,7 @@ public class PlaceBookController
 				{
 					if (dragItem.getItem().hasParameter("height"))
 					{
-						final int heightPX = (int) (dragItem.getItem().getParameter("height") * pages.getOffsetHeight() / PlaceBookItemWidget.HEIGHT_PRECISION);
+						final int heightPX = (int) (dragItem.getItem().getParameter("height") * pages.getOffsetHeight() / PlaceBookItemView.HEIGHT_PRECISION);
 						dragItem.setHeight(heightPX + "px");
 					}
 					else
@@ -324,7 +345,7 @@ public class PlaceBookController
 			final int distance = Math.abs(event.getClientX() - originx) + Math.abs(event.getClientY() - originy);
 			if (distance > RESIZE_DISTANCE)
 			{
-				GWT.log("Resize Start");
+				Log.info("Resize Start");
 				setSelected(dragItemFrame);
 				dragState = DragState.resizing;
 			}
@@ -343,7 +364,7 @@ public class PlaceBookController
 			oldColumn = newColumn;
 
 			if (canDrop(newColumn, dragFrame.getItem()))
-			{			
+			{
 				newColumn.reflow(insert, event.getRelativeY(newColumn.getElement()), dragFrame.getItemWidget()
 						.getOffsetHeight() + 14);
 			}
@@ -356,35 +377,19 @@ public class PlaceBookController
 		{
 			final int y = event.getClientY();
 			final int heightPX = y - dragItemFrame.getRootPanel().getElement().getAbsoluteTop() - 10;
-			final int maxHeight = dragItemFrame.getColumn().getRemainingHeight() + dragItemFrame.getRootPanel().getOffsetHeight();
+			final int maxHeight = dragItemFrame.getColumn().getRemainingHeight()
+					+ dragItemFrame.getRootPanel().getOffsetHeight();
 			PlaceBookColumn.setHeight(dragItemFrame, Math.min(heightPX, maxHeight));
 			dragItemFrame.getColumn().reflow();
 		}
 		event.stopPropagation();
 	}
 
-	private boolean canDrop(final PlaceBookColumn column, final PlaceBookItem item)
-	{
-		if(column == null)
-		{
-			return false;
-		}
-		if(!canAdd(column.getPage().getPlaceBook(), item))
-		{
-			return false;
-		}
-		if(column.getRemainingHeight() < (column.getOffsetHeight() * 0.05))
-		{
-			return false;
-		}
-		return true;
-	}
-	
 	private void handleDragEnd(final MouseEvent<?> event)
 	{
 		if (dragState == DragState.dragging)
 		{
-			GWT.log("Drag End");
+			Log.info("Drag End");
 			// TODO Move to dragFrame detach
 			dragFrame.getRootPanel().getElement().getStyle().setVisibility(Visibility.HIDDEN);
 			insert.removeFromParent();
@@ -398,29 +403,29 @@ public class PlaceBookController
 
 			if (canDrop(newColumn, dragFrame.getItem()))
 			{
-				GWT.log("Dropped into column " + newColumn.getIndex());
-				int maxHeight = newColumn.getRemainingHeight();
-				
+				Log.info("Dropped into column " + newColumn.getIndex());
+				final int maxHeight = newColumn.getRemainingHeight();
+
 				newColumn.reflow(dragItem, event.getRelativeY(newColumn.getElement()));
 				newColumn.getPage().getPlaceBook().add(dragItem.getItem());
 				dragItem.getItem().setParameter("column", newColumn.getIndex());
 				final PlaceBookItemFrame frame = factory.createFrame(this);
 				frame.setItemWidget(dragItem);
 				newColumn.getPage().add(frame);
-				
-				if(frame.getItemWidget().getOffsetHeight() > maxHeight)
+
+				if (frame.getItemWidget().getOffsetHeight() > maxHeight)
 				{
 					PlaceBookColumn.setHeight(frame, maxHeight);
 				}
-				newColumn.reflow();				
-				
-				saveContext.markChanged();
+				newColumn.reflow();
+
+				controller.markChanged();
 			}
 			dragFrame.clearItemWidget();
 		}
 		else if (dragState == DragState.resizing)
 		{
-			saveContext.markChanged();
+			controller.markChanged();
 		}
 		dragState = DragState.waiting;
 	}
@@ -429,15 +434,5 @@ public class PlaceBookController
 	{
 		dropMenu.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 		dropMenu.getElement().getStyle().setOpacity(0);
-	}
-
-	public void goToPage(int page)
-	{
-		pages.goToPage(page);		
-	}
-	
-	public void goToPage(PlaceBook page)
-	{
-		pages.goToPage(page);		
 	}
 }

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
-
 /**
- * Class to encapsulate response from Peoples Collection API for a list of Trails for a user 
+ * Class to encapsulate response from Peoples Collection API for a list of Trails for a user
+ * 
  * @author pszmp
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -22,22 +22,18 @@ public class PeoplesCollectionSearchTrailsResponse
 		trails = new ArrayList<PeoplesCollectionTrailListItem>();
 	}
 
-
-	public PeoplesCollectionSearchTrailsResponse(ArrayList<PeoplesCollectionTrailListItem> mytrails,	ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails,		int total_objects, int per_page,	PeoplesCollectionLoginResponse authenticationresponse)
+	public PeoplesCollectionSearchTrailsResponse(final ArrayList<PeoplesCollectionTrailListItem> mytrails,
+			final ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails, final int total_objects,
+			final int per_page, final PeoplesCollectionLoginResponse authenticationresponse)
 	{
-		this.trails = mytrails;
+		trails = mytrails;
 		this.total_objects = total_objects;
 		this.per_page = per_page;
 	}
 
-	public ArrayList<PeoplesCollectionTrailListItem> GetTrails()
+	public void AddItem(final PeoplesCollectionTrailListItem item)
 	{
-		return trails;
-	}
-
-	public int GetTotalObjects()
-	{
-		return total_objects;
+		trails.add(item);
 	}
 
 	public int GetPerPage()
@@ -45,20 +41,24 @@ public class PeoplesCollectionSearchTrailsResponse
 		return per_page;
 	}
 
-	public void AddItem(PeoplesCollectionTrailListItem item)
+	public int GetTotalObjects()
 	{
-		trails.add(item);
+		return total_objects;
 	}
 
-	public void SetTotalObjects(int value)
+	public ArrayList<PeoplesCollectionTrailListItem> GetTrails()
 	{
-		total_objects = value;
+		return trails;
 	}
 
-	public void SetPerPage(int value)
+	public void SetPerPage(final int value)
 	{
 		per_page = value;
 	}
 
-	
+	public void SetTotalObjects(final int value)
+	{
+		total_objects = value;
+	}
+
 }

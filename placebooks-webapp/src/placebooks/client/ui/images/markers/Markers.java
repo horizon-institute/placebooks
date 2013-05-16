@@ -11,23 +11,23 @@ public interface Markers extends ClientBundleWithLookup
 	ImageResource marker();
 
 	ImageResource marker1();
-	
+
 	ImageResource marker2();
-	
+
 	ImageResource marker3();
-	
-	ImageResource marker4();	
+
+	ImageResource marker4();
 
 	ImageResource marker5();
-	
+
 	ImageResource marker6();
-	
+
 	ImageResource marker7();
-	
+
 	ImageResource marker8();
-	
+
 	ImageResource marker9();
-	
+
 	ImageResource markera();
 
 	ImageResource markerb();

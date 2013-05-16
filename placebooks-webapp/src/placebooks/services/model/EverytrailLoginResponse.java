@@ -24,7 +24,7 @@ public class EverytrailLoginResponse
 	 */
 	public String getStatus()
 	{
-		return this.status;
+		return status;
 	}
 
 	/*
@@ -34,6 +34,6 @@ public class EverytrailLoginResponse
 	 */
 	public String getValue()
 	{
-		return this.value;
+		return value;
 	}
 }

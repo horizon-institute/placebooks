@@ -8,7 +8,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class PlaceBookEntry extends JavaScriptObject
 {
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
+
 	protected PlaceBookEntry()
 	{
 	}

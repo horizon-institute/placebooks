@@ -1,11 +1,11 @@
 package placebooks.client.ui.items;
 
+import org.wornchaos.client.ui.CompositeView;
+
+import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
 
-import com.google.gwt.user.client.ui.Composite;
-
-public abstract class PlaceBookItemWidget extends Composite
+public abstract class PlaceBookItemView extends CompositeView<PlaceBookItem>
 {
 	public static interface FocusHandler
 	{
@@ -19,21 +19,33 @@ public abstract class PlaceBookItemWidget extends Composite
 
 	public static final double HEIGHT_PRECISION = 10000;
 
-	protected PlaceBookItem item;
-	protected PlaceBookController controller;
+	private final PlaceBookItemController controller;
 
 	private FocusHandler focusHandler;
 	private ResizeHandler resizeHandler;
 
-	PlaceBookItemWidget(final PlaceBookItem item, final PlaceBookController handler)
+	protected PlaceBookItemView(final PlaceBookItemController controller)
 	{
-		this.item = item;
-		this.controller = handler;
+		this.controller = controller;
+	}
+
+	public PlaceBookItemController getController()
+	{
+		return controller;
 	}
 
 	public PlaceBookItem getItem()
 	{
-		return item;
+		return controller.getItem();
+	}
+
+	@Override
+	public void itemChanged(final PlaceBookItem newItem)
+	{
+		controller.setItem(newItem);
+		newItem.removeMetadata("tempID");
+
+		refresh();
 	}
 
 	public abstract void refresh();
@@ -53,23 +65,9 @@ public abstract class PlaceBookItemWidget extends Composite
 		this.resizeHandler = resizeHandler;
 	}
 
-	public void update(final PlaceBookItem newItem)
-	{
-		item.setKey(newItem.getKey());
-		item.removeMetadata("tempID");
-		newItem.removeMetadata("tempID");
-
-		if (newItem.getHash() != null)
-		{
-			item.setHash(newItem.getHash());
-			item.setSourceURL(newItem.getSourceURL());
-		}
-		refresh();
-	}
-
 	int getOrder()
 	{
-		return item.getParameter("order", 0);
+		return getItem().getParameter("order", 0);
 	}
 
 	protected void fireChanged()

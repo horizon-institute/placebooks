@@ -12,8 +12,12 @@ public interface Images extends ClientBundle
 
 	ImageResource arrow_right();
 
+	ImageResource delete();
+
 	ImageResource dropMenuIcon();
 
+	ImageResource add();
+	
 	ImageResource error();
 
 	ImageResource headline();
@@ -26,8 +30,6 @@ public interface Images extends ClientBundle
 
 	ImageResource listitem_phone();
 
-	ImageResource pcw_logo();
-	
 	ImageResource listitem_video();
 
 	ImageResource listitem_youtube();
@@ -35,7 +37,7 @@ public interface Images extends ClientBundle
 	ImageResource page_next();
 
 	ImageResource page_previous();
-	
+
 	ImageResource pallette_audio();
 
 	ImageResource pallette_folder();
@@ -50,6 +52,8 @@ public interface Images extends ClientBundle
 
 	ImageResource pallette_web();
 
+	ImageResource pcw_logo();
+
 	ImageResource placebook_open();
 
 	@Source("Placebook_128.png")
@@ -60,6 +64,9 @@ public interface Images extends ClientBundle
 
 	@Source("Placebook_016.png")
 	ImageResource placebook16();
+
+	@Source("Placebook_Brown.png")
+	ImageResource placebookgroup();
 
 	ImageResource progress();
 

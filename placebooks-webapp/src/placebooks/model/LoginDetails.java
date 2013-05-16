@@ -50,7 +50,7 @@ public class LoginDetails
 	@ElementCollection
 	@Column(columnDefinition = "LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
-	
+
 	public LoginDetails(final User user, final String service, final String userid, final String username,
 			final String password)
 	{
@@ -59,16 +59,6 @@ public class LoginDetails
 		this.service = service;
 		this.username = username;
 		this.password = password;
-	}
-	
-	public String getMetadata(final String key)
-	{
-		return metadata.get(key);
-	}
-	
-	public void setMetadata(final String key, final String value)
-	{
-		metadata.put(key, value);
 	}
 
 	LoginDetails()
@@ -83,6 +73,11 @@ public class LoginDetails
 	public Date getLastSync()
 	{
 		return lastSync;
+	}
+
+	public String getMetadata(final String key)
+	{
+		return metadata.get(key);
 	}
 
 	public String getPassword()
@@ -118,6 +113,11 @@ public class LoginDetails
 	public void setLastSync()
 	{
 		lastSync = new Date();
+	}
+
+	public void setMetadata(final String key, final String value)
+	{
+		metadata.put(key, value);
 	}
 
 	public void setPassword(final String password)

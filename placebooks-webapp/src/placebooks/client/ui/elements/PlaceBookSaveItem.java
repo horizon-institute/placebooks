@@ -1,104 +1,20 @@
 package placebooks.client.ui.elements;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import org.wornchaos.client.controller.ControllerState;
+import org.wornchaos.client.controller.ControllerStateListener;
 
 import placebooks.client.Resources;
 import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
 
-public class PlaceBookSaveItem extends PlaceBookToolbarItem
+public class PlaceBookSaveItem extends PlaceBookToolbarItem implements ControllerStateListener
 {
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
-	public enum SaveState
+
+	@Override
+	public void stateChanged(final ControllerState state)
 	{
-		not_saved, save_error, saved, saving
-	}
-
-	private SaveState state = SaveState.saved;
-
-	private static final int saveDelay = 2000;
-
-	private final List<PlaceBookSaveStateListener> listeners = new ArrayList<PlaceBookSaveStateListener>(); 
-	
-	private long lastChange;
-	private long lastSave;
-	private long saveAttempt;
-
-	private Runnable runnable;
-
-	private Timer timer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			if (state == SaveState.saved) { return; }
-			setState(SaveState.saving);
-			if (runnable != null)
-			{
-				saveAttempt = lastChange;
-				runnable.run();
-			}
-		}
-	};
-	
-	public void add(PlaceBookSaveStateListener listener)
-	{
-		listeners.add(listener);
-	}
-	
-	public void remove(PlaceBookSaveStateListener listener)
-	{
-		listeners.remove(listener);
-	}
-
-	public SaveState getState()
-	{
-		return state;
-	}
-
-	public void markChanged()
-	{
-		timer.cancel();
-		timer.schedule(saveDelay);
-		lastChange = new Date().getTime();
-		if (state == SaveState.saved)
-		{
-			setState(SaveState.not_saved);
-		}
-		// changed = true;
-	}
-
-	public void markSaved()
-	{
-		lastSave = saveAttempt;
-		if (lastSave == lastChange)
-		{
-			setState(SaveState.saved);
-		}
-		else
-		{
-			setState(SaveState.not_saved);
-		}
-	}
-
-	public void pause()
-	{
-		timer.cancel();
-	}
-
-	public void setRunnable(final Runnable runnable)
-	{
-		this.runnable = runnable;
-	}
-
-	public void setState(final SaveState state)
-	{
-		this.state = state;
 		switch (state)
 		{
 			case saved:
@@ -123,16 +39,10 @@ public class PlaceBookSaveItem extends PlaceBookToolbarItem
 				setText(uiMessages.saveError());
 				setImage(Resources.IMAGES.error());
 				setEnabled(true);
-				markChanged();
 				break;
 
 			default:
 				break;
-		}
-		
-		for(PlaceBookSaveStateListener listener: listeners)
-		{
-			listener.saveStateChanged(state);
 		}
 	}
 }

@@ -21,32 +21,47 @@ public class ServerInfo
 	private final int maxImageSize;
 	private final int maxVideoSize;
 	private final int maxAudioSize;
-	
+
 	private final List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
 	public ServerInfo()
 	{
-		this.openSpaceKey = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		openSpaceKey = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_APIKEY, "");
-		this.openSpaceHost = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		openSpaceHost = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_HOST, "");
-		this.serverName = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		serverName = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_SERVER_NAME, "");
-		this.openSpaceBaseURL = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		openSpaceBaseURL = PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_BASEURL, "");
-		this.maxVideoSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		maxVideoSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_VIDEO_MAX_SIZE, "25"));
 
-		this.maxImageSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		maxImageSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_IMAGE_MAX_SIZE, "1"));
 
-		this.maxAudioSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+		maxAudioSize = Integer.parseInt(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_AUDIO_MAX_SIZE, "10"));
 
-		for(ServiceInfo info: ServiceRegistry.getServices())
+		for (final ServiceInfo info : ServiceRegistry.getServices())
 		{
 			services.add(info);
 		}
+	}
+
+	public final int getMaxAudioSize()
+	{
+		return maxAudioSize;
+	}
+
+	public final int getMaxImageSize()
+	{
+		return maxImageSize;
+	}
+
+	public final int getMaxVideoSize()
+	{
+		return maxVideoSize;
 	}
 
 	public final String getOpenSpaceBaseURL()
@@ -67,21 +82,6 @@ public class ServerInfo
 	public final String getServerName()
 	{
 		return serverName;
-	}
-	
-	public final int getMaxImageSize()
-	{
-		return maxImageSize;
-	}
-
-	public final int getMaxVideoSize()
-	{
-		return maxVideoSize;
-	}
-
-	public final int getMaxAudioSize()
-	{
-		return maxAudioSize;
 	}
 
 }

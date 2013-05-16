@@ -27,11 +27,11 @@ public class EverytrailVideosResponse
 
 	public String getStatus()
 	{
-		return this.status;
+		return status;
 	}
 
 	public Vector<Node> getVideos()
 	{
-		return this.trips;
+		return trips;
 	}
 }

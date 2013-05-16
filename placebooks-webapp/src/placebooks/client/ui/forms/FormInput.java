@@ -21,20 +21,15 @@ public class FormInput extends Composite implements HasText
 
 	@UiField
 	Label label;
-	
+
 	@UiField
 	TextBox input;
-	
+
 	public FormInput()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		input.getElement().setAttribute("spellcheck", "false");
-	}
 
-	@UiChild(tagname = "widget")
-	void addWidget(final Widget widget, final String name)
-	{
+		input.getElement().setAttribute("spellcheck", "false");
 	}
 
 	@Override
@@ -44,8 +39,13 @@ public class FormInput extends Composite implements HasText
 	}
 
 	@Override
-	public void setText(String text)
+	public void setText(final String text)
 	{
-		label.setText(text);		
+		label.setText(text);
+	}
+
+	@UiChild(tagname = "widget")
+	void addWidget(final Widget widget, final String name)
+	{
 	}
 }

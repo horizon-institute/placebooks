@@ -21,10 +21,10 @@ public class FormInputPanel extends Composite implements HasText
 
 	@UiField
 	Label label;
-	
+
 	@UiField
 	TextBox input;
-	
+
 	public FormInputPanel()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
@@ -35,11 +35,6 @@ public class FormInputPanel extends Composite implements HasText
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	@UiChild(tagname = "widget")
-	void addWidget(final Widget widget, final String name)
-	{
-	}
-
 	@Override
 	public String getText()
 	{
@@ -47,8 +42,13 @@ public class FormInputPanel extends Composite implements HasText
 	}
 
 	@Override
-	public void setText(String text)
+	public void setText(final String text)
 	{
-		label.setText(text);		
+		label.setText(text);
+	}
+
+	@UiChild(tagname = "widget")
+	void addWidget(final Widget widget, final String name)
+	{
 	}
 }

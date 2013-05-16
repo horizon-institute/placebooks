@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
-
 /**
- * Class to encapsulate response from Peoples Collection API for a list of Trails for a user 
+ * Class to encapsulate response from Peoples Collection API for a list of Trails for a user
+ * 
  * @author pszmp
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PeoplesCollectionTrailsResponse {
+public class PeoplesCollectionTrailsResponse
+{
 
 	ArrayList<PeoplesCollectionTrailListItem> mytrails;
 	ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails;
@@ -24,8 +25,9 @@ public class PeoplesCollectionTrailsResponse {
 
 	}
 
-
-	public PeoplesCollectionTrailsResponse(ArrayList<PeoplesCollectionTrailListItem> mytrails,	ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails,		int total_objects, int per_page,	PeoplesCollectionLoginResponse authenticationresponse)
+	public PeoplesCollectionTrailsResponse(final ArrayList<PeoplesCollectionTrailListItem> mytrails,
+			final ArrayList<PeoplesCollectionTrailListItem> myfavouritetrails, final int total_objects,
+			final int per_page, final PeoplesCollectionLoginResponse authenticationresponse)
 	{
 		this.mytrails = mytrails;
 		this.myfavouritetrails = myfavouritetrails;
@@ -34,9 +36,9 @@ public class PeoplesCollectionTrailsResponse {
 		this.authenticationresponse = authenticationresponse;
 	}
 
-	public ArrayList<PeoplesCollectionTrailListItem> GetMyTrails()
+	public PeoplesCollectionLoginResponse GetAuthenticationResponse()
 	{
-		return mytrails;
+		return authenticationresponse;
 	}
 
 	public ArrayList<PeoplesCollectionTrailListItem> GetMyFavouriteTrails()
@@ -44,9 +46,9 @@ public class PeoplesCollectionTrailsResponse {
 		return myfavouritetrails;
 	}
 
-	public int GetTotalObjects()
+	public ArrayList<PeoplesCollectionTrailListItem> GetMyTrails()
 	{
-		return total_objects;
+		return mytrails;
 	}
 
 	public int GetPerPage()
@@ -54,8 +56,8 @@ public class PeoplesCollectionTrailsResponse {
 		return per_page;
 	}
 
-	public PeoplesCollectionLoginResponse GetAuthenticationResponse()
+	public int GetTotalObjects()
 	{
-		return authenticationresponse;
+		return total_objects;
 	}
 }

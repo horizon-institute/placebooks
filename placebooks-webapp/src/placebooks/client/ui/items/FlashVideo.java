@@ -1,6 +1,6 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
@@ -26,7 +26,7 @@ public class FlashVideo extends Widget
 	public void setSrc(final String url)
 	{
 		getElement().setAttribute("type", "application/x-shockwave-flash");
-		getElement().setAttribute("data", PlaceBookService.getHostURL() + "FLVPlayer.swf");
+		getElement().setAttribute("data", PlaceBooks.getServer().getHostURL() + "FLVPlayer.swf");
 
 		// addParam(getElement(), "movie", PlaceBookService.getHostURL() + "flowplayer-3.2.7.swf");
 		addParam(getElement(), "allowScriptAccess", "always");

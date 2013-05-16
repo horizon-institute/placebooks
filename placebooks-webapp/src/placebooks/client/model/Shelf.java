@@ -23,7 +23,18 @@ public class Shelf extends JavaScriptObject
 		};
 	}
 
+	public final native PlaceBookGroup getGroup() /*-{ return this.group; }-*/;
+
 	public final native User getUser() /*-{ return this.user; }-*/;
+
+	public final native void remove(PlaceBookEntry entry)
+	/*-{ 
+		var idx = this.entries.indexOf(entry);
+		if (idx != -1)
+		{
+			this.entries.splice(idx, 1);
+		}
+	}-*/;
 
 	private final native JsArray<PlaceBookEntry> getEntriesImpl() /*-{ return this.entries; }-*/;
 }

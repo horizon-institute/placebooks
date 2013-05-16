@@ -14,8 +14,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -34,6 +34,9 @@ public class User
 
 	@OneToMany(mappedBy = "user", cascade = ALL)
 	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
+	
+	@OneToMany(mappedBy = "owner", cascade = ALL)
+	private Collection<PlaceBookGroup> groups = new HashSet<PlaceBookGroup>();
 
 	private String name;
 
@@ -42,13 +45,7 @@ public class User
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "owner", cascade = ALL)
-	private Collection<PlaceBookBinder> placebookBinders = 
-		new HashSet<PlaceBookBinder>();
-
-	User()
-	{
-
-	}
+	private Collection<PlaceBookBinder> placebookBinders = new HashSet<PlaceBookBinder>();
 
 	public User(final String name, final String email, final String passwordHash)
 	{
@@ -57,9 +54,26 @@ public class User
 		this.passwordHash = passwordHash;
 	}
 
+	User()
+	{
+
+	}
+
 	public void add(final LoginDetails loginDetail)
 	{
 		loginDetails.add(loginDetail);
+	}
+	
+	public void add(final PlaceBookGroup group)
+	{
+		for(PlaceBookGroup altGroup: groups)
+		{
+			if(altGroup.getId().equals(group.getId()))
+			{
+				return;
+			}
+		}
+		groups.add(group);
 	}
 
 	public void add(final PlaceBookBinder placebookBinder)
@@ -72,6 +86,11 @@ public class User
 		friends.add(friend);
 	}
 
+	public boolean contains(final LoginDetails details)
+	{
+		return loginDetails.contains(details);
+	}
+
 	public String getEmail()
 	{
 		return email;
@@ -82,14 +101,14 @@ public class User
 		return friends;
 	}
 
-	public Iterable<LoginDetails> getLoginDetails()
-	{
-		return loginDetails;
-	}
-	
 	public String getKey()
 	{
 		return id;
+	}
+
+	public Iterable<LoginDetails> getLoginDetails()
+	{
+		return loginDetails;
 	}
 
 	public LoginDetails getLoginDetails(final String service)
@@ -116,6 +135,11 @@ public class User
 		return placebookBinders;
 	}
 
+	public void remove(final LoginDetails loginDetails)
+	{
+		this.loginDetails.remove(loginDetails);
+	}
+
 	public void remove(final PlaceBookBinder placebookBinder)
 	{
 		placebookBinders.remove(placebookBinder);
@@ -126,18 +150,8 @@ public class User
 		friends.remove(friend);
 	}
 
-	public void remove(final LoginDetails loginDetails)
-	{
-		this.loginDetails.remove(loginDetails);
-	}
-	
 	public void setName(final String name)
 	{
 		this.name = name;
-	}
-
-	public boolean contains(LoginDetails details)
-	{
-		return this.loginDetails.contains(details);
 	}
 }

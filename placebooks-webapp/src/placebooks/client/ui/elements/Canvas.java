@@ -20,7 +20,7 @@ public class Canvas extends Widget
 	 */
 	public CanvasElement getCanvasElement()
 	{
-		return this.getElement().cast();
+		return getElement().cast();
 	}
 
 	/**

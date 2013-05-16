@@ -19,7 +19,7 @@ public class PlaceBookItemEntry extends ShelfEntry
 		setOwner(p.getOwner().getKey());
 		setTimestamp(p.getTimestamp());
 
-		this.pbKey = p.getPlaceBook().getKey();
+		pbKey = p.getPlaceBook().getKey();
 	}
 
 	public String getPBKey()

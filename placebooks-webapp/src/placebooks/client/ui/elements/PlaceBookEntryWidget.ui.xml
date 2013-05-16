@@ -7,10 +7,6 @@
 			color: #555;
 		}
 		
-		.container {
-			cursor: default;
-		}
-		
 		.placebookEntry {
 			padding: 5px;
 			margin: 0;
@@ -18,7 +14,8 @@
 			text-align: center;
 			border-radius: 16px;
 			display: inline-block;
-			vertical-align: top;		
+			vertical-align: top;
+			position: relative;
 		}
 		
 		.textPanel {
@@ -40,13 +37,21 @@
 			font-family: mako, sans-serif;
 			font-size: 16px;
 		}		
+
+		.deleteIcon {
+			position: absolute;
+			top: 0px;
+			right: 20px;
+			cursor: pointer;
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
 	<ui:with field='markers' type='placebooks.client.ui.images.markers.Markers'/>	
 	<p:MousePanel ui:field="container" styleName="{style.placebookEntry}">
+		<g:Image ui:field="delete" resource="{images.delete}" styleName="{style.deleteIcon}" />	    
 		<g:Image ui:field="image" resource="{images.placebook128}"/>
 		<g:FlowPanel>
-			<g:Image ui:field="markerImage" resource="{markers.markera}" styleName="{style.marker}" />
+			<g:Image ui:field="markerImage" resource="{markers.markera}" styleName="{style.marker}" />		
 			<g:FlowPanel styleName="{style.textPanel}">			
 				<g:Label ui:field="title" styleName="{style.title}" />
 				<g:Label ui:field="author" styleName="{style.author}" />

@@ -1,8 +1,8 @@
 package placebooks.controller;
 
 import java.io.File;
-import com.vividsolutions.jts.geom.Geometry;
 
+import com.vividsolutions.jts.geom.Geometry;
 
 public class MapMetadata
 {
@@ -10,8 +10,7 @@ public class MapMetadata
 	private Geometry boundingBox;
 	private int selectedScale;
 
-	public MapMetadata(final File file, final Geometry boundingBox, 
-					   final int selectedScale)
+	public MapMetadata(final File file, final Geometry boundingBox, final int selectedScale)
 	{
 		this.file = file;
 		this.boundingBox = boundingBox;
@@ -33,4 +32,3 @@ public class MapMetadata
 		return selectedScale;
 	}
 }
-

@@ -5,7 +5,6 @@
 // Generated on: 2011.11.25 at 03:09:27 PM GMT 
 //
 
-
 package placebooks.model.jaxb.GPX11;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,15 +13,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 	 A link to an external resource (Web page, digital photo, video clip, etc) with additional information.
- *     
+ * A link to an external resource (Web page, digital photo, video clip, etc) with additional
+ * information.
  * 
- * <p>Java class for linkType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for linkType complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="linkType">
@@ -41,88 +42,83 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "linkType", propOrder = {
-    "text",
-    "type"
-})
-public class LinkType {
+@XmlType(name = "linkType", propOrder = { "text", "type" })
+public class LinkType
+{
 
-    protected String text;
-    protected String type;
-    @XmlAttribute(required = true)
-    @XmlSchemaType(name = "anyURI")
-    protected String href;
+	protected String text;
+	protected String type;
+	@XmlAttribute(required = true)
+	@XmlSchemaType(name = "anyURI")
+	protected String href;
 
-    /**
-     * Gets the value of the text property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getText() {
-        return text;
-    }
+	/**
+	 * Gets the value of the href property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getHref()
+	{
+		return href;
+	}
 
-    /**
-     * Sets the value of the text property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setText(String value) {
-        this.text = value;
-    }
+	/**
+	 * Gets the value of the text property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getText()
+	{
+		return text;
+	}
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * Gets the value of the type property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getType()
+	{
+		return type;
+	}
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+	/**
+	 * Sets the value of the href property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setHref(final String value)
+	{
+		href = value;
+	}
 
-    /**
-     * Gets the value of the href property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getHref() {
-        return href;
-    }
+	/**
+	 * Sets the value of the text property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setText(final String value)
+	{
+		text = value;
+	}
 
-    /**
-     * Sets the value of the href property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHref(String value) {
-        this.href = value;
-    }
+	/**
+	 * Sets the value of the type property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setType(final String value)
+	{
+		type = value;
+	}
 
 }

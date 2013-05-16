@@ -48,20 +48,20 @@ public class GPSTraceItem extends PlaceBookItem
 	@JsonIgnore
 	@Lob
 	private String trace;
-	
-	private String hash;
 
-	GPSTraceItem()
-	{
-	}
+	private String hash;
 
 	public GPSTraceItem(final GPSTraceItem g)
 	{
 		super(g);
 		if (g.getTrace() != null)
+		{
 			setTrace(new String(g.getTrace()));
+		}
 		else
+		{
 			setTrace(null);
+		}
 	}
 
 	public GPSTraceItem(final User owner)
@@ -71,58 +71,52 @@ public class GPSTraceItem extends PlaceBookItem
 		setOwner(owner);
 	}
 
-	
-	public GPSTraceItem(final User owner, final URL sourceURL, 
-						final String trace)
+	public GPSTraceItem(final User owner, final URL sourceURL, final String trace)
 	{
 		// Geometry is set from calculating the GPX boundaries
 		super(owner, null, sourceURL);
 		setTrace(trace);
 	}
-	
+
+	GPSTraceItem()
+	{
+	}
+
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
 		if (trace == null)
 		{
-			log.warn("GPSTraceItem " + getKey() + 
-					 " has null trace, possible traceless map");
+			log.warn("GPSTraceItem " + getKey() + " has null trace, possible traceless map");
 			return;
 		}
 		try
 		{
 			// Check package dir exists already
-			final String path = PropertiesSingleton.get(
-				this.getClass().getClassLoader())
-					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" 
-						+ getPlaceBook().getPlaceBookBinder().getKey();
+			final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
 
 			if (new File(path).exists() || new File(path).mkdirs())
 			{
 
 				final StringReader reader = new StringReader(trace);
 				final InputSource isource = new InputSource(reader);
-				final DocumentBuilder builder = 
-					DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				final Document document = builder.parse(isource);
 				reader.close();
 
 				final String gpxPath = path + "/" + getKey() + ".gpx";
 				final File gpxFile = new File(gpxPath);
-		
+
 				final Source source = new DOMSource(document);
 				final Result result = new StreamResult(gpxFile);
 
-        		final Transformer t = 
-					TransformerFactory.newInstance().newTransformer();
-		        t.transform(source, result);
-				
+				final Transformer t = TransformerFactory.newInstance().newTransformer();
+				t.transform(source, result);
 
 				final Element item = getConfigurationHeader(config);
 				final Element filename = config.createElement("filename");
-				filename.appendChild(
-					config.createTextNode(gpxFile.getName())
-				);
+				filename.appendChild(config.createTextNode(gpxFile.getName()));
 				item.appendChild(filename);
 				root.appendChild(item);
 			}
@@ -139,7 +133,7 @@ public class GPSTraceItem extends PlaceBookItem
 	{
 		return new GPSTraceItem(this);
 	}
-	
+
 	@Override
 	public boolean deleteItemData()
 	{
@@ -163,13 +157,10 @@ public class GPSTraceItem extends PlaceBookItem
 	{
 		if (trace == null && getSourceURL() != null)
 		{
-			log.warn("Attempting to redownload GPSTraceItem content for " 
-					 + getKey() + " from URL " + getSourceURL());
+			log.warn("Attempting to redownload GPSTraceItem content for " + getKey() + " from URL " + getSourceURL());
 			try
 			{
-				readTrace(CommunicationHelper.getConnection(getSourceURL())
-											 .getInputStream()
-				);
+				readTrace(CommunicationHelper.getConnection(getSourceURL()).getInputStream());
 			}
 			catch (final Throwable e)
 			{
@@ -179,21 +170,40 @@ public class GPSTraceItem extends PlaceBookItem
 
 		return trace;
 	}
-	
+
 	public void readTrace(final InputStream is) throws Exception
 	{
-		final BufferedReader reader = 
-			new BufferedReader(new InputStreamReader(is));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		final StringWriter writer = new StringWriter();
 		int data;
-		while((data = reader.read()) != -1)
+		while ((data = reader.read()) != -1)
 		{
 			writer.write(data);
 		}
 		reader.close();
 		writer.close();
-			
+
 		setTrace(writer.toString());
+	}
+
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 */
+	public void updateItem(final PlaceBookItem updateItem)
+	{
+		final GPSTraceItem item = (GPSTraceItem) updateItem;
+		super.updateItem(item);
+		if (item instanceof GPSTraceItem)
+		{
+			final GPSTraceItem gpsitem = item;
+			if (gpsitem.getTrace() != null && !gpsitem.getTrace().trim().equals(""))
+			{
+				setTrace((item).getTrace());
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -214,19 +224,20 @@ public class GPSTraceItem extends PlaceBookItem
 		float maxLon = Float.NEGATIVE_INFINITY;
 
 		final WKTReader wktReader = new WKTReader();
-		try 
+		try
 		{
 			// GPX 1.1 spec
 
 			GpxType gpx = null;
-			Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX11").createUnmarshaller();
-			JAXBElement<GpxType> root = (JAXBElement<GpxType>)u.unmarshal(new StreamSource(new StringReader(this.trace)));
+			final Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX11").createUnmarshaller();
+			final JAXBElement<GpxType> root = (JAXBElement<GpxType>) u.unmarshal(new StreamSource(new StringReader(
+					this.trace)));
 			gpx = root.getValue();
-			for (TrkType track : gpx.getTrk()) 
+			for (final TrkType track : gpx.getTrk())
 			{
-				for (TrksegType seg : track.getTrkseg())
+				for (final TrksegType seg : track.getTrkseg())
 				{
-					for (WptType wpt : seg.getTrkpt())
+					for (final WptType wpt : seg.getTrkpt())
 					{
 						minLat = Math.min(minLat, wpt.getLat().floatValue());
 						maxLat = Math.max(maxLat, wpt.getLat().floatValue());
@@ -236,7 +247,7 @@ public class GPSTraceItem extends PlaceBookItem
 				}
 			}
 			// Wpt
-			for (WptType wpt : gpx.getWpt())
+			for (final WptType wpt : gpx.getWpt())
 			{
 				minLat = Math.min(minLat, wpt.getLat().floatValue());
 				maxLat = Math.max(maxLat, wpt.getLat().floatValue());
@@ -244,9 +255,9 @@ public class GPSTraceItem extends PlaceBookItem
 				maxLon = Math.max(maxLon, wpt.getLon().floatValue());
 			}
 			// Rte
-			for (RteType rte : gpx.getRte())
+			for (final RteType rte : gpx.getRte())
 			{
-				for (WptType wpt : rte.getRtept())
+				for (final WptType wpt : rte.getRtept())
 				{
 					minLat = Math.min(minLat, wpt.getLat().floatValue());
 					maxLat = Math.max(maxLat, wpt.getLat().floatValue());
@@ -255,25 +266,25 @@ public class GPSTraceItem extends PlaceBookItem
 				}
 			}
 			log.info("Read track as GPX 1.1");
-		} 
-		catch (final Throwable e) 
+		}
+		catch (final Throwable e)
 		{
 			// GPX 1.0 spec
 			log.info("Failed to read GPX as GPX1.1, trying 1.0");
-			try 
+			try
 			{
-				Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX10").createUnmarshaller();
+				final Unmarshaller u = JAXBContext.newInstance("placebooks.model.jaxb.GPX10").createUnmarshaller();
 				// GPX 1.0 is anonymous
-				Object root = u.unmarshal(new StreamSource(new StringReader(this.trace)));
+				final Object root = u.unmarshal(new StreamSource(new StringReader(this.trace)));
 				log.info(root.getClass());
-				Gpx gpx = (Gpx)root;
+				final Gpx gpx = (Gpx) root;
 
 				// Trk
-				for (Gpx.Trk track : gpx.getTrk())
+				for (final Gpx.Trk track : gpx.getTrk())
 				{
-					for (Gpx.Trk.Trkseg seg : track.getTrkseg())
+					for (final Gpx.Trk.Trkseg seg : track.getTrkseg())
 					{
-						for (Gpx.Trk.Trkseg.Trkpt pt : seg.getTrkpt())
+						for (final Gpx.Trk.Trkseg.Trkpt pt : seg.getTrkpt())
 						{
 							minLat = Math.min(minLat, pt.getLat().floatValue());
 							maxLat = Math.max(maxLat, pt.getLat().floatValue());
@@ -283,7 +294,7 @@ public class GPSTraceItem extends PlaceBookItem
 					}
 				}
 				// Wpt
-				for (Gpx.Wpt wpt : gpx.getWpt())
+				for (final Gpx.Wpt wpt : gpx.getWpt())
 				{
 					minLat = Math.min(minLat, wpt.getLat().floatValue());
 					maxLat = Math.max(maxLat, wpt.getLat().floatValue());
@@ -291,9 +302,9 @@ public class GPSTraceItem extends PlaceBookItem
 					maxLon = Math.max(maxLon, wpt.getLon().floatValue());
 				}
 				// Rte
-				for (Gpx.Rte rte : gpx.getRte())
+				for (final Gpx.Rte rte : gpx.getRte())
 				{
-					for (Gpx.Rte.Rtept rpt : rte.getRtept())
+					for (final Gpx.Rte.Rtept rpt : rte.getRtept())
 					{
 						minLat = Math.min(minLat, rpt.getLat().floatValue());
 						maxLat = Math.max(maxLat, rpt.getLat().floatValue());
@@ -302,8 +313,8 @@ public class GPSTraceItem extends PlaceBookItem
 					}
 				}
 				log.info("Read track as GPX 1.0");
-			} 
-			catch (final Exception e_) 
+			}
+			catch (final Exception e_)
 			{
 				log.error("Fatal error in reading GPX file");
 				log.error(e_.toString(), e_);
@@ -312,11 +323,9 @@ public class GPSTraceItem extends PlaceBookItem
 		}
 		try
 		{
-	
-			if (minLat == Float.POSITIVE_INFINITY || 
-				maxLat == Float.NEGATIVE_INFINITY ||
-				minLon == Float.POSITIVE_INFINITY || 
-				maxLon == Float.NEGATIVE_INFINITY)
+
+			if (minLat == Float.POSITIVE_INFINITY || maxLat == Float.NEGATIVE_INFINITY
+					|| minLon == Float.POSITIVE_INFINITY || maxLon == Float.NEGATIVE_INFINITY)
 			{
 				log.error("Warning: calculated bounds were not valid, ignoring");
 				setGeometry(null);
@@ -324,13 +333,9 @@ public class GPSTraceItem extends PlaceBookItem
 			else
 			{
 
-				log.info("Creating bounds: " + minLat  + ", " + minLon + ",  "  + maxLat + ",  " + maxLon);
-				bounds = wktReader.read("POLYGON ((" 
-						+ minLat + " " + minLon + ", "
-						+ minLat + " " + maxLon + ", "
-						+ maxLat + " " + maxLon + ", "
-						+ maxLat + " " + minLon + ", "
-						+ minLat + " " + minLon + "))");
+				log.info("Creating bounds: " + minLat + ", " + minLon + ",  " + maxLat + ",  " + maxLon);
+				bounds = wktReader.read("POLYGON ((" + minLat + " " + minLon + ", " + minLat + " " + maxLon + ", "
+						+ maxLat + " " + maxLon + ", " + maxLat + " " + minLon + ", " + minLat + " " + minLon + "))");
 			}
 		}
 		catch (final Throwable e_)
@@ -340,39 +345,24 @@ public class GPSTraceItem extends PlaceBookItem
 			return;
 		}
 		if (bounds != null)
+		{
 			setGeometry(bounds.getBoundary());
+		}
 		else
+		{
 			log.error("Bounds was null");
-		
+		}
+
 		try
 		{
 			final MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(trace.getBytes());
-			
-			hash = String.format("%032x", new BigInteger(1, md.digest()));			
+
+			hash = String.format("%032x", new BigInteger(1, md.digest()));
 		}
-		catch(Exception e)
+		catch (final Exception e)
 		{
 			log.error("Failed to hash gpx", e);
-		}
-	}
-
-	@Override
-	/* (non-Javadoc)
-	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
-	 */
-	public void updateItem(PlaceBookItem updateItem)
-	{
-		GPSTraceItem item = (GPSTraceItem) updateItem;
-		super.updateItem(item);
-		if(item instanceof GPSTraceItem)
-		{
-			GPSTraceItem gpsitem = item; 
-			if (gpsitem.getTrace() != null && 
-			    !gpsitem.getTrace().trim().equals(""))
-			{
-				setTrace((item).getTrace());
-			}
 		}
 	}
 

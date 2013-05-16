@@ -28,6 +28,18 @@ public class PlaceBookBinder extends JavaScriptObject
 		this.pages = new Array();
 	}-*/;
 
+	public final Iterable<PlaceBookGroup> getGroups()
+	{
+		return new Iterable<PlaceBookGroup>()
+		{
+			@Override
+			public Iterator<PlaceBookGroup> iterator()
+			{
+				return new JSIterator<PlaceBookGroup>(getGroupsImpl());
+			}
+		};
+	}
+
 	public final native String getId()
 	/*-{
 		return this.id;
@@ -129,6 +141,15 @@ public class PlaceBookBinder extends JavaScriptObject
 			this.parameters = new Object();
 		}
 		this.parameters[name] = value;
+	}-*/;
+
+	private final native JsArray<PlaceBookGroup> getGroupsImpl()
+	/*-{
+		if(!('groups' in this))
+		{
+			this.groups = new Array();
+		}
+		return this.groups;
 	}-*/;
 
 	private final native JsArray<PlaceBook> getPagesInternal()

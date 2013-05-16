@@ -1,17 +1,18 @@
 package placebooks.client.ui.dialogs;
 
-import placebooks.client.JSONResponse;
-import placebooks.client.PlaceBookService;
-import placebooks.client.model.DataStore;
+import org.wornchaos.client.controller.Controller;
+import org.wornchaos.client.controller.ControllerState;
+import org.wornchaos.client.controller.ControllerStateListener;
+import org.wornchaos.client.logger.Log;
+import org.wornchaos.client.ui.View;
+
+import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.ServerInfoController;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.model.ServerInfo;
-import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.model.ServerInfo;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookSaveItem.SaveState;
-import placebooks.client.ui.elements.PlaceBookSaveStateListener;
-import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -29,19 +30,19 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookSaveStateListener
+public class PlaceBookUploadDialog extends PlaceBookDialog implements ControllerStateListener, View<ServerInfo>
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
 	interface UploadDialogUiBinder extends UiBinder<Widget, PlaceBookUploadDialog>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static UploadDialogUiBinder uiBinder = GWT.create(UploadDialogUiBinder.class);
 
 	@UiField
 	Label infoLabel;
-	
+
 	@UiField
 	FormPanel form;
 
@@ -58,51 +59,21 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookS
 	TextArea copyright;
 
 	private boolean uploading = false;
-	
-	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
-	
-	private final PlaceBookItemWidget item;
 
-	private final PlaceBookController controller;
-	
-	public PlaceBookUploadDialog(final PlaceBookController controller, final PlaceBookItemWidget item)
+	private final PlaceBookItemView item;
+
+	private final Controller<?> controller;
+
+	public PlaceBookUploadDialog(final Controller<?> controller, final PlaceBookItemView item)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 
 		this.item = item;
 		this.controller = controller;
-		
+
 		setTitle(uiMessages.upload());
-		
-		infoStore.get(null, new JSONResponse<ServerInfo>()
-		{
-			@Override
-			public void handleResponse(ServerInfo object)
-			{
-				String type = null;
-				int size = 0;
-				if (item.getItem().is(ItemType.IMAGE))
-				{
-					type = uiMessages.image();
-					size = object.getImageSize();
-				}
-				else if (item.getItem().is(ItemType.VIDEO))
-				{
-					type = uiMessages.video();
-					size = object.getVideoSize();
-				}
-				else if (item.getItem().is(ItemType.AUDIO))
-				{
-					type = uiMessages.audio();
-					size = object.getAudioSize();
-				}
-				if(type != null)
-				{
-					setTitle(uiMessages.upload(type));
-					infoLabel.setText(uiMessages.maxSize(type, size));
-				}
-			}
-		});
+
+		ServerInfoController.getController().add(this);
 
 		itemKey.setName("itemKey");
 
@@ -110,7 +81,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookS
 				.toLowerCase();
 		upload.setName(type + "." + item.getItem().getKey());
 
-		form.setAction(PlaceBookService.getHostURL() + "/placebooks/a/admin/add_item/upload");
+		form.setAction(PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler()
@@ -121,13 +92,22 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookS
 				try
 				{
 					final String result = event.getResults().replaceAll("(<([^>]+)>)", "");
-					GWT.log("Upload Complete: " + result);
+					Log.info("Upload Complete: " + result);
 					setUploadState(false);
 
-					final PlaceBookItem placebookItem = PlaceBookService.parse(PlaceBookItem.class, result);
+					final PlaceBookItem placebookItem = PlaceBooks.getServer().parse(PlaceBookItem.class, result);
 					item.getItem().removeParameter("height");
 					item.getItem().setParameter("uploadResize", 1);
-					item.update(placebookItem);
+					item.getItem().setKey(placebookItem.getKey());
+					item.getItem().removeMetadata("tempID");
+					placebookItem.removeMetadata("tempID");
+
+					if (placebookItem.getHash() != null)
+					{
+						item.getItem().setHash(placebookItem.getHash());
+						item.getItem().setSourceURL(placebookItem.getSourceURL());
+					}
+					item.itemChanged(item.getItem());
 					hide();
 					controller.markChanged();
 				}
@@ -142,21 +122,44 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookS
 		refresh();
 	}
 
-	private void setUploadState(final boolean uploading)
+	@Override
+	public void itemChanged(final ServerInfo value)
 	{
-		this.uploading = uploading;
-		if(uploading)
+		String type = null;
+		int size = 0;
+		if (item.getItem().is(ItemType.IMAGE))
 		{
-			setProgressVisible(true, uiMessages.uploading());
-			uploadButton.setEnabled(false);
-			GWT.log("Uploading " + item.getItem().getKey());
+			type = uiMessages.image();
+			size = value.getImageSize();
 		}
-		else
+		else if (item.getItem().is(ItemType.VIDEO))
 		{
-			setProgressVisible(false, null);			
+			type = uiMessages.video();
+			size = value.getVideoSize();
+		}
+		else if (item.getItem().is(ItemType.AUDIO))
+		{
+			type = uiMessages.audio();
+			size = value.getAudioSize();
+		}
+		if (type != null)
+		{
+			setTitle(uiMessages.upload(type));
+			infoLabel.setText(uiMessages.maxSize(type, size));
 		}
 	}
-	
+
+	@Override
+	public void stateChanged(final ControllerState state)
+	{
+		if (uploading && state == ControllerState.saved)
+		{
+			controller.remove(this);
+			itemKey.setValue(item.getItem().getKey());
+			form.submit();
+		}
+	}
+
 	@UiHandler("upload")
 	void fileChanged(final ChangeEvent event)
 	{
@@ -167,35 +170,38 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements PlaceBookS
 	void upload(final ClickEvent event)
 	{
 		setUploadState(true);
-		if(item.getItem().getKey() == null) 
+		if (item.getItem().getKey() == null)
 		{
-			controller.getSaveItem().add(this);			
-			if(controller.getSaveItem().getState() == SaveState.saved)
+			controller.add(this);
+			if (controller.getState() == ControllerState.saved)
 			{
 				controller.markChanged();
-			}			
+			}
 		}
 		else
 		{
-			itemKey.setValue(item.getItem().getKey());	
+			itemKey.setValue(item.getItem().getKey());
 			form.submit();
 		}
 	}
 
 	private void refresh()
 	{
-		uploadButton.setEnabled(upload.getFilename() != null
-				&& !"Unknown".equals(upload.getFilename()));
+		uploadButton.setEnabled(upload.getFilename() != null && !"Unknown".equals(upload.getFilename()));
 	}
 
-	@Override
-	public void saveStateChanged(SaveState state)
+	private void setUploadState(final boolean uploading)
 	{
-		if(uploading && state == SaveState.saved)
+		this.uploading = uploading;
+		if (uploading)
 		{
-			controller.getSaveItem().remove(this);
-			itemKey.setValue(item.getItem().getKey());	
-			form.submit();
+			setProgressVisible(true, uiMessages.uploading());
+			uploadButton.setEnabled(false);
+			Log.info("Uploading " + item.getItem().getKey());
+		}
+		else
+		{
+			setProgressVisible(false, null);
 		}
 	}
 }

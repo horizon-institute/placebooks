@@ -30,12 +30,12 @@ public class SearchIndex
 	{
 		index.add(element);
 	}
-	
+
 	public void addAll(final Set<String> elements)
 	{
 		index.addAll(elements);
 	}
-	
+
 	public void clear()
 	{
 		index.clear();
@@ -51,11 +51,11 @@ public class SearchIndex
 		return Collections.unmodifiableSet(index);
 	}
 
-	public void setID(String id)
+	public void setID(final String id)
 	{
 		this.id = id;
 	}
-	
+
 	public void setIndex(final Set<String> index)
 	{
 		this.index.clear();

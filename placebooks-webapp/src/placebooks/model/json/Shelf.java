@@ -88,6 +88,11 @@ public class Shelf
 			entries.add(entry);
 		}
 	}
+	
+	public Iterable<ShelfEntry> getEntries()
+	{
+		return entries;
+	}
 
 	public void setEntries(final Collection<ShelfEntry> entries)
 	{

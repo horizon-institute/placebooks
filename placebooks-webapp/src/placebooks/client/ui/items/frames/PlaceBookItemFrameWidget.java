@@ -1,6 +1,6 @@
 package placebooks.client.ui.items.frames;
 
-import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,7 +29,7 @@ public abstract class PlaceBookItemFrameWidget extends PlaceBookItemFrame
 	Panel resizeSection;
 
 	@Override
-	public void setItemWidget(final PlaceBookItemWidget itemWidget)
+	public void setItemWidget(final PlaceBookItemView itemWidget)
 	{
 		super.setItemWidget(itemWidget);
 		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));

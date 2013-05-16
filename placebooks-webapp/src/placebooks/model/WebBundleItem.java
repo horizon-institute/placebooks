@@ -24,8 +24,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class WebBundleItem extends PlaceBookItem
 {
 
-	private static final Logger log = 	
-		Logger.getLogger(WebBundleItem.class.getName());
+	private static final Logger log = Logger.getLogger(WebBundleItem.class.getName());
 
 	@Transient
 	private BufferedImage thumbnail;
@@ -34,13 +33,8 @@ public class WebBundleItem extends PlaceBookItem
 
 	private String webBundlePath;
 
-	WebBundleItem()
-	{
-	}
-
-	public WebBundleItem(final User owner, final Geometry geom, 
-						 final URL sourceURL, final String webBundleName,
-						 final String webBundlePath)
+	public WebBundleItem(final User owner, final Geometry geom, final URL sourceURL, final String webBundleName,
+			final String webBundlePath)
 	{
 		super(owner, geom, sourceURL);
 		this.webBundleName = webBundleName;
@@ -51,9 +45,13 @@ public class WebBundleItem extends PlaceBookItem
 	public WebBundleItem(final WebBundleItem w)
 	{
 		super(w);
-		this.webBundleName = new String(w.getWebBundleName());
-		this.webBundlePath = new String(w.getWebBundlePath());		
+		webBundleName = new String(w.getWebBundleName());
+		webBundlePath = new String(w.getWebBundlePath());
 		thumbnail = null;
+	}
+
+	WebBundleItem()
+	{
 	}
 
 	@Override
@@ -64,14 +62,13 @@ public class WebBundleItem extends PlaceBookItem
 		try
 		{
 			final File from = new File(getWebBundlePath());
-			final File to = new File(getPlaceBook().getPlaceBookBinder().getPackagePath() 
-									 + "/" + getKey());
+			final File to = new File(getPlaceBook().getPlaceBookBinder().getPackagePath() + "/" + getKey());
 
 			FileUtils.copyDirectory(from, to);
 
 			final Element filename = config.createElement("filename");
-			filename.appendChild(config.createTextNode(getPlaceBook().getPlaceBookBinder().getPackagePath() 
-									 + "/" + getKey() + "/" + getWebBundle()));
+			filename.appendChild(config.createTextNode(getPlaceBook().getPlaceBookBinder().getPackagePath() + "/"
+					+ getKey() + "/" + getWebBundle()));
 			item.appendChild(filename);
 		}
 		catch (final IOException e)
@@ -131,6 +128,7 @@ public class WebBundleItem extends PlaceBookItem
 	{
 		return webBundlePath + "/" + webBundleName;
 	}
+
 	public String getWebBundleName()
 	{
 		return webBundleName;
@@ -141,7 +139,9 @@ public class WebBundleItem extends PlaceBookItem
 		return webBundlePath;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
@@ -154,9 +154,9 @@ public class WebBundleItem extends PlaceBookItem
 		{
 			pm.getTransaction().begin();
 			item = ItemFactory.getExistingItem(this, pm);
-			if(item != null)
+			if (item != null)
 			{
-				
+
 				item.update(this);
 				pm.persist(item);
 				returnItem = item;

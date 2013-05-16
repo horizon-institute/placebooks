@@ -20,11 +20,11 @@ public class EverytrailResponseStatusData
 
 	public String getStatus()
 	{
-		return this.status;
+		return status;
 	}
 
 	public String getValue()
 	{
-		return this.value;
+		return value;
 	}
 }

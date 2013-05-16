@@ -2,7 +2,7 @@ package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookDialog;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.core.client.GWT;
@@ -16,11 +16,11 @@ import com.google.gwt.user.client.ui.TextBox;
 public class EditTitleMenuItem extends MenuItem
 {
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
-	private final PlaceBookController controller;
+
+	private final DragController controller;
 	private final PlaceBookItemFrame item;
 
-	public EditTitleMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
+	public EditTitleMenuItem(final DragController controller, final PlaceBookItemFrame item)
 	{
 		super(uiMessages.editTitle());
 		this.item = item;

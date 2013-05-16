@@ -5,13 +5,13 @@
 // Generated on: 2011.11.25 at 03:09:27 PM GMT 
 //
 
-
 package placebooks.model.jaxb.GPX11;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,15 +19,16 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * 
- * 		wpt represents a waypoint, point of interest, or named feature on a map.
- * 	  
+ * wpt represents a waypoint, point of interest, or named feature on a map.
  * 
- * <p>Java class for wptType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for wptType complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="wptType">
@@ -64,562 +65,526 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "wptType", propOrder = {
-    "ele",
-    "time",
-    "magvar",
-    "geoidheight",
-    "name",
-    "cmt",
-    "desc",
-    "src",
-    "link",
-    "sym",
-    "type",
-    "fix",
-    "sat",
-    "hdop",
-    "vdop",
-    "pdop",
-    "ageofdgpsdata",
-    "dgpsid",
-    "extensions"
-})
-public class WptType {
+@XmlType(name = "wptType", propOrder = { "ele", "time", "magvar", "geoidheight", "name", "cmt", "desc", "src", "link",
+										"sym", "type", "fix", "sat", "hdop", "vdop", "pdop", "ageofdgpsdata", "dgpsid",
+										"extensions" })
+public class WptType
+{
 
-    protected BigDecimal ele;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar time;
-    protected BigDecimal magvar;
-    protected BigDecimal geoidheight;
-    protected String name;
-    protected String cmt;
-    protected String desc;
-    protected String src;
-    protected List<LinkType> link;
-    protected String sym;
-    protected String type;
-    protected String fix;
-    @XmlSchemaType(name = "nonNegativeInteger")
-    protected BigInteger sat;
-    protected BigDecimal hdop;
-    protected BigDecimal vdop;
-    protected BigDecimal pdop;
-    protected BigDecimal ageofdgpsdata;
-    protected Integer dgpsid;
-    protected ExtensionsType extensions;
-    @XmlAttribute(required = true)
-    protected BigDecimal lat;
-    @XmlAttribute(required = true)
-    protected BigDecimal lon;
+	protected BigDecimal ele;
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar time;
+	protected BigDecimal magvar;
+	protected BigDecimal geoidheight;
+	protected String name;
+	protected String cmt;
+	protected String desc;
+	protected String src;
+	protected List<LinkType> link;
+	protected String sym;
+	protected String type;
+	protected String fix;
+	@XmlSchemaType(name = "nonNegativeInteger")
+	protected BigInteger sat;
+	protected BigDecimal hdop;
+	protected BigDecimal vdop;
+	protected BigDecimal pdop;
+	protected BigDecimal ageofdgpsdata;
+	protected Integer dgpsid;
+	protected ExtensionsType extensions;
+	@XmlAttribute(required = true)
+	protected BigDecimal lat;
+	@XmlAttribute(required = true)
+	protected BigDecimal lon;
 
-    /**
-     * Gets the value of the ele property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getEle() {
-        return ele;
-    }
+	/**
+	 * Gets the value of the ageofdgpsdata property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getAgeofdgpsdata()
+	{
+		return ageofdgpsdata;
+	}
 
-    /**
-     * Sets the value of the ele property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setEle(BigDecimal value) {
-        this.ele = value;
-    }
+	/**
+	 * Gets the value of the cmt property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getCmt()
+	{
+		return cmt;
+	}
 
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
+	/**
+	 * Gets the value of the desc property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getDesc()
+	{
+		return desc;
+	}
 
-    /**
-     * Sets the value of the time property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTime(XMLGregorianCalendar value) {
-        this.time = value;
-    }
+	/**
+	 * Gets the value of the dgpsid property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getDgpsid()
+	{
+		return dgpsid;
+	}
 
-    /**
-     * Gets the value of the magvar property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getMagvar() {
-        return magvar;
-    }
+	/**
+	 * Gets the value of the ele property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getEle()
+	{
+		return ele;
+	}
 
-    /**
-     * Sets the value of the magvar property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setMagvar(BigDecimal value) {
-        this.magvar = value;
-    }
+	/**
+	 * Gets the value of the extensions property.
+	 * 
+	 * @return possible object is {@link ExtensionsType }
+	 * 
+	 */
+	public ExtensionsType getExtensions()
+	{
+		return extensions;
+	}
 
-    /**
-     * Gets the value of the geoidheight property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getGeoidheight() {
-        return geoidheight;
-    }
+	/**
+	 * Gets the value of the fix property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getFix()
+	{
+		return fix;
+	}
 
-    /**
-     * Sets the value of the geoidheight property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setGeoidheight(BigDecimal value) {
-        this.geoidheight = value;
-    }
+	/**
+	 * Gets the value of the geoidheight property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getGeoidheight()
+	{
+		return geoidheight;
+	}
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Gets the value of the hdop property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getHdop()
+	{
+		return hdop;
+	}
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+	/**
+	 * Gets the value of the lat property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getLat()
+	{
+		return lat;
+	}
 
-    /**
-     * Gets the value of the cmt property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCmt() {
-        return cmt;
-    }
+	/**
+	 * Gets the value of the link property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+	 * modification you make to the returned list will be present inside the JAXB object. This is
+	 * why there is not a <CODE>set</CODE> method for the link property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getLink().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link LinkType }
+	 * 
+	 * 
+	 */
+	public List<LinkType> getLink()
+	{
+		if (link == null)
+		{
+			link = new ArrayList<LinkType>();
+		}
+		return link;
+	}
 
-    /**
-     * Sets the value of the cmt property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCmt(String value) {
-        this.cmt = value;
-    }
+	/**
+	 * Gets the value of the lon property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getLon()
+	{
+		return lon;
+	}
 
-    /**
-     * Gets the value of the desc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDesc() {
-        return desc;
-    }
+	/**
+	 * Gets the value of the magvar property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getMagvar()
+	{
+		return magvar;
+	}
 
-    /**
-     * Sets the value of the desc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
-    /**
-     * Gets the value of the src property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSrc() {
-        return src;
-    }
+	/**
+	 * Gets the value of the pdop property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getPdop()
+	{
+		return pdop;
+	}
 
-    /**
-     * Sets the value of the src property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSrc(String value) {
-        this.src = value;
-    }
+	/**
+	 * Gets the value of the sat property.
+	 * 
+	 * @return possible object is {@link BigInteger }
+	 * 
+	 */
+	public BigInteger getSat()
+	{
+		return sat;
+	}
 
-    /**
-     * Gets the value of the link property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the link property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLink().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link LinkType }
-     * 
-     * 
-     */
-    public List<LinkType> getLink() {
-        if (link == null) {
-            link = new ArrayList<LinkType>();
-        }
-        return this.link;
-    }
+	/**
+	 * Gets the value of the src property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getSrc()
+	{
+		return src;
+	}
 
-    /**
-     * Gets the value of the sym property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSym() {
-        return sym;
-    }
+	/**
+	 * Gets the value of the sym property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getSym()
+	{
+		return sym;
+	}
 
-    /**
-     * Sets the value of the sym property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSym(String value) {
-        this.sym = value;
-    }
+	/**
+	 * Gets the value of the time property.
+	 * 
+	 * @return possible object is {@link XMLGregorianCalendar }
+	 * 
+	 */
+	public XMLGregorianCalendar getTime()
+	{
+		return time;
+	}
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * Gets the value of the type property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getType()
+	{
+		return type;
+	}
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+	/**
+	 * Gets the value of the vdop property.
+	 * 
+	 * @return possible object is {@link BigDecimal }
+	 * 
+	 */
+	public BigDecimal getVdop()
+	{
+		return vdop;
+	}
 
-    /**
-     * Gets the value of the fix property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFix() {
-        return fix;
-    }
+	/**
+	 * Sets the value of the ageofdgpsdata property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setAgeofdgpsdata(final BigDecimal value)
+	{
+		ageofdgpsdata = value;
+	}
 
-    /**
-     * Sets the value of the fix property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFix(String value) {
-        this.fix = value;
-    }
+	/**
+	 * Sets the value of the cmt property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setCmt(final String value)
+	{
+		cmt = value;
+	}
 
-    /**
-     * Gets the value of the sat property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
-     */
-    public BigInteger getSat() {
-        return sat;
-    }
+	/**
+	 * Sets the value of the desc property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setDesc(final String value)
+	{
+		desc = value;
+	}
 
-    /**
-     * Sets the value of the sat property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
-     */
-    public void setSat(BigInteger value) {
-        this.sat = value;
-    }
+	/**
+	 * Sets the value of the dgpsid property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setDgpsid(final Integer value)
+	{
+		dgpsid = value;
+	}
 
-    /**
-     * Gets the value of the hdop property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getHdop() {
-        return hdop;
-    }
+	/**
+	 * Sets the value of the ele property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setEle(final BigDecimal value)
+	{
+		ele = value;
+	}
 
-    /**
-     * Sets the value of the hdop property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setHdop(BigDecimal value) {
-        this.hdop = value;
-    }
+	/**
+	 * Sets the value of the extensions property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ExtensionsType }
+	 * 
+	 */
+	public void setExtensions(final ExtensionsType value)
+	{
+		extensions = value;
+	}
 
-    /**
-     * Gets the value of the vdop property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getVdop() {
-        return vdop;
-    }
+	/**
+	 * Sets the value of the fix property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setFix(final String value)
+	{
+		fix = value;
+	}
 
-    /**
-     * Sets the value of the vdop property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setVdop(BigDecimal value) {
-        this.vdop = value;
-    }
+	/**
+	 * Sets the value of the geoidheight property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setGeoidheight(final BigDecimal value)
+	{
+		geoidheight = value;
+	}
 
-    /**
-     * Gets the value of the pdop property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getPdop() {
-        return pdop;
-    }
+	/**
+	 * Sets the value of the hdop property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setHdop(final BigDecimal value)
+	{
+		hdop = value;
+	}
 
-    /**
-     * Sets the value of the pdop property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setPdop(BigDecimal value) {
-        this.pdop = value;
-    }
+	/**
+	 * Sets the value of the lat property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setLat(final BigDecimal value)
+	{
+		lat = value;
+	}
 
-    /**
-     * Gets the value of the ageofdgpsdata property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getAgeofdgpsdata() {
-        return ageofdgpsdata;
-    }
+	/**
+	 * Sets the value of the lon property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setLon(final BigDecimal value)
+	{
+		lon = value;
+	}
 
-    /**
-     * Sets the value of the ageofdgpsdata property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setAgeofdgpsdata(BigDecimal value) {
-        this.ageofdgpsdata = value;
-    }
+	/**
+	 * Sets the value of the magvar property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setMagvar(final BigDecimal value)
+	{
+		magvar = value;
+	}
 
-    /**
-     * Gets the value of the dgpsid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getDgpsid() {
-        return dgpsid;
-    }
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(final String value)
+	{
+		name = value;
+	}
 
-    /**
-     * Sets the value of the dgpsid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setDgpsid(Integer value) {
-        this.dgpsid = value;
-    }
+	/**
+	 * Sets the value of the pdop property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setPdop(final BigDecimal value)
+	{
+		pdop = value;
+	}
 
-    /**
-     * Gets the value of the extensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public ExtensionsType getExtensions() {
-        return extensions;
-    }
+	/**
+	 * Sets the value of the sat property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigInteger }
+	 * 
+	 */
+	public void setSat(final BigInteger value)
+	{
+		sat = value;
+	}
 
-    /**
-     * Sets the value of the extensions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public void setExtensions(ExtensionsType value) {
-        this.extensions = value;
-    }
+	/**
+	 * Sets the value of the src property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setSrc(final String value)
+	{
+		src = value;
+	}
 
-    /**
-     * Gets the value of the lat property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getLat() {
-        return lat;
-    }
+	/**
+	 * Sets the value of the sym property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setSym(final String value)
+	{
+		sym = value;
+	}
 
-    /**
-     * Sets the value of the lat property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setLat(BigDecimal value) {
-        this.lat = value;
-    }
+	/**
+	 * Sets the value of the time property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link XMLGregorianCalendar }
+	 * 
+	 */
+	public void setTime(final XMLGregorianCalendar value)
+	{
+		time = value;
+	}
 
-    /**
-     * Gets the value of the lon property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getLon() {
-        return lon;
-    }
+	/**
+	 * Sets the value of the type property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setType(final String value)
+	{
+		type = value;
+	}
 
-    /**
-     * Sets the value of the lon property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setLon(BigDecimal value) {
-        this.lon = value;
-    }
+	/**
+	 * Sets the value of the vdop property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BigDecimal }
+	 * 
+	 */
+	public void setVdop(final BigDecimal value)
+	{
+		vdop = value;
+	}
 
 }

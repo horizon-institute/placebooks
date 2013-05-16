@@ -71,6 +71,7 @@
 		<p:PlaceBookToolbarItem addStyleNames="{style.toolbarLogin}" ui:field="languageItem" />
 		<p:DropMenu ui:field="dropMenu" styleName="{style.toolbarMenu}">
 			<g:FlowPanel ui:field="languagePanel"></g:FlowPanel>
+			<g:Label ui:field="groups" styleName="{style.toolbarMenuItem}"><ui:msg>Groups</ui:msg></g:Label>			
 			<g:Label ui:field="linkedAccounts" styleName="{style.toolbarMenuItem}"><ui:msg>Linked Accounts</ui:msg></g:Label>
 			<g:Label ui:field="logout" styleName="{style.toolbarMenuItem}"><ui:msg>Logout</ui:msg></g:Label>
 		</p:DropMenu>		

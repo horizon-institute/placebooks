@@ -1,12 +1,12 @@
 package placebooks.client.ui.elements;
 
+import placebooks.client.PlaceBooks;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
-import placebooks.client.ui.PlaceBookEditor;
-import placebooks.client.ui.PlaceBookPlace;
-import placebooks.client.ui.PlaceBookPreview;
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.openlayers.Marker;
+import placebooks.client.ui.places.PlaceBook;
+import placebooks.client.ui.places.PlaceBook.Type;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,6 +22,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -29,11 +30,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandlers, HasMouseOutHandlers
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
 	interface PlaceBookEntryWidgetUiBinder extends UiBinder<Widget, PlaceBookEntryWidget>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static PlaceBookEntryWidgetUiBinder uiBinder = GWT.create(PlaceBookEntryWidgetUiBinder.class);
 
@@ -47,18 +48,27 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	Label distance;
 	@UiField
 	Image markerImage;
+	@UiField
+	Image delete;
 
 	private Marker marker;
 
-	private final PlaceBookPlace place;
+	private Type type;
+	
 	private final PlaceBookEntry entry;
 
-	public PlaceBookEntryWidget(final PlaceBookPlace place, final PlaceBookEntry entry)
+	private final AsyncCallback<PlaceBookEntry> callback;
+
+	public PlaceBookEntryWidget(final PlaceBookEntry entry, final AsyncCallback<PlaceBookEntry> callback, Type type)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		this.place = place;
 		this.entry = entry;
+		this.callback = callback;
+		this.type = type;
+
+		delete.setVisible(callback != null);
+		delete.setTitle("Remove PlaceBook");
 
 		title.setText(entry.getTitle());
 		if (isPublished())
@@ -142,13 +152,24 @@ public class PlaceBookEntryWidget extends Composite implements HasMouseOverHandl
 	@UiHandler("container")
 	void clicked(final ClickEvent event)
 	{
-		if (isPublished())
+		if(type != null)
 		{
-			place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
+			PlaceBooks.goTo(new PlaceBook(entry.getKey(), type));
+		}
+		else if(isPublished())
+		{
+			PlaceBooks.goTo(new PlaceBook(entry.getKey()));
 		}
 		else
 		{
-			place.getPlaceController().goTo(new PlaceBookEditor(place.getUser(), entry.getKey()));
+			PlaceBooks.goTo(new PlaceBook(entry.getKey(), PlaceBook.Type.edit));			
 		}
+	}
+
+	@UiHandler("delete")
+	void delete(final ClickEvent event)
+	{
+		callback.onSuccess(entry);
+		event.stopPropagation();
 	}
 }

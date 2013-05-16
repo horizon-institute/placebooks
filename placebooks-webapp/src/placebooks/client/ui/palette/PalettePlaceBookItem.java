@@ -1,12 +1,13 @@
 package placebooks.client.ui.palette;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.items.PlaceBookItemWidget;
-import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
+import placebooks.client.ui.elements.DragController;
+import placebooks.client.ui.items.PlaceBookItemView;
+import placebooks.client.ui.items.PlaceBookItemViewFactory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -17,17 +18,17 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PalettePlaceBookItem extends PaletteItem
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);	
-	
-	private final PlaceBookItem item;
-	private final PlaceBookController controller;
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
-	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final PlaceBookController dragHandler)
+	private final PlaceBookItem item;
+	private final DragController controller;
+
+	public PalettePlaceBookItem(final PlaceBookItem placeBookItem, final DragController dragHandler)
 	{
 		super(placeBookItem.getMetadata("title", uiMessages.unnamed()));
 
-		this.item = placeBookItem;
-		this.controller = dragHandler;
+		item = placeBookItem;
+		controller = dragHandler;
 	}
 
 	@Override
@@ -78,9 +79,10 @@ public class PalettePlaceBookItem extends PaletteItem
 		return result;
 	}
 
-	private PlaceBookItemWidget createItem()
+	private PlaceBookItemView createItem()
 	{
-		final PlaceBookItem newItem = PlaceBookService.parse(PlaceBookItem.class, new JSONObject(item).toString());
+		final PlaceBookItem newItem = PlaceBooks.getServer()
+				.parse(PlaceBookItem.class, new JSONObject(item).toString());
 		if (newItem.getKey() != null)
 		{
 			newItem.setKey(null);
@@ -94,6 +96,7 @@ public class PalettePlaceBookItem extends PaletteItem
 			newItem.removeMetadata("originalItemID");
 		}
 		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
-		return PlaceBookItemWidgetFactory.createItemWidget(newItem, controller);
+		final PlaceBookItemController itemController = new PlaceBookItemController(newItem, controller.getSaveItem());
+		return PlaceBookItemViewFactory.createItemWidget(itemController);
 	}
 }

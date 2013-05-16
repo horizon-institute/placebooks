@@ -15,7 +15,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_AUDIO_MAX_SIZE = "audioitem.size_limit";
 
 	public static final String VIDEOITEM_FFMPEG_TRANSCODE = "videoitem.ffmpeg_transcode";
-	
+
 	public static final String IDEN_CONFIG = "config.name";
 	public static final String IDEN_IMAGE_MAX_SIZE = "imageitem.size_limit";
 	public static final String IDEN_MEDIA = "media.dir";
@@ -25,7 +25,7 @@ public final class PropertiesSingleton
 	public static final String IDEN_SEARCH_LON = "search.lon";
 	public static final String IDEN_SEARCH_RADIUS = "search.radius";
 	public static final String IDEN_SEARCH_TERMS = "search.terms";
-	
+
 	public static final String IDEN_OPENSPACE_APIKEY = "openspace.apikey";
 	public static final String IDEN_OPENSPACE_BASEURL = "openspace.baseurl";
 	public static final String IDEN_OPENSPACE_HOST = "openspace.host";
@@ -41,8 +41,8 @@ public final class PropertiesSingleton
 	public static final String IDEN_TILER_PIXEL_Y = "tiler.y_pixels";
 	public static final String IDEN_TILER_MAX_TILES = "tiler.max_tiles";
 	public static final String IDEN_TILER_SQUARE = "tiler.square";
-	public static final String IDEN_TILER_SINGLE_MAP = "tiler.single_map";	
-	public static final String IDEN_TILER_MAX_ATTEMPTS = "tiler.max_attempts";	
+	public static final String IDEN_TILER_SINGLE_MAP = "tiler.single_map";
+	public static final String IDEN_TILER_MAX_ATTEMPTS = "tiler.max_attempts";
 	public static final String IDEN_TILER_PRODUCT = "tiler.product";
 
 	public static final String IDEN_USER_AGENT = "webbundleitem.user-agent";
@@ -50,12 +50,12 @@ public final class PropertiesSingleton
 	public static final String IDEN_WEBBUNDLE = "webbundleitem.dir";
 
 	public static final String IDEN_WGET = "webbundleitem.wget";
-	public static final String IDEN_WGET_TIMEOUT = "webbundleitem.wget_timeout";	
+	public static final String IDEN_WGET_TIMEOUT = "webbundleitem.wget_timeout";
 	public static final String PROPERTIES_FILENAME = "placebooks.properties";
 	public static final String PROXY_ACTIVE = "proxy.active";
 	public static final String PROXY_HOST = "proxy.host";
 	public static final String PROXY_PORT = "proxy.port";
-	
+
 	public static final String DROPBOX_APIKEY = "dropbox.apikey";
 	public static final String DROPBOX_APISECRET = "dropbox.apisecret";
 	public static final String DROPBOX_ACCESSTYPE = "dropbox.accesstype";

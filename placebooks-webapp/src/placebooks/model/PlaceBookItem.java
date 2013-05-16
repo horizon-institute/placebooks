@@ -62,7 +62,8 @@ public abstract class PlaceBookItem
 	protected PlaceBookItemSearchIndex index = new PlaceBookItemSearchIndex();
 
 	// Searchable metadata attributes, e.g., title, description, etc.
-	@ElementCollection	@Column(columnDefinition="LONGTEXT")
+	@ElementCollection
+	@Column(columnDefinition = "LONGTEXT")
 	private Map<String, String> metadata = new HashMap<String, String>();
 
 	@JsonIgnore
@@ -82,47 +83,43 @@ public abstract class PlaceBookItem
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
-	PlaceBookItem()
-	{
-		index.setPlaceBookItem(this);
-	}
+	private final static int VALUE_LENGTH_LIMIT = 511;
 
 	public PlaceBookItem(final PlaceBookItem p)
 	{
-		this.owner = p.getOwner();
+		owner = p.getOwner();
 		if (p.getGeometry() != null)
 		{
-			this.geom = (Geometry) p.getGeometry().clone();
+			geom = (Geometry) p.getGeometry().clone();
 		}
 		else
 		{
-			this.geom = null;
+			geom = null;
 		}
 
 		if (p.getSourceURL() != null)
 		{
-			this.sourceURL = new String(p.getSourceURL().toString());
+			sourceURL = new String(p.getSourceURL().toString());
 		}
 		else
 		{
-			this.sourceURL = null;
+			sourceURL = null;
 		}
 
-		this.parameters = new HashMap<String, Integer>(p.getParameters());
-		this.metadata = new HashMap<String, String>(p.getMetadata());
+		parameters = new HashMap<String, Integer>(p.getParameters());
+		metadata = new HashMap<String, String>(p.getMetadata());
 
 		index.setPlaceBookItem(this);
-		this.index.addAll(p.getSearchIndex().getIndex());
+		index.addAll(p.getSearchIndex().getIndex());
 
 		if (p.getTimestamp() != null)
 		{
-			this.timestamp = (Date) p.getTimestamp().clone();
-			log.info("Copied PlaceBookItem, concrete name: " + getEntityName() + ", timestamp="
-					+ this.timestamp.toString());
+			timestamp = (Date) p.getTimestamp().clone();
+			log.info("Copied PlaceBookItem, concrete name: " + getEntityName() + ", timestamp=" + timestamp.toString());
 		}
 		else
 		{
-			this.timestamp = null;
+			timestamp = null;
 			log.info("Copied PlaceBookItem, concrete name: " + getEntityName());
 		}
 	}
@@ -132,18 +129,24 @@ public abstract class PlaceBookItem
 	{
 		this.owner = owner;
 		this.geom = geom;
-		this.timestamp = new Date();
+		timestamp = new Date();
 		if (sourceURL != null)
+		{
 			this.sourceURL = sourceURL.toExternalForm();
+		}
 		else
+		{
 			this.sourceURL = null;
+		}
 
 		index.setPlaceBookItem(this);
-		log.info("Created new PlaceBookItem, concrete name: " + getEntityName() + ", timestamp="
-				+ this.timestamp.toString());
+		log.info("Created new PlaceBookItem, concrete name: " + getEntityName() + ", timestamp=" + timestamp.toString());
 	}
 
-	private final static int VALUE_LENGTH_LIMIT = 511;
+	PlaceBookItem()
+	{
+		index.setPlaceBookItem(this);
+	}
 
 	public void addMetadataEntry(String key, String value)
 	{
@@ -153,7 +156,7 @@ public abstract class PlaceBookItem
 		}
 		else
 		{
-			// Strip HTML tags since people seem unable to remove them 
+			// Strip HTML tags since people seem unable to remove them
 			// themselves before calling this method
 			value = value.replaceAll("<(.|\n)*?>", "");
 			if (key.length() > VALUE_LENGTH_LIMIT)
@@ -195,62 +198,6 @@ public abstract class PlaceBookItem
 	 * Each class must provide a method for deleting any data sitting on disk
 	 */
 	public abstract boolean deleteItemData();
-
-	/**
-	 * Header common to all items
-	 * 
-	 * @param config
-	 * @return 
-	 */
-	protected Element getConfigurationHeader(final Document config)
-	{
-		log.debug(getEntityName() + ": getConfigurationHeader");
-		final Element item = config.createElement(getEntityName());
-		item.setAttribute("key", getKey());
-		item.setAttribute("owner", getOwner().getKey());
-		if (this.getOwner() == null)
-		{
-			log.error("Fatal error: PlaceBookItem " + this.getKey() + 
-					  " has no owner");
-		}
-
-
-		// Timestamp is ok to be null
-		if (getTimestamp() != null)
-		{
-			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
-			item.appendChild(timestamp);
-		}
-
-		// Geometry and sourceURL are acceptable as null
-
-		if (getGeometry() != null)
-		{
-			final Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(getGeometry().toText()));
-			item.appendChild(geometry);
-		}
-
-		if (getSourceURL() != null)
-		{
-			final Element url = config.createElement("url");
-			url.appendChild(config.createTextNode(getSourceURL().toExternalForm()));
-			item.appendChild(url);
-		}
-
-		// Write metadata and parameters
-		if (this.hasMetadata())
-		{
-			item.appendChild(setToConfig(config, this.getMetadata(), "metadata"));
-		}
-		if (this.hasParameters())
-		{
-			item.appendChild(setToConfig(config, this.getParameters(), "parameters"));
-		}
-
-		return item;
-	}
 
 	public abstract String getEntityName();
 
@@ -311,7 +258,7 @@ public abstract class PlaceBookItem
 		{
 			return new URL(sourceURL);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			return null;
 		}
@@ -370,7 +317,7 @@ public abstract class PlaceBookItem
 
 	public void setExternalID(final String id)
 	{
-		this.externalID = id;
+		externalID = id;
 	}
 
 	public void setGeometry(final Geometry geom)
@@ -380,7 +327,7 @@ public abstract class PlaceBookItem
 
 	public void setMedataData(final Map<String, String> new_data)
 	{
-		this.metadata.putAll(new_data);
+		metadata.putAll(new_data);
 	}
 
 	public void setOwner(final User owner)
@@ -390,7 +337,7 @@ public abstract class PlaceBookItem
 
 	public void setParameters(final Map<String, Integer> new_data)
 	{
-		this.parameters.putAll(new_data);
+		parameters.putAll(new_data);
 	}
 
 	public void setPlaceBook(final PlaceBook placebook)
@@ -401,9 +348,13 @@ public abstract class PlaceBookItem
 	public void setSourceURL(final URL sourceURL)
 	{
 		if (sourceURL != null)
+		{
 			this.sourceURL = sourceURL.toExternalForm();
+		}
 		else
+		{
 			this.sourceURL = null;
+		}
 	}
 
 	public void setTimestamp(final Date timestamp)
@@ -411,25 +362,7 @@ public abstract class PlaceBookItem
 		this.timestamp = timestamp;
 	}
 
-	private Element setToConfig(final Document config, final Map<String, ?> m, final String name)
-	{
-		if (!m.isEmpty())
-		{
-			final Element sElem = config.createElement(name);
-			for (final Map.Entry<String, ?> e : m.entrySet())
-			{
-				final Element elem = config.createElement(e.getKey());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
-				sElem.appendChild(elem);
-			}
-
-			return sElem;
-		}
-
-		return null;
-	}
-
-	public final void update(PlaceBookItem item)
+	public final void update(final PlaceBookItem item)
 	{
 		if (this == item) { return; }
 
@@ -439,23 +372,77 @@ public abstract class PlaceBookItem
 	}
 
 	/**
+	 * Header common to all items
+	 * 
+	 * @param config
+	 * @return
+	 */
+	protected Element getConfigurationHeader(final Document config)
+	{
+		log.debug(getEntityName() + ": getConfigurationHeader");
+		final Element item = config.createElement(getEntityName());
+		item.setAttribute("key", getKey());
+		item.setAttribute("owner", getOwner().getKey());
+		if (getOwner() == null)
+		{
+			log.error("Fatal error: PlaceBookItem " + getKey() + " has no owner");
+		}
+
+		// Timestamp is ok to be null
+		if (getTimestamp() != null)
+		{
+			final Element timestamp = config.createElement("timestamp");
+			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
+			item.appendChild(timestamp);
+		}
+
+		// Geometry and sourceURL are acceptable as null
+
+		if (getGeometry() != null)
+		{
+			final Element geometry = config.createElement("geometry");
+			geometry.appendChild(config.createTextNode(getGeometry().toText()));
+			item.appendChild(geometry);
+		}
+
+		if (getSourceURL() != null)
+		{
+			final Element url = config.createElement("url");
+			url.appendChild(config.createTextNode(getSourceURL().toExternalForm()));
+			item.appendChild(url);
+		}
+
+		// Write metadata and parameters
+		if (hasMetadata())
+		{
+			item.appendChild(setToConfig(config, getMetadata(), "metadata"));
+		}
+		if (hasParameters())
+		{
+			item.appendChild(setToConfig(config, getParameters(), "parameters"));
+		}
+
+		return item;
+	}
+
+	/**
 	 * Implementation of 'update' for placebook item superclass to update all base fields. This
 	 * should be called from descendant classes in their implementation of 'update'
 	 * 
 	 * @param item
 	 */
-	protected void updateItem(PlaceBookItem updateItem)
+	protected void updateItem(final PlaceBookItem updateItem)
 	{
-		PlaceBookItem item = (PlaceBookItem) updateItem;
+		final PlaceBookItem item = updateItem;
 		parameters.clear();
-		for (Entry<String, Integer> entry : item.getParameters().entrySet())
+		for (final Entry<String, Integer> entry : item.getParameters().entrySet())
 		{
 			addParameterEntry(entry.getKey(), entry.getValue());
 		}
 
 		index.clear();
 		metadata.clear();
-		for (Entry<String, String> entry : item.getMetadata().entrySet())
+		for (final Entry<String, String> entry : item.getMetadata().entrySet())
 		{
 			addMetadataEntry(entry.getKey(), entry.getValue());
 		}
@@ -474,5 +461,23 @@ public abstract class PlaceBookItem
 		{
 			item.setTimestamp(new Date());
 		}
+	}
+
+	private Element setToConfig(final Document config, final Map<String, ?> m, final String name)
+	{
+		if (!m.isEmpty())
+		{
+			final Element sElem = config.createElement(name);
+			for (final Map.Entry<String, ?> e : m.entrySet())
+			{
+				final Element elem = config.createElement(e.getKey());
+				elem.appendChild(config.createTextNode(e.getValue().toString()));
+				sElem.appendChild(elem);
+			}
+
+			return sElem;
+		}
+
+		return null;
 	}
 }

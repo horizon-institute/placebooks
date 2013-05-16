@@ -15,7 +15,7 @@ public abstract class EventHandler
 
 	public EventHandler()
 	{
-		this.handler = createHandler(this);
+		handler = createHandler(this);
 	}
 
 	public EventHandlerFunction getFunction()

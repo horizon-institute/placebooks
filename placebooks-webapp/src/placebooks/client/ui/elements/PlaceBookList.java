@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.UIMessages;
@@ -21,8 +21,6 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PlaceBookList extends CellList<PlaceBookEntry>
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
 	interface Bundle extends ClientBundle
 	{
 		@Source("PlaceBookList.css")
@@ -73,6 +71,8 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 		String listItem();
 	}
 
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
 	private static final Bundle STYLES = GWT.create(Bundle.class);
 
 	private static final PlaceBookEntry newPlaceBook;
@@ -88,9 +88,11 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 	static
 	{
-		newPlaceBook = PlaceBookService
-				.parse(	PlaceBookEntry.class,
-						"{\"key\": \"new\", \"title\": \"" + uiMessages.createNewPlaceBook() + "\", \"description\": \"" + uiMessages.createNewPlaceBookDesc() + "\"}");
+		newPlaceBook = PlaceBooks.getServer().parse(PlaceBookEntry.class,
+													"{\"key\": \"new\", \"title\": \""
+															+ uiMessages.createNewPlaceBook()
+															+ "\", \"description\": \""
+															+ uiMessages.createNewPlaceBookDesc() + "\"}");
 	}
 
 	public PlaceBookList()

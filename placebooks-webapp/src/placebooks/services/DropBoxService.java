@@ -149,7 +149,7 @@ public class DropBoxService extends Service
 		{
 			manager.getTransaction().begin();
 			user.remove(details);
-			manager.merge(user);			
+			manager.merge(user);
 			manager.getTransaction().commit();
 		}
 		catch (final DropboxServerException e)

@@ -16,6 +16,18 @@ public class User extends JavaScriptObject
 		return this.email;
 	}-*/;
 
+	public final Iterable<PlaceBookGroup> getGroups()
+	{
+		return new Iterable<PlaceBookGroup>()
+		{
+			@Override
+			public Iterator<PlaceBookGroup> iterator()
+			{
+				return new JSIterator<PlaceBookGroup>(getGroupsImpl());
+			}
+		};
+	}
+
 	public final Iterable<LoginDetails> getLoginDetails()
 	{
 		return new Iterable<LoginDetails>()
@@ -31,6 +43,15 @@ public class User extends JavaScriptObject
 	public final native String getName()
 	/*-{
 		return this.name;
+	}-*/;
+
+	private final native JsArray<PlaceBookGroup> getGroupsImpl()
+	/*-{
+		if(!('groups' in this))
+		{
+			this.groups = new Array();
+		}
+		return this.groups;
 	}-*/;
 
 	private final native JsArray<LoginDetails> getLoginDetailsImpl()

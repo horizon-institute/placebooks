@@ -10,9 +10,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class BoundaryGenerator
 {
-	protected static final Logger log = 
-		Logger.getLogger(BoundaryGenerator.class.getName());
-
+	protected static final Logger log = Logger.getLogger(BoundaryGenerator.class.getName());
 
 	public abstract void calcBoundary();
 
@@ -32,34 +30,36 @@ public abstract class BoundaryGenerator
 			if (g != null)
 			{
 				// A Geometry with no dimensions has to be handled
-				if (g.getBoundary().isEmpty()) 
+				if (g.getBoundary().isEmpty())
 				{
-					Coordinate[] cs = g.getCoordinates();
-					for (Coordinate c : cs)
+					final Coordinate[] cs = g.getCoordinates();
+					for (final Coordinate c : cs)
 					{
-						minLat = Math.min(minLat, (float)c.x);
-						maxLat = Math.max(maxLat, (float)c.x);
-						minLon = Math.min(minLon, (float)c.y);
-						maxLon = Math.max(maxLon, (float)c.y);
+						minLat = Math.min(minLat, (float) c.x);
+						maxLat = Math.max(maxLat, (float) c.x);
+						minLon = Math.min(minLon, (float) c.y);
+						maxLon = Math.max(maxLon, (float) c.y);
 						emptySet = true;
 					}
 				}
 				else
 				{
 					if (bounds != null)
+					{
 						bounds = g.union(bounds);
+					}
 					else
+					{
 						bounds = g;
+					}
 				}
 			}
 		}
 
 		if (emptySet)
 		{
-			if (minLat == Float.POSITIVE_INFINITY || 
-				maxLat == Float.NEGATIVE_INFINITY ||
-				minLon == Float.POSITIVE_INFINITY || 
-				maxLon == Float.NEGATIVE_INFINITY)
+			if (minLat == Float.POSITIVE_INFINITY || maxLat == Float.NEGATIVE_INFINITY
+					|| minLon == Float.POSITIVE_INFINITY || maxLon == Float.NEGATIVE_INFINITY)
 			{
 				log.error("Warning: empty bounds to calculate were not valid, ignoring");
 			}
@@ -67,17 +67,18 @@ public abstract class BoundaryGenerator
 			{
 				try
 				{
-					Geometry empty = new WKTReader().read(
-									"POLYGON ((" + minLat + " " + minLon + ", "
-												 + minLat + " " + maxLon + ", "
-												 + maxLat + " " + maxLon + ", "
-												 + maxLat + " " + minLon + ", "
-												 + minLat + " " + minLon + "))");
+					final Geometry empty = new WKTReader().read("POLYGON ((" + minLat + " " + minLon + ", " + minLat
+							+ " " + maxLon + ", " + maxLat + " " + maxLon + ", " + maxLat + " " + minLon + ", "
+							+ minLat + " " + minLon + "))");
 					log.info("empty=" + empty);
 					if (bounds != null)
+					{
 						bounds = empty.union(bounds);
+					}
 					else
+					{
 						bounds = empty;
+					}
 				}
 				catch (final Throwable e)
 				{

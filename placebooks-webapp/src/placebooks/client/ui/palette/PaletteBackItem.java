@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class PaletteBackItem extends PaletteItem
 {
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
+
 	private final PaletteFolder parent;
 	private final Palette palette;
 
@@ -27,10 +27,10 @@ public class PaletteBackItem extends PaletteItem
 		final Widget result = super.createWidget();
 
 		image.setVisible(false);
-		
+
 		text.setStyleName(style.backItem());
-		
-		//markerImage.setResource(Resources.IMAGES.back_border());
+
+		// markerImage.setResource(Resources.IMAGES.back_border());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override

@@ -17,7 +17,7 @@ public class ServiceInfo extends JavaScriptObject
 	/*-{
 		return this.url;
 	}-*/;
-	
+
 	public final native boolean isOAuth()
 	/*-{
 		return this.oauth; 

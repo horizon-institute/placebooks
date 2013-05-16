@@ -1,132 +1,140 @@
 package placebooks.client;
 
-import placebooks.client.model.PlaceBookBinder;
-import placebooks.client.model.Shelf;
+import org.wornchaos.client.parser.JavaScriptObjectParser;
+import org.wornchaos.client.server.AbstractJSONServer;
 
-import com.google.gwt.core.client.GWT;
+import placebooks.client.model.PlaceBookBinder;
+import placebooks.client.model.ServerInfo;
+import placebooks.client.model.Shelf;
+import placebooks.client.model.User;
+
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class PlaceBookService
+public class PlaceBookService extends AbstractJSONServer
 {
-	public static void deletePlaceBook(final String key, final RequestCallback callback)
+	public void addGroup(final String placebook, final String group, final AsyncCallback<PlaceBookBinder> callback)
+	{
+		serverRequest(	getHostURL() + "placebooks/a/addgroup", "placebookID=" + placebook + "&groupID=" + group,
+						new JSONCallback<PlaceBookBinder>(callback, new JavaScriptObjectParser<PlaceBookBinder>()));
+	}
+
+	public void deletePlaceBook(final String key, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/admin/deletebinder/" + key, callback);
 	}
 
-	public static String getHostURL()
-	{
-		if (GWT.getModuleBaseURL().endsWith(GWT.getModuleName() + "/")) { return GWT.getModuleBaseURL()
-				.substring(0, (GWT.getModuleBaseURL().length() - GWT.getModuleName().length() - 1)); }
-
-		return GWT.getModuleBaseURL();
-	}
-
-	public static void getPaletteItems(final RequestCallback callback)
+	public void getPaletteItems(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/palette", callback);
 	}
 
-	public static void getPlaceBook(final String key, final JSONResponse<PlaceBookBinder> callback)
+	public void getPlaceBook(final String key, final AsyncCallback<PlaceBookBinder> callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/placebookbinder/" + key, callback);
+		serverRequest(getHostURL() + "placebooks/a/placebookbinder/" + key, new JSONCallback<PlaceBookBinder>(callback,
+				new JavaScriptObjectParser<PlaceBookBinder>()));
 	}
 
-	public static void getRandomPlaceBooks(final int count, final RequestCallback callback)
+	public void getPlaceBookGroup(final String id, final AsyncCallback<Shelf> callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/group/" + id, new JSONCallback<Shelf>(callback,
+				new JavaScriptObjectParser<Shelf>()));
+	}
+
+	public void getRandomPlaceBooks(final int count, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/randomized/" + count, callback);
 	}
 
-	public static void linkAccount(final String username, final String password, final String service,
-			final JSONResponse<Shelf> callback)
+	public void getServerInfo(final AsyncCallback<ServerInfo> callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/admin/serverinfo", new JSONCallback<ServerInfo>(callback,
+				new JavaScriptObjectParser<ServerInfo>()));
+	}
+
+	public void getShelf(final AsyncCallback<Shelf> callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/shelf", new JSONCallback<Shelf>(callback,
+				new JavaScriptObjectParser<Shelf>()));
+	}
+
+	public void getUser(final AsyncCallback<User> callback)
+	{
+		serverRequest(getHostURL() + "placebooks/a/currentUser", new JSONCallback<User>(callback,
+				new JavaScriptObjectParser<User>()));
+	}
+
+	public void linkAccount(final String username, final String password, final String service,
+			final AsyncCallback<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/addLoginDetails", "username=" + username + "&password=" + password
-				+ "&service=" + service, callback);
+				+ "&service=" + service, new JSONCallback<Shelf>(callback, new JavaScriptObjectParser<Shelf>()));
 	}
 
-	public static void login(final String email, final String password, final JSONResponse<Shelf> callback)
+	public void login(final String email, final String password, final AsyncCallback<Shelf> callback)
 	{
 		serverRequest(getHostURL() + "j_spring_security_check", "j_username=" + email + "&j_password=" + password
-				+ "&_spring_security_remember_me=true", callback);
+				+ "&_spring_security_remember_me=true", new JSONCallback<Shelf>(callback,
+				new JavaScriptObjectParser<Shelf>()));
 	}
 
-	public static void logout(final RequestCallback callback)
+	public void logout(final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "j_spring_security_logout", callback);
 	}
 
 	// public static final native <T extends JavaScriptObject> T parse(Class<T> clazz, String json)
 	// /*-{ return eval('(' + json + ')'); }-*/;
-	public static final <T extends JavaScriptObject> T parse(final Class<T> clazz, final String json)
+	public final <T extends JavaScriptObject> T parse(final Class<T> clazz, final String json)
 	{
 		return JSONParser.parseStrict(json).isObject().getJavaScriptObject().<T> cast();
 	}
 
-	public static void publishPlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)
+	public void publishPlaceBook(final PlaceBookBinder placebook, final RequestCallback callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/publishplacebookbinder",
 						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
 	}
 
-	public static void registerAccount(final String name, final String email, final String password,
+	public void registerAccount(final String name, final String email, final String password,
 			final AbstractCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/createUserAccount", "name=" + name + "&email=" + email
 				+ "&password=" + password, callback);
 	}
 
-	public static void savePlaceBook(final PlaceBookBinder placebook, final JSONResponse<PlaceBookBinder> callback)
+	public void savePlaceBook(final PlaceBookBinder placebook, final AsyncCallback<PlaceBookBinder> callback)
 	{
 		serverRequest(	getHostURL() + "placebooks/a/saveplacebookbinder",
-						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()), callback);
+						"placebookbinder=" + URL.encodePathSegment(new JSONObject(placebook).toString()),
+						new JSONCallback<PlaceBookBinder>(callback, new JavaScriptObjectParser<PlaceBookBinder>()));
 	}
 
-	public static void search(final String search, final JSONResponse<Shelf> callback)
+	public void savePlaceBookGroup(final Shelf shelf, final AsyncCallback<Shelf> callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search), callback);
+		serverRequest(	getHostURL() + "placebooks/a/savegroup",
+						"group=" + URL.encodePathSegment(new JSONObject(shelf).toString()), new JSONCallback<Shelf>(
+								callback, new JavaScriptObjectParser<Shelf>()));
 	}
 
-	public static void searchLocation(final String geometry, final JSONResponse<Shelf> callback)
+	public void search(final String search, final AsyncCallback<Shelf> callback)
 	{
-		serverRequest(getHostURL() + "placebooks/a/admin/location_search/placebookbinder/" + geometry, callback);
+		serverRequest(	getHostURL() + "placebooks/a/admin/search", "terms=" + URL.encodeQueryString(search),
+						new JSONCallback<Shelf>(callback, new JavaScriptObjectParser<Shelf>()));
 	}
 
-	public static void sync(final String service, final RequestCallback callback)
+	public void searchLocation(final String geometry, final AsyncCallback<Shelf> callback)
+	{
+		serverRequest(	getHostURL() + "placebooks/a/admin/location_search/placebookbinder/" + geometry,
+						new JSONCallback<Shelf>(callback, new JavaScriptObjectParser<Shelf>()));
+	}
+
+	public void sync(final String service, final RequestCallback callback)
 	{
 		serverRequest(getHostURL() + "placebooks/a/sync/" + service, callback);
-	}
-
-	private static void serverRequest(final String url, final RequestBuilder.Method method, final String data,
-			final RequestCallback callback)
-	{
-		GWT.log("Request: " + url);
-		final RequestBuilder builder = new RequestBuilder(method, URL.encode(url));
-		if (data != null)
-		{
-			builder.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			GWT.log("Request data: " + URL.decodePathSegment(data));
-		}
-		try
-		{
-			builder.sendRequest(data, callback);
-		}
-		catch (final Exception e)
-		{
-			GWT.log(e.getMessage(), e);
-		}
-	}
-
-	private static void serverRequest(final String url, final RequestCallback callback)
-	{
-		serverRequest(url, RequestBuilder.GET, null, callback);
-	}
-
-	private static void serverRequest(final String url, final String data, final RequestCallback callback)
-	{
-		serverRequest(url, RequestBuilder.POST, data, callback);
 	}
 }

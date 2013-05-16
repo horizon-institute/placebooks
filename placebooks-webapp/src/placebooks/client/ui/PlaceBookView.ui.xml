@@ -4,7 +4,7 @@
 	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
 	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
 	ui:generateLocales="en">
-	<ui:style>
+	<ui:style type='placebooks.client.ui.PlaceBookView.Style'>
 		.infoPanel {
 			padding: 0px 30px;
 			background: #EEE;
@@ -41,6 +41,14 @@
 			padding: 5px;
 		}
 		
+		.groupTag {
+			padding: 3px 8px;
+			background: #999;
+			border-radius: 3px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
 		.bookPanel {
 			position: absolute;
 			top: 92px;
@@ -78,7 +86,7 @@
 		
 		.right {
 			float: right;
-			padding-top: 15px;
+			margin-top: 15px;
 		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">

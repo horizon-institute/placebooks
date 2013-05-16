@@ -32,8 +32,7 @@ public class TextItem extends PlaceBookItem
 		setText(new String(t.getText()));
 	}
 
-	public TextItem(final User owner, final Geometry geom, final URL sourceURL,
-					final String text)
+	public TextItem(final User owner, final Geometry geom, final URL sourceURL, final String text)
 	{
 		super(owner, geom, sourceURL);
 		setText(text);
@@ -42,10 +41,10 @@ public class TextItem extends PlaceBookItem
 	@Override
 	public void appendConfiguration(final Document config, final Element root)
 	{
-		log.debug("TextItem.appendConfiguration(), text=" + this.getText());
+		log.debug("TextItem.appendConfiguration(), text=" + getText());
 		final Element item = getConfigurationHeader(config);
 		final Element text = config.createElement("text");
-		text.appendChild(config.createTextNode(this.getText()));
+		text.appendChild(config.createTextNode(getText()));
 		item.appendChild(text);
 		root.appendChild(item);
 	}
@@ -73,7 +72,9 @@ public class TextItem extends PlaceBookItem
 		return text;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
 	 */
 	@Override
@@ -86,9 +87,9 @@ public class TextItem extends PlaceBookItem
 		{
 			pm.getTransaction().begin();
 			item = ItemFactory.getExistingItem(this, pm);
-			if(item != null)
+			if (item != null)
 			{
-				
+
 				item.update(this);
 				pm.persist(item);
 				returnItem = item;
@@ -116,16 +117,16 @@ public class TextItem extends PlaceBookItem
 	{
 		this.text = text;
 		index.clear();
-		index.addAll(SearchHelper.getIndex(text.replaceAll("\\<.*?\\>","")));
+		index.addAll(SearchHelper.getIndex(text.replaceAll("\\<.*?\\>", "")));
 	}
 
 	@Override
-	public void updateItem(PlaceBookItem item)
+	public void updateItem(final PlaceBookItem item)
 	{
 		super.updateItem(item);
-		if(item instanceof TextItem)
+		if (item instanceof TextItem)
 		{
-			setText(((TextItem)item).getText());
+			setText(((TextItem) item).getText());
 		}
 	}
 }

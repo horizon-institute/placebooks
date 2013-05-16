@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.PlaceBookHome;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.DragController;
+import placebooks.client.ui.places.Home;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -47,8 +46,7 @@ public class Palette extends FlowPanel
 
 	private PaletteFolder currentFolder = null;
 
-	private PlaceBookController controller;
-	private PlaceController placeController;
+	private DragController controller;
 
 	private final Timer timer = new Timer()
 	{
@@ -63,20 +61,14 @@ public class Palette extends FlowPanel
 	{
 	}
 
-	public void setControllers(final PlaceBookController controller, final PlaceController placeController)
+	public void setDragController(final DragController controller)
 	{
 		this.controller = controller;
-		this.placeController = placeController;
 		setPalette(null);
 		updatePalette();
 		timer.scheduleRepeating(6000);
 	}
 
-	public void stop()
-	{
-		timer.cancel();
-	}
-	
 	public void setPaletteFolder(final PaletteFolder folder)
 	{
 		currentFolder = folder;
@@ -101,16 +93,21 @@ public class Palette extends FlowPanel
 		}
 	}
 
+	public void stop()
+	{
+		timer.cancel();
+	}
+
 	public void updatePalette()
 	{
-		PlaceBookService.getPaletteItems(new AbstractCallback()
+		PlaceBooks.getServer().getPaletteItems(new AbstractCallback()
 		{
 			@Override
 			public void failure(final Request request, final Response response)
 			{
 				if (response.getStatusCode() == 401)
 				{
-					placeController.goTo(new PlaceBookHome());
+					PlaceBooks.goTo(new Home());
 				}
 			}
 
@@ -168,15 +165,17 @@ public class Palette extends FlowPanel
 	{
 		final PaletteFolder root = new PaletteFolder("root", null, this);
 
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_HEADER_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_TEXT_LIST_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_IMAGE_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_VIDEO_ITEM), controller));
-		// root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class,
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_TEXT_HEADER_ITEM),
+				controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_TEXT_ITEM), controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_TEXT_LIST_ITEM),
+				controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_IMAGE_ITEM), controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_VIDEO_ITEM), controller));
+		// root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class,
 		// NEW_WEB_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_GPS_ITEM), controller));
-		root.add(new PalettePlaceBookItem(PlaceBookService.parse(PlaceBookItem.class, NEW_AUDIO_ITEM), controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_GPS_ITEM), controller));
+		root.add(new PalettePlaceBookItem(PlaceBooks.getServer().parse(PlaceBookItem.class, NEW_AUDIO_ITEM), controller));
 
 		if (items != null)
 		{

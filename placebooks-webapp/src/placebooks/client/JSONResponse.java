@@ -1,6 +1,7 @@
 package placebooks.client;
 
-import com.google.gwt.core.client.GWT;
+import org.wornchaos.client.logger.Log;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -24,14 +25,14 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 	@Override
 	public void onError(final Request request, final Throwable throwable)
 	{
-		GWT.log("Error: " + throwable.getMessage(), throwable);
+		Log.error("Error: " + throwable.getMessage(), throwable);
 		handleError(request, null, throwable);
 	}
 
 	@Override
 	public void onResponseReceived(final Request request, final Response response)
 	{
-		GWT.log("Response: " + response.getStatusCode() + ": " + response.getText());
+		Log.info("Response: " + response.getStatusCode() + ": " + response.getText());
 		try
 		{
 			if (response.getStatusCode() == 200)
@@ -39,7 +40,7 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 				final T result = parse(response.getText());
 				if (result == null)
 				{
-					GWT.log("Error: 'null' parsed from " + response.getText());
+					Log.error("Error: 'null' parsed from " + response.getText());
 					handleError(request, response, new NullPointerException());
 				}
 				handleResponse(result);
@@ -51,7 +52,7 @@ public abstract class JSONResponse<T extends JavaScriptObject> implements Reques
 		}
 		catch (final Exception e)
 		{
-			GWT.log("Error: " + response.getText(), e);
+			Log.error("Error: " + response.getText(), e);
 			handleError(request, response, e);
 		}
 	}

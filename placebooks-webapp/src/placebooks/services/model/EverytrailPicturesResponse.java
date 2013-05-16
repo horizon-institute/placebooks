@@ -5,6 +5,7 @@ package placebooks.services.model;
 
 import java.util.Collection;
 import java.util.HashMap;
+
 import org.w3c.dom.Node;
 
 /**
@@ -21,8 +22,8 @@ public class EverytrailPicturesResponse
 	/**
 	 * 
 	 */
-	public EverytrailPicturesResponse(final String status, final HashMap<String, Node> picturesMap, 
-			 final HashMap<String, String> pictureTrips,  final HashMap<String, String> tripNames)
+	public EverytrailPicturesResponse(final String status, final HashMap<String, Node> picturesMap,
+			final HashMap<String, String> pictureTrips, final HashMap<String, String> tripNames)
 	{
 		this.status = status;
 		this.picturesMap = picturesMap;
@@ -32,31 +33,31 @@ public class EverytrailPicturesResponse
 
 	public Collection<Node> getPictures()
 	{
-		return this.picturesMap.values();
+		return picturesMap.values();
 	}
 
 	/**
 	 * Get a map listing pictures with key of trip_id
+	 * 
 	 * @return Map<String, Node>
 	 */
 	public HashMap<String, Node> getPicturesMap()
 	{
-		return this.picturesMap;
+		return picturesMap;
 	}
-	
+
 	public HashMap<String, String> getPictureTrips()
 	{
-		return this.pictureTrips;
+		return pictureTrips;
 	}
-	
-	
+
 	public String getStatus()
 	{
-		return this.status;
+		return status;
 	}
-	
+
 	public HashMap<String, String> getTripNames()
 	{
-		return this.tripNames;
+		return tripNames;
 	}
 }

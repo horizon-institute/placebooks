@@ -22,7 +22,7 @@ public class Map extends JavaScriptObject
 			controls : [
 						new $wnd.OpenLayers.Control.Navigation(),
 							new $wnd.OpenLayers.Control.PanZoomBar(),
-	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
+							new $wnd.OpenLayers.Control.LayerSwitcher(),
 	//						new $wnd.OpenLayers.Control.Attribution()
 					],
 			units: "m",
@@ -39,7 +39,7 @@ public class Map extends JavaScriptObject
 			controls : [
 						new $wnd.OpenLayers.Control.Navigation(),
 	//						new $wnd.OpenLayers.Control.PanZoomBar(),
-	//						new $wnd.OpenLayers.Control.LayerSwitcher(),
+							new $wnd.OpenLayers.Control.LayerSwitcher(),
 	//						new $wnd.OpenLayers.Control.Attribution()
 					],
 			units: "m",

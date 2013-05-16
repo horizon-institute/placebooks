@@ -27,11 +27,11 @@ public class EverytrailTripsResponse
 
 	public String getStatus()
 	{
-		return this.status;
+		return status;
 	}
 
 	public Vector<Node> getTrips()
 	{
-		return this.trips;
+		return trips;
 	}
 }

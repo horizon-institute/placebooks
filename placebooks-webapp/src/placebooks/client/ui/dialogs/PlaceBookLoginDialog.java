@@ -18,11 +18,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookLoginDialog extends PlaceBookDialog
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
 	interface LoginDialogUiBinder extends UiBinder<Widget, PlaceBookLoginDialog>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static LoginDialogUiBinder uiBinder = GWT.create(LoginDialogUiBinder.class);
 

@@ -12,7 +12,7 @@ public class PlaceBookItemDistanceEntry extends PlaceBookItemEntry
 	{
 		super(p);
 		this.distance = distance;
-		this.ownerName = p.getOwner().getName();
+		ownerName = p.getOwner().getName();
 	}
 
 	public double getDistance()

@@ -6,13 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.wornchaos.client.ui.View;
+
 import placebooks.client.AbstractCallback;
-import placebooks.client.JSONResponse;
-import placebooks.client.PlaceBookService;
-import placebooks.client.model.DataStore;
+import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.ServerInfoController;
+import placebooks.client.controllers.UserController;
 import placebooks.client.model.LoginDetails;
 import placebooks.client.model.ServerInfo;
-import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.ServiceInfo;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
@@ -33,6 +34,7 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -40,15 +42,13 @@ import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionModel;
 
-public class PlaceBookAccountsDialog extends PlaceBookDialog
+public class PlaceBookAccountsDialog extends PlaceBookDialog implements View<User>
 {
 	interface PlaceBookAccountsDialogUiBinder extends UiBinder<Widget, PlaceBookAccountsDialog>
 	{
 	}
 
 	private static final UIMessages uiConstants = GWT.create(UIMessages.class);
-	
-	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
 
 	private static PlaceBookAccountsDialogUiBinder uiBinder = GWT.create(PlaceBookAccountsDialogUiBinder.class);
 
@@ -68,32 +68,114 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 	Panel buttonPanel;
 
 	private CellTable<LoginDetails> cellTable;
-	private User user;
 
-	private ServerInfo info;
-
-	private final DataStore<User> userStore = new DataStore<User>()
+	public PlaceBookAccountsDialog()
 	{
-		@Override
-		protected String getRequestURL(final String id)
-		{
-			return getHostURL() + "placebooks/a/currentUser";
-		}
-
-		@Override
-		protected String getStorageID(final String id)
-		{
-			return "current.user";
-		}
-	};
-
-	public PlaceBookAccountsDialog(final User user)
-	{
-		this.user = user;
 		setWidget(uiBinder.createAndBindUi(this));
 		onInitialize();
 		center();
 		updateUser();
+	}
+
+	@Override
+	public void itemChanged(final User user)
+	{
+		final Map<String, ServiceInfo> services = new HashMap<String, ServiceInfo>();
+		if (ServerInfoController.getController().getItem() != null)
+		{
+			for (final ServiceInfo service : ServerInfoController.getController().getItem().getServices())
+			{
+				services.put(service.getName(), service);
+			}
+		}
+
+		boolean syncing = false;
+		final List<LoginDetails> list = new ArrayList<LoginDetails>();
+		for (final LoginDetails details : user.getLoginDetails())
+		{
+			if (details.isSyncInProgress())
+			{
+				syncing = true;
+			}
+			services.remove(details.getService());
+			list.add(details);
+		}
+
+		if (syncing)
+		{
+			new Timer()
+			{
+				@Override
+				public void run()
+				{
+					updateUser();
+				}
+			}.schedule(1000);
+		}
+
+		buttonPanel.clear();
+		cellTable.setRowData(list);
+
+		for (final ServiceInfo service : services.values())
+		{
+			if (service.isOAuth())
+			{
+				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
+				{
+					@Override
+					public void onClick(final ClickEvent arg0)
+					{
+						Window.Location.replace(PlaceBooks.getServer().getHostURL() + "placebooks/a/oauth?service="
+								+ service.getName());
+					}
+				}));
+			}
+			else
+			{
+				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
+				{
+					@Override
+					public void onClick(final ClickEvent arg0)
+					{
+						final PlaceBookLoginDialog account = new PlaceBookLoginDialog(uiConstants.linkAccount(service
+								.getName()), uiConstants.linkAccount(), service.getName() + " "
+								+ uiConstants.username() + ":");
+						account.addClickHandler(new ClickHandler()
+						{
+
+							@Override
+							public void onClick(final ClickEvent event)
+							{
+								account.setProgress(true);
+								PlaceBooks.getServer().linkAccount(account.getUsername(), account.getPassword(),
+																	service.getName(), new AsyncCallback<Shelf>()
+																	{
+
+																		@Override
+																		public void onFailure(final Throwable throwable)
+																		{
+																			account.setError(uiConstants
+																					.loginFailed(service.getName()));
+																			account.setProgress(false);
+																		}
+
+																		@Override
+																		public void onSuccess(final Shelf shelf)
+																		{
+																			account.hide();
+																			itemChanged(shelf.getUser());
+																		}
+																	});
+							}
+						});
+
+						account.show();
+					}
+				}));
+			}
+		}
+
+		center();
 	}
 
 	/**
@@ -174,7 +256,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 			@Override
 			public void update(final int index, final LoginDetails object, final LoginDetails value)
 			{
-				PlaceBookService.sync(object.getService(), new AbstractCallback()
+				PlaceBooks.getServer().sync(object.getService(), new AbstractCallback()
 				{
 					@Override
 					public void success(final Request request, final Response response)
@@ -182,7 +264,6 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 					}
 				});
 				object.setSyncInProgress(true);
-				setUser(user);
 			}
 		});
 		cellTable.addColumn(updateColumn);
@@ -200,133 +281,23 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog
 
 		tablePanel.add(cellTable);
 
-		setUser(user);
-	}
-
-	private void setUser(final User user)
-	{
-		this.user = user;
-
-		final Map<String, ServiceInfo> services = new HashMap<String, ServiceInfo>();
-		if (info != null)
+		UserController.getController().add(this);
+		ServerInfoController.getController().add(new View<ServerInfo>()
 		{
-			for (final ServiceInfo service : info.getServices())
+
+			@Override
+			public void itemChanged(final ServerInfo value)
 			{
-				services.put(service.getName(), service);
+				// TODO Auto-generated method stub
+
 			}
-		}
-
-		boolean syncing = false;
-		final List<LoginDetails> list = new ArrayList<LoginDetails>();
-		for (final LoginDetails details : user.getLoginDetails())
-		{
-			if (details.isSyncInProgress())
-			{
-				syncing = true;
-			}
-			services.remove(details.getService());
-			list.add(details);
-		}
-
-		if (syncing)
-		{
-			new Timer()
-			{
-				@Override
-				public void run()
-				{
-					updateUser();
-				}
-			}.schedule(1000);
-		}
-
-		buttonPanel.clear();
-		cellTable.setRowData(list);
-
-		for (final ServiceInfo service : services.values())
-		{
-			if (service.isOAuth())
-			{
-				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
-				{
-					@Override
-					public void onClick(final ClickEvent arg0)
-					{
-						Window.Location.replace(PlaceBookService.getHostURL() + "placebooks/a/oauth?service=" + service.getName());
-					}
-				}));
-			}
-			else
-			{
-				buttonPanel.add(new Button(uiConstants.linkAccount(service.getName()), new ClickHandler()
-				{
-					@Override
-					public void onClick(final ClickEvent arg0)
-					{
-						final PlaceBookLoginDialog account = new PlaceBookLoginDialog(uiConstants.linkAccount(service.getName()),
-								uiConstants.linkAccount(), service.getName() + " " + uiConstants.username() + ":");
-						account.addClickHandler(new ClickHandler()
-						{
-
-							@Override
-							public void onClick(final ClickEvent event)
-							{
-								account.setProgress(true);
-								PlaceBookService.linkAccount(	account.getUsername(), account.getPassword(),
-																service.getName(), new JSONResponse<Shelf>()
-																{
-
-																	@Override
-																	public void handleError(final Request request,
-																			final Response response,
-																			final Throwable throwable)
-																	{
-																		account.setError(uiConstants.loginFailed(service.getName()));
-																		account.setProgress(false);
-																	}
-
-																	@Override
-																	public void handleResponse(final Shelf shelf)
-																	{
-																		account.hide();
-																		setUser(shelf.getUser());
-																	}
-																});
-							}
-						});
-
-						account.show();
-					}
-				}));
-			}
-		}
-
-		center();
+		});
 	}
 
 	private void updateUser()
 	{
 		if (!isShowing()) { return; }
-		userStore.get(null, new JSONResponse<User>()
-		{
-			@Override
-			public void handleResponse(final User object)
-			{
-				setUser(object);
-			}
-		}, true);
-		infoStore.get(null, new JSONResponse<ServerInfo>()
-		{
-
-			@Override
-			public void handleResponse(final ServerInfo object)
-			{
-				if (object != null)
-				{
-					info = object;
-				}
-				setUser(user);
-			}
-		}, true);
+		UserController.getController().refresh();
+		ServerInfoController.getController().refresh();
 	}
 }

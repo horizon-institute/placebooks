@@ -1,7 +1,6 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -9,9 +8,9 @@ public class QTVideoItem extends MediaItem
 {
 	private QTVideo video;
 
-	QTVideoItem(final PlaceBookItem item, final PlaceBookController handler)
+	QTVideoItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
+		super(controller);
 
 		video = new QTVideo();
 

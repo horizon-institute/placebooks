@@ -1,10 +1,9 @@
 package placebooks.client.ui.elements;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.Resources;
 import placebooks.client.model.PlaceBookEntry;
-import placebooks.client.ui.PlaceBookPlace;
-import placebooks.client.ui.PlaceBookPreview;
+import placebooks.client.ui.places.PlaceBook;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,7 +40,7 @@ public class PlaceBookEntryPreview extends Composite
 	@UiField
 	FlowPanel container;
 
-	public PlaceBookEntryPreview(final PlaceBookPlace place, final PlaceBookEntry entry)
+	public PlaceBookEntryPreview(final PlaceBookEntry entry)
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
@@ -54,7 +53,7 @@ public class PlaceBookEntryPreview extends Composite
 
 		if (entry.getPreviewImage() != null)
 		{
-			image.setUrl(PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/imageitem/"
+			image.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/serve/media/imageitem/"
 					+ entry.getPreviewImage());
 		}
 		else
@@ -67,7 +66,7 @@ public class PlaceBookEntryPreview extends Composite
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), entry.getKey()));
+				PlaceBooks.goTo(new PlaceBook(entry.getKey()));
 			}
 		}, ClickEvent.getType());
 

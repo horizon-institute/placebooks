@@ -1,7 +1,7 @@
 package placebooks.client.ui.dialogs;
 
 import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.core.client.GWT;
@@ -17,11 +17,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 {
-	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
-	
 	interface CreateAccountUiBinder extends UiBinder<Widget, PlaceBookCreateAccountDialog>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static CreateAccountUiBinder uiBinder = GWT.create(CreateAccountUiBinder.class);
 
@@ -93,11 +93,11 @@ public class PlaceBookCreateAccountDialog extends PlaceBookDialog
 
 		createAccount.setEnabled(true);
 	}
-	
+
 	@UiHandler("createAccount")
 	void createAccount(final ClickEvent event)
 	{
 		createAccount.setEnabled(false);
-		PlaceBookService.registerAccount(name.getText(), email.getText(), password.getText(), callback);
+		PlaceBooks.getServer().registerAccount(name.getText(), email.getText(), password.getText(), callback);
 	}
 }
