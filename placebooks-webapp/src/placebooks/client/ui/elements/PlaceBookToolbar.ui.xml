@@ -25,9 +25,7 @@
 			z-index: 1800;
 			background: #000;
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-			-webkit-transition: clip 0.2s linear;
-			-moz-transition: clip 0.2s linear;			
-	        transition: clip 0.5s linear;  			
+	        transition: clip 0.2s linear;  			
 		}		
 		
 		.left {

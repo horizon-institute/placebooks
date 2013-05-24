@@ -68,12 +68,12 @@ public class DropMenu extends FlowPanel implements HasMouseOverHandlers, HasMous
 		if (!showing)
 		{
 			showing = true;
-			getElement().getStyle().setProperty("clip",
-												"rect(0px, 500px, " + (getElement().getClientHeight() + 10)
-														+ "px, 0px)");
 			getElement().getStyle().setTop(y, Unit.PX);
 			getElement().getStyle().setLeft(x, Unit.PX);
 			updateHandlers();
+			getElement().getStyle().setProperty("clip",
+												"rect(0px, 500px, " + (getElement().getClientHeight() + 10)
+														+ "px, 0px)");			
 		}
 	}
 

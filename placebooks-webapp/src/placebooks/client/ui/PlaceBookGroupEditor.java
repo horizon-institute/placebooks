@@ -1,7 +1,7 @@
 package placebooks.client.ui;
 
 import org.wornchaos.client.server.AbstractAsyncCallback;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.GroupController;

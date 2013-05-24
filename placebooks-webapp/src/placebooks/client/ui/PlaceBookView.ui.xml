@@ -61,9 +61,7 @@
 			position: absolute;
 			z-index: 3000;
 			padding: 0px;
-			-moz-transition: opacity .5s linear, visibility .5s linear;
-			-webkit-transition: opacity .5s linear, visibility .5s linear;
-			transition: opacity .5s linear, visibility .5s linear;
+			transition: clip 0.1s linear;
 			background: #FFF;
 			-moz-box-shadow: 3px 3px 4px #222;
 			-webkit-box-shadow: 3px 3px 4px #222;

@@ -1,7 +1,7 @@
 package placebooks.client.ui.items;
 
 import org.wornchaos.client.logger.Log;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.controllers.ServerInfoController;

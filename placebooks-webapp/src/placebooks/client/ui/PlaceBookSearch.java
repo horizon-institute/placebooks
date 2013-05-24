@@ -2,7 +2,7 @@ package placebooks.client.ui;
 
 import java.util.Comparator;
 
-import org.wornchaos.client.controller.AbstractReadOnlyController;
+import org.wornchaos.client.controller.CachedController;
 import org.wornchaos.client.logger.Log;
 
 import placebooks.client.PlaceBooks;
@@ -42,7 +42,7 @@ public class PlaceBookSearch extends PlaceBookPage
 
 	private static PlaceBookMapSearchUiBinder uiBinder = GWT.create(PlaceBookMapSearchUiBinder.class);
 
-	private final AbstractReadOnlyController<Shelf> controller = new AbstractReadOnlyController<Shelf>()
+	private final CachedController<Shelf> controller = new CachedController<Shelf>()
 	{
 		@Override
 		protected void load(final String id, final AsyncCallback<Shelf> callback)

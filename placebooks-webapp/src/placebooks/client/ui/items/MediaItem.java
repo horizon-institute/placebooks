@@ -24,7 +24,7 @@ public abstract class MediaItem extends PlaceBookItemView
 	private final Panel panel;
 	private String hash = null;
 	private final Image markerImage = new Image();
-
+	
 	private final Timer loadTimer = new Timer()
 	{
 		@Override
@@ -37,6 +37,7 @@ public abstract class MediaItem extends PlaceBookItemView
 	protected MediaItem(final PlaceBookItemController controller)
 	{
 		super(controller);
+		
 		panel = new FlowPanel();
 		panel.setWidth("100%");
 		panel.setHeight("100%");
@@ -77,7 +78,7 @@ public abstract class MediaItem extends PlaceBookItemView
 			{
 				panel.clear();
 			}
-			if (!panel.iterator().hasNext())
+			if (!panel.iterator().hasNext() && getController().canEdit())
 			{
 				final FlowPanel uploadPanel = new FlowPanel();
 				uploadPanel.setWidth("100%");

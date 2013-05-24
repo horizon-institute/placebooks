@@ -1,7 +1,7 @@
 package placebooks.client.ui.elements;
 
-import org.wornchaos.client.controller.ControllerState;
-import org.wornchaos.client.controller.ControllerStateListener;
+import org.wornchaos.controllers.ControllerState;
+import org.wornchaos.controllers.ControllerStateListener;
 
 import placebooks.client.Resources;
 import placebooks.client.ui.UIMessages;

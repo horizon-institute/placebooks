@@ -1,6 +1,6 @@
 package placebooks.client.ui;
 
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.GroupController;
@@ -82,7 +82,7 @@ public class PlaceBookGroupView extends PlaceBookPage implements View<Shelf>
 		if (imagePanel.getWidget() == null)
 		{
 			final PlaceBookItemController itemController = new PlaceBookItemController(shelf.getGroup().getItem(),
-					controller);
+					controller, false);
 			imagePanel.setWidget(new ImageItem(itemController));
 		}
 		else

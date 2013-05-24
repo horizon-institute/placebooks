@@ -1,10 +1,10 @@
 package placebooks.client.ui.dialogs;
 
-import org.wornchaos.client.controller.Controller;
-import org.wornchaos.client.controller.ControllerState;
-import org.wornchaos.client.controller.ControllerStateListener;
 import org.wornchaos.client.logger.Log;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.controllers.SomethingController;
+import org.wornchaos.controllers.ControllerState;
+import org.wornchaos.controllers.ControllerStateListener;
+import org.wornchaos.views.View;
 
 import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.ServerInfoController;
@@ -62,9 +62,9 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 
 	private final PlaceBookItemView item;
 
-	private final Controller<?> controller;
+	private final SomethingController<?> controller;
 
-	public PlaceBookUploadDialog(final Controller<?> controller, final PlaceBookItemView item)
+	public PlaceBookUploadDialog(final SomethingController<?> controller, final PlaceBookItemView item)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 

@@ -96,7 +96,7 @@ public class PalettePlaceBookItem extends PaletteItem
 			newItem.removeMetadata("originalItemID");
 		}
 		newItem.setMetadata("tempID", "" + System.currentTimeMillis());
-		final PlaceBookItemController itemController = new PlaceBookItemController(newItem, controller.getSaveItem());
+		final PlaceBookItemController itemController = new PlaceBookItemController(newItem, controller.getSaveItem(), true);
 		return PlaceBookItemViewFactory.createItemWidget(itemController);
 	}
 }

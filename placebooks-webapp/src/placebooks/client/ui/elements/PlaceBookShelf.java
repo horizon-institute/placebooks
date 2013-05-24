@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.wornchaos.client.ui.CompositeView;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.Resources;
 import placebooks.client.controllers.ServerInfoController;

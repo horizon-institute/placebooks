@@ -3,7 +3,7 @@ package placebooks.client.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBooks;
@@ -123,7 +123,12 @@ public class PlaceBookView extends PlaceBookPage implements View<PlaceBookBinder
 	{
 		final User user = UserController.getUser();
 		if ("PUBLISHED".equals(binder.getState())) { return; }
-		if (binder.getOwner() != null && binder.getOwner().getEmail().equals(user.getEmail())) { return; }
+		if (binder.getOwner() == null) { return; }
+		if (user.getEmail().equals(binder.getOwner().getEmail()))
+		{
+			UserController.getController().setItem(binder.getOwner());
+			return;
+		}
 		if (binder.getPermissions().containsKey(user.getEmail())) { return; }
 		PlaceBooks.goTo(new Home());
 	}

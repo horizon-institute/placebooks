@@ -1,7 +1,7 @@
 package placebooks.client.ui;
 
 import org.wornchaos.client.server.AbstractAsyncCallback;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.controllers.UserController;
 import placebooks.client.model.PlaceBookGroup;
@@ -40,7 +40,7 @@ public class PlaceBookGroups extends PlaceBookPage implements View<User>
 		Window.setTitle(uiMessages.placebooksLibrary());
 
 		UserController.getController().add(this);
-		UserController.getController().load();
+		UserController.getController().refresh();
 
 		return library;
 	}

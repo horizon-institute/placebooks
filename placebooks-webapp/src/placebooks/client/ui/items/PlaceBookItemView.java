@@ -1,5 +1,6 @@
 package placebooks.client.ui.items;
 
+import org.wornchaos.client.logger.Log;
 import org.wornchaos.client.ui.CompositeView;
 
 import placebooks.client.controllers.PlaceBookItemController;
@@ -42,8 +43,12 @@ public abstract class PlaceBookItemView extends CompositeView<PlaceBookItem>
 	@Override
 	public void itemChanged(final PlaceBookItem newItem)
 	{
+		Log.info("Item " + newItem.getKey() + " updated");
 		controller.setItem(newItem);
-		newItem.removeMetadata("tempID");
+		if(newItem.getKey() != null)
+		{
+			newItem.removeMetadata("tempID");
+		}
 
 		refresh();
 	}

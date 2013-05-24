@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.wornchaos.client.logger.Log;
 
 import placebooks.model.AudioItem;
 import placebooks.model.GPSTraceItem;
@@ -177,7 +178,7 @@ public class PlaceBooksAdminController
 	{
 		return "account";
 	}
-
+	
 	@RequestMapping(value = "/addgroup", method = RequestMethod.POST)
 	public void addGroup(@RequestParam final String groupID, @RequestParam final String placebookID, final HttpServletResponse res)
 	{
@@ -1403,7 +1404,6 @@ public class PlaceBooksAdminController
 	public void serveMedia(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("type") final String type, @PathVariable("hash") final String hash)
 	{
-
 		String itemPath = "";
 		if (type.equalsIgnoreCase("imageitem"))
 		{
@@ -1812,6 +1812,7 @@ public class PlaceBooksAdminController
 
 			PlaceBookBinder.Permission perms = PlaceBookBinder.Permission.R_W;
 
+			Log.info("Upload: " + itemKey);
 			PlaceBookItem item = null;
 			if (itemKey != null)
 			{

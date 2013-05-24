@@ -80,8 +80,6 @@ public class PlaceBookToolbar extends CompositeView<User>
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		UserController.getController().add(this);
-
 		final String[] languageNames = LocaleInfo.getAvailableLocaleNames();
 		if (languageNames.length <= 3)
 		{
@@ -164,6 +162,7 @@ public class PlaceBookToolbar extends CompositeView<User>
 			languageItem.setVisible(false);
 		}
 
+		UserController.getController().add(this);		
 		UserController.getController().load();
 		//
 		// userStore.get(null, new JSONResponse<User>()
@@ -191,6 +190,13 @@ public class PlaceBookToolbar extends CompositeView<User>
 		// valueChanged(object);
 		// }
 		// });
+	}
+	
+	@Override
+	protected void onDetach()
+	{
+		super.onDetach();
+		UserController.getController().remove(this);
 	}
 
 	@Override
@@ -262,50 +268,51 @@ public class PlaceBookToolbar extends CompositeView<User>
 				public void onClick(final ClickEvent event)
 				{
 					loginDialog.setProgress(true);
-					PlaceBooks.getServer().login(loginDialog.getUsername(), loginDialog.getPassword(),
-													new AsyncCallback<Shelf>()
-													{
+					
+					UserController.getController().login(loginDialog.getUsername(), loginDialog.getPassword(),
+															new AsyncCallback<Shelf>()
+															{
 
-														@Override
-														public void onFailure(final Throwable caught)
-														{
-															loginDialog.setProgress(false);
-															// if (response != null)
-															// {
-															// if (response
-															// .getText()
-															// .equals("{\"detailMessage\":\"Bad credentials\"}"))
-															// {
-															// loginDialog.setError(uiConstants.loginFail());
-															// }
-															// else if (response.getText()
-															// .startsWith("{\"detailMessage\":"))
-															// {
-															// loginDialog
-															// .setError(response.getText()
-															// .substring( 18,
-															// response.getText()
-															// .length() - 2));
-															// }
-															// else
-															// {
-															// loginDialog.setError(uiConstants.loginError());
-															// }
-															// }
-															// else
-															// {
-															loginDialog.setError(uiConstants.loginError());
-															// }
-															loginDialog.center();
-														}
+																@Override
+																public void onFailure(final Throwable caught)
+																{
+																	loginDialog.setProgress(false);
+																	// if (response != null)
+																	// {
+																	// if (response
+																	// .getText()
+																	// .equals("{\"detailMessage\":\"Bad credentials\"}"))
+																	// {
+																	// loginDialog.setError(uiConstants.loginFail());
+																	// }
+																	// else if (response.getText()
+																	// .startsWith("{\"detailMessage\":"))
+																	// {
+																	// loginDialog
+																	// .setError(response.getText()
+																	// .substring( 18,
+																	// response.getText()
+																	// .length() - 2));
+																	// }
+																	// else
+																	// {
+																	// loginDialog.setError(uiConstants.loginError());
+																	// }
+																	// }
+																	// else
+																	// {
+																	loginDialog.setError(uiConstants.loginError());
+																	// }
+																	loginDialog.center();
+																}
 
-														@Override
-														public void onSuccess(final Shelf shelf)
-														{
-															itemChanged(shelf.getUser());
-															loginDialog.hide();
-														}
-													});
+																@Override
+																public void onSuccess(final Shelf shelf)
+																{
+																	itemChanged(shelf.getUser());
+																	loginDialog.hide();
+																}
+															});
 				}
 			});
 			loginDialog.show();
@@ -316,12 +323,12 @@ public class PlaceBookToolbar extends CompositeView<User>
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		PlaceBooks.getServer().logout(new AbstractCallback()
+		UserController.getController().logout(new AbstractCallback()
 		{
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				// TODO userStore.removeCached(null);
+
 				PlaceBooks.goTo(new Home());
 			}
 		});

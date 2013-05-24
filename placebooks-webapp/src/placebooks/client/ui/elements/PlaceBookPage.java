@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.wornchaos.client.logger.Log;
+
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -139,7 +141,7 @@ public class PlaceBookPage extends Composite
 			}
 			else
 			{
-				GWT.log("Item not found!");
+				Log.error("Item not found:" + item.getClassName() +"."+ item.getKey() + " - " + item.getMetadata("tempID"));
 			}
 		}
 

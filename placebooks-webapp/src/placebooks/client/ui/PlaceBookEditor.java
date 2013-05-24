@@ -1,7 +1,7 @@
 package placebooks.client.ui;
 
-import org.wornchaos.client.controller.ControllerState;
-import org.wornchaos.client.ui.View;
+import org.wornchaos.controllers.ControllerState;
+import org.wornchaos.views.View;
 
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBooks;
@@ -82,11 +82,20 @@ public class PlaceBookEditor extends PlaceBookPage implements View<PlaceBookBind
 
 	@UiField
 	PlaceBookToolbar toolbar;
-	
+
 	@UiField
 	DropMenu dropMenu;
 
 	private final PlaceBookItemPopupFrame.Factory factory = new PlaceBookItemPopupFrame.Factory();
+
+	private final View<User> checkAuthorized = new View<User>()
+	{
+		@Override
+		public void itemChanged(User item)
+		{
+			checkAuthorized(controller.getItem());
+		}
+	};
 
 	private DragController dragController;
 
@@ -114,7 +123,12 @@ public class PlaceBookEditor extends PlaceBookPage implements View<PlaceBookBind
 			}
 		}
 
-		if (binder.getOwner() == null || user.getEmail().equals(binder.getOwner().getEmail())) { return; }
+		if (binder.getOwner() == null) { return; }
+		if (user.getEmail().equals(binder.getOwner().getEmail()))
+		{
+			UserController.getController().setItem(binder.getOwner());
+			return;
+		}
 
 		if (binder.getPermissions() != null && binder.getPermissions().keySet().size() > 0
 				&& binder.getPermissions().containsKey(user.getEmail()))
@@ -162,16 +176,7 @@ public class PlaceBookEditor extends PlaceBookPage implements View<PlaceBookBind
 		controller.add(bookPanel);
 		controller.add(saveItem);
 
-		final UserController userController = UserController.getController();
-		userController.add(new View<User>()
-		{
-			@Override
-			public void itemChanged(final User value)
-			{
-				checkAuthorized(controller.getItem());
-			}
-		});
-		userController.load();
+		UserController.getController().add(checkAuthorized);
 
 		// saveItem.setState(SaveState.saved);
 		// saveItem.setRunnable(new Runnable()
@@ -297,8 +302,8 @@ public class PlaceBookEditor extends PlaceBookPage implements View<PlaceBookBind
 			final PlaceBook place = (PlaceBook) PlaceBooks.getPlace();
 			if (!place.getId().equals(newPlacebook.getId()))
 			{
-				History.newItem(placebooks.client.PlaceBooks.historyMapper.getToken(new PlaceBook(newPlacebook, PlaceBook.Type.edit)),
-								false);
+				History.newItem(placebooks.client.PlaceBooks.historyMapper.getToken(new PlaceBook(newPlacebook,
+						PlaceBook.Type.edit)), false);
 			}
 		}
 
@@ -322,6 +327,8 @@ public class PlaceBookEditor extends PlaceBookPage implements View<PlaceBookBind
 	{
 		palette.stop();
 		// TODO saveItem.markSaved();
+
+		UserController.getController().remove(checkAuthorized);
 	}
 
 	@UiHandler("newPage")

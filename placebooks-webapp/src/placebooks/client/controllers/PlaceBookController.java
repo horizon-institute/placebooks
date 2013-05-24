@@ -1,6 +1,7 @@
 package placebooks.client.controllers;
 
 import org.wornchaos.client.controller.AbstractController;
+import org.wornchaos.client.logger.Log;
 import org.wornchaos.client.parser.JavaScriptObjectParser;
 
 import placebooks.client.PlaceBooks;
@@ -31,6 +32,7 @@ public class PlaceBookController extends AbstractController<PlaceBookBinder>
 			if (currentVersion > newVersion)
 			{
 				markChanged();
+				Log.info("Refused new placebook");
 				return false;
 			}
 		}

@@ -1,7 +1,7 @@
 package placebooks.client.controllers;
 
-import org.wornchaos.client.controller.Controller;
-import org.wornchaos.client.controller.DelegateController;
+import org.wornchaos.controllers.SomethingController;
+import org.wornchaos.controllers.DelegateController;
 
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
@@ -13,14 +13,14 @@ public class PlaceBookItemController extends DelegateController<PlaceBookItem>
 
 	private final boolean canEdit;
 
-	public PlaceBookItemController(final PlaceBookItem item, final Controller<?> controller)
+	public PlaceBookItemController(final PlaceBookItem item, final SomethingController<?> controller)
 	{
 		super(controller);
 		canEdit = false;
 		setItem(item);
 	}
 
-	public PlaceBookItemController(final PlaceBookItem item, final Controller<?> controller, final boolean canEdit)
+	public PlaceBookItemController(final PlaceBookItem item, final SomethingController<?> controller, final boolean canEdit)
 	{
 		super(controller);
 		this.canEdit = canEdit;

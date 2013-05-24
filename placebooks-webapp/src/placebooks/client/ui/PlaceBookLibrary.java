@@ -1,9 +1,11 @@
 package placebooks.client.ui;
 
-import org.wornchaos.client.controller.AbstractReadOnlyController;
+import org.wornchaos.client.controller.CachedController;
 import org.wornchaos.client.parser.JavaScriptObjectParser;
+import org.wornchaos.views.View;
 
 import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.UserController;
 import placebooks.client.model.Shelf;
 import placebooks.client.ui.elements.PlaceBookShelf;
 
@@ -14,7 +16,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookLibrary extends PlaceBookPage
+public class PlaceBookLibrary extends PlaceBookPage implements View<Shelf>
 {
 	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
 	{
@@ -22,7 +24,7 @@ public class PlaceBookLibrary extends PlaceBookPage
 
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
-	private final AbstractReadOnlyController<Shelf> controller = new AbstractReadOnlyController<Shelf>(
+	private final CachedController<Shelf> controller = new CachedController<Shelf>(
 			new JavaScriptObjectParser<Shelf>(), "library")
 	{
 		@Override
@@ -48,5 +50,14 @@ public class PlaceBookLibrary extends PlaceBookPage
 		controller.load();
 
 		return library;
+	}
+
+	@Override
+	public void itemChanged(Shelf item)
+	{
+		if(item.getUser() != null)	
+		{
+			UserController.getController().setItem(item.getUser());
+		}
 	}
 }

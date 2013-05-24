@@ -19,6 +19,11 @@
 		.author {
 			margin-right: 5px;
 		}
+
+		.actionMenu {
+			font: 16px verdana, arial, sans-serif;
+			padding: 5px;
+		}
 		
 		.dropArrow {
 			vertical-align: 20%;
@@ -60,7 +65,8 @@
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">			
-			    <g:Label styleName="{style.right}">Back</g:Label>
+				<p:PlaceBookToolbarItem ui:field="back"
+					addStyleNames="{style.actionMenu} {style.right}"><ui:msg>Back</ui:msg></p:PlaceBookToolbarItem>				    
 				<p:GooglePlusOne ui:field="googlePlus" styleName="{style.right}" />
 				<p:FacebookLikeButton ui:field="facebookLike" styleName="{style.right}" />
 				<g:FlowPanel styleName="{style.titleBlock}">

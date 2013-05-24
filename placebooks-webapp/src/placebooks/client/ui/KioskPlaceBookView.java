@@ -1,6 +1,6 @@
 package placebooks.client.ui;
 
-import org.wornchaos.client.ui.View;
+import org.wornchaos.views.View;
 
 import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.PlaceBookController;
@@ -16,8 +16,11 @@ import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 import placebooks.client.ui.places.Home;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
@@ -155,6 +158,12 @@ public class KioskPlaceBookView extends PlaceBookPage implements View<PlaceBookB
 		bookPanel.resized();
 	}
 
+	@UiHandler("back")
+	void back(ClickEvent event)
+	{
+		History.back();
+	}
+	
 	@Override
 	public void onStop()
 	{
