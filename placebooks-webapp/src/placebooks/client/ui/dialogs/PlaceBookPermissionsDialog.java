@@ -3,7 +3,8 @@ package placebooks.client.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookController;
+import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
@@ -58,22 +59,24 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 			// Add the name and address.
 			sb.appendHtmlConstant("<div>");
-			if (value.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
+			if (value.email.equals(controller.getItem().getOwner().getEmail()))
 			{
-				sb.appendEscaped("Owner");
+				sb.appendEscaped(uiMessages.owner());
 			}
 			else if (value.permission.equals("R_W"))
 			{
-				sb.appendEscaped("Read + Write");
+				sb.appendEscaped(uiMessages.readwrite());
 			}
 			else
 			{
-				sb.appendEscaped("Read");
+				sb.appendEscaped(uiMessages.read());
 			}
 
 			sb.appendHtmlConstant("</div></div>");
 		}
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static PlaceBookPermissionsDialogUiBinder uiBinder = GWT.create(PlaceBookPermissionsDialogUiBinder.class);
 
@@ -105,12 +108,12 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 	public PlaceBookPermissionsDialog(final PlaceBookController controller)
 	{
-		setTitle("Edit Permissions");
+		setTitle(uiMessages.editPermissions());
 		this.controller = controller;
 		setWidget(uiBinder.createAndBindUi(this));
 
-		permissionsBox.addItem("Read");
-		permissionsBox.addItem("Read + Write");
+		permissionsBox.addItem(uiMessages.read());
+		permissionsBox.addItem(uiMessages.readwrite());
 
 		cellList = new CellList<Permission>(new PermissionsCell(), keyProvider);
 		cellList.setWidth("100%");
@@ -128,7 +131,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 				{
 					emailBox.setText(permission.email);
 
-					if (permission.email.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
+					if (permission.email.equals(controller.getItem().getOwner().getEmail()))
 					{
 						emailBox.setEnabled(false);
 						permissionsBox.setEnabled(false);
@@ -171,7 +174,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 	@UiHandler("addUser")
 	void handleAddUser(final ClickEvent event)
 	{
-		controller.getPages().getPlaceBook().getPermissions().put("", new JSONString("R"));
+		controller.getItem().getPermissions().put("", new JSONString("R"));
 		updatePermissionsList();
 		for (final Permission permission : permissionList)
 		{
@@ -190,9 +193,8 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 		{
 			final Permission selection = selectionModel.getSelectedObject();
 
-			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
-			controller.getPages().getPlaceBook().getPermissions()
-					.put(emailBox.getText(), new JSONString(selection.permission));
+			controller.getItem().getPermissions().put(selection.email, null);
+			controller.getItem().getPermissions().put(emailBox.getText(), new JSONString(selection.permission));
 			selection.email = emailBox.getText();
 			cellList.redraw();
 			controller.markChanged();
@@ -206,7 +208,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 		{
 			final Permission selection = selectionModel.getSelectedObject();
 
-			controller.getPages().getPlaceBook().getPermissions().put(selection.email, null);
+			controller.getItem().getPermissions().put(selection.email, null);
 			controller.markChanged();
 			updatePermissionsList();
 		}
@@ -228,8 +230,7 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 
 				selection.permission = "R_W";
 			}
-			controller.getPages().getPlaceBook().getPermissions()
-					.put(selection.email, new JSONString(selection.permission));
+			controller.getItem().getPermissions().put(selection.email, new JSONString(selection.permission));
 
 			cellList.redraw();
 			controller.markChanged();
@@ -240,27 +241,25 @@ public class PlaceBookPermissionsDialog extends PlaceBookDialog
 	{
 		permissionList = new ArrayList<Permission>();
 		Permission permission = new Permission();
-		permission.email = controller.getPages().getPlaceBook().getOwner().getEmail();
+		permission.email = controller.getItem().getOwner().getEmail();
 		permission.permission = "R_W";
 		permissionList.add(permission);
 
-		for (final String user : controller.getPages().getPlaceBook().getPermissions().keySet())
+		for (final String user : controller.getItem().getPermissions().keySet())
 		{
-			if (user.equals(controller.getPages().getPlaceBook().getOwner().getEmail()))
+			if (user.equals(controller.getItem().getOwner().getEmail()))
 			{
 				continue;
 			}
 
 			permission = new Permission();
 			permission.email = user;
-			permission.permission = controller.getPages().getPlaceBook().getPermissions().get(user).isString()
-					.stringValue();
+			permission.permission = controller.getItem().getPermissions().get(user).isString().stringValue();
 
 			permissionList.add(permission);
 		}
 
-		controller.getPages().getPlaceBook().getPermissions()
-				.put(controller.getPages().getPlaceBook().getOwner().getEmail(), new JSONString("R_W"));
+		controller.getItem().getPermissions().put(controller.getItem().getOwner().getEmail(), new JSONString("R_W"));
 
 		cellList.setRowData(permissionList);
 	}

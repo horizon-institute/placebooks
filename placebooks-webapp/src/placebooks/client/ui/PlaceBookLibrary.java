@@ -1,57 +1,36 @@
 package placebooks.client.ui;
 
-import placebooks.client.JSONResponse;
-import placebooks.client.model.DataStore;
-import placebooks.client.model.PlaceBookEntry;
+import org.wornchaos.client.controller.CachedController;
+import org.wornchaos.client.parser.JavaScriptObjectParser;
+import org.wornchaos.views.View;
+
+import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.UserController;
 import placebooks.client.model.Shelf;
-import placebooks.client.model.User;
 import placebooks.client.ui.elements.PlaceBookShelf;
-import placebooks.client.ui.elements.PlaceBookShelf.ShelfControl;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.place.shared.PlaceTokenizer;
-import com.google.gwt.place.shared.Prefix;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookLibrary extends PlaceBookPlace
+public class PlaceBookLibrary extends PlaceBookPage implements View<Shelf>
 {
-	@Prefix("browse")
-	public static class Tokenizer implements PlaceTokenizer<PlaceBookLibrary>
-	{
-		@Override
-		public PlaceBookLibrary getPlace(final String token)
-		{
-			return new PlaceBookLibrary();
-		}
-
-		@Override
-		public String getToken(final PlaceBookLibrary place)
-		{
-			return "library";
-		}
-	}
-
 	interface PlaceBookLibraryUiBinder extends UiBinder<Widget, PlaceBookLibrary>
 	{
 	}
 
-	private final DataStore<Shelf> libraryStore = new DataStore<Shelf>()
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
+	private final CachedController<Shelf> controller = new CachedController<Shelf>(
+			new JavaScriptObjectParser<Shelf>(), "library")
 	{
 		@Override
-		protected String getRequestURL(final String id)
+		protected void load(final String id, final AsyncCallback<Shelf> callback)
 		{
-			return getHostURL() + "placebooks/a/shelf";
-		}
-
-		@Override
-		protected String getStorageID(final String id)
-		{
-			return "library.shelf";
+			PlaceBooks.getServer().getShelf(callback);
 		}
 	};
 
@@ -60,47 +39,25 @@ public class PlaceBookLibrary extends PlaceBookPlace
 	@UiField
 	PlaceBookShelf shelf;
 
-	public PlaceBookLibrary()
-	{
-		super(null);
-	}
-
-	public PlaceBookLibrary(final User user)
-	{
-		super(user);
-	}
-
 	@Override
-	public void start(final AcceptsOneWidget panel, final EventBus eventBus)
+	public Widget createView()
 	{
 		final Widget library = uiBinder.createAndBindUi(this);
 
-		Window.setTitle("PlaceBooks Library");
+		Window.setTitle(uiMessages.placebooksLibrary());
 
-		toolbar.setPlace(this);
+		controller.add(shelf);
+		controller.load();
 
-		panel.setWidget(library);
+		return library;
+	}
 
-		shelf.setShelfControl(new ShelfControl(this)
+	@Override
+	public void itemChanged(Shelf item)
+	{
+		if(item.getUser() != null)	
 		{
-			@Override
-			public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
-			{
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public void getShelf(final JSONResponse<Shelf> callback)
-			{
-				libraryStore.get("", callback);
-			}
-
-			@Override
-			public boolean include(final PlaceBookEntry entry)
-			{
-				return true;
-			}
-		});
+			UserController.getController().setItem(item.getUser());
+		}
 	}
 }

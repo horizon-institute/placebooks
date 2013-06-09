@@ -124,9 +124,7 @@
 			background: #FFF;
 			box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 			border: 1px solid #DDD;
-			-webkit-transition: clip 0.2s linear;
-			-moz-transition: clip 0.2s linear;			
-	        transition: clip 0.5s linear;  					
+	        transition: clip 0.2s ease;  					
 		}
 		
 		.menuItem {
@@ -148,7 +146,7 @@
 			<g:FlowPanel styleName="{style.infoPanel}">
 				<g:TextBox ui:field="title" styleName="{style.titleLabel}" />
 				<g:SimplePanel styleName="{style.saveItem}"><p:PlaceBookSaveItem ui:field="saveItem"/></g:SimplePanel>
-				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></p:PlaceBookToolbarItem>				
+				<p:PlaceBookToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg> ▾</p:PlaceBookToolbarItem>				
 			</g:FlowPanel>
 			<p:PlaceBookPages ui:field="bookPanel" styleName="{style.bookPanel}" />	
 		</g:FlowPanel>

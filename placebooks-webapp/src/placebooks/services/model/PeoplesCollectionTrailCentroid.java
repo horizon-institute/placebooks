@@ -4,15 +4,17 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PeoplesCollectionTrailCentroid {
+public class PeoplesCollectionTrailCentroid
+{
 	protected String id;
 	protected double x;
 	protected double y;
 
-	public PeoplesCollectionTrailCentroid () 
-	{ }
-	
-	public PeoplesCollectionTrailCentroid(String id, double x, double y)
+	public PeoplesCollectionTrailCentroid()
+	{
+	}
+
+	public PeoplesCollectionTrailCentroid(final String id, final double x, final double y)
 	{
 		this.id = id;
 		this.x = x;

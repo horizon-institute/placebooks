@@ -19,12 +19,11 @@ import org.apache.log4j.Logger;
  */
 public class CommunicationHelper
 {
-	private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
-
 	/**
 	 * Class to create an HTTP authenticatoion object based on a given username and password
+	 * 
 	 * @author pszmp
-	 *
+	 * 
 	 */
 	public static class HttpAuthenticator extends Authenticator
 	{
@@ -36,6 +35,7 @@ public class CommunicationHelper
 			password = pass;
 		}
 
+		@Override
 		protected PasswordAuthentication getPasswordAuthentication()
 		{
 			log.debug("Requesting Host  : " + getRequestingHost());
@@ -48,8 +48,8 @@ public class CommunicationHelper
 		}
 	}
 
-	
-	
+	private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
+
 	/**
 	 * Gets an http connection paying attention to the Placebooks proxy configuration values
 	 * requires a try/catch block as per url.openconnection()
@@ -82,5 +82,5 @@ public class CommunicationHelper
 		}
 		return conn;
 	}
-	
+
 }

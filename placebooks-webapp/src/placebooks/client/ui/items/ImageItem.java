@@ -1,8 +1,9 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.ui.dialogs.PlaceBookUploadDialog;
 
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -15,9 +16,9 @@ public class ImageItem extends MediaItem
 {
 	private final Image image = new Image();
 
-	ImageItem(final PlaceBookItem item, final PlaceBookController handler)
+	public ImageItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
+		super(controller);
 		image.getElement().getStyle().setProperty("margin", "0 auto");
 		image.getElement().getStyle().setDisplay(Display.BLOCK);
 
@@ -30,15 +31,21 @@ public class ImageItem extends MediaItem
 			}
 		});
 
-		image.addClickHandler(new ClickHandler()
+		if (controller.canEdit())
 		{
-			@Override
-			public void onClick(final ClickEvent event)
+			image.getElement().getStyle().setCursor(Cursor.POINTER);
+			image.addClickHandler(new ClickHandler()
 			{
-				fireFocusChanged(true);
-				event.stopPropagation();
-			}
-		});
+				@Override
+				public void onClick(final ClickEvent event)
+				{
+					fireFocusChanged(true);
+					event.stopPropagation();
+					final PlaceBookUploadDialog dialog = new PlaceBookUploadDialog(getController(), ImageItem.this);
+					dialog.show();
+				}
+			});
+		}
 
 		refresh();
 	}

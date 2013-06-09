@@ -6,14 +6,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import placebooks.client.JSONResponse;
+import org.wornchaos.client.ui.CompositeView;
+import org.wornchaos.views.View;
+
 import placebooks.client.Resources;
-import placebooks.client.model.DataStore;
+import placebooks.client.controllers.ServerInfoController;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.ServerInfo;
-import placebooks.client.model.ServerInfoDataStore;
 import placebooks.client.model.Shelf;
-import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.openlayers.Bounds;
@@ -22,6 +23,8 @@ import placebooks.client.ui.openlayers.Map;
 import placebooks.client.ui.openlayers.Marker;
 import placebooks.client.ui.openlayers.MarkerLayer;
 import placebooks.client.ui.openlayers.OSLayer;
+import placebooks.client.ui.places.PlaceBook;
+import placebooks.client.ui.places.PlaceBook.Type;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -36,35 +39,46 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookShelf extends Composite
+public class PlaceBookShelf extends CompositeView<Shelf>
 {
-	public static abstract class ShelfControl implements Comparator<PlaceBookEntry>
-	{
-		private final PlaceBookPlace place;
-
-		public ShelfControl(final PlaceBookPlace place)
-		{
-			this.place = place;
-		}
-
-		public abstract void getShelf(final JSONResponse<Shelf> callback);
-
-		public abstract boolean include(PlaceBookEntry entry);
-	}
+	// public static abstract class ShelfControl implements Comparator<PlaceBookEntry>
+	// {
+	// public ShelfControl()
+	// {
+	// }
+	//
+	// public abstract void getShelf(final JSONResponse<Shelf> callback);
+	//
+	// public abstract boolean include(PlaceBookEntry entry);
+	// }
 
 	interface PlaceBookShelfUiBinder extends UiBinder<Widget, PlaceBookShelf>
 	{
 	}
 
-	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
+	private static final PlaceBookShelfUiBinder uiBinder = GWT.create(PlaceBookShelfUiBinder.class);
 
-	private static PlaceBookShelfUiBinder uiBinder = GWT.create(PlaceBookShelfUiBinder.class);
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
+	@UiField
+	Panel mapPanel;
+
+	@UiField
+	Panel mapToggle;
+
+	@UiField
+	Image mapToggleImage;
+
+	@UiField
+	Label mapToggleText;
+
+	boolean mapVisible = false;
 
 	@UiField
 	Panel placebooks;
@@ -75,37 +89,45 @@ public class PlaceBookShelf extends Composite
 	@UiField
 	Label progressLabel;
 
-	@UiField
-	Panel mapPanel;
+	private AsyncCallback<PlaceBookEntry> deleteCallback = null;
 
 	private Map map;
 
-	private final Collection<PlaceBookEntryWidget> widgets = new ArrayList<PlaceBookEntryWidget>();
+	private Comparator<PlaceBookEntry> comparator = new Comparator<PlaceBookEntry>()
+	{
+		@Override
+		public int compare(final PlaceBookEntry o1, final PlaceBookEntry o2)
+		{
+			final String state1 = getState(o1);
+			final String state2 = getState(o2);
+
+			if (!state1.equals(state2)) { return state2.compareTo(state1); }
+			return 0;
+		}
+
+		private String getState(final PlaceBookEntry entry)
+		{
+			String result = entry.getState();
+			if (result == null)
+			{
+				result = "0";
+			}
+			return result;
+		}
+	};
+	
+	private PlaceBook.Type type = null;
 
 	private MarkerLayer markerLayer;
 
-	@UiField
-	Label mapToggleText;
-
-	@UiField
-	Image mapToggleImage;
-
-	@UiField
-	Panel mapToggle;
-
-	boolean mapVisible = false;
+	private final Collection<PlaceBookEntryWidget> widgets = new ArrayList<PlaceBookEntryWidget>();
 
 	public PlaceBookShelf()
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
-		setMapVisible(false);
-
-		createMap();
-
 		addDomHandler(new LoadHandler()
 		{
-
 			@Override
 			public void onLoad(final LoadEvent event)
 			{
@@ -175,6 +197,99 @@ public class PlaceBookShelf extends Composite
 		}
 	}
 
+	@Override
+	public void itemChanged(final Shelf shelf)
+	{
+		if (shelf == null) { return; }
+		progress.setVisible(false);
+		mapToggle.setVisible(true);
+		placebooks.clear();
+		widgets.clear();
+
+		final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
+		for (final PlaceBookEntry entry : shelf.getEntries())
+		{
+			// if (shelfControl.include(entry))
+			// {
+			entries.add(entry);
+			// }
+		}
+
+		Collections.sort(entries, comparator);
+
+		int markerIndex = 1;
+		for (final PlaceBookEntry entry : entries)
+		{
+			final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(entry, deleteCallback, type);
+
+			if (entry.getCenter() != null)
+			{
+				final String geometry = entry.getCenter();
+				if (geometry.startsWith(MapItem.POINT_PREFIX) && map != null)
+				{
+					try
+					{
+						final LonLat lonlat = LonLat
+								.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
+																		geometry.length() - 1)).cloneLonLat()
+								.transform(map.getDisplayProjection(), map.getProjection());
+						final ImageResource markerImage = getMarker(markerIndex);
+						markerIndex++;
+						final Marker marker = Marker.create(markerImage, lonlat);
+						widget.setMarker(marker, markerImage);
+						markerLayer.addMarker(marker);
+					}
+					catch (final Exception e)
+					{
+						GWT.log(e.getMessage(), e);
+					}
+				}
+			}
+
+			widget.addMouseOverHandler(new MouseOverHandler()
+			{
+				@Override
+				public void onMouseOver(final MouseOverEvent event)
+				{
+					highlight(entry);
+				}
+			});
+			widget.addMouseOutHandler(new MouseOutHandler()
+			{
+				@Override
+				public void onMouseOut(final MouseOutEvent event)
+				{
+					highlight(null);
+				}
+			});
+
+			widgets.add(widget);
+			placebooks.add(widget);
+		}
+
+		ServerInfoController.getController().add(new View<ServerInfo>()
+		{
+			@Override
+			public void itemChanged(final ServerInfo value)
+			{
+				createMap(value);
+			}
+		});
+
+		setMapVisible(mapVisible);
+		recenter();
+	}
+
+	public void setComparator(final Comparator<PlaceBookEntry> comparator)
+	{
+		this.comparator = comparator;
+	}
+
+	public void setDeleteCallback(final AsyncCallback<PlaceBookEntry> callback)
+	{
+		deleteCallback = callback;
+	}
+
 	public void setMapVisible(final boolean visible)
 	{
 		mapVisible = visible;
@@ -186,7 +301,7 @@ public class PlaceBookShelf extends Composite
 
 		if (mapVisible)
 		{
-			mapToggleText.setText("Hide Map");
+			mapToggleText.setText(uiMessages.mapHide());
 			mapToggleImage.setResource(Resources.IMAGES.arrow_right());
 			placebooks.getElement().getStyle().clearRight();
 			placebooks.getElement().getStyle().clearPaddingLeft();
@@ -197,94 +312,13 @@ public class PlaceBookShelf extends Composite
 		}
 		else
 		{
-			mapToggleText.setText("Show Map");
+			mapToggleText.setText(uiMessages.mapShow());
 			mapToggleImage.setResource(Resources.IMAGES.arrow_left());
 			placebooks.getElement().getStyle().setRight(0, Unit.PX);
 			placebooks.getElement().getStyle().setPaddingLeft(40, Unit.PX);
 			placebooks.getElement().getStyle().setPaddingRight(40, Unit.PX);
 			placebooks.getElement().getStyle().clearWidth();
 		}
-	}
-
-	public void setShelfControl(final ShelfControl shelfControl)
-	{
-		shelfControl.getShelf(new JSONResponse<Shelf>()
-		{
-			@Override
-			public void handleResponse(final Shelf shelf)
-			{
-				if (shelf == null) { return; }
-				progress.setVisible(false);
-				mapToggle.setVisible(true);
-				placebooks.clear();
-				widgets.clear();
-
-				final List<PlaceBookEntry> entries = new ArrayList<PlaceBookEntry>();
-				for (final PlaceBookEntry entry : shelf.getEntries())
-				{
-					if (shelfControl.include(entry))
-					{
-						entries.add(entry);
-					}
-				}
-
-				Collections.sort(entries, shelfControl);
-
-				int markerIndex = 1;
-				for (final PlaceBookEntry entry : entries)
-				{
-					final PlaceBookEntryWidget widget = new PlaceBookEntryWidget(shelfControl.place, entry);
-
-					if (entry.getCenter() != null)
-					{
-						final String geometry = entry.getCenter();
-						if (geometry.startsWith(MapItem.POINT_PREFIX) && map != null)
-						{
-							try
-							{
-								final LonLat lonlat = LonLat
-										.createFromPoint(	geometry.substring(	MapItem.POINT_PREFIX.length(),
-																				geometry.length() - 1)).cloneLonLat()
-										.transform(map.getDisplayProjection(), map.getProjection());
-								final ImageResource markerImage = getMarker(markerIndex);
-								markerIndex++;
-								final Marker marker = Marker.create(markerImage, lonlat);
-								widget.setMarker(marker, markerImage);
-								markerLayer.addMarker(marker);
-							}
-							catch (final Exception e)
-							{
-								GWT.log(e.getMessage());
-							}
-						}
-					}
-
-					widget.addMouseOverHandler(new MouseOverHandler()
-					{
-						@Override
-						public void onMouseOver(final MouseOverEvent event)
-						{
-							highlight(entry);
-						}
-					});
-					widget.addMouseOutHandler(new MouseOutHandler()
-					{
-						@Override
-						public void onMouseOut(final MouseOutEvent event)
-						{
-							highlight(null);
-						}
-					});
-
-					widgets.add(widget);
-					placebooks.add(widget);
-				}
-
-				setMapVisible(mapVisible);
-				recenter();
-
-			}
-		});
 	}
 
 	public void showProgress(final String string)
@@ -297,7 +331,7 @@ public class PlaceBookShelf extends Composite
 		}
 
 		progress.setVisible(true);
-		progressLabel.setText(string);
+		progressLabel.setText(string.toUpperCase());
 		mapPanel.setVisible(false);
 		mapToggle.setVisible(false);
 
@@ -310,18 +344,21 @@ public class PlaceBookShelf extends Composite
 		event.preventDefault();
 	}
 
-	private void createMap()
+	@Override
+	protected void onAttach()
 	{
-		infoStore.get(null, new JSONResponse<ServerInfo>()
-		{
-			@Override
-			public void handleResponse(final ServerInfo object)
-			{
-				createMap(object);
-			};
-		});
+		super.onAttach();
+
+		setMapVisible(false);
+
+		ServerInfoController.getController().load();
 	}
 
+	public void setType(final Type type)
+	{
+		this.type = type;
+	}
+	
 	private void createMap(final ServerInfo serverInfo)
 	{
 		map = Map.create(mapPanel.getElement(), true);

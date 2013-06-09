@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.wornchaos.client.logger.Log;
+
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
@@ -39,7 +41,7 @@ public class PlaceBookPage extends Composite
 	@UiField
 	Panel columnPanel;
 
-	public PlaceBookPage(final PlaceBook page, final PlaceBookController controller, final int pageIndex,
+	public PlaceBookPage(final PlaceBook page, final DragController controller, final int pageIndex,
 			final int defaultColumnCount)
 	{
 		this.page = page;
@@ -127,7 +129,7 @@ public class PlaceBookPage extends Composite
 
 	public void update(final PlaceBook newPage)
 	{
-		this.page = newPage;
+		page = newPage;
 		page.removeMetadata("tempID");
 
 		for (final PlaceBookItem item : newPage.getItems())
@@ -135,11 +137,11 @@ public class PlaceBookPage extends Composite
 			final PlaceBookItemFrame frame = getFrame(item);
 			if (frame != null)
 			{
-				frame.getItemWidget().update(item);
+				frame.getItemWidget().itemChanged(item);
 			}
 			else
 			{
-				GWT.log("Item not found!");
+				Log.error("Item not found:" + item.getClassName() +"."+ item.getKey() + " - " + item.getMetadata("tempID"));
 			}
 		}
 

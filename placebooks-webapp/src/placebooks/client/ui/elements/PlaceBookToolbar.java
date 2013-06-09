@@ -1,18 +1,20 @@
 package placebooks.client.ui.elements;
 
+import org.wornchaos.client.ui.CompositeView;
+
 import placebooks.client.AbstractCallback;
-import placebooks.client.JSONResponse;
-import placebooks.client.PlaceBookService;
-import placebooks.client.model.DataStore;
+import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.UserController;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
-import placebooks.client.ui.PlaceBookEditor;
-import placebooks.client.ui.PlaceBookHome;
-import placebooks.client.ui.PlaceBookLibrary;
-import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookAccountsDialog;
 import placebooks.client.ui.dialogs.PlaceBookCreateAccountDialog;
 import placebooks.client.ui.dialogs.PlaceBookLoginDialog;
+import placebooks.client.ui.places.Groups;
+import placebooks.client.ui.places.Home;
+import placebooks.client.ui.places.Library;
+import placebooks.client.ui.places.PlaceBook;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -21,17 +23,18 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookToolbar extends Composite
+public class PlaceBookToolbar extends CompositeView<User>
 {
 	interface PlaceBookToolbarUiBinder extends UiBinder<Widget, PlaceBookToolbar>
 	{
@@ -41,6 +44,8 @@ public class PlaceBookToolbar extends Composite
 	{
 		String toolbarMenuItem();
 	}
+
+	private static final UIMessages uiConstants = GWT.create(UIMessages.class);
 
 	private static final PlaceBookToolbarUiBinder uiBinder = GWT.create(PlaceBookToolbarUiBinder.class);
 
@@ -60,6 +65,9 @@ public class PlaceBookToolbar extends Composite
 	PlaceBookToolbarItem accountItem;
 
 	@UiField
+	PlaceBookToolbarItem languageItem;
+
+	@UiField
 	Panel languagePanel;
 
 	@UiField
@@ -68,130 +76,156 @@ public class PlaceBookToolbar extends Composite
 	@UiField
 	Panel loginPanel;
 
-	private User user;
-
-	private PlaceBookPlace place;
-
-	private final DataStore<User> userStore = new DataStore<User>()
-	{
-		@Override
-		protected String getRequestURL(final String id)
-		{
-			return getHostURL() + "placebooks/a/currentUser";
-		}
-
-		@Override
-		protected String getStorageID(final String id)
-		{
-			return "current.user";
-		}
-	};
-
 	public PlaceBookToolbar()
 	{
-		super();
 		initWidget(uiBinder.createAndBindUi(this));
 
-		for (final String localeName : LocaleInfo.getAvailableLocaleNames())
+		final String[] languageNames = LocaleInfo.getAvailableLocaleNames();
+		if (languageNames.length <= 3)
 		{
-			if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
+			for (final String localeName : LocaleInfo.getAvailableLocaleNames())
 			{
-				final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
-				final Label label = new Label(displayName);
-				label.setStyleName(style.toolbarMenuItem());
-				label.addClickHandler(new ClickHandler()
+				if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
 				{
-					@Override
-					public void onClick(final ClickEvent event)
+					final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+					languageItem.setText(displayName);
+					languageItem.addClickHandler(new ClickHandler()
 					{
-						final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
-						urlBuilder.setHash(Window.Location.getHash());
-						urlBuilder.setHost(Window.Location.getHost());
-						urlBuilder.setPath(Window.Location.getPath());
-						try
+						@Override
+						public void onClick(final ClickEvent event)
 						{
-							urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
-						}
-						catch(Exception e)
-						{
-							
-						}
-						urlBuilder.setProtocol(Window.Location.getProtocol());
-						for (final String key : Window.Location.getParameterMap().keySet())
-						{
-							urlBuilder.setParameter(key, Window.Location.getParameter(key));
-						}
-						urlBuilder.setParameter("locale", localeName);
+							final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+							urlBuilder.setHash(Window.Location.getHash());
+							urlBuilder.setHost(Window.Location.getHost());
+							urlBuilder.setPath(Window.Location.getPath());
+							try
+							{
+								urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+							}
+							catch (final Exception e)
+							{
 
-						Window.Location.replace(urlBuilder.buildString());
-					}
-				});
-				languagePanel.add(label);
+							}
+							urlBuilder.setProtocol(Window.Location.getProtocol());
+							for (final String key : Window.Location.getParameterMap().keySet())
+							{
+								urlBuilder.setParameter(key, Window.Location.getParameter(key));
+							}
+							urlBuilder.setParameter("locale", localeName);
+
+							Window.Location.replace(urlBuilder.buildString());
+						}
+					});
+				}
+			}
+			languagePanel.setVisible(false);
+		}
+		else
+		{
+			for (final String localeName : LocaleInfo.getAvailableLocaleNames())
+			{
+				if (!LocaleInfo.getCurrentLocale().getLocaleName().equals(localeName))
+				{
+					final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+					final Label label = new Label(displayName);
+					label.setStyleName(style.toolbarMenuItem());
+					label.addClickHandler(new ClickHandler()
+					{
+						@Override
+						public void onClick(final ClickEvent event)
+						{
+							final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+							urlBuilder.setHash(Window.Location.getHash());
+							urlBuilder.setHost(Window.Location.getHost());
+							urlBuilder.setPath(Window.Location.getPath());
+							try
+							{
+								urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+							}
+							catch (final Exception e)
+							{
+
+							}
+							urlBuilder.setProtocol(Window.Location.getProtocol());
+							for (final String key : Window.Location.getParameterMap().keySet())
+							{
+								urlBuilder.setParameter(key, Window.Location.getParameter(key));
+							}
+							urlBuilder.setParameter("locale", localeName);
+
+							Window.Location.replace(urlBuilder.buildString());
+						}
+					});
+					languagePanel.add(label);
+				}
+			}
+			languageItem.setVisible(false);
+		}
+
+		UserController.getController().add(this);		
+		UserController.getController().load();
+		//
+		// userStore.get(null, new JSONResponse<User>()
+		// {
+		// @Override
+		// public void handleError(final Request request, final Response response, final Throwable
+		// throwable)
+		// {
+		// valueChanged(null); // ?
+		// }
+		//
+		// @Override
+		// public void handleOther(final Request request, final Response response)
+		// {
+		// if (response.getStatusCode() == 401)
+		// {
+		// userStore.removeCached(null);
+		// valueChanged(null);
+		// }
+		// }
+		//
+		// @Override
+		// public void handleResponse(final User object)
+		// {
+		// valueChanged(object);
+		// }
+		// });
+	}
+	
+	@Override
+	protected void onDetach()
+	{
+		super.onDetach();
+		UserController.getController().remove(this);
+	}
+
+	@Override
+	public void itemChanged(final User user)
+	{
+		if (UserController.getController().hasLoaded())
+		{
+			if (user != null)
+			{
+				loginPanel.setVisible(false);
+				accountItem.setVisible(true);
+				accountItem.setHTML(user.getName() + " ▾");
+			}
+			else
+			{
+				loginPanel.setVisible(true);
+				accountItem.setVisible(false);
 			}
 		}
-
-		loginPanel.setVisible(false);
-
-		accountItem.setVisible(false);
-
-		createItem.setEnabled(false);
-		libraryItem.setEnabled(false);
-	}
-
-	public void setPlace(final PlaceBookPlace place)
-	{
-		this.place = place;
-
-		if (place != null && place.getUser() != null)
-		{
-			setUser(place.getUser());
-		}
 		else
-		{
-			userStore.get(null, new JSONResponse<User>()
-			{
-				@Override
-				public void handleError(final Request request, final Response response, final Throwable throwable)
-				{
-					place.setUser(null);
-				}
-
-				@Override
-				public void handleOther(final Request request, final Response response)
-				{
-					place.setUser(null);
-					if (response.getStatusCode() == 401)
-					{
-						userStore.removeCached(null);
-					}
-				}
-
-				@Override
-				public void handleResponse(final User object)
-				{
-					place.setUser(object);
-				}
-			});
-		}
-	}
-
-	public void setUser(final User user)
-	{
-		loginPanel.setVisible(true);
-		if (this.user == user) { return; }
-		this.user = user;
-		if (user != null)
 		{
 			loginPanel.setVisible(false);
-			accountItem.setVisible(true);
-			accountItem.setHTML(user.getName());
-		}
-		else
-		{
-			loginPanel.setVisible(true);
 			accountItem.setVisible(false);
 		}
-		refreshItems();
+
+		final Place place = PlaceBooks.getPlace();
+		homeItem.setEnabled(!(place instanceof Home));
+		libraryItem.setEnabled(!(place instanceof Library) && user != null);
+		createItem.setEnabled(user != null);
 	}
 
 	@UiHandler("homeItem")
@@ -199,7 +233,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (homeItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookHome(place.getUser()));
+			PlaceBooks.goTo(new Home());
 		}
 	}
 
@@ -208,7 +242,7 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (libraryItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookLibrary(place.getUser()));
+			PlaceBooks.goTo(new Library());
 		}
 	}
 
@@ -217,62 +251,68 @@ public class PlaceBookToolbar extends Composite
 	{
 		if (createItem.isEnabled())
 		{
-			place.getPlaceController().goTo(new PlaceBookEditor(place.getUser(), "new"));
+			PlaceBooks.goTo(new PlaceBook("new", PlaceBook.Type.edit));
 		}
 	}
 
 	@UiHandler("loginLabel")
 	void login(final ClickEvent event)
 	{
-		if (user == null)
+		if (UserController.getUser() == null)
 		{
-			final PlaceBookLoginDialog loginDialog = new PlaceBookLoginDialog("Login", "Login", "Email:");
+			final PlaceBookLoginDialog loginDialog = new PlaceBookLoginDialog(uiConstants.login(), uiConstants.login(),
+					uiConstants.email() + ":");
 			loginDialog.addClickHandler(new ClickHandler()
 			{
 				@Override
 				public void onClick(final ClickEvent event)
 				{
 					loginDialog.setProgress(true);
-					PlaceBookService.login(	loginDialog.getUsername(), loginDialog.getPassword(),
-											new JSONResponse<Shelf>()
-											{
-												@Override
-												public void handleError(final Request request, final Response response,
-														final Throwable throwable)
-												{
-													loginDialog.setProgress(false);
-													if (response != null)
-													{
-														if (response.getText()
-																.equals("{\"detailMessage\":\"Bad credentials\"}"))
-														{
-															loginDialog
-																	.setError("Login not recognised. Check username and password.");
-														}
-														else if (response.getText().startsWith("{\"detailMessage\":"))
-														{
-															loginDialog.setError(response.getText()
-																	.substring(18, response.getText().length() - 2));
-														}
-														else
-														{
-															loginDialog.setError("Error logging in");
-														}
-													}
-													else
-													{
-														loginDialog.setError("Error logging in");
-													}
-													loginDialog.center();
-												}
+					
+					UserController.getController().login(loginDialog.getUsername(), loginDialog.getPassword(),
+															new AsyncCallback<Shelf>()
+															{
 
-												@Override
-												public void handleResponse(final Shelf shelf)
-												{
-													place.setUser(shelf.getUser());
-													loginDialog.hide();
-												}
-											});
+																@Override
+																public void onFailure(final Throwable caught)
+																{
+																	loginDialog.setProgress(false);
+																	// if (response != null)
+																	// {
+																	// if (response
+																	// .getText()
+																	// .equals("{\"detailMessage\":\"Bad credentials\"}"))
+																	// {
+																	// loginDialog.setError(uiConstants.loginFail());
+																	// }
+																	// else if (response.getText()
+																	// .startsWith("{\"detailMessage\":"))
+																	// {
+																	// loginDialog
+																	// .setError(response.getText()
+																	// .substring( 18,
+																	// response.getText()
+																	// .length() - 2));
+																	// }
+																	// else
+																	// {
+																	// loginDialog.setError(uiConstants.loginError());
+																	// }
+																	// }
+																	// else
+																	// {
+																	loginDialog.setError(uiConstants.loginError());
+																	// }
+																	loginDialog.center();
+																}
+
+																@Override
+																public void onSuccess(final Shelf shelf)
+																{
+																	itemChanged(shelf.getUser());
+																	loginDialog.hide();
+																}
+															});
 				}
 			});
 			loginDialog.show();
@@ -283,29 +323,35 @@ public class PlaceBookToolbar extends Composite
 	@UiHandler("logout")
 	void logout(final ClickEvent event)
 	{
-		PlaceBookService.logout(new AbstractCallback()
+		UserController.getController().logout(new AbstractCallback()
 		{
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				userStore.removeCached(null);
-				place.getPlaceController().goTo(new PlaceBookHome(null));
+
+				PlaceBooks.goTo(new Home());
 			}
 		});
+	}
+
+	@UiHandler("groups")
+	void showGroupsDialog(final ClickEvent event)
+	{
+		PlaceBooks.goTo(new Groups());
 	}
 
 	@UiHandler("linkedAccounts")
 	void showLinkedAccountsDialog(final ClickEvent event)
 	{
-		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog(user);
-		account.setTitle("Linked Accounts");
+		final PlaceBookAccountsDialog account = new PlaceBookAccountsDialog();
+		account.setTitle(uiConstants.linkedAccounts());
 		account.show();
 	}
 
 	@UiHandler("accountItem")
 	void showMenuLogin(final ClickEvent event)
 	{
-		if (user != null)
+		if (UserController.getUser() != null)
 		{
 			dropMenu.show(accountItem.getAbsoluteLeft(), accountItem.getAbsoluteTop() + accountItem.getOffsetHeight());
 		}
@@ -321,36 +367,22 @@ public class PlaceBookToolbar extends Composite
 			public void success(final Request request, final Response response)
 			{
 				account.hide();
-				PlaceBookService.login(account.getEmail(), account.getPassword(), new JSONResponse<Shelf>()
+				PlaceBooks.getServer().login(account.getEmail(), account.getPassword(), new AsyncCallback<Shelf>()
 				{
-
 					@Override
-					public void handleError(final Request request, final Response response, final Throwable throwable)
+					public void onFailure(final Throwable caught)
 					{
-						place.setUser(null);
+						itemChanged(null);
 					}
 
 					@Override
-					public void handleOther(final Request request, final Response response)
+					public void onSuccess(final Shelf result)
 					{
-						place.setUser(null);
-					}
-
-					@Override
-					public void handleResponse(final Shelf object)
-					{
-						place.setUser(object.getUser());
+						itemChanged(result.getUser());
 					}
 				});
 			}
 		});
 		account.show();
-	}
-
-	private void refreshItems()
-	{
-		homeItem.setEnabled(!(place instanceof PlaceBookHome));
-		libraryItem.setEnabled(!(place instanceof PlaceBookLibrary) && place.getUser() != null);
-		createItem.setEnabled(place.getUser() != null);
 	}
 }

@@ -1,22 +1,23 @@
 package placebooks.client.ui.items.frames;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.items.PlaceBookItemWidget;
-import placebooks.client.ui.items.PlaceBookItemWidgetFactory;
+import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.ui.elements.DragController;
+import placebooks.client.ui.items.PlaceBookItemView;
+import placebooks.client.ui.items.PlaceBookItemViewFactory;
 
 import com.google.gwt.core.client.GWT;
 
 public abstract class PlaceBookItemFrameFactory
 {
-	public abstract PlaceBookItemFrame createFrame(final PlaceBookController handler);
+	public abstract PlaceBookItemFrame createFrame(final DragController handler);
 
-	public PlaceBookItemFrame createFrame(final PlaceBookItem item, final PlaceBookController handler)
+	public PlaceBookItemFrame createFrame(final PlaceBookItemController controller, final DragController handler)
 	{
-		final PlaceBookItemWidget widget = PlaceBookItemWidgetFactory.createItemWidget(item, handler);
+		final PlaceBookItemView widget = PlaceBookItemViewFactory.createItemWidget(controller);
 		if (widget == null)
 		{
-			GWT.log("No widget for " + item.getKey() + ": type=" + item.getShortClassName());
+			GWT.log("No widget for " + controller.getItem().getKey() + ": type="
+					+ controller.getItem().getShortClassName());
 			return null;
 		}
 

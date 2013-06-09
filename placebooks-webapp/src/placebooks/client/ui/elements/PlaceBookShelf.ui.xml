@@ -24,6 +24,7 @@
 			top: 20px;
 			bottom: 0px;
 			padding-left: 10px;
+			padding-top: 20px;
 			position: absolute;
 		}
 		
@@ -45,7 +46,6 @@
 			padding: 0 10px;
 			cursor: default;
 			color: #777;
-			background-color: #FFF;
 			z-index: 20;
 		}
 		

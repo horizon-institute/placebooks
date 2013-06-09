@@ -14,7 +14,8 @@
 		}
 		
 		.enabled:HOVER {
-			background-color: rgba(128, 128, 128, 0.5);
+			color: #fff;
+			background-color: rgba(128, 128, 128, 0.3);
 		}
 		
 		.label {

@@ -19,13 +19,13 @@ public class PlaceBookEntry extends ShelfEntry
 		setTitle(placebook.getMetadataValue("title"));
 		setOwner(placebook.getOwner().getKey());
 		setTimestamp(placebook.getTimestamp());
-		this.description = placebook.getMetadataValue("description");
-		this.numItems = placebook.getItems().size();
+		description = placebook.getMetadataValue("description");
+		numItems = placebook.getItems().size();
 
 		if (placebook.getGeometry() != null)
 		{
 			// this.geometry = placebook.getGeometry().toString();
-			this.center = placebook.getGeometry().getCentroid().toString();
+			center = placebook.getGeometry().getCentroid().toString();
 		}
 	}
 

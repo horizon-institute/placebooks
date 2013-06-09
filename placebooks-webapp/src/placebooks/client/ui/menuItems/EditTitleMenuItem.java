@@ -1,9 +1,11 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookDialog;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -13,12 +15,14 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class EditTitleMenuItem extends MenuItem
 {
-	private final PlaceBookController controller;
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
+	private final DragController controller;
 	private final PlaceBookItemFrame item;
 
-	public EditTitleMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
+	public EditTitleMenuItem(final DragController controller, final PlaceBookItemFrame item)
 	{
-		super("Edit Title");
+		super(uiMessages.editTitle());
 		this.item = item;
 		this.controller = controller;
 	}
@@ -38,7 +42,7 @@ public class EditTitleMenuItem extends MenuItem
 		};
 		final TextBox title = new TextBox();
 		title.setText(item.getItem().getMetadata("title", ""));
-		final Button uploadButton = new Button("Set Title", new ClickHandler()
+		final Button uploadButton = new Button(uiMessages.setTitle(), new ClickHandler()
 		{
 			@Override
 			public void onClick(final ClickEvent event)
@@ -53,7 +57,7 @@ public class EditTitleMenuItem extends MenuItem
 		panel.add(title);
 		panel.add(uploadButton);
 
-		dialogBox.setTitle("Edit Title");
+		dialogBox.setTitle(uiMessages.editTitle());
 		dialogBox.setWidget(panel);
 		dialogBox.show();
 

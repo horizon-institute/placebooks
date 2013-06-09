@@ -39,27 +39,43 @@
 			padding: 30px 0;
 			background-color: #EEE;
 			border-bottom: 1px solid #CCC;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
+			height: 40px;
 		}
 		
 		.searchBar {
 			margin: 0 auto;
 			width: 80%;
 			position: relative;
+			height: 35px;
 		}
 		
 		.parent {
 			height: 100%;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
 		}
 		
 		.nearbyLink {
  			margin: 0 auto;
 			width: 80%;
 			display: block;
-}
+		}
+		
+		.shelf {
+			position: absolute;
+			top: 122px;
+			left: 0px;
+			right: 0px;
+			bottom: 20px;
+		}
+		
+				.footer {
+			width: 100%;
+			text-align: center;
+			clear: both;
+			font-size: smaller;
+			position: absolute;
+			bottom: 5px;
+			color: #555;
+		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
@@ -77,6 +93,8 @@
 			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}"><ui:msg>Find Nearby PlaceBooks</ui:msg></g:Anchor>
 		</g:FlowPanel>
 
-		<p:PlaceBookShelf ui:field="shelf" />
+		<p:PlaceBookShelf ui:field="shelf" styleName="{style.shelf}" />
+		
+		<g:Label styleName="{style.footer}"><ui:msg>This work was supported by the Research Councils UK (RCUK) [grant number - EP/J000604/2]</ui:msg></g:Label>		
 	</g:FlowPanel>
 </ui:UiBinder>

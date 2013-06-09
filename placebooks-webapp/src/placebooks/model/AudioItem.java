@@ -19,8 +19,7 @@ public class AudioItem extends MediaItem
 		super(a);
 	}
 
-	public AudioItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String audio)
+	public AudioItem(final User owner, final Geometry geom, final URL sourceURL, final String audio)
 	{
 		super(owner, geom, sourceURL, audio);
 	}

@@ -1,8 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.Resources;
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.ui.elements.RichTextArea;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -15,16 +14,16 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 
-public class EditableTextItem extends PlaceBookItemWidget
+public class EditableTextItem extends PlaceBookItemView
 {
 	private RichTextArea textPanel = new RichTextArea("");
 	private final FlowPanel rootPanel = new FlowPanel();
 	private final Image markerImage = new Image();
 
-	EditableTextItem(final PlaceBookItem item, final PlaceBookController handler)
+	EditableTextItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
-		
+		super(controller);
+
 		rootPanel.add(markerImage);
 		rootPanel.add(textPanel);
 
@@ -63,23 +62,23 @@ public class EditableTextItem extends PlaceBookItemWidget
 			@Override
 			public void onKeyUp(final KeyUpEvent event)
 			{
-				item.setText(textPanel.getElement().getInnerHTML());
+				getItem().setText(textPanel.getElement().getInnerHTML());
 				fireResized();
 				fireChanged();
 			}
 		});
 
-		textPanel.getElement().setInnerHTML(item.getText());
+		textPanel.getElement().setInnerHTML(getItem().getText());
 	}
 
 	@Override
 	public void refresh()
 	{
-		if(getItem().showMarker())
+		if (getItem().showMarker())
 		{
 			markerImage.setResource(getItem().getMarkerImage());
 			markerImage.getElement().getStyle().setFloat(com.google.gwt.dom.client.Style.Float.LEFT);
-			markerImage.getElement().getStyle().setProperty("margin", "0 8px 0 0");			
+			markerImage.getElement().getStyle().setProperty("margin", "0 8px 0 0");
 		}
 		markerImage.setVisible(getItem().showMarker());
 	}

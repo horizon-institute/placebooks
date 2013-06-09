@@ -1,6 +1,6 @@
 package placebooks.client.model;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.Resources;
 import placebooks.client.ui.images.markers.Markers;
 
@@ -80,6 +80,23 @@ public class PlaceBookItem extends JavaScriptObject
 										return this.id;
 										}-*/;
 
+	public final ImageResource getMarkerImage()
+	{
+		final int markerID = getParameter("marker", 0);
+
+		if (markerID == 0)
+		{
+			return Markers.IMAGES.marker();
+		}
+		else
+		{
+			final char markerPostFix = (char) markerID;
+			final ResourcePrototype result = Markers.IMAGES.getResource("marker" + markerPostFix);
+			if (result instanceof ImageResource) { return (ImageResource) result; }
+			return Markers.IMAGES.marker();
+		}
+	}
+
 	public final native String getMetadata(String name) /*-{
 														return this.metadata[name];
 														}-*/;
@@ -96,31 +113,6 @@ public class PlaceBookItem extends JavaScriptObject
 														return this.parameters[name];
 														}-*/;
 
-	public final boolean showMarker()
-	{
-		return hasParameter("mapPage") && getParameter("markerShow", 0) == 1;
-	}
-	
-	public final ImageResource getMarkerImage()
-	{
-		int markerID = getParameter("marker", 0);
-
-		if(markerID == 0)
-		{
-			return Markers.IMAGES.marker();
-		}
-		else
-		{
-			char markerPostFix = (char) markerID;
-			ResourcePrototype result = Markers.IMAGES.getResource("marker" + markerPostFix);
-			if(result instanceof ImageResource)
-			{
-				return (ImageResource) result;
-			}
-			return Markers.IMAGES.marker();			
-		}
-	}
-	
 	public final native int getParameter(String name, final int defaultValue)
 	/*-{
 		if ('parameters' in this && name in this.parameters) {
@@ -148,8 +140,8 @@ public class PlaceBookItem extends JavaScriptObject
 		final String shortClass = getShortClassName();
 		if (isMedia(shortClass))
 		{
-			if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/thumb/"
-					+ getHash(); }
+			if (getHash() != null) { return PlaceBooks.getServer().getHostURL()
+					+ "placebooks/a/admin/serve/media/thumb/" + getHash(); }
 		}
 
 		return getURL();
@@ -159,15 +151,15 @@ public class PlaceBookItem extends JavaScriptObject
 	{
 		final String shortClass = getShortClassName();
 		String key = getKey();
-		if (getHash() != null) { return PlaceBookService.getHostURL() + "placebooks/a/admin/serve/media/" + shortClass
-				+ "/" + getHash(); }
+		if (getHash() != null) { return PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/serve/media/"
+				+ shortClass + "/" + getHash(); }
 
 		if (key == null)
 		{
 			key = getMetadata("originalItemID", null);
 		}
 
-		if (key != null && isMedia(shortClass)) { return PlaceBookService.getHostURL()
+		if (key != null && isMedia(shortClass)) { return PlaceBooks.getServer().getHostURL()
 				+ "placebooks/a/admin/serve/item/media/" + shortClass + "/" + key; }
 
 		return getSourceURL();
@@ -237,6 +229,11 @@ public class PlaceBookItem extends JavaScriptObject
 	public final native void setText(String newText) /*-{
 														this.text = newText;
 														}-*/;
+
+	public final boolean showMarker()
+	{
+		return hasParameter("mapPage") && getParameter("markerShow", 0) == 1;
+	}
 
 	private boolean isMedia(final String shortClass)
 	{

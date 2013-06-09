@@ -3,10 +3,11 @@ package placebooks.client.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.UIMessages;
+import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
-import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -56,6 +57,8 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		}
 	}
 
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
 	private static final MarkerTemplates MARKER_TEMPLATES = GWT.create(MarkerTemplates.class);
 
 	private static PlaceBookMapsDialogUiBinder uiBinder = GWT.create(PlaceBookMapsDialogUiBinder.class);
@@ -80,21 +83,21 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 	private MapItem map;
 
-	private final PlaceBookItemWidget item;
+	private final PlaceBookItemView item;
 	private final List<PlaceBookItemFrame> mapItems;
 
-	private final PlaceBookController controller;
+	private final DragController controller;
 
 	private final CellList<ImageResource> markers;
 
-	public PlaceBookMapsDialog(final PlaceBookItemWidget item, final List<PlaceBookItemFrame> mapItems,
-			final PlaceBookController controller)
+	public PlaceBookMapsDialog(final PlaceBookItemView item, final List<PlaceBookItemFrame> mapItems,
+			final DragController controller)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 		this.controller = controller;
 		this.item = item;
 		this.mapItems = mapItems;
-		setTitle("Locate " + item.getItem().getMetadata("title", "Item") + " on Map");
+		setTitle(uiMessages.locateOnMap(item.getItem().getMetadata("title", "Item")));
 		onInitialize();
 
 		final int mapPage = item.getItem().getParameter("mapPage", -1);
@@ -133,8 +136,15 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 				final ImageResource marker = selectionModel.getSelectedObject();
 				try
 				{
-					final int markerIndex = marker.getName().charAt(6);
-					item.getItem().setParameter("marker", markerIndex);
+					if (marker.getName().equals("marker"))
+					{
+						item.getItem().removeParameter("marker");
+					}
+					else
+					{
+						final int markerIndex = marker.getName().charAt(6);
+						item.getItem().setParameter("marker", markerIndex);
+					}
 				}
 				catch (final Exception e)
 				{
@@ -199,21 +209,21 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	private void onInitialize()
 	{
 		mapSelect.clear();
-		mapSelect.addItem("Not On Any Map", "");
+		mapSelect.addItem(uiMessages.itemNotOnMap(), "");
 
 		mapPanel.clear();
 
 		for (final PlaceBookItemFrame item : mapItems)
 		{
-			String title = item.getItem().getMetadata("title");
+			final String title = item.getItem().getMetadata("title");
 			if (title == null || title.equals("Map"))
 			{
-				mapSelect.addItem(	"On Map on Page " + (item.getColumn().getPage().getIndex() + 1),
+				mapSelect.addItem(	uiMessages.onMap(item.getColumn().getPage().getIndex() + 1),
 									Integer.toString(item.getColumn().getPage().getIndex()));
 			}
 			else
 			{
-				mapSelect.addItem(	"On " + title + " Map (page " + (item.getColumn().getPage().getIndex() + 1) + ")",
+				mapSelect.addItem(	uiMessages.onMap(title, item.getColumn().getPage().getIndex() + 1),
 									Integer.toString(item.getColumn().getPage().getIndex()));
 			}
 		}
@@ -237,11 +247,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 		if (item.getItem().getGeometry() == null)
 		{
-			mapLabel.setText("Click on the Map to Place " + item.getItem().getMetadata("title", "Untitled"));
+			mapLabel.setText(uiMessages.clickMapPlace(item.getItem().getMetadata("title", "Untitled")));
 		}
 		else
 		{
-			mapLabel.setText("Click on the Map to Move " + item.getItem().getMetadata("title", "Untitled"));
+			mapLabel.setText(uiMessages.clickMapMove(item.getItem().getMetadata("title", "Untitled")));
 		}
 
 		if (page != -1)
@@ -250,7 +260,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 			{
 				if (page == mapItem.getColumn().getPage().getIndex())
 				{
-					map = new MapItem(mapItem.getItem(), controller);
+					map = new MapItem(mapItem.getItemWidget().getController());
 					map.refreshMarkers();
 
 					mapPanel.add(map);

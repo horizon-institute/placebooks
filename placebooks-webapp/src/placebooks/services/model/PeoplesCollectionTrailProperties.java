@@ -3,11 +3,11 @@ package placebooks.services.model;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
-
 /**
  * Class to encapsulate response from Peoples Collection API for Trail Properties
+ * 
  * @author pszmp
- *
+ * 
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
 public class PeoplesCollectionTrailProperties
@@ -37,7 +37,10 @@ public class PeoplesCollectionTrailProperties
 
 	}
 
-	public PeoplesCollectionTrailProperties(PeoplesCollectionTrailCentroid centroid, int[] items, String title, String titlecym, String description, String descriptioncym, String difficulty, String trailtype, double distance, int userid, String tags, String tagscym, int trailid)
+	public PeoplesCollectionTrailProperties(final PeoplesCollectionTrailCentroid centroid, final int[] items,
+			final String title, final String titlecym, final String description, final String descriptioncym,
+			final String difficulty, final String trailtype, final double distance, final int userid,
+			final String tags, final String tagscym, final int trailid)
 	{
 		this.centroid = centroid;
 		this.items = items;
@@ -58,14 +61,45 @@ public class PeoplesCollectionTrailProperties
 
 		this.trailid = trailid;
 	}
+
 	public PeoplesCollectionTrailCentroid GetCentroid()
 	{
 		return centroid;
 	}
 
+	public String GetDecriptionCym()
+	{
+		return descriptioncym;
+	}
+
+	public String GetDescription()
+	{
+		return description;
+	}
+
+	public String GetDifficulty()
+	{
+		return difficulty;
+	}
+
+	public double GetDistance()
+	{
+		return distance;
+	}
+
 	public int[] GetItems()
 	{
 		return items;
+	}
+
+	public String GetTags()
+	{
+		return tags;
+	}
+
+	public String GetTagsCym()
+	{
+		return tagscym;
 	}
 
 	public String GetTitle()
@@ -78,47 +112,18 @@ public class PeoplesCollectionTrailProperties
 		return titlecym;
 	}
 
-	public String GetDescription()
-	{
-		return description; 
-	}
-
-	public String GetDecriptionCym()
-	{
-		return descriptioncym;        
-	}
-
-	public String GetDifficulty()
-	{
-		return difficulty;
-	}
-	public String GetTrailType()
-	{
-		return trailtype;
-	}
-
-	public double GetDistance()
-	{
-		return distance;
-	}
-
-	public int GetUserId()
-	{
-		return userid;
-	}
-	
 	public int GetTrailId()
 	{
 		return trailid;
 	}
 
-	public String GetTags()
+	public String GetTrailType()
 	{
-		return tags;
+		return trailtype;
 	}
 
-	public String GetTagsCym()
+	public int GetUserId()
 	{
-		return tagscym;
+		return userid;
 	}
 }

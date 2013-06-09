@@ -7,6 +7,8 @@
 	<inherits name="com.google.gwt.activity.Activity" />
 	<inherits name="com.google.gwt.place.Place" />
 	
+	<inherits name="org.wornchaos.Utils" />	
+	
 	<script src="../openlayers/proj4js-compressed.js" />
 	<script src="../openlayers/OpenLayers.js" />	
 	
@@ -14,9 +16,9 @@
 	
 	<source path="client" />
 
-	<extend-property name="locale" values="cy"/>	
-	<extend-property name="locale" values="en" />
+	<extend-property name="locale" values="en,cy"/>	
 	<set-property-fallback name="locale" value="en" />
+	<set-property name="locale" value="en,cy"/>
 	
-	<entry-point class="placebooks.client.PlaceBookEditor" />
+	<entry-point class="placebooks.client.PlaceBooks" />
 </module>

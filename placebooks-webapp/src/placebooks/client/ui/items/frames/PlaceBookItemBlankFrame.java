@@ -1,14 +1,14 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.DragController;
 
 public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 {
 	public static PlaceBookItemFrameFactory FACTORY = new PlaceBookItemFrameFactory()
 	{
 		@Override
-		public PlaceBookItemFrame createFrame(final PlaceBookController handler)
+		public PlaceBookItemFrame createFrame(final DragController handler)
 		{
 			return new PlaceBookItemBlankFrame();
 		}

@@ -13,6 +13,19 @@
 			width: 100%;
 		}
 		
+		.pcw_logo {
+			margin-left: 80px;
+			margin-top: 15px;	
+			float:left;
+		}
+
+		.previewPanel1 {
+			width: 50%;
+			float: left;
+			clear:both;
+		}
+		
+		
 		.previewPanel {
 			width: 50%;
 			float: left;
@@ -69,6 +82,12 @@
 			color: #888;
 			vertical-align: top;
 			margin-top: 5px;
+			padding: 3px 5px;
+			border-radius: 3px;
+			border: 1px solid #666;
+			box-shadow: inset 2px 2px 5px #DDD;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
 		}
 		
 		.searchButton {
@@ -91,13 +110,25 @@
 		
 		.content {
 			overflow-y: auto;
-			-webkit-box-flex: 1;
-			height: 100%;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+			top: 41px;
 		}
 		
 		.innerContent {
 			margin: auto;
 			width: 800px;
+		}
+		
+		.footer {
+			width: 100%;
+			text-align: center;
+			clear: both;
+			font-size: smaller;
+			padding: 5px;
+			color: #555;			
 		}
 	</ui:style>
 	<ui:with field='images' type='placebooks.client.ui.images.Images' />
@@ -139,88 +170,105 @@
 						<ui:msg>Search PlaceBooks</ui:msg>
 					</g:TextBox>
 				</g:FlowPanel>
-				<g:Label styleName="{style.listTitle}">
-					<ui:msg>WHAT YOU NEED TO MAKE A PLACEBOOK</ui:msg>
-				</g:Label>
-				<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_chrome}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>
-							<a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">Google Chrome</a>
-						</b>, PlaceBooks is designed to work on Google Chrome. We recommend
-						that you
-						<a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">download</a>
-						and install it on your computer. We do not support any other web
-						browser.
-					</ui:msg></g:HTML>
+				<g:FlowPanel styleName="{style.previewPanel}">
+					<g:Label styleName="{style.listTitle}">
+						<ui:msg>WHAT YOU NEED TO MAKE A PLACEBOOK</ui:msg>
+					</g:Label>
+					<g:FlowPanel styleName="{style.listItem}">
+						<g:Image styleName="{style.listImage}" resource="{images.listitem_chrome}" />
+						<g:HTML styleName="{style.listText}">
+							<ui:msg>
+								<b>
+									<a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">Google Chrome</a>
+								</b>
+								, PlaceBooks is designed to work on Google Chrome. We recommend
+								that you
+								<a href="http://www.google.com/chrome/intl/en-GB/landing_tv.html">download</a>
+								and install it on your computer. We do not support any other web
+								browser.
+							</ui:msg>
+						</g:HTML>
+					</g:FlowPanel>
+					<g:FlowPanel styleName="{style.listItem}">
+						<g:Image styleName="{style.listImage}" resource="{images.listitem_phone}" />
+						<g:HTML styleName="{style.listText}">
+							<ui:msg>
+								<b>A smart phone</b>
+								, if you want to track your routes and generate geo-tagged
+								content
+								while you are out and about, either an
+								<a href="http://androidphone.org.uk/guides/what-is-an-android-phone/">Android</a>
+								phone or an
+								<a href="http://www.apple.com/uk/iphone/">iPhone</a>
+								.
+							</ui:msg>
+						</g:HTML>
+					</g:FlowPanel>
+					<g:FlowPanel styleName="{style.listItem}">
+						<g:Image styleName="{style.listImage}" resource="{images.listitem_logo}" />
+						<g:HTML styleName="{style.listText}">
+							<ui:msg>
+								<b>
+									<a
+										href="https://play.google.com/store/apps/details?id=com.peoplescollection.placebooks">A PlaceBooks App</a>
+								</b>
+								is available for the Android, which allows you to view your
+								placebooks on your phone.
+							</ui:msg>
+						</g:HTML>
+					</g:FlowPanel>
+					<g:FlowPanel styleName="{style.listItem}">
+						<g:Image styleName="{style.listImage}" resource="{images.listitem_everytrail}" />
+						<g:HTML styleName="{style.listText}">
+							<ui:msg>
+								<b>
+									<a href="http://www.everytrail.com/">EveryTrail</a>
+								</b>
+								, this allows you to track your routes and generate geo-tagged
+								content while you are out and about. You can download it for
+								Android or iPhone. You can use the
+								<a
+									href="https://market.android.com/details?id=com.globalmotion.everytrail&amp;feature=search_result">free version</a>
+								, or the
+								<a
+									href="https://market.android.com/details?id=com.globalmotion.everytrail.pro&amp;feature=search_result">Pro version</a>
+								which lets you geo-tag video as well. You will need to set up an
+								<a href="http://www.everytrail.com/signup.php">EveryTrail account</a>
+								to use the routes and content in PlaceBooks.
+							</ui:msg>
+						</g:HTML>
+					</g:FlowPanel>
+					<g:FlowPanel styleName="{style.listItem}">
+						<g:Image styleName="{style.listImage}" resource="{images.listitem_video}" />
+						<g:HTML styleName="{style.listText}">
+							<ui:msg>
+								<b>
+									<a href="http://www.ixconverter.com">IXConverter</a>
+								</b>
+								, this free online service allows you download your YouTube
+								videos
+								and add save them on your computer so that you can add them to a
+								PlaceBook. You should save your videos in mp4 format. You can
+								also
+								use IXConverter to convert audio files into mp3 format. If you
+								want to put videos or audio into a PlaceBook you must use the mp4
+								and mp3 formats.
+							</ui:msg>
+						</g:HTML>
+					</g:FlowPanel>
 				</g:FlowPanel>
-				<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_phone}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>A smart phone</b>, if you want to track your routes and generate geo-tagged content
-						while you are out and about, either an
-						<a href="http://androidphone.org.uk/guides/what-is-an-android-phone/">Android</a>
-						phone or an
-						<a href="http://www.apple.com/uk/iphone/">iPhone</a>
-						.
-					</ui:msg></g:HTML>
-				</g:FlowPanel>
-				<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_logo}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>
-							<a href="#appinstall:">A PlaceBooks App</a>
-						</b>
-						is available for the Android, which allows you to view your
-						placebooks on your phone.
-					</ui:msg></g:HTML>
-				</g:FlowPanel>
-				<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_everytrail}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>
-							<a href="http://www.everytrail.com/">EveryTrail</a>
-						</b>, this allows you to track your routes and generate geo-tagged
-						content while you are out and about. You can download it for
-						Android or iPhone. You can use the
-						<a
-							href="https://market.android.com/details?id=com.globalmotion.everytrail&amp;feature=search_result">free version</a>, or the
-						<a
-							href="https://market.android.com/details?id=com.globalmotion.everytrail.pro&amp;feature=search_result">Pro version</a>
-						which lets you geo-tag video as well. You will need to set up an
-						<a href="http://www.everytrail.com/signup.php">EveryTrail account</a>
-						to use the routes and content in PlaceBooks.
-					</ui:msg></g:HTML>
-				</g:FlowPanel>
-				<!--<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_youtube}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>
-							<a href="http://www.youtube.com">YouTube</a>
-						</b>
-						, this allows you to download any videos you make using EveryTrail
-						Pro. You will need to set up a
-						<a href="http://www.youtube.com/create_account">YouTube</a>
-						account to access the video.
-					</ui:msg></g:HTML>
-				</g:FlowPanel>-->
-				<g:FlowPanel styleName="{style.listItem}">
-					<g:Image styleName="{style.listImage}" resource="{images.listitem_video}" />
-					<g:HTML styleName="{style.listText}"><ui:msg>
-						<b>
-							<a href="http://www.ixconverter.com">IXConverter</a>
-						</b>, this free online service allows you download your YouTube videos
-						and add save them on your computer so that you can add them to a
-						PlaceBook. You should save your videos in mp4 format. You can also
-						use IXConverter to convert audio files into mp3 format. If you
-						want to put videos or audio into a PlaceBook you must use the mp4
-						and mp3 formats.
-					</ui:msg></g:HTML>
-				</g:FlowPanel>
-				<g:SimplePanel styleName="{style.previewPanel}"
+				<g:HTML styleName="{style.previewPanel}">
+					<video style="width: 100%; padding: 5px; padding-right: 0; box-sizing: border-box;" controls="controls" >
+						<source src="screen recording3.mp4" type="video/mp4" />
+					</video>
+				</g:HTML>
+				<g:SimplePanel styleName="{style.previewPanel1}" 
 					ui:field="preview1" />
 				<g:SimplePanel styleName="{style.previewPanel}"
 					ui:field="preview2" />
+					
+				<g:Label styleName="{style.footer}"><ui:msg>This work was supported by the Research Councils UK (RCUK) [grant number -
+EP/J000604/2]</ui:msg></g:Label>
 			</g:FlowPanel>
 		</g:FlowPanel>
 	</g:FlowPanel>

@@ -1,20 +1,25 @@
 package placebooks.client.ui.menuItems;
 
+import placebooks.client.controllers.PlaceBookController;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookColumn;
-import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+
+import com.google.gwt.core.client.GWT;
 
 public class DeleteItemMenuItem extends MenuItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
 	private final PlaceBookController controller;
 	private final PlaceBookItemFrame item;
 
 	public DeleteItemMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
 	{
-		super("Delete");
+		super(uiMessages.delete());
 		this.item = item;
 		this.controller = controller;
 	}
@@ -29,21 +34,21 @@ public class DeleteItemMenuItem extends MenuItem
 		{
 			panel.reflow();
 		}
-		
-		if(item.getItem().is(ItemType.GPS))
+
+		if (item.getItem().is(ItemType.GPS))
 		{
-			for(PlaceBook placebook: controller.getPages().getPlaceBook().getPages())
+			for (final PlaceBook placebook : controller.getItem().getPages())
 			{
-				for(PlaceBookItem pbItem: placebook.getItems())
+				for (final PlaceBookItem pbItem : placebook.getItems())
 				{
-					if(pbItem.getMetadata("mapItemID", "").equals(item.getItem().getKey()))
-					{					
+					if (pbItem.getMetadata("mapItemID", "").equals(item.getItem().getKey()))
+					{
 						pbItem.removeMetadata("mapItemID");
 					}
 				}
 			}
 		}
-		
+
 		controller.markChanged();
 	}
 }

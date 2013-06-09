@@ -3,7 +3,11 @@ package placebooks.model;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,8 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
@@ -27,7 +31,7 @@ public class LoginDetails
 	private Date lastSync;
 
 	private boolean syncInProgress = false;
-	
+
 	@JsonIgnore
 	private String password;
 
@@ -42,9 +46,10 @@ public class LoginDetails
 
 	private String username;
 
-	LoginDetails()
-	{
-	}
+	@JsonIgnore
+	@ElementCollection
+	@Column(columnDefinition = "LONGTEXT")
+	private Map<String, String> metadata = new HashMap<String, String>();
 
 	public LoginDetails(final User user, final String service, final String userid, final String username,
 			final String password)
@@ -54,6 +59,10 @@ public class LoginDetails
 		this.service = service;
 		this.username = username;
 		this.password = password;
+	}
+
+	LoginDetails()
+	{
 	}
 
 	public String getID()
@@ -66,14 +75,14 @@ public class LoginDetails
 		return lastSync;
 	}
 
+	public String getMetadata(final String key)
+	{
+		return metadata.get(key);
+	}
+
 	public String getPassword()
 	{
 		return password;
-	}
-	
-	public boolean isSyncInProgress()
-	{
-		return syncInProgress;
 	}
 
 	public String getService()
@@ -96,18 +105,38 @@ public class LoginDetails
 		return username;
 	}
 
-	public void setSyncInProgress(final boolean inProgress)
+	public boolean isSyncInProgress()
 	{
-		this.syncInProgress = inProgress;
+		return syncInProgress;
 	}
-	
+
 	public void setLastSync()
 	{
 		lastSync = new Date();
 	}
 
+	public void setMetadata(final String key, final String value)
+	{
+		metadata.put(key, value);
+	}
+
+	public void setPassword(final String password)
+	{
+		this.password = password;
+	}
+
+	public void setSyncInProgress(final boolean inProgress)
+	{
+		syncInProgress = inProgress;
+	}
+
 	public void setUserID(final String userID)
 	{
-		this.userid = userID;
+		userid = userID;
+	}
+
+	public void setUsername(final String username)
+	{
+		this.username = username;
 	}
 }

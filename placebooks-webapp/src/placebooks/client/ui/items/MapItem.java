@@ -1,12 +1,13 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.JSONResponse;
-import placebooks.client.model.DataStore;
+import org.wornchaos.client.logger.Log;
+import org.wornchaos.views.View;
+
+import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.controllers.ServerInfoController;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.ServerInfo;
-import placebooks.client.model.ServerInfoDataStore;
-import placebooks.client.ui.elements.PlaceBookController;
 import placebooks.client.ui.openlayers.Bounds;
 import placebooks.client.ui.openlayers.ClickControl;
 import placebooks.client.ui.openlayers.Event;
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class MapItem extends PlaceBookItemWidget
+public class MapItem extends PlaceBookItemView
 {
 	public final static String POINT_PREFIX = "POINT (";
 
@@ -53,18 +54,16 @@ public class MapItem extends PlaceBookItemWidget
 
 	private final Label popupLabel = new Label();
 
-	private final DataStore<ServerInfo> infoStore = new ServerInfoDataStore();
-
-	public MapItem(final PlaceBookItem item, final PlaceBookController handler)
+	public MapItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
+		super(controller);
 		initWidget(panel);
 		panel.setWidth("100%");
 		panel.setHeight("100%");
 
-		if (!item.hasParameter("height"))
+		if (!controller.getItem().hasParameter("height"))
 		{
-			item.setParameter("height", 5000);
+			controller.getItem().setParameter("height", 5000);
 		}
 
 		popup.add(popupLabel);
@@ -89,12 +88,12 @@ public class MapItem extends PlaceBookItemWidget
 																						map.getDisplayProjection());
 				if (positionItem != null)
 				{
-					GWT.log("Clicked at " + lonLat);
+					// Log.info("Clicked at " + lonLat);
 					positionItem.setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
 
 					fireChanged();
 					fireFocusChanged(true);
-					controller.markChanged();
+					getController().markChanged();
 					refreshMarkers();
 					changeHandler.onChange(null);
 					createGeometry();
@@ -111,7 +110,7 @@ public class MapItem extends PlaceBookItemWidget
 		final String newURL = getItem().getURL();
 		if (url == null || !url.equals(newURL) || routeLayer == null)
 		{
-			this.url = newURL;
+			url = newURL;
 			createRoute();
 		}
 		refreshMarkers();
@@ -124,9 +123,9 @@ public class MapItem extends PlaceBookItemWidget
 		markerLayer.clearMarkers();
 
 		final int mapPage = getMapPage();
-		GWT.log("Map Page: " + mapPage);
+		// Log.info("Map Page: " + mapPage);
 
-		for (final PlaceBook page : controller.getPages().getPlaceBook().getPages())
+		for (final PlaceBook page : getController().getPlaceBook().getPages())
 		{
 			for (final PlaceBookItem item : page.getItems())
 			{
@@ -150,7 +149,7 @@ public class MapItem extends PlaceBookItemWidget
 							@Override
 							protected void handleEvent(final Event event)
 							{
-								controller.goToPage(page);
+								getController().gotoPage(page);
 							}
 						}));
 						marker.getEvents().register("mouseover", marker, EventHandler.createHandler(new EventHandler()
@@ -195,29 +194,30 @@ public class MapItem extends PlaceBookItemWidget
 
 	private void createGeometry()
 	{
-		if (item.getHash() != null) { return; }
+		if (getItem().getHash() != null) { return; }
 		final Bounds bounds = getLayerBounds();
 		if (bounds != null)
 		{
 			final Bounds clone = bounds.clone();
 			clone.transform(map.getProjection(), map.getDisplayProjection());
-			GWT.log("Bounds: " + clone.toBBox());
+			Log.info("Bounds: " + clone.toBBox());
 			if (clone.getWidth() == 0 && clone.getHeight() == 0)
 			{
-				item.setGeometry("POINT (" + clone.getTop() + " " + clone.getLeft() + ")");
+				getItem().setGeometry("POINT (" + clone.getTop() + " " + clone.getLeft() + ")");
 			}
 			else
 			{
-				item.setGeometry("LINEARRING (" + clone.getTop() + " " + clone.getLeft() + ", " + clone.getTop() + " "
-						+ clone.getRight() + "," + clone.getBottom() + " " + clone.getRight() + "," + clone.getBottom()
-						+ " " + clone.getLeft() + "," + clone.getTop() + " " + clone.getLeft() + ")");
+				getItem().setGeometry(	"LINEARRING (" + clone.getTop() + " " + clone.getLeft() + ", " + clone.getTop()
+												+ " " + clone.getRight() + "," + clone.getBottom() + " "
+												+ clone.getRight() + "," + clone.getBottom() + " " + clone.getLeft()
+												+ "," + clone.getTop() + " " + clone.getLeft() + ")");
 			}
 		}
 		else
 		{
 			final LonLat center = map.getCenter().cloneLonLat()
 					.transform(map.getProjection(), map.getDisplayProjection());
-			item.setGeometry("POINT (" + center.getLat() + " " + center.getLon() + ")");
+			getItem().setGeometry("POINT (" + center.getLat() + " " + center.getLon() + ")");
 		}
 	}
 
@@ -225,14 +225,16 @@ public class MapItem extends PlaceBookItemWidget
 	{
 		if (map == null)
 		{
-			infoStore.get(null, new JSONResponse<ServerInfo>()
+			ServerInfoController.getController().add(new View<ServerInfo>()
 			{
+
 				@Override
-				public void handleResponse(final ServerInfo object)
+				public void itemChanged(final ServerInfo value)
 				{
-					createMap(object);
+					createMap(value);
 				}
 			});
+			ServerInfoController.getController().load();
 		}
 	}
 
@@ -242,7 +244,7 @@ public class MapItem extends PlaceBookItemWidget
 		{
 			map.destroy();
 		}
-		map = Map.create(panel.getElement(), controller.canEdit());
+		map = Map.create(panel.getElement(), getController().canEdit());
 
 		// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
 		map.addLayer(OSLayer.create("oslayer", serverInfo));
@@ -310,7 +312,7 @@ public class MapItem extends PlaceBookItemWidget
 	private int getMapPage()
 	{
 		int index = 0;
-		for (final PlaceBook page : controller.getPages().getPlaceBook().getPages())
+		for (final PlaceBook page : getController().getPlaceBook().getPages())
 		{
 			for (final PlaceBookItem item : page.getItems())
 			{

@@ -1,24 +1,25 @@
 package placebooks.controller;
 
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class ExecTimer extends Thread
 {
-	
+
 	private class ExecConsumer extends Thread
 	{
 
 		private InputStream is = null;
 		private boolean kill;
 
-		public ExecConsumer(InputStream is)
+		public ExecConsumer(final InputStream is)
 		{
 			this.is = is;
 			kill = false;
 		}
+
 		public void kill()
 		{
 			kill = true;
@@ -29,8 +30,7 @@ public class ExecTimer extends Thread
 		{
 			try
 			{
-				final InputStreamReader isr = 
-					new InputStreamReader(is);
+				final InputStreamReader isr = new InputStreamReader(is);
 				final BufferedReader out = new BufferedReader(isr);
 				String line = "";
 				while (!kill && (line = out.readLine()) != null)
@@ -43,7 +43,7 @@ public class ExecTimer extends Thread
 					System.out.println("Process killed");
 					isr.close();
 				}
-				
+
 			}
 			catch (final Throwable e)
 			{
@@ -52,11 +52,12 @@ public class ExecTimer extends Thread
 		}
 
 	}
+
 	private long time;
 
 	private String command;
 
-	public ExecTimer(long time, String command)
+	public ExecTimer(final long time, final String command)
 	{
 		this.time = time;
 		this.command = command;
@@ -75,19 +76,18 @@ public class ExecTimer extends Thread
 
 			try
 			{
-				System.out.println("Waiting for process... allowing " + time 
-								   + " millis");
+				System.out.println("Waiting for process... allowing " + time + " millis");
 				sleep(time);
 			}
 			catch (final InterruptedException e)
 			{
 				System.out.println(e.toString());
 			}
-			((ExecConsumer)t1).kill();
-			((ExecConsumer)t2).kill();
+			((ExecConsumer) t1).kill();
+			((ExecConsumer) t2).kill();
 			p.destroy();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.out.println(e.toString());
 		}

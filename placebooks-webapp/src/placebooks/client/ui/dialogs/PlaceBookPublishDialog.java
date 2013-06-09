@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.AbstractCallback;
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem.ItemType;
-import placebooks.client.ui.PlaceBookPlace;
-import placebooks.client.ui.PlaceBookPreview;
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.places.PlaceBook;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -36,6 +36,8 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 	interface PlaceBookPublishUiBinder extends UiBinder<Widget, PlaceBookPublishDialog>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static final PlaceBookPublishUiBinder uiBinder = GWT.create(PlaceBookPublishUiBinder.class);
 
@@ -86,16 +88,14 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 
 	private final PlaceBookBinder placebook;
 
-	private final PlaceBookPlace place;
-
 	private boolean allowPublish = true;
 
-	public PlaceBookPublishDialog(final PlaceBookPlace place, final PlaceBookPages canvas)
+	public PlaceBookPublishDialog(final PlaceBookPages canvas)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
-		setTitle("Publish PlaceBook");
+		setTitle(uiMessages.publishPlaceBook());
 		title.setMaxLength(64);
-		title.setText(canvas.getPlaceBook().getMetadata("title", "No Title"));
+		title.setText(canvas.getPlaceBook().getMetadata("title", uiMessages.noTitle()));
 		description.setText(canvas.getPlaceBook().getMetadata("description", ""));
 		location.setText(canvas.getPlaceBook().getMetadata("location", ""));
 
@@ -119,8 +119,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 			activity.setVisible(true);
 		}
 
-		this.placebook = canvas.getPlaceBook();
-		this.place = place;
+		placebook = canvas.getPlaceBook();
 
 		for (final PlaceBookPage page : canvas.getPages())
 		{
@@ -135,7 +134,7 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 						.is(ItemType.AUDIO)) && frame.getItem().getHash() == null)
 				{
 					allowPublish = false;
-					setError("Cannot publish while there are items which require uploading");
+					setError(uiMessages.uploadRequired());
 				}
 			}
 		}
@@ -192,13 +191,14 @@ public class PlaceBookPublishDialog extends PlaceBookDialog
 		}
 		placebook.setMetadata("description", description.getText());
 
-		PlaceBookService.publishPlaceBook(placebook, new AbstractCallback()
+		PlaceBooks.getServer().publishPlaceBook(placebook, new AbstractCallback()
 		{
 			@Override
 			public void success(final Request request, final Response response)
 			{
-				final PlaceBookBinder placebook = PlaceBookService.parse(PlaceBookBinder.class, response.getText());
-				place.getPlaceController().goTo(new PlaceBookPreview(place.getUser(), placebook));
+				final PlaceBookBinder placebook = PlaceBooks.getServer().parse(PlaceBookBinder.class,
+																				response.getText());
+				PlaceBooks.goTo(new PlaceBook(placebook));
 			}
 		});
 	}

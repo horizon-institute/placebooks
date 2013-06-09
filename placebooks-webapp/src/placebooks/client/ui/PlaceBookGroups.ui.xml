@@ -1,0 +1,56 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:placebooks.client.ui.palette" xmlns:p="urn:import:placebooks.client.ui.elements"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.title {
+			font-style: mako, sans-serif;
+			font-size: 26px;
+			font-weight: bold;
+			margin: 0px auto;
+			color: #384967;
+			width: 80%;
+		}
+		
+		.parent {
+			height: 100%;
+		}
+		
+		.topPanel {
+			padding: 30px 0;
+			background-color: #EEE;
+			border-bottom: 1px solid #CCC;
+			height: 30px;
+		}
+		
+		.shelf {
+			position: absolute;
+			top: 132px;
+			left: 0px;
+			right: 0px;
+			bottom: 20px;
+			padding: 20px 40px;
+		}
+		
+		.footer {
+			width: 100%;
+			text-align: center;
+			clear: both;
+			font-size: smaller;
+			position: absolute;
+			bottom: 5px;
+			color: #555;
+		}
+	</ui:style>
+	<g:FlowPanel styleName="{style.parent}">
+		<p:PlaceBookToolbar ui:field="toolbar" />
+
+		<g:FlowPanel styleName="{style.topPanel}">
+			<g:Label ui:field="titleLabel" styleName="{style.title}"><ui:msg>Groups</ui:msg></g:Label>
+		</g:FlowPanel>		
+		<g:FlowPanel ui:field="shelf" styleName="{style.shelf}" />
+		<g:Label styleName="{style.footer}"><ui:msg>This work was supported by the Research Councils UK (RCUK) [grant number - EP/J000604/2]</ui:msg></g:Label>
+	</g:FlowPanel>
+</ui:UiBinder>

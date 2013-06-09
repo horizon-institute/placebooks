@@ -1,7 +1,6 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
 
 import com.google.gwt.media.client.Video;
 import com.google.gwt.user.client.ui.Widget;
@@ -10,9 +9,9 @@ public class VideoItem extends MediaItem
 {
 	private final Video video;
 
-	VideoItem(final PlaceBookItem item, final PlaceBookController handler)
+	VideoItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
+		super(controller);
 
 		video = Video.createIfSupported();
 		video.setControls(true);

@@ -6,7 +6,7 @@ public class GoogleLayer extends Layer
 {
 	public final static GoogleLayer create(final String name, final Bounds mapBounds)
 	{
-		JavaScriptInjector.add("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false");
+		JavaScriptInjector.add("http://maps.google.com/maps/api/js?v=3.2&sensor=false");
 
 		return createLayer(name, mapBounds);
 	}
@@ -20,6 +20,8 @@ public class GoogleLayer extends Layer
 			maxExtent: mapBounds
 		});
 	}-*/;
+
+	// TODO Add alternatives
 
 	protected GoogleLayer()
 	{

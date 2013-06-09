@@ -5,24 +5,27 @@
 // Generated on: 2011.11.25 at 03:09:27 PM GMT 
 //
 
-
 package placebooks.model.jaxb.GPX11;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- *  	 A Track Segment holds a list of Track Points which are logically connected in order. To represent a single GPS track where GPS reception was lost, or the GPS receiver was turned off, start a new Track Segment for each continuous span of track data.
- *     
+ * A Track Segment holds a list of Track Points which are logically connected in order. To represent
+ * a single GPS track where GPS reception was lost, or the GPS receiver was turned off, start a new
+ * Track Segment for each continuous span of track data.
  * 
- * <p>Java class for trksegType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for trksegType complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="trksegType">
@@ -40,66 +43,64 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "trksegType", propOrder = {
-    "trkpt",
-    "extensions"
-})
-public class TrksegType {
+@XmlType(name = "trksegType", propOrder = { "trkpt", "extensions" })
+public class TrksegType
+{
 
-    protected List<WptType> trkpt;
-    protected ExtensionsType extensions;
+	protected List<WptType> trkpt;
+	protected ExtensionsType extensions;
 
-    /**
-     * Gets the value of the trkpt property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the trkpt property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTrkpt().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link WptType }
-     * 
-     * 
-     */
-    public List<WptType> getTrkpt() {
-        if (trkpt == null) {
-            trkpt = new ArrayList<WptType>();
-        }
-        return this.trkpt;
-    }
+	/**
+	 * Gets the value of the extensions property.
+	 * 
+	 * @return possible object is {@link ExtensionsType }
+	 * 
+	 */
+	public ExtensionsType getExtensions()
+	{
+		return extensions;
+	}
 
-    /**
-     * Gets the value of the extensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public ExtensionsType getExtensions() {
-        return extensions;
-    }
+	/**
+	 * Gets the value of the trkpt property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+	 * modification you make to the returned list will be present inside the JAXB object. This is
+	 * why there is not a <CODE>set</CODE> method for the trkpt property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getTrkpt().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link WptType }
+	 * 
+	 * 
+	 */
+	public List<WptType> getTrkpt()
+	{
+		if (trkpt == null)
+		{
+			trkpt = new ArrayList<WptType>();
+		}
+		return trkpt;
+	}
 
-    /**
-     * Sets the value of the extensions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public void setExtensions(ExtensionsType value) {
-        this.extensions = value;
-    }
+	/**
+	 * Sets the value of the extensions property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ExtensionsType }
+	 * 
+	 */
+	public void setExtensions(final ExtensionsType value)
+	{
+		extensions = value;
+	}
 
 }

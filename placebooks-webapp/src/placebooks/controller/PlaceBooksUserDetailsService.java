@@ -29,11 +29,11 @@ public class PlaceBooksUserDetailsService implements UserDetailsService
 				return userDetails;
 			}
 		}
-		catch(Exception e)
+		catch (final Exception e)
 		{
 			System.out.println("Username not found " + email);
-			throw new UsernameNotFoundException("Username not found: " + email);			
-		}		
+			throw new UsernameNotFoundException("Username not found: " + email);
+		}
 		finally
 		{
 			manager.close();

@@ -29,19 +29,24 @@ public class PlaceBookBinderEntry extends ShelfEntry
 		setTitle(placebookBinder.getMetadataValue("title"));
 		setOwner(placebookBinder.getOwner().getKey());
 		setTimestamp(placebookBinder.getTimestamp());
-		this.description = placebookBinder.getMetadataValue("description");
-		this.activity = placebookBinder.getMetadataValue("activity");
-		this.previewImage = placebookBinder.getMetadataValue("placebookImage");
-		this.numPlaceBooks = placebookBinder.getPlaceBooks().size();
-		this.packagePath = placebookBinder.getPackagePath();
-		this.state = placebookBinder.getState().toString();
-		this.permissions = placebookBinder.getPermissionsAsString();
+		description = placebookBinder.getMetadataValue("description");
+		activity = placebookBinder.getMetadataValue("activity");
+		previewImage = placebookBinder.getMetadataValue("placebookImage");
+		numPlaceBooks = placebookBinder.getPlaceBooks().size();
+		packagePath = placebookBinder.getPackagePath();
+		state = placebookBinder.getState().toString();
+		permissions = placebookBinder.getPermissionsAsString();
 
 		if (placebookBinder.getGeometry() != null)
 		{
 			// this.geometry = placebookBinder.getGeometry().toString();
-			this.center = placebookBinder.getGeometry().getCentroid().toString();
+			center = placebookBinder.getGeometry().getCentroid().toString();
 		}
+	}
+
+	public String getActivity()
+	{
+		return activity;
 	}
 
 	public String getCenter()
@@ -77,10 +82,5 @@ public class PlaceBookBinderEntry extends ShelfEntry
 	public String getState()
 	{
 		return state;
-	}
-
-	public String getActivity()
-	{
-		return activity;
 	}
 }

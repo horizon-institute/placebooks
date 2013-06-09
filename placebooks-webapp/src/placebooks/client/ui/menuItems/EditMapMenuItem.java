@@ -3,19 +3,24 @@ package placebooks.client.ui.menuItems;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookMapsDialog;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 
+import com.google.gwt.core.client.GWT;
+
 public class EditMapMenuItem extends MenuItem
 {
-	private final PlaceBookController controller;
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
+	private final DragController controller;
 	private final PlaceBookItemFrame item;
 
-	public EditMapMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
+	public EditMapMenuItem(final DragController controller, final PlaceBookItemFrame item)
 	{
-		super("Locate on Map");
+		super(uiMessages.editLocation());
 		this.item = item;
 		this.controller = controller;
 	}

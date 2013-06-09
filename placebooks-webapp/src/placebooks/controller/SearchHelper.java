@@ -22,11 +22,11 @@ public final class SearchHelper
 	public static Set<String> getIndex(final String input, final int maxTokens)
 	{
 		final Set<String> returnSet = new HashSet<String>();
+		final Analyzer analyzer = new EnglishAnalyzer(org.apache.lucene.util.Version.LUCENE_31);		
 		try
 		{
-			final Analyzer analyzer = new EnglishAnalyzer(org.apache.lucene.util.Version.LUCENE_31);
 			final TokenStream tokenStream = analyzer.tokenStream("content", new StringReader(input));
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			while (tokenStream.incrementToken())
 			{
 				if (maxTokens > 0 && returnSet.size() >= maxTokens)
@@ -41,7 +41,7 @@ public final class SearchHelper
 					sb.append(attr.toString());
 					sb.append("\" ");
 					returnSet.add(attr.toString());
-					
+
 				}
 			}
 			log.debug("getIndex() terms: " + sb.toString());
@@ -49,6 +49,10 @@ public final class SearchHelper
 		catch (final Exception e)
 		{
 			log.error(e.toString());
+		}
+		finally
+		{
+			analyzer.close();
 		}
 
 		return returnSet;

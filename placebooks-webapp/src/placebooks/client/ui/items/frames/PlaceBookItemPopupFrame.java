@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import placebooks.client.Resources;
+import placebooks.client.ui.elements.DragController;
+import placebooks.client.ui.elements.DragController.DragState;
 import placebooks.client.ui.elements.PlaceBookColumn;
-import placebooks.client.ui.elements.PlaceBookController;
-import placebooks.client.ui.elements.PlaceBookController.DragState;
-import placebooks.client.ui.items.PlaceBookItemWidget;
+import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
 import placebooks.client.ui.menuItems.EditMapMenuItem;
 import placebooks.client.ui.menuItems.EditTitleMenuItem;
@@ -34,13 +34,13 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	public static class Factory extends PlaceBookItemFrameFactory
 	{
 		@Override
-		public PlaceBookItemFrame createFrame(final PlaceBookController handler)
+		public PlaceBookItemFrame createFrame(final DragController handler)
 		{
 			return new PlaceBookItemPopupFrame(handler);
 		}
 	}
 
-	private final PlaceBookItemWidget.FocusHandler focusHandler = new PlaceBookItemWidget.FocusHandler()
+	private final PlaceBookItemView.FocusHandler focusHandler = new PlaceBookItemView.FocusHandler()
 	{
 		@Override
 		public void itemFocusChanged(final boolean focussed)
@@ -76,11 +76,11 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}
 	};
 
-	private final PlaceBookController controller;
+	private final DragController controller;
 
 	private Collection<MenuItem> menuItems = new ArrayList<MenuItem>();
 
-	public PlaceBookItemPopupFrame(final PlaceBookController controller)
+	public PlaceBookItemPopupFrame(final DragController controller)
 	{
 		super();
 		rootPanel = widgetPanel;
@@ -125,23 +125,23 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 		}, MouseDownEvent.getType());
 
 		menuItems.add(new EditMapMenuItem(controller, this));
-		menuItems.add(new DeleteItemMenuItem(controller, this));
+		menuItems.add(new DeleteItemMenuItem(controller.getSaveItem(), this));
 		menuItems.add(new FitToContentMenuItem(controller, this));
 		menuItems.add(new HideTrailMenuItem(controller, this));
 		menuItems.add(new EditTitleMenuItem(controller, this));
 		// menuItems.add(new SetSourceURLMenuItem(controller, this));
 		menuItems.add(new ShowTrailMenuItem(controller, this));
-		menuItems.add(new UploadMenuItem(controller, this));
+		menuItems.add(new UploadMenuItem(controller.getSaveItem(), this));
 
 		frame.getElement().getStyle().setProperty("left", "0px");
 		frame.getElement().getStyle().setProperty("width", "100%");
-		
+
 		markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
-		markerImage.getElement().getStyle().setZIndex(2);		
+		markerImage.getElement().getStyle().setZIndex(2);
 		markerImage.addClickHandler(new ClickHandler()
 		{
 			@Override
-			public void onClick(ClickEvent event)
+			public void onClick(final ClickEvent event)
 			{
 				controller.goToPage(getItem().getParameter("mapPage"));
 			}
@@ -153,13 +153,6 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	{
 		super.resize(height);
 		resize();
-	}
-
-	@Override
-	public void setItemWidget(final PlaceBookItemWidget itemWidget)
-	{
-		super.setItemWidget(itemWidget);
-		itemWidget.setFocusHandler(focusHandler);
 	}
 
 	@Override
@@ -179,32 +172,39 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	}
 
 	@Override
+	public void setItemWidget(final PlaceBookItemView itemWidget)
+	{
+		super.setItemWidget(itemWidget);
+		itemWidget.setFocusHandler(focusHandler);
+	}
+
+	@Override
 	public void updateFrame()
 	{
 		dragSection.setText(itemWidget.getItem().getMetadata("title", ""));
-		
-//		if(getItem().hasParameter("mapPage") && column != null)
-//		{
-//			markerImage.setResource(getItem().getMarkerImage());
-//			column.add(markerImage);
-//			markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
-//			markerImage.getElement().getStyle().setZIndex(2);		
-//			markerImage.addClickHandler(new ClickHandler()
-//			{
-//				@Override
-//				public void onClick(ClickEvent event)
-//				{
-//					controller.goToPage(getItem().getParameter("mapPage"));
-//				}
-//			});			
-//			markerImage.setVisible(true);
-//			
-//		}
-//		else
-//		{
-//			markerImage.setVisible(false);
-//		}
-		
+
+		// if(getItem().hasParameter("mapPage") && column != null)
+		// {
+		// markerImage.setResource(getItem().getMarkerImage());
+		// column.add(markerImage);
+		// markerImage.getElement().getStyle().setPosition(Position.ABSOLUTE);
+		// markerImage.getElement().getStyle().setZIndex(2);
+		// markerImage.addClickHandler(new ClickHandler()
+		// {
+		// @Override
+		// public void onClick(ClickEvent event)
+		// {
+		// controller.goToPage(getItem().getParameter("mapPage"));
+		// }
+		// });
+		// markerImage.setVisible(true);
+		//
+		// }
+		// else
+		// {
+		// markerImage.setVisible(false);
+		// }
+
 		if (controller.getSelected() == this)
 		{
 			resize();
@@ -238,7 +238,7 @@ public class PlaceBookItemPopupFrame extends PlaceBookItemFrameWidget
 	{
 		frame.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() - 22, Unit.PX);
 		frame.getElement().getStyle().setHeight(rootPanel.getOffsetHeight() + 37, Unit.PX);
-		
+
 		markerImage.getElement().getStyle().setTop(rootPanel.getElement().getOffsetTop() + 3, Unit.PX);
 	}
 

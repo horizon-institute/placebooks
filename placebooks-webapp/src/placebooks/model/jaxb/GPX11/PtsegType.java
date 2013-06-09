@@ -5,24 +5,25 @@
 // Generated on: 2011.11.25 at 03:09:27 PM GMT 
 //
 
-
 package placebooks.model.jaxb.GPX11;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * 
- * 	 An ordered sequence of points.  (for polygons or polylines, e.g.)
- *     
+ * An ordered sequence of points. (for polygons or polylines, e.g.)
  * 
- * <p>Java class for ptsegType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for ptsegType complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="ptsegType">
@@ -39,40 +40,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ptsegType", propOrder = {
-    "pt"
-})
-public class PtsegType {
+@XmlType(name = "ptsegType", propOrder = { "pt" })
+public class PtsegType
+{
 
-    protected List<PtType> pt;
+	protected List<PtType> pt;
 
-    /**
-     * Gets the value of the pt property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the pt property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPt().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link PtType }
-     * 
-     * 
-     */
-    public List<PtType> getPt() {
-        if (pt == null) {
-            pt = new ArrayList<PtType>();
-        }
-        return this.pt;
-    }
+	/**
+	 * Gets the value of the pt property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+	 * modification you make to the returned list will be present inside the JAXB object. This is
+	 * why there is not a <CODE>set</CODE> method for the pt property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getPt().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link PtType }
+	 * 
+	 * 
+	 */
+	public List<PtType> getPt()
+	{
+		if (pt == null)
+		{
+			pt = new ArrayList<PtType>();
+		}
+		return pt;
+	}
 
 }

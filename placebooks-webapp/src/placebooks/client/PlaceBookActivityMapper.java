@@ -1,6 +1,6 @@
 package placebooks.client;
 
-import placebooks.client.ui.PlaceBookPlace;
+import placebooks.client.ui.places.PlaceBookPlace;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -9,12 +9,9 @@ import com.google.gwt.place.shared.PlaceController;
 
 public class PlaceBookActivityMapper implements ActivityMapper
 {
-	private final PlaceController controller;
-
 	public PlaceBookActivityMapper(final PlaceController controller)
 	{
 		super();
-		this.controller = controller;
 	}
 
 	@Override
@@ -23,8 +20,7 @@ public class PlaceBookActivityMapper implements ActivityMapper
 		if (place instanceof PlaceBookPlace)
 		{
 			final PlaceBookPlace placebookPlace = (PlaceBookPlace) place;
-			placebookPlace.setPlaceController(controller);
-			return (PlaceBookPlace) place;
+			return placebookPlace.createActivity();
 		}
 		return null;
 	}

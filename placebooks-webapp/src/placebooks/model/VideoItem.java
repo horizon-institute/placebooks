@@ -24,12 +24,11 @@ public class VideoItem extends MediaItem
 		super();
 	}
 
-	public VideoItem(final User owner, final Geometry geom, final URL sourceURL,
-					 final String video)
+	public VideoItem(final User owner, final Geometry geom, final URL sourceURL, final String video)
 	{
 		super(owner, geom, sourceURL, video);
 	}
-	
+
 	public VideoItem(final VideoItem v)
 	{
 		super(v);
@@ -41,12 +40,77 @@ public class VideoItem extends MediaItem
 		return new VideoItem(this);
 	}
 
+	/**
+	 * Get the path of the video transcoded for chrome
+	 * 
+	 * @param postfix
+	 * @return
+	 */
+	public String getChromePath()
+	{
+		String chromePath = null;
+		final String originalPath = getPath();
+		if (originalPath != null)
+		{
+			chromePath = originalPath + "-chrome.ogg";
+			final File chromeFile = new File(chromePath);
+			// Check if the mobile version of the file exists and if it doesn't, and it should be
+			// transcoded, do it now.
+			// Otherwise return the original items path
+			if (!chromeFile.exists())
+			{
+				if (PropertiesSingleton.get(CommunicationHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
+				{
+					TranscodeHelper.transcodeVideoForChrome(originalPath);
+				}
+				else
+				{
+					chromePath = originalPath;
+				}
+			}
+		}
+		return chromePath;
+	}
+
 	@Override
 	public String getEntityName()
 	{
 		return VideoItem.class.getName();
 	}
-	
+
+	/**
+	 * Get the path of the video transcoded for android
+	 * 
+	 * @return
+	 */
+	public String getMobilePath()
+	{
+		String mobilePath = null;
+		final String originalPath = getPath();
+		if (originalPath != null)
+		{
+			mobilePath = originalPath + "-mobile.mp4";
+			final File mobileFile = new File(mobilePath);
+			// Check if the mobile version of the file exists and if it doesn't, and it should be
+			// transcoded, do it now.
+			// Otherwise return the original items path
+			if (!mobileFile.exists())
+			{
+				if (PropertiesSingleton.get(CommunicationHelper.class.getClassLoader())
+						.getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
+				{
+					TranscodeHelper.transcodeVideoForChrome(originalPath);
+				}
+				else
+				{
+					mobilePath = originalPath;
+				}
+			}
+		}
+		return mobilePath;
+	}
+
 	@Override
 	protected void copyDataToPackage() throws IOException
 	{
@@ -67,65 +131,5 @@ public class VideoItem extends MediaItem
 			fis.close();
 			fos.close();
 		}
-	}
-	
-	
-	/**
-	 * Get the path of the video transcoded for android
-	 * @return
-	 */
-	public String getMobilePath()
-	{
-		String mobilePath = null;
-		String originalPath = getPath();
-		if(originalPath!=null)
-		{
-			mobilePath = originalPath + "-mobile.mp4";
-			File mobileFile = new File(mobilePath);
-			//Check if the mobile version of the file exists and if it doesn't, and it should be transcoded, do it now.
-			// Otherwise return the original items path
-			if(!mobileFile.exists())
-			{	
-				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
-				{
-					TranscodeHelper.transcodeVideoForChrome(originalPath);
-				}
-				else
-				{
-					mobilePath = originalPath;
-				}
-			}
-		}
-		return mobilePath;
-	}
-	
-	/**
-	 * Get the path of the video transcoded for chrome
-	 * @param postfix
-	 * @return
-	 */
-	public String getChromePath()
-	{
-		String chromePath = null;
-		String originalPath = getPath();
-		if(originalPath!=null)
-		{
-			chromePath = originalPath + "-chrome.ogg";
-			File chromeFile = new File(chromePath);
-			//Check if the mobile version of the file exists and if it doesn't, and it should be transcoded, do it now.
-			// Otherwise return the original items path
-			if(!chromeFile.exists())
-			{	
-				if(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.VIDEOITEM_FFMPEG_TRANSCODE, "false").equals("true"))
-				{
-					TranscodeHelper.transcodeVideoForChrome(originalPath);
-				}
-				else
-				{
-					chromePath = originalPath;
-				}
-			}
-		}
-		return chromePath;
 	}
 }

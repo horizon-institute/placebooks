@@ -5,27 +5,29 @@
 // Generated on: 2011.11.25 at 03:09:27 PM GMT 
 //
 
-
 package placebooks.model.jaxb.GPX11;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * 
- * 		Information about the GPX file, author, and copyright restrictions goes in the metadata section.  Providing rich,
- * 		meaningful information about your GPX files allows others to search for and use your GPS data.
- * 	  
+ * Information about the GPX file, author, and copyright restrictions goes in the metadata section.
+ * Providing rich, meaningful information about your GPX files allows others to search for and use
+ * your GPS data.
  * 
- * <p>Java class for metadataType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for metadataType complex type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="metadataType">
@@ -50,249 +52,234 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "metadataType", propOrder = {
-    "name",
-    "desc",
-    "author",
-    "copyright",
-    "link",
-    "time",
-    "keywords",
-    "bounds",
-    "extensions"
-})
-public class MetadataType {
+@XmlType(name = "metadataType", propOrder = { "name", "desc", "author", "copyright", "link", "time", "keywords",
+												"bounds", "extensions" })
+public class MetadataType
+{
 
-    protected String name;
-    protected String desc;
-    protected PersonType author;
-    protected CopyrightType copyright;
-    protected List<LinkType> link;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar time;
-    protected String keywords;
-    protected BoundsType bounds;
-    protected ExtensionsType extensions;
+	protected String name;
+	protected String desc;
+	protected PersonType author;
+	protected CopyrightType copyright;
+	protected List<LinkType> link;
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar time;
+	protected String keywords;
+	protected BoundsType bounds;
+	protected ExtensionsType extensions;
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Gets the value of the author property.
+	 * 
+	 * @return possible object is {@link PersonType }
+	 * 
+	 */
+	public PersonType getAuthor()
+	{
+		return author;
+	}
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+	/**
+	 * Gets the value of the bounds property.
+	 * 
+	 * @return possible object is {@link BoundsType }
+	 * 
+	 */
+	public BoundsType getBounds()
+	{
+		return bounds;
+	}
 
-    /**
-     * Gets the value of the desc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDesc() {
-        return desc;
-    }
+	/**
+	 * Gets the value of the copyright property.
+	 * 
+	 * @return possible object is {@link CopyrightType }
+	 * 
+	 */
+	public CopyrightType getCopyright()
+	{
+		return copyright;
+	}
 
-    /**
-     * Sets the value of the desc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
+	/**
+	 * Gets the value of the desc property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getDesc()
+	{
+		return desc;
+	}
 
-    /**
-     * Gets the value of the author property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PersonType }
-     *     
-     */
-    public PersonType getAuthor() {
-        return author;
-    }
+	/**
+	 * Gets the value of the extensions property.
+	 * 
+	 * @return possible object is {@link ExtensionsType }
+	 * 
+	 */
+	public ExtensionsType getExtensions()
+	{
+		return extensions;
+	}
 
-    /**
-     * Sets the value of the author property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PersonType }
-     *     
-     */
-    public void setAuthor(PersonType value) {
-        this.author = value;
-    }
+	/**
+	 * Gets the value of the keywords property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getKeywords()
+	{
+		return keywords;
+	}
 
-    /**
-     * Gets the value of the copyright property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CopyrightType }
-     *     
-     */
-    public CopyrightType getCopyright() {
-        return copyright;
-    }
+	/**
+	 * Gets the value of the link property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+	 * modification you make to the returned list will be present inside the JAXB object. This is
+	 * why there is not a <CODE>set</CODE> method for the link property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getLink().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link LinkType }
+	 * 
+	 * 
+	 */
+	public List<LinkType> getLink()
+	{
+		if (link == null)
+		{
+			link = new ArrayList<LinkType>();
+		}
+		return link;
+	}
 
-    /**
-     * Sets the value of the copyright property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CopyrightType }
-     *     
-     */
-    public void setCopyright(CopyrightType value) {
-        this.copyright = value;
-    }
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
-    /**
-     * Gets the value of the link property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the link property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLink().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link LinkType }
-     * 
-     * 
-     */
-    public List<LinkType> getLink() {
-        if (link == null) {
-            link = new ArrayList<LinkType>();
-        }
-        return this.link;
-    }
+	/**
+	 * Gets the value of the time property.
+	 * 
+	 * @return possible object is {@link XMLGregorianCalendar }
+	 * 
+	 */
+	public XMLGregorianCalendar getTime()
+	{
+		return time;
+	}
 
-    /**
-     * Gets the value of the time property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
+	/**
+	 * Sets the value of the author property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link PersonType }
+	 * 
+	 */
+	public void setAuthor(final PersonType value)
+	{
+		author = value;
+	}
 
-    /**
-     * Sets the value of the time property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTime(XMLGregorianCalendar value) {
-        this.time = value;
-    }
+	/**
+	 * Sets the value of the bounds property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BoundsType }
+	 * 
+	 */
+	public void setBounds(final BoundsType value)
+	{
+		bounds = value;
+	}
 
-    /**
-     * Gets the value of the keywords property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKeywords() {
-        return keywords;
-    }
+	/**
+	 * Sets the value of the copyright property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link CopyrightType }
+	 * 
+	 */
+	public void setCopyright(final CopyrightType value)
+	{
+		copyright = value;
+	}
 
-    /**
-     * Sets the value of the keywords property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKeywords(String value) {
-        this.keywords = value;
-    }
+	/**
+	 * Sets the value of the desc property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setDesc(final String value)
+	{
+		desc = value;
+	}
 
-    /**
-     * Gets the value of the bounds property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BoundsType }
-     *     
-     */
-    public BoundsType getBounds() {
-        return bounds;
-    }
+	/**
+	 * Sets the value of the extensions property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ExtensionsType }
+	 * 
+	 */
+	public void setExtensions(final ExtensionsType value)
+	{
+		extensions = value;
+	}
 
-    /**
-     * Sets the value of the bounds property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BoundsType }
-     *     
-     */
-    public void setBounds(BoundsType value) {
-        this.bounds = value;
-    }
+	/**
+	 * Sets the value of the keywords property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setKeywords(final String value)
+	{
+		keywords = value;
+	}
 
-    /**
-     * Gets the value of the extensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public ExtensionsType getExtensions() {
-        return extensions;
-    }
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(final String value)
+	{
+		name = value;
+	}
 
-    /**
-     * Sets the value of the extensions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ExtensionsType }
-     *     
-     */
-    public void setExtensions(ExtensionsType value) {
-        this.extensions = value;
-    }
+	/**
+	 * Sets the value of the time property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link XMLGregorianCalendar }
+	 * 
+	 */
+	public void setTime(final XMLGregorianCalendar value)
+	{
+		time = value;
+	}
 
 }

@@ -1,5 +1,7 @@
 package placebooks.client.ui.dialogs;
 
+import placebooks.client.ui.UIMessages;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -16,10 +18,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PlaceBookLoginDialog extends PlaceBookDialog
 {
-
 	interface LoginDialogUiBinder extends UiBinder<Widget, PlaceBookLoginDialog>
 	{
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static LoginDialogUiBinder uiBinder = GWT.create(LoginDialogUiBinder.class);
 
@@ -76,7 +79,7 @@ public class PlaceBookLoginDialog extends PlaceBookDialog
 		{
 			submit.setEnabled(false);
 		}
-		setProgressVisible(showProgress, "Logging In...");
+		setProgressVisible(showProgress, uiMessages.loggingIn());
 	}
 
 	public void setUsername(final String username)

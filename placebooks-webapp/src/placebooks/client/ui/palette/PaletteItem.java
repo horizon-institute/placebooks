@@ -12,13 +12,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PaletteItem
 {
+	interface PaletteItemUiBinder extends UiBinder<Widget, PaletteItem>
+	{
+	}
+
 	interface PaletteStyle extends CssResource
 	{
 		String backItem();
-	}
-	
-	interface PaletteItemUiBinder extends UiBinder<Widget, PaletteItem>
-	{
 	}
 
 	private static PaletteItemUiBinder uiBinder = GWT.create(PaletteItemUiBinder.class);
@@ -34,7 +34,7 @@ public class PaletteItem
 
 	@UiField
 	PaletteStyle style;
-	
+
 	private String name;
 
 	public PaletteItem(final String name)
@@ -46,6 +46,7 @@ public class PaletteItem
 	{
 		final Widget result = uiBinder.createAndBindUi(this);
 		text.setText(name);
+		text.setTitle(name);
 		return result;
 	}
 

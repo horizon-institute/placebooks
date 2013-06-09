@@ -14,49 +14,40 @@ import com.vividsolutions.jts.io.WKTReader;
 public class PeoplesCollectionGeometryLineString
 {
 	protected static final Logger log = Logger.getLogger(PeoplesCollectionGeometryLineString.class);
-		
+
 	private String type;
 	private float[][] coordinates;
 
-	public PeoplesCollectionGeometryLineString() {
-		
+	public PeoplesCollectionGeometryLineString()
+	{
+
 	}
 
-	public PeoplesCollectionGeometryLineString(String type, float[][] coordinates) {
+	public PeoplesCollectionGeometryLineString(final String type, final float[][] coordinates)
+	{
 		this.type = type;
 		this.coordinates = coordinates;
 	}
 
-	
-	public String GetType() {
-		return type;
-	}
-
-	public void SetType(String type) {
-		this.type = type;
-	}
-
-	public float[][] GetCoordinates() {
+	public float[][] GetCoordinates()
+	{
 		return coordinates;
 	}
 
-	public void SetCoordinates(float[][] coordinates) {
-		this.coordinates = coordinates;
-	}
-
-	public Geometry GetGeometry() throws IOException {
+	public Geometry GetGeometry() throws IOException
+	{
 		try
 		{
-			StringBuilder wktStringBuilder = new StringBuilder();
-			if(coordinates.length==1)
+			final StringBuilder wktStringBuilder = new StringBuilder();
+			if (coordinates.length == 1)
 			{
 				log.warn("Converting LineString to Point in Peoplescollection item");
-				wktStringBuilder.append("POINT (" + coordinates[0][0] + " " +  coordinates[0][1] + ")");
+				wktStringBuilder.append("POINT (" + coordinates[0][0] + " " + coordinates[0][1] + ")");
 			}
 			else
 			{
 				wktStringBuilder.append(type.toUpperCase());
-				if(coordinates.length==0)
+				if (coordinates.length == 0)
 				{
 					wktStringBuilder.append(" EMPTY");
 				}
@@ -64,9 +55,9 @@ public class PeoplesCollectionGeometryLineString
 				{
 					wktStringBuilder.append(" (");
 					boolean first = true;
-					for(float[] coordinate : coordinates)
+					for (final float[] coordinate : coordinates)
 					{
-						if(first)
+						if (first)
 						{
 							first = false;
 						}
@@ -74,17 +65,32 @@ public class PeoplesCollectionGeometryLineString
 						{
 							wktStringBuilder.append(", ");
 						}
-						wktStringBuilder.append(coordinate[0] + " " +  coordinate[1]);
+						wktStringBuilder.append(coordinate[0] + " " + coordinate[1]);
 					}
 					wktStringBuilder.append(")");
 				}
 			}
-			//log.debug("Created WKT string:" + wktStringBuilder.toString());
+			// log.debug("Created WKT string:" + wktStringBuilder.toString());
 			return new WKTReader().read(wktStringBuilder.toString());
 		}
-		catch (ParseException e)
+		catch (final ParseException e)
 		{
 			throw new IOException("WKT Parse Error", e);
 		}
+	}
+
+	public String GetType()
+	{
+		return type;
+	}
+
+	public void SetCoordinates(final float[][] coordinates)
+	{
+		this.coordinates = coordinates;
+	}
+
+	public void SetType(final String type)
+	{
+		this.type = type;
 	}
 }

@@ -1,6 +1,7 @@
 package placebooks.client;
 
-import com.google.gwt.core.client.GWT;
+import org.wornchaos.client.logger.Log;
+
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
@@ -14,14 +15,14 @@ public abstract class AbstractCallback implements RequestCallback
 	@Override
 	public void onError(final Request request, final Throwable throwable)
 	{
-		GWT.log("Error: " + request.toString(), throwable);
+		Log.error("Error: " + request.toString(), throwable);
 		failure(request, null);
 	}
 
 	@Override
 	public void onResponseReceived(final Request request, final Response response)
 	{
-		GWT.log("Response " + response.getStatusCode() + ": " + response.getText());
+		Log.info("Response " + response.getStatusCode() + ": " + response.getText());
 		if (response.getStatusCode() == 200)
 		{
 			success(request, response);

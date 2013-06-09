@@ -1,18 +1,17 @@
 package placebooks.client;
 
-import placebooks.client.ui.PlaceBookAppInstall;
-import placebooks.client.ui.PlaceBookEditor;
-import placebooks.client.ui.PlaceBookHome;
-import placebooks.client.ui.PlaceBookLibrary;
-import placebooks.client.ui.PlaceBookPreview;
-import placebooks.client.ui.PlaceBookSearch;
+import placebooks.client.ui.places.Group;
+import placebooks.client.ui.places.Groups;
+import placebooks.client.ui.places.Home;
+import placebooks.client.ui.places.Library;
+import placebooks.client.ui.places.PlaceBook;
+import placebooks.client.ui.places.Search;
 
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
-@WithTokenizers({ PlaceBookEditor.Tokenizer.class, PlaceBookSearch.Tokenizer.class, PlaceBookHome.Tokenizer.class,
-					PlaceBookPreview.Tokenizer.class, PlaceBookLibrary.Tokenizer.class,
-					PlaceBookAppInstall.Tokenizer.class })
+@WithTokenizers({ Search.Tokenizer.class, Home.Tokenizer.class, PlaceBook.Tokenizer.class, Library.Tokenizer.class,
+					Group.Tokenizer.class, Groups.Tokenizer.class })
 public interface PlaceBookHistoryMapper extends PlaceHistoryMapper
 {
 }

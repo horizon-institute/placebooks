@@ -11,22 +11,23 @@ public class PeoplesCollectionTrailCRS
 	protected String type;
 	protected HashMap<String, String> properties;
 
-	PeoplesCollectionTrailCRS()
-	{ }
-
-	public PeoplesCollectionTrailCRS(String type, HashMap<String, String> properies)
+	public PeoplesCollectionTrailCRS(final String type, final HashMap<String, String> properies)
 	{
 		this.type = type;
-		this.properties = properies;
+		properties = properies;
 	}
 
-	public String GetType()
+	PeoplesCollectionTrailCRS()
 	{
-		return type;
 	}
 
 	public HashMap<String, String> GetProperties()
 	{
 		return properties;
+	}
+
+	public String GetType()
+	{
+		return type;
 	}
 }

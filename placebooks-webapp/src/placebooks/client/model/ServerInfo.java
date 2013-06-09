@@ -1,12 +1,25 @@
 package placebooks.client.model;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
 public class ServerInfo extends JavaScriptObject
 {
 	protected ServerInfo()
 	{
 	}
+
+	public final native int getAudioSize()
+	/*-{
+		return this.maxAudioSize;
+	}-*/;
+
+	public final native int getImageSize()
+	/*-{
+		return this.maxImageSize;
+	}-*/;
 
 	public final native String getOpenSpaceBaseURL()
 	/*-{
@@ -27,19 +40,30 @@ public class ServerInfo extends JavaScriptObject
 	/*-{
 		return this.serverName;
 	}-*/;
-	
-	public final native int getImageSize()
-	/*-{
-		return this.maxImageSize;
-	}-*/;
-	
+
+	public final Iterable<ServiceInfo> getServices()
+	{
+		return new Iterable<ServiceInfo>()
+		{
+			@Override
+			public Iterator<ServiceInfo> iterator()
+			{
+				return new JSIterator<ServiceInfo>(getServicesInternal());
+			}
+		};
+	}
+
 	public final native int getVideoSize()
 	/*-{
 		return this.maxVideoSize;
 	}-*/;
-	
-	public final native int getAudioSize()
+
+	private final native JsArray<ServiceInfo> getServicesInternal()
 	/*-{
-		return this.maxAudioSize;
-	}-*/;			
+		if(!('services' in this))
+		{
+			this.services = new Array();
+		}
+		return this.services;
+	}-*/;
 }

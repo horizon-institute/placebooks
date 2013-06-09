@@ -1,17 +1,22 @@
 package placebooks.client.ui.palette;
 
+import placebooks.client.ui.UIMessages;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PaletteBackItem extends PaletteItem
 {
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
 	private final PaletteFolder parent;
 	private final Palette palette;
 
 	public PaletteBackItem(final PaletteFolder parent, final Palette palette)
 	{
-		super("Back");
+		super(uiMessages.back());
 		this.parent = parent;
 		this.palette = palette;
 	}
@@ -22,10 +27,10 @@ public class PaletteBackItem extends PaletteItem
 		final Widget result = super.createWidget();
 
 		image.setVisible(false);
-		
+
 		text.setStyleName(style.backItem());
-		
-		//markerImage.setResource(Resources.IMAGES.back_border());
+
+		// markerImage.setResource(Resources.IMAGES.back_border());
 		panel.addClickHandler(new ClickHandler()
 		{
 			@Override

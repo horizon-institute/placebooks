@@ -75,8 +75,7 @@ public final class PlaceBooksAdminHelper
 			{
 				// Delete all existing maps
 				em.getTransaction().begin();
-				final List<PlaceBookItem> toDel = 
-						new ArrayList<PlaceBookItem>();
+				final List<PlaceBookItem> toDel = new ArrayList<PlaceBookItem>();
 
 				for (final PlaceBookItem pbi : p.getItems())
 				{
@@ -90,7 +89,9 @@ public final class PlaceBooksAdminHelper
 				}
 
 				for (final PlaceBookItem pbi : toDel)
+				{
 					p.removeItem(pbi);
+				}
 
 				em.getTransaction().commit();
 			}
@@ -107,8 +108,8 @@ public final class PlaceBooksAdminHelper
 				}
 			}
 
-
-			//			if (!p.hasPlaceBookItemClass(MapImageItem.class) && p.hasPlaceBookItemClass(GPSTraceItem.class))
+			// if (!p.hasPlaceBookItemClass(MapImageItem.class) &&
+			// p.hasPlaceBookItemClass(GPSTraceItem.class))
 			// Create overview map
 			if (p.hasPlaceBookItemClass(GPSTraceItem.class))
 			{
@@ -132,18 +133,13 @@ public final class PlaceBooksAdminHelper
 						if (md.getSelectedScale() > 0)
 						{
 							// Create local content maps if necessary
-							final List<PlaceBookItem> toAdd = 
-									new ArrayList<PlaceBookItem>();
+							final List<PlaceBookItem> toAdd = new ArrayList<PlaceBookItem>();
 							for (final PlaceBookItem pbi : p.getItems())
 							{
-								if (!(pbi instanceof GPSTraceItem) && 
-									pbi.getMetadataValue("mapItemID") != null)
+								if (!(pbi instanceof GPSTraceItem) && pbi.getMetadataValue("mapItemID") != null)
 								{
-									final MapMetadata md_ = 
-										TileHelper.getMap(pbi);
-									final MapImageItem mii_ = 
-										new MapImageItem(null, null, null, 
-														 null);
+									final MapMetadata md_ = TileHelper.getMap(pbi);
+									final MapImageItem mii_ = new MapImageItem(null, null, null, null);
 									mii_.setPlaceBook(p);
 									mii_.setOwner(p.getOwner());
 									mii_.setGeometry(p.getGeometry());
@@ -156,14 +152,17 @@ public final class PlaceBooksAdminHelper
 							}
 
 							for (final PlaceBookItem pbi : toAdd)
+							{
 								p.addItem(pbi);
+							}
 						}
 
 						em.getTransaction().commit();
 					}
 					else
-						log.error("Fatal error in creating map, boundary for "
-								  + "PlaceBook page was null");
+					{
+						log.error("Fatal error in creating map, boundary for " + "PlaceBook page was null");
+					}
 				}
 				catch (final Throwable e)
 				{
@@ -179,10 +178,10 @@ public final class PlaceBooksAdminHelper
 				}
 
 			}
-			//else
-			//{
-			//	log.info("PlaceBook already has MapImageItem");
-			//}
+			// else
+			// {
+			// log.info("PlaceBook already has MapImageItem");
+			// }
 
 		}
 
@@ -191,19 +190,18 @@ public final class PlaceBooksAdminHelper
 		{
 			final File clean = new File(pb.getPackagePath());
 			if (clean.exists())
+			{
 				FileUtils.deleteDirectory(clean);
+			}
 		}
 		catch (final Throwable e)
 		{
 			log.error(e.toString());
 		}
 
-
 		final Map<String, String> out = placeBookBinderToXMLMap(pb);
 
-		if (out.size() == 0)
-			return null;
-
+		if (out.size() == 0) { return null; }
 
 		final String pkgPath = pb.getPackagePath();
 		if (new File(pkgPath).exists() || new File(pkgPath).mkdirs())
@@ -212,10 +210,7 @@ public final class PlaceBooksAdminHelper
 			{
 				for (final Map.Entry<String, String> entry : out.entrySet())
 				{
-					final FileWriter fw = 
-							new FileWriter(new File(pkgPath	+ "/" 
-									+ entry.getKey())
-									);
+					final FileWriter fw = new FileWriter(new File(pkgPath + "/" + entry.getKey()));
 					fw.write(entry.getValue());
 					fw.close();
 				}
@@ -345,24 +340,24 @@ public final class PlaceBooksAdminHelper
 			{
 				try
 				{
-					String original = item.getMetadataValue("originalItemID");
+					final String original = item.getMetadataValue("originalItemID");
 					boolean originalFound = false;
-					if(original!=null)
+					if (original != null)
 					{
-						PlaceBookItem originalItem = manager.find(PlaceBookItem.class, original);
-						if(originalItem!=null)
+						final PlaceBookItem originalItem = manager.find(PlaceBookItem.class, original);
+						if (originalItem != null)
 						{
 							originalFound = true;
 							item.update(originalItem);
 						}
 					}
-					if(!originalFound)
+					if (!originalFound)
 					{
 						if (item instanceof MediaItem)
 						{
 							final MediaItem mediaItem = (MediaItem) item;
 							// Check if the file exists...
-							if(mediaItem.attemptPathFix()==null)
+							if (mediaItem.attemptPathFix() == null)
 							{
 								mediaItem.RedownloadItem();
 							}
@@ -373,7 +368,8 @@ public final class PlaceBooksAdminHelper
 
 							if (gpsItem.getSourceURL() != null)
 							{
-								gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL()).getInputStream());
+								gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL())
+										.getInputStream());
 							}
 						}
 						else if (item instanceof WebBundleItem)
@@ -454,24 +450,17 @@ public final class PlaceBooksAdminHelper
 		return false;
 	}
 
-	public static final Set<Map.Entry<PlaceBookBinder, Integer>> 
-	search(final EntityManager em, final String terms)
+	public static final Set<Map.Entry<PlaceBookBinder, Integer>> search(final EntityManager em, final String terms)
 	{
 
-		final int nTerms = 
-				Integer.parseInt(
-						PropertiesSingleton.get(
-								CommunicationHelper.class.getClassLoader()
-								).getProperty(PropertiesSingleton.IDEN_SEARCH_TERMS, "5"));
-
+		final int nTerms = Integer.parseInt(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_SEARCH_TERMS, "5"));
 
 		final Set<String> search = SearchHelper.getIndex(terms, nTerms);
 
-		final TypedQuery<PlaceBookBinderSearchIndex> query1 = 
-				em.createQuery("SELECT p FROM PlaceBookBinderSearchIndex p",
-						PlaceBookBinderSearchIndex.class);
-		final List<PlaceBookBinderSearchIndex> pbIndexes = 
-				query1.getResultList();
+		final TypedQuery<PlaceBookBinderSearchIndex> query1 = em
+				.createQuery("SELECT p FROM PlaceBookBinderSearchIndex p", PlaceBookBinderSearchIndex.class);
+		final List<PlaceBookBinderSearchIndex> pbIndexes = query1.getResultList();
 
 		// Search rationale: ratings are accumulated per PlaceBookBinder for
 		// that Binder plus any PlaceBookItems associated with all the Binder's
@@ -488,13 +477,11 @@ public final class PlaceBooksAdminHelper
 			{
 				rating = new Integer(0);
 			}
-			hits.put(index.getPlaceBookBinder(), 
-					new Integer(keywords.size() + rating.intValue()));
+			hits.put(index.getPlaceBookBinder(), new Integer(keywords.size() + rating.intValue()));
 		}
 
-		final TypedQuery<PlaceBookItemSearchIndex> query2 = 
-				em.createQuery("SELECT p FROM PlaceBookItemSearchIndex p",
-						PlaceBookItemSearchIndex.class);
+		final TypedQuery<PlaceBookItemSearchIndex> query2 = em.createQuery(	"SELECT p FROM PlaceBookItemSearchIndex p",
+																			PlaceBookItemSearchIndex.class);
 		final List<PlaceBookItemSearchIndex> pbiIndexes = query2.getResultList();
 
 		for (final PlaceBookItemSearchIndex index : pbiIndexes)
@@ -502,13 +489,12 @@ public final class PlaceBooksAdminHelper
 			final Set<String> keywords = new HashSet<String>();
 			keywords.addAll(index.getIndex());
 			keywords.retainAll(search);
-			if (index.getPlaceBookItem() == null || index.getPlaceBookItem().getPlaceBook() == null ||
-					index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder() == null)
+			if (index.getPlaceBookItem() == null || index.getPlaceBookItem().getPlaceBook() == null
+					|| index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder() == null)
 			{
 				continue;
 			}
-			final PlaceBookBinder p = 
-					index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder();
+			final PlaceBookBinder p = index.getPlaceBookItem().getPlaceBook().getPlaceBookBinder();
 			Integer rating = hits.get(p);
 			if (rating == null)
 			{
@@ -522,7 +508,7 @@ public final class PlaceBooksAdminHelper
 
 	public static final Set<Map.Entry<PlaceBookBinder, Double>> searchLocationForPlaceBookBinders(
 			final EntityManager em, final Geometry geometry)
-			{
+	{
 		final List<PlaceBookBinder> pbs = em
 				.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.state = :state", PlaceBookBinder.class)
 				.setParameter("state", PlaceBookBinder.State.PUBLISHED).getResultList();
@@ -537,16 +523,16 @@ public final class PlaceBooksAdminHelper
 		}
 
 		return hits.entrySet();
-			}
+	}
 
 	public static final Set<Map.Entry<PlaceBookItem, Double>> searchLocationForPlaceBookItems(final EntityManager em,
 			final Geometry geometry)
-			{
+	{
 		// TODO: need to look up PlaceBookBinder state; not sure how
 		final List<PlaceBookItem> ps = em
 				.createQuery("SELECT p FROM PlaceBookItem p WHERE p.placebook.placebookbinder.state = :state",
-						PlaceBookItem.class).setParameter("state", PlaceBookBinder.State.PUBLISHED)
-						.getResultList();
+								PlaceBookItem.class).setParameter("state", PlaceBookBinder.State.PUBLISHED)
+				.getResultList();
 
 		final Map<PlaceBookItem, Double> hits = new HashMap<PlaceBookItem, Double>();
 		for (final PlaceBookItem p : ps)
@@ -558,7 +544,7 @@ public final class PlaceBooksAdminHelper
 		}
 
 		return hits.entrySet();
-			}
+	}
 
 	private static boolean containsItem(final PlaceBookItem findItem, final List<PlaceBookItem> items)
 	{
@@ -597,9 +583,8 @@ public final class PlaceBooksAdminHelper
 	}
 
 	// Map returned is as follows:
-	//		filename to write to -> XML string
-	private static Map<String, String> 
-	placeBookBinderToXMLMap(final PlaceBookBinder pb)
+	// filename to write to -> XML string
+	private static Map<String, String> placeBookBinderToXMLMap(final PlaceBookBinder pb)
 	{
 
 		final Map<String, String> map = new HashMap<String, String>();
@@ -607,8 +592,7 @@ public final class PlaceBooksAdminHelper
 		try
 		{
 
-			final DocumentBuilder builder = 
-					DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			final Document config = builder.newDocument();
 			final TransformerFactory tf = TransformerFactory.newInstance();
 			final Transformer t = tf.newTransformer();
@@ -625,21 +609,21 @@ public final class PlaceBooksAdminHelper
 				// Note: ImageItem, VideoItem and AudioItem write their data to
 				// a package directly as well as creating XML configuration
 				for (final PlaceBookItem item : p.getItems())
+				{
 					item.appendConfiguration(config_, root_);
+				}
 				config_.appendChild(root_);
 
 				final DOMSource source_ = new DOMSource(config_);
 
-				StringWriter out_ = new StringWriter();
+				final StringWriter out_ = new StringWriter();
 				final StreamResult result_ = new StreamResult(out_);
 				t.transform(source_, result_);
 
 				map.put(p.getKey() + ".xml", out_.getBuffer().toString());
 
 				final Element pageXMLFile = config.createElement("page");
-				pageXMLFile.appendChild(
-						config.createTextNode(p.getKey() + ".xml")
-						);
+				pageXMLFile.appendChild(config.createTextNode(p.getKey() + ".xml"));
 				root.appendChild(pageXMLFile);
 
 				t.reset();
@@ -649,16 +633,12 @@ public final class PlaceBooksAdminHelper
 
 			final DOMSource source = new DOMSource(config);
 
-			StringWriter out = new StringWriter();
+			final StringWriter out = new StringWriter();
 			final StreamResult result = new StreamResult(out);
 			t.transform(source, result);
 
-			map.put(
-					PropertiesSingleton.get(
-							PlaceBooksAdminHelper.class.getClassLoader()
-							).getProperty(PropertiesSingleton.IDEN_CONFIG, "config.xml"), 
-							out.getBuffer().toString()
-					);
+			map.put(PropertiesSingleton.get(PlaceBooksAdminHelper.class.getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_CONFIG, "config.xml"), out.getBuffer().toString());
 		}
 		catch (final Throwable e)
 		{
@@ -693,12 +673,12 @@ public final class PlaceBooksAdminHelper
 		final List<PlaceBookItem> items = new ArrayList<PlaceBookItem>();
 		for (final PlaceBookItem item : placebook.getItems())
 		{
-			PlaceBookItem resultItem = updatePlaceBookItem(manager, item, currentUser, updateMedia);
+			final PlaceBookItem resultItem = updatePlaceBookItem(manager, item, currentUser, updateMedia);
 			resultItem.setPlaceBook(result);
 			items.add(resultItem);
 		}
 		result.setItems(items);
-		
+
 		if (result.getOwner() == null)
 		{
 			result.setOwner(currentUser);
@@ -785,7 +765,7 @@ public final class PlaceBooksAdminHelper
 				final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
 				for (final PlaceBook placebook : binder.getPlaceBooks())
 				{
-					PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
+					final PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
 					pbresult.setPlaceBookBinder(dbBinder);
 					placebooks.add(pbresult);
 				}
@@ -793,7 +773,7 @@ public final class PlaceBooksAdminHelper
 
 				dbBinder.setMetadata(binder.getMetadata());
 				dbBinder.setParameters(binder.getParameters());
-				
+
 				dbBinder.setGeometry(binder.getGeometry());
 
 				dbBinder.setPermissions(binder.getPermissions());
@@ -805,7 +785,7 @@ public final class PlaceBooksAdminHelper
 		final List<PlaceBook> placebooks = new ArrayList<PlaceBook>();
 		for (final PlaceBook placebook : binder.getPlaceBooks())
 		{
-			PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
+			final PlaceBook pbresult = updatePlaceBook(manager, placebook, currentUser, updateMedia);
 			pbresult.setPlaceBookBinder(result);
 			placebooks.add(pbresult);
 		}
@@ -859,7 +839,7 @@ public final class PlaceBooksAdminHelper
 			if (item.getMetadata().get("originalItemID") != null)
 			{
 				final PlaceBookItem originalItem = manager.find(PlaceBookItem.class,
-						item.getMetadata().get("originalItemID"));
+																item.getMetadata().get("originalItemID"));
 				if (originalItem != null)
 				{
 					// We want to keep the metadata & parameters

@@ -1,16 +1,21 @@
 package placebooks.client.ui.menuItems;
 
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.ui.UIMessages;
+import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+
+import com.google.gwt.core.client.GWT;
 
 public class HideTrailMenuItem extends MenuItem
 {
-	private final PlaceBookController controller;
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
+
+	private final DragController controller;
 	private final PlaceBookItemFrame item;
 
-	public HideTrailMenuItem(final PlaceBookController controller, final PlaceBookItemFrame item)
+	public HideTrailMenuItem(final DragController controller, final PlaceBookItemFrame item)
 	{
-		super("Hide Trail");
+		super(uiMessages.hideTrail());
 
 		this.item = item;
 		this.controller = controller;

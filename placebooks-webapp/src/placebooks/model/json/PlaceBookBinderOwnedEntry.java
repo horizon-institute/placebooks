@@ -9,7 +9,7 @@ public class PlaceBookBinderOwnedEntry extends PlaceBookBinderEntry
 	public PlaceBookBinderOwnedEntry(final PlaceBookBinder placebookBinder)
 	{
 		super(placebookBinder);
-		this.ownerName = placebookBinder.getOwner().getName();
+		ownerName = placebookBinder.getOwner().getName();
 	}
 
 	public String getOwnerName()

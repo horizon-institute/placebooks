@@ -9,19 +9,18 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 public class MapImageItem extends ImageItem
 {
-	MapImageItem()
-	{
-	}
-
 	public MapImageItem(final MapImageItem m)
 	{
 		super(m);
 	}
-	
-	public MapImageItem(final User owner, final Geometry geom, 
-						final URL sourceURL, final String image)
+
+	public MapImageItem(final User owner, final Geometry geom, final URL sourceURL, final String image)
 	{
 		super(owner, geom, sourceURL, image);
+	}
+
+	MapImageItem()
+	{
 	}
 
 	@Override

@@ -5,10 +5,11 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 /**
  * Class to encapsulate response from Peoples Collection API for a log in response
+ * 
  * @author pszmp
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE)
-public class PeoplesCollectionLoginResponse 
+public class PeoplesCollectionLoginResponse
 {
 	protected boolean isvalid;
 	protected String reason;
@@ -18,7 +19,7 @@ public class PeoplesCollectionLoginResponse
 
 	}
 
-	public PeoplesCollectionLoginResponse(boolean isvalid, String reason)
+	public PeoplesCollectionLoginResponse(final boolean isvalid, final String reason)
 	{
 		this.isvalid = isvalid;
 		this.reason = reason;
@@ -26,11 +27,11 @@ public class PeoplesCollectionLoginResponse
 
 	public boolean GetIsValid()
 	{
-		return this.isvalid;
+		return isvalid;
 	}
 
 	public String GetReason()
 	{
-		return this.reason;
+		return reason;
 	}
 }

@@ -23,6 +23,9 @@
 			background: #333;
 			color: #FFF;
 			border-radius: 10px;
+			max-width: 96px;
+			overflow: hidden;
+			text-overflow: ellipsis;			
 		}
 		
 		.backItem {

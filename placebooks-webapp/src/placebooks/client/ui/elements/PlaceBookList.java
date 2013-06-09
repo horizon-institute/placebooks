@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import placebooks.client.PlaceBookService;
+import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookEntry;
 import placebooks.client.model.Shelf;
+import placebooks.client.ui.UIMessages;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
@@ -48,13 +49,13 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 			}
 			else
 			{
-				sb.appendEscaped("Edit PlaceBook: " + value.getTitle());
+				sb.appendEscaped(uiMessages.editPlaceBook(value.getTitle()));
 			}
 			sb.appendHtmlConstant("</div>");
 			sb.appendHtmlConstant("<div><small style=\"color: #333;\">");
 			if (value.getDescription() == null)
 			{
-				sb.appendEscaped("No Description");
+				sb.appendEscaped(uiMessages.noDesc());
 			}
 			else
 			{
@@ -69,6 +70,8 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 	{
 		String listItem();
 	}
+
+	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
 	private static final Bundle STYLES = GWT.create(Bundle.class);
 
@@ -85,9 +88,11 @@ public class PlaceBookList extends CellList<PlaceBookEntry>
 
 	static
 	{
-		newPlaceBook = PlaceBookService
-				.parse(	PlaceBookEntry.class,
-						"{\"key\": \"new\", \"title\": \"Create New PlaceBook\", \"description\": \"Start editing a new placebook\"}");
+		newPlaceBook = PlaceBooks.getServer().parse(PlaceBookEntry.class,
+													"{\"key\": \"new\", \"title\": \""
+															+ uiMessages.createNewPlaceBook()
+															+ "\", \"description\": \""
+															+ uiMessages.createNewPlaceBookDesc() + "\"}");
 	}
 
 	public PlaceBookList()

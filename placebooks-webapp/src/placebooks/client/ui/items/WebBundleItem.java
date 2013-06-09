@@ -1,7 +1,6 @@
 package placebooks.client.ui.items;
 
-import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookController;
+import placebooks.client.controllers.PlaceBookItemController;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -11,14 +10,14 @@ import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.ui.Frame;
 
-public class WebBundleItem extends PlaceBookItemWidget
+public class WebBundleItem extends PlaceBookItemView
 {
 	private final Frame frame = new Frame("http://www.google.co.uk");
 	private String url;
 
-	WebBundleItem(final PlaceBookItem item, final PlaceBookController handler)
+	WebBundleItem(final PlaceBookItemController controller)
 	{
-		super(item, handler);
+		super(controller);
 		initWidget(frame);
 		frame.setWidth("100%");
 		frame.getElement().getStyle().setBorderWidth(0, Unit.PX);
