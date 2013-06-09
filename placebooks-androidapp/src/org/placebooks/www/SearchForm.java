@@ -1,5 +1,7 @@
 package org.placebooks.www;
 
+import java.util.Locale;
+
 import org.apache.http.HttpResponse;
 
 import android.app.Activity;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import android.location.LocationManager;
 import android.content.DialogInterface;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.widget.ImageButton;
 
 
@@ -32,6 +35,7 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 	private String activityItem;
 	private LocationManager locationManager;
 
+	private String languageSelected;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +48,15 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
         if(intent != null) distanceItem = intent.getStringExtra("distanceItem");
         if(intent != null) activityItem = intent.getStringExtra("activityItem");
 
-        
+        CustomApp appState = ((CustomApp)getApplicationContext());
+        languageSelected  = appState.getLanguage();  
+        Locale locale = new Locale(languageSelected);   
+        Locale.setDefault(locale);  
+        Configuration config = new Configuration();  
+        config.locale = locale;  
+        getBaseContext().getResources().updateConfiguration(config,   
+        getBaseContext().getResources().getDisplayMetrics()); 
+        System.out.println("language selected ==== " + languageSelected);
         setContentView(TabGroupActivity.makeSpinner(getParent()));
        
         Spinner spinnerDistance = (Spinner) findViewById(R.id.spinnerDistance);
@@ -98,9 +110,9 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 	        			 else{
 	        				 
 	 				        AlertDialog.Builder builder = new AlertDialog.Builder(getParent());
-	 			        	builder.setTitle("Unable to search!");
-	 			        	builder.setMessage("Please make sure you are online!");
-	 			        	builder.setPositiveButton("OK", null);
+	 			        	builder.setTitle(getResources().getString(R.string.unable_search));
+	 			        	builder.setMessage(getResources().getString(R.string.unable_search2));
+	 			        	builder.setPositiveButton(getResources().getString(R.string.ok), null);
 	 			        	builder.show();
 	        				 
 	        			 }
@@ -119,9 +131,9 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
         
         searchButton.setOnTouchListener(searchListener);   
         
-        ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
+//        ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
+/*        logoutButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
         	
@@ -130,8 +142,8 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 	            
 	            //ask user are they sure they want to log out
 	            AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getParent());
-	            helpBuilder.setTitle("Logout");
-	            helpBuilder.setMessage("Are you sure you want to logout?");
+	            helpBuilder.setTitle(getResources().getString(R.string.sign_out));
+	            helpBuilder.setMessage(getResources().getString(R.string.sign_out_q));
 	            helpBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
 
 	               public void onClick(DialogInterface dialog, int which) {
@@ -146,7 +158,7 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 	               }
 	               });
           	 
-	            helpBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+	            helpBuilder.setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
 		             @Override
 		             public void onClick(DialogInterface dialog, int which) {
@@ -160,16 +172,16 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 	            
 	            
 			});
-        
+ */      
         
 	}
 	
 	private void showGPSDisabledAlertToUser(){
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getParent());
-			alertDialogBuilder.setTitle("Unable to search without location services on!");
-			alertDialogBuilder.setMessage("Location services are disabled in your device. Would you like to enable them?")
+			alertDialogBuilder.setTitle(getResources().getString(R.string.unable_search_location));
+			alertDialogBuilder.setMessage(getResources().getString(R.string.unable_search_location2))
 			.setCancelable(false)
-			.setPositiveButton("Go to Settings Page To Enable GPS",
+			.setPositiveButton(getResources().getString(R.string.goto_settings),
 			new DialogInterface.OnClickListener(){
 				public void onClick(DialogInterface dialog, int id){
 					Intent callGPSSettingIntent = new Intent(
@@ -177,7 +189,7 @@ public class SearchForm extends Activity /*implements AdapterView.OnItemSelected
 					startActivity(callGPSSettingIntent);
 				}
 			});
-			alertDialogBuilder.setNegativeButton("Cancel",
+			alertDialogBuilder.setNegativeButton(getResources().getString(R.string.cancel),
 					new DialogInterface.OnClickListener(){
 						public void onClick(DialogInterface dialog, int id){
 							dialog.cancel();

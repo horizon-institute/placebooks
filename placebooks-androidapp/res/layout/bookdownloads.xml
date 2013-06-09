@@ -7,7 +7,7 @@
    android:layout_height="fill_parent"
    android:orientation="vertical"
    android:layout_gravity="top"
-android:background="@android:color/white">
+   android:background="@android:color/white">
 	
   	<RelativeLayout
 	 android:layout_width="fill_parent"
@@ -24,7 +24,7 @@ android:background="@android:color/white">
 		   android:layout_marginLeft="0dip"
 		   android:src="@drawable/downloads"
 	   />
-	   
+<!--  	   
   	  <ImageButton
         android:id="@+id/logoutButton"
         android:layout_width="35dp"
@@ -33,6 +33,7 @@ android:background="@android:color/white">
 		android:layout_alignParentRight="true"
         android:layout_marginRight="8dp"        
         />
+        -->
   	</RelativeLayout>
   	
   	<GridView 

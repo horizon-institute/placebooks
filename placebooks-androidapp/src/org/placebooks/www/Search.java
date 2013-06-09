@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.ListView;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.io.IOException;
 
 import android.view.Gravity;
@@ -102,6 +103,8 @@ public class Search extends ListActivity  {
 	private String distanceItem;
 	private String activityItem;
 		
+	private String languageSelected;
+	private String search_Url;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +127,15 @@ public class Search extends ListActivity  {
         packageUrl = appState.getPackageUrl();
         root = appState.getRoot();
         unzippedDir = appState.getUnzippedDir();
+        search_Url = appState.getSearchUrl();
+        
+        languageSelected  = appState.getLanguage();  
+        Locale locale = new Locale(languageSelected);   
+        Locale.setDefault(locale);  
+        Configuration config = new Configuration();  
+        config.locale = locale;  
+        getBaseContext().getResources().updateConfiguration(config,   
+        getBaseContext().getResources().getDisplayMetrics()); 
         
         SharedPreferences prefs = this.getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
         cookieName = prefs.getString("cookieName", "");
@@ -136,15 +148,15 @@ public class Search extends ListActivity  {
         if(intent != null) activityItem = intent.getStringExtra("activityItem");
                 
 
-        if (distanceItem == "Up to 10 Miles")
+        if (distanceItem == getResources().getString(R.string.distance1))
 			//search(10);
 			distanceEntered = 10;
-		else if (distanceItem == "Up to 25 Miles")
+		else if (distanceItem == getResources().getString(R.string.distance2))
 			distanceEntered = 25;
 			//search(25);
-		else if (distanceItem == "Up to 50 Miles")
+		else if (distanceItem == getResources().getString(R.string.distance3))
 			distanceEntered = 50;
-		else if (distanceItem == "Everywhere")
+		else if (distanceItem == getResources().getString(R.string.distance4))
 			distanceEntered = 100000000;
 
     
@@ -178,7 +190,7 @@ public class Search extends ListActivity  {
     	}
 
         
-        ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
+ /*       ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -189,9 +201,9 @@ public class Search extends ListActivity  {
 	            
 	            //ask user are they sure they want to log out
 	            AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getParent());
-	            helpBuilder.setTitle("Logout");
-	            helpBuilder.setMessage("Are you sure you want to logout?");
-	            helpBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+	            helpBuilder.setTitle(getResources().getString(R.string.sign_out));
+	            helpBuilder.setMessage(getResources().getString(R.string.sign_out_q));
+	            helpBuilder.setPositiveButton(getResources().getString(R.string.yes),new DialogInterface.OnClickListener() {
 
 	               public void onClick(DialogInterface dialog, int which) {
 	            	   //clear the preferences
@@ -205,7 +217,7 @@ public class Search extends ListActivity  {
 	               }
 	               });
           	 
-	            helpBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+	            helpBuilder.setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
 		             @Override
 		             public void onClick(DialogInterface dialog, int which) {
@@ -219,7 +231,7 @@ public class Search extends ListActivity  {
 	            
 	            
 			});
-
+*/
     }
 	
 	public void clearPreferences(){
@@ -244,7 +256,7 @@ public class Search extends ListActivity  {
 			  /*uname = username;
 			   disItem = distanceItem;
 			   actItem = activityItem;*/
-			   message = "Searching..";
+			   message = getResources().getString(R.string.searching);
 		   }
 
 		   @Override
@@ -271,7 +283,7 @@ public class Search extends ListActivity  {
 		           }
 		           else{
 		           	   //Alert user that GPS is turned off and they will not be able to see tracking
-		        	   Toast msg = Toast.makeText(getParent(), "Please turn on GPS to search for Placebooks around you", Toast.LENGTH_LONG);
+		        	   Toast msg = Toast.makeText(getParent(), getResources().getString(R.string.gps_off), Toast.LENGTH_LONG);
 		   			   msg.show();
 		           }
 		        }
@@ -302,7 +314,9 @@ public class Search extends ListActivity  {
 		//bookCount = 0;
 		//String searchUrl =  "http://www.placebooks.org/placebooks/placebooks/a/admin/location_search/placebook/POINT("+lat +"%20"+lon+")";
 		//String searchUrl =  "http://www.placebooks.org/placebooks/placebooks/a/admin/location_search/placebookbinder/POINT(51%20-4.2)";
-		String searchUrl =  "http://www.placebooks.org/placebooks/placebooks/a/admin/location_search/placebookbinder/POINT("+lat+ "%20"+lon+")";
+		//String searchUrl =  "http://www.placebooks.org/placebooks/placebooks/a/admin/location_search/placebookbinder/POINT("+lat+ "%20"+lon+")";
+		String searchUrl = search_Url + "("+lat+ "%20"+lon+")";
+		
 		System.out.println("latitude ===="+lat+" ; longitude===="+lon);
 		System.out.println("Is Online URL = " + searchUrl);
         SharedPreferences prefs = this.getSharedPreferences("LOGIN_DETAILS", MODE_PRIVATE);
@@ -338,7 +352,9 @@ public class Search extends ListActivity  {
 		        	System.out.println("book distance === " +bookDistance + "      distanceEntered === " +distanceEntered);
 			        if (bookDistance < distanceEntered && activityItem.equals(activity)){
 			        		
+			        	
 				        	item.setDistance(e.getDouble("distance"));
+				        
 				        	//item.setID(i);		//Owner ID
 				        	item.setKey(e.optString("key"));	//book key key
 				        	item.setTitle(e.optString("title"));	//book title
@@ -367,9 +383,9 @@ public class Search extends ListActivity  {
 			        			Log.d("MyApp", "No SDCARD");
 			        		       
 			                	AlertDialog.Builder builder = new AlertDialog.Builder(Search.this);
-			                	builder.setTitle("No SD Card!");
-			                	builder.setMessage("There is no sd card mounted to this device! You need an sd card to download a Placebook!");
-			                	builder.setPositiveButton("OK", null);
+			                	builder.setTitle(getResources().getString(R.string.no_sdcard));
+			                	builder.setMessage(getResources().getString(R.string.no_sdcard_download));
+			                	builder.setPositiveButton(getResources().getString(R.string.ok), null);
 			                	builder.show();
 			        			
 			        		}
@@ -403,7 +419,7 @@ public class Search extends ListActivity  {
 		        	//bookCount++;
 			        }	//end of if bookDistance
 			        
-			        else if (bookDistance < distanceEntered && activityItem == "<No Activity>"){
+			        else if (bookDistance < distanceEntered && activityItem == getResources().getString(R.string.activity_list_item1)){
 			        	
 							      		
 							        	item.setDistance(e.getDouble("distance"));
@@ -435,8 +451,8 @@ public class Search extends ListActivity  {
 						        			Log.d("MyApp", "No SDCARD");
 						        		       
 						                	AlertDialog.Builder builder = new AlertDialog.Builder(Search.this);
-						                	builder.setTitle("No SD Card!");
-						                	builder.setMessage("There is no sd card mounted to this device! You need an sd card to download a Placebook!");
+						                	builder.setTitle(getResources().getString(R.string.no_sdcard));
+						                	builder.setMessage(getResources().getString(R.string.no_sdcard_download));
 						                	builder.setPositiveButton("OK", null);
 						                	builder.show();
 						        			
@@ -493,7 +509,7 @@ public class Search extends ListActivity  {
 		        	}
 		        	else{
 		        		TextView tv = (TextView) findViewById(R.id.empty);
-		        		tv.setText("0 search results found");
+		        		tv.setText(getResources().getString(R.string.search_results_found));
 		        	}
 		        	
 		        	//Toast message telling the user how many books were found
@@ -529,7 +545,7 @@ public class Search extends ListActivity  {
 			            case DIALOG_DOWNLOAD_PROGRESS:
 			                mProgressDialog = new ProgressDialog(getParent());
 			            	//mProgressDialog = ProgressDialog.show(getParent(), "Downloading Placebook..");
-			                mProgressDialog.setMessage("Downloading Placebook..");
+			                mProgressDialog.setMessage(getResources().getString(R.string.downloading_placebook));
 			                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			                mProgressDialog.setCancelable(true);
 			                mProgressDialog.show();
@@ -778,7 +794,7 @@ public class Search extends ListActivity  {
 				
 						}
 						else{
-							latLongString = "No location found";
+							latLongString = getResources().getString(R.string.no_location_found);
 						}
 						
 

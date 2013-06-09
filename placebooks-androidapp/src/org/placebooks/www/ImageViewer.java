@@ -32,11 +32,26 @@ public class ImageViewer extends Activity {
 	        if(intent != null) myImagePath = intent.getStringExtra("imagePath");
 
 			imageView = new ImageView(this);
-	        
+	        /*
 			BitmapFactory.Options options = new BitmapFactory.Options();
 		    options.inSampleSize = 1;	//WAS 2 BUT TRYING 1
 		    bm = BitmapFactory.decodeFile(myImagePath, options);
 		    imageView.setImageBitmap(bm);
+		    imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+		    setContentView(imageView);
+		    */
+			
+		    BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inJustDecodeBounds = true;
+			/*bm =*/ BitmapFactory.decodeFile(myImagePath, options);	 
+			options.inJustDecodeBounds = false;
+			if(options.outWidth>1000){ 
+                options.inSampleSize = 4; 
+                bm = BitmapFactory.decodeFile(myImagePath, options); 
+			} 
+			else bm = BitmapFactory.decodeFile(myImagePath, options); 
+			
+			imageView.setImageBitmap(bm);
 		    imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 		    setContentView(imageView);
 		    

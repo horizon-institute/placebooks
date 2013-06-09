@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true"
-    android:fadingEdgeLength="6px"
-   >
-    <LinearLayout
-    android:id="@+id/linearlayout"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:layout_height="fill_parent"
     >
-    
-    </LinearLayout>
- </ScrollView>
+
+        <org.osmdroid.views.MapView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/mapview"
+            android:layout_width="fill_parent" 
+            android:layout_height="fill_parent"
+            android:enabled="true"      
+            android:clickable="true"
+        />  
+</LinearLayout>

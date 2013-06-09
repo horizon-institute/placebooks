@@ -4,7 +4,8 @@ public class TextItem extends Item {
 	
 	private String text;
 	private String url;
-
+	private int mapPage = -1;
+	private int mapMarker = -1;
 	
 	public String getURL() {
 		return url;
@@ -19,9 +20,26 @@ public class TextItem extends Item {
 		this.text = text;
 	}
 	
+	public int getMapPage(){
+		return mapPage;
+	}
+	
+	public void setMapPage(int pageNumber){
+		this.mapPage = pageNumber;
+	}
+	
+
+	public int getMapMarker(){
+		return mapMarker;
+	}
+	
+	public void setMapMarker(int mapMarker){
+		this.mapMarker = mapMarker;
+	}
+	
 	@Override
 	public String toString() {
-		return "Text=" + text + "\nurl=" + url + "\nPanel=" +super.getPanel() + "\nOrder=" + super.getOrder(); 
+		return "Text=" + text + "\nurl=" + url + "\nColumn=" +super.getColumn() + "\nOrder=" + super.getOrder(); 
 	}
 	
 }

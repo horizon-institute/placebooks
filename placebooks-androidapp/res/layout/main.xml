@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true"
-    android:fadingEdgeLength="6px"
-   >
-    <LinearLayout
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearlayout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:layout_height="fill_parent"
+    android:background="@drawable/login_background"
     android:gravity="center_horizontal"
     >
     
@@ -33,31 +28,33 @@
 		   android:layout_height="wrap_content"
 		   android:layout_x="-6px"
            android:layout_y="32px"
+           android:background="@drawable/placebooks_logo2"
 	   />
 
  	
       <EditText
             android:id="@+id/txt_username"
-            android:layout_width="250px"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Email Address"
+            android:hint="@string/email_address"
             android:singleLine="true"
             android:textSize="18sp"
              />
       <EditText
             android:id="@+id/txt_password"
-            android:layout_width="250px"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/password"
             android:singleLine="true"
             android:textSize="18sp"
             android:password="true"
              />
       <Button
  			android:id="@+id/btnLogin"
-            android:layout_width="110px"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Sign In"
+            android:hint="@string/sign_in"
+
             /> 
 		
 			
@@ -84,7 +81,5 @@
  --> 			
    			
    	</LinearLayout>		 
-	
-	</ScrollView>
-
+		
  	

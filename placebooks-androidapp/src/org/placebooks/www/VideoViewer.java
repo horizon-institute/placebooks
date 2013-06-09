@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Gallery;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.VideoView;
 import android.widget.TextView;
@@ -30,19 +31,20 @@ public class VideoViewer extends Activity {
 	        
 	        CustomApp appState = ((CustomApp)getApplicationContext());
 	        unzippedDir = appState.getUnzippedDir();
-
+			//videoView =  (VideoView) findViewById(R.id.surface_view); //new VideoView(VideoViewer.this);
 	        
 	         //Get the extras (video filename) out of the new intent
 	        Intent intent = getIntent();
 	        if(intent != null) videoFile = intent.getStringExtra("video");
 	        if(intent != null) packagePath = intent.getStringExtra("path");
 	        
-	        File clip=new File(unzippedDir + packagePath + File.separator + videoFile);
+	        File clip=new File(/*unzippedDir + */packagePath + File.separator + videoFile);
+	        System.out.println("Complete video path === " + packagePath + File.separator + videoFile);
 
 	        try{
 				if (clip.exists()) {
 	
-						videoView = new VideoView(VideoViewer.this);
+						videoView =  new VideoView(VideoViewer.this);
 						videoView.setVideoPath(clip.getAbsolutePath());
 	
 						videoView.setLayoutParams(new Gallery.LayoutParams(

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"    
+    >
+        <PreferenceCategory
+                android:title="@string/languages">
+                <ListPreference
+                        android:title="@string/languages"
+                        android:summary="@string/languages2"
+                        android:key="listPref"
+                        android:defaultValue="1"
+                        android:entries="@array/listArray"
+                        android:entryValues="@array/listValues" />
+                
+        </PreferenceCategory>
+        <PreferenceCategory
+                android:title="@string/sign_out">
+        <Preference
+                android:title="@string/sign_out"
+                android:summary="@string/signoutpref"
+                android:key="signoutPref" />
+        </PreferenceCategory>
+</PreferenceScreen>

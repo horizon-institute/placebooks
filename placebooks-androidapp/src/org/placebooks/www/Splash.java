@@ -34,7 +34,7 @@ private final int SPLASH_DISPLAY_LENGHT = 1000;
 	
 	                        /* Create an Intent that will start the Menu-Activity. */
 	
-	                        Intent mainIntent = new Intent(Splash.this,PlaceBooks.class);
+	                        Intent mainIntent = new Intent(Splash.this,Welcome.class);
 	
 	                        Splash.this.startActivity(mainIntent);
 	

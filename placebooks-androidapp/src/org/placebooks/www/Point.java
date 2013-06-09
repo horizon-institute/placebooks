@@ -17,7 +17,8 @@ public class Point implements Comparable<Point>{
 	public Coordinate[] co;
 	public String gpxFilename;
 	public int height;
-
+	public int mapPage;
+	public int mapMarker = -1;
 	
 	// without coordinates without url
 	public Point(String data, int panel, int order, String type, String itemKey){
@@ -48,8 +49,8 @@ public class Point implements Comparable<Point>{
 		this.co = co;
 	}
 	
-	// without coordinates without url with imageHeight
-	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, int height){
+	// with coordinates without url with imageHeight
+	public Point(String data, int panel, int order, String type, String itemKey, Coordinate[] co, int height, int mapPage, int marker){
 		this.data = data;
 		this.panel = panel;
 		this.order = order;
@@ -57,6 +58,8 @@ public class Point implements Comparable<Point>{
 		this.itemKey = itemKey;
 		this.co = co;
 		this.height = height;
+		this.mapPage = mapPage;
+		this.mapMarker = marker;
 	}
 	
 	
@@ -128,6 +131,12 @@ public class Point implements Comparable<Point>{
 	public int getImageHeight(){
 		return height;
 	}
+	public int getMapPage(){
+		return mapPage;
+	}
+	public int getMapMarker(){
+		return mapMarker;
+	}
 	
 	/*
 	 * Setter methods
@@ -147,7 +156,9 @@ public class Point implements Comparable<Point>{
 	public void setGpxFilename(String gpxFilename){
 		this.gpxFilename = gpxFilename;
 	}
-	
+	public void setMapMarker(int marker){
+		this.mapMarker = marker;
+	}
 	
 	/*
 	 * Compare a given order number with this object.

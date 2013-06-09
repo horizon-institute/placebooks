@@ -4,13 +4,34 @@
   android:id="@+id/lLayout"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
+  android:gravity="center_horizontal"
+  android:orientation="vertical"
   >
+  
+    <org.placebooks.www.Pager  android:id="@+id/scrollView"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_weight="1.0"
+		>
+	</org.placebooks.www.Pager>
+<!--  	<org.placebooks.www.PageIndicator android:id="@+id/indicator" android:layout_width="wrap_content" android:layout_height="wrap_content"/> -->
+	
+
+  <!-- 
+  <android.support.v4.view.ViewPager
+    android:id="@+android:id/viewpager"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    />
+    -->
+  
+  <!--  
   <ViewFlipper
   android:id="@+id/flipper"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   >
-  <ScrollView
+  
+   <ScrollView
     android:id="@+id/scroller"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -25,8 +46,7 @@
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center_horizontal" 
-	    android:background="@android:color/white"
+	    android:gravity="center_horizontal" 	    
 	    >
 	     <TextView android:id="@+id/text1"
 		android:layout_width="fill_parent"
@@ -37,19 +57,23 @@
 		android:textColor="#444"
 		android:typeface="serif"
 		android:text="page 1"
+		android:gravity="right"
+		android:paddingRight="10dip"
 		/>
 	    
 	    
 	    
 	    </LinearLayout>
   </ScrollView>
-  <ScrollView
+
+
+   <ScrollView
     android:id="@+id/scroller2"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fadingEdgeLength="6px"
-    android:background="@android:color/white"
+    android:background="@drawable/page"
     >    
 	    
 	    <LinearLayout
@@ -57,8 +81,7 @@
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center_horizontal" 
-	    android:background="@android:color/white"
+	    android:gravity="center_horizontal" 	    
 	    >
 	    
 	    <TextView android:id="@+id/text2"
@@ -70,6 +93,8 @@
 		android:textColor="#444"
 		android:typeface="serif"
 		android:text="page 2"
+		android:gravity="right"
+		android:paddingRight="10dip"
 		/>
 	    
 	    
@@ -82,15 +107,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fadingEdgeLength="6px"
-    android:background="@android:color/white"
+    android:background="@drawable/page"
     >	    
 	    <LinearLayout
 	  	android:id="@+id/linearLayout3"
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center_horizontal" 
-	    android:background="@android:color/white"
+	    android:gravity="center_horizontal"	     
 	    >
 	     <TextView android:id="@+id/text3"
 		android:layout_width="fill_parent"
@@ -101,104 +125,16 @@
 		android:textColor="#444"
 		android:typeface="serif"
 		android:text="page 3"
+		android:gravity="right"
+		android:paddingRight="10dip"
 		/>
 	    
 	    </LinearLayout>
 </ScrollView>
 
-
- <ScrollView
-android:id="@+id/scroller4"
-android:orientation="vertical"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:fadingEdgeLength="6px"
-android:background="@android:color/white"
->	    
-    <LinearLayout
-  	android:id="@+id/linearLayout4"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal" 
-    android:background="@android:color/white"
-    >
-     <TextView android:id="@+id/text4"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:textSize="15sp"
-	android:layout_marginLeft="5px"
-	android:layout_marginRight="5px"
-	android:textColor="#444"
-	android:typeface="serif"
-	android:text="page 4"
-	/>
-
-    </LinearLayout>
-</ScrollView>
-
- <ScrollView
-android:id="@+id/scroller5"
-android:orientation="vertical"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:fadingEdgeLength="6px"
-android:background="@android:color/white"
->	    
-    <LinearLayout
-  	android:id="@+id/linearLayout5"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal" 
-    android:background="@android:color/white"
-    >
-     <TextView android:id="@+id/text5"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:textSize="15sp"
-	android:layout_marginLeft="5px"
-	android:layout_marginRight="5px"
-	android:textColor="#444"
-	android:typeface="serif"
-	android:text="page 5"
-	/>
-    
-    
-    </LinearLayout>
-</ScrollView>
-
- <ScrollView
-android:id="@+id/scroller6"
-android:orientation="vertical"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:fadingEdgeLength="6px"
-android:background="@android:color/white"
->	    
-    <LinearLayout
-  	android:id="@+id/linearLayout6"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal" 
-    android:background="@android:color/white"
-    >
-     <TextView android:id="@+id/text6"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:textSize="15sp"
-	android:layout_marginLeft="5px"
-	android:layout_marginRight="5px"
-	android:textColor="#444"
-	android:typeface="serif"
-	android:text="page 6"
-	/>
-    
-    </LinearLayout>
-</ScrollView>
-
-
-</ViewFlipper> 
+   
+  
+  </ViewFlipper>
+  -->
 </LinearLayout>
 

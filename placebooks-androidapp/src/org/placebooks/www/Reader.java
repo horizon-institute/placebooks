@@ -2,7 +2,11 @@ package org.placebooks.www;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,7 +14,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
-import org.placebooks.www.R;
 import org.placebooks.www.XMLHandler;
 import org.placebooks.www.Book;
 import org.simpleframework.xml.Serializer;
@@ -20,6 +23,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.util.Log;
 //import android.view.KeyEvent;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;
@@ -36,7 +41,9 @@ import android.provider.MediaStore;
 import android.view.View.OnClickListener; 
 import android.view.Gravity;
 import android.widget.Toast;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.view.MotionEvent;
 //import android.view.View.OnTouchListener;
 import android.view.View.OnLongClickListener;
@@ -45,6 +52,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+
+import org.placebooks.www.PageIndicator;
+import org.placebooks.www.Pager;
 import com.vividsolutions.jts.geom.Coordinate;
 import 	android.net.Uri;
 import java.io.FileNotFoundException;
@@ -52,27 +62,48 @@ import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import org.apache.commons.lang.StringEscapeUtils;
 import android.webkit.*;
+import android.graphics.Color;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.graphics.drawable.Drawable;
+import android.widget.RelativeLayout;
 
 
 //Implement a Listener (added the interface to the base class)
-public class Reader extends Activity {
+public class Reader extends FragmentActivity {
+	
+	
+	
+	//private View pageView ;
+	private LinearLayout pageView;
+	private ScrollView pageScroll;
+	private Pager scroller;
+	private PageIndicator indicator;
+	private PagerAdapter mPagerAdapter;
+	
+    private LayoutInflater layoutInflater;
+	
+	private int pageCounter = 0;
 	
 	private int screenWidth;	//Mobile screen width resolution
 	private int screenHeight;	//Mobile screen height resolution
 	
+	
+	//private ScrollView svFrontCover;
+	//private LinearLayout llFrontCover;
 	//ScrollView and LinearLayout
-	private ScrollView sv;		//Scroll view that wraps the linear layout
-	private ScrollView sv2;		//Scroll view for page 2
-	private ScrollView sv3;		//Scroll view for page 3
-	private ScrollView sv4;		//Scroll view for page 4
-	private ScrollView sv5;		//Scroll view for page 5
-	private ScrollView sv6;		//Scroll view for page 6
-	private LinearLayout ll;	//Main linear layout page 1
-	private LinearLayout ll2;	//Linear layout page 2
-	private LinearLayout ll3;	//Linear layout page 3
-	private LinearLayout ll4;	//Linear layout page 4
-	private LinearLayout ll5;	//Linear layout page 5
-	private LinearLayout ll6;	//Linear layout page 6
+	//private ScrollView sv;		//Scroll view that wraps the linear layout
+	//private ScrollView sv2;		//Scroll view for page 2
+	//private ScrollView sv3;	
+	//private LinearLayout ll;	//Main linear layout page 1
+	//private LinearLayout ll2;	//Linear layout page 2
+	//private LinearLayout ll3;
 	private LinearLayout llAudio;  //Audio layout
 	
 	//Page flipper and swipe gesture constants
@@ -92,18 +123,36 @@ public class Reader extends Activity {
 	private String pbtimestamp;
 	//private String uName;	//this is the users actual name that they used to register with placebooks. Note - this is not their email address.
     private String packagePath;
+    
+    private ArrayList<String> pageFilenames = new ArrayList<String>();
 	
-    private ArrayList<Point> page1 = new ArrayList<Point>();
-	private ArrayList<Point> page2 = new ArrayList<Point>();
-	private ArrayList<Point> page3 = new ArrayList<Point>();
-	private ArrayList<Point> page4 = new ArrayList<Point>();
-	private ArrayList<Point> page5 = new ArrayList<Point>();
-	private ArrayList<Point> page6 = new ArrayList<Point>();
-	
-	//Image Variables
-	private ImageView imgView;
-	private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
+    private ArrayList<Point> currentPage = new ArrayList<Point>();
+    private ArrayList<Point> nextPage = new ArrayList<Point>();
+    private ArrayList<Point> previousPage = new ArrayList<Point>();
+    private ArrayList<Point> pageCol1 = new ArrayList<Point>();
+    private ArrayList<Point> pageCol2 = new ArrayList<Point>();
+    private ArrayList<ArrayList> allPages = new ArrayList<ArrayList>();
+    
+    //Geotagged media
+    private ArrayList<String> alGeoTextData = new ArrayList<String>();
+	private ArrayList<Integer> alGeoTextMapPage = new ArrayList<Integer>();
+	private ArrayList<Integer> alGeoTextMapMarker = new ArrayList<Integer>();
+	private ArrayList<Coordinate> alGeoTextCoordinate = new ArrayList<Coordinate>();
+    
+    private ArrayList<String> alGeoImageFilename = new ArrayList<String>();
 	private ArrayList<Coordinate> alGeoImageCoordinate = new ArrayList<Coordinate>();
+	private ArrayList<Integer> alGeoImageMapPage = new ArrayList<Integer>();
+	private ArrayList<Integer> alGeoImageMapMarker = new ArrayList<Integer>();
+	
+	private ArrayList<String> alGeoVideoFilename = new ArrayList<String>();
+	private ArrayList<Coordinate> alGeoVideoCoordinate = new ArrayList<Coordinate>();
+	private ArrayList<Integer> alGeoVideoMapPage = new ArrayList<Integer>();
+	private ArrayList<Integer> alGeoVideoMapMarker = new ArrayList<Integer>();
+
+	private ArrayList<String> alGeoAudioFilename = new ArrayList<String>();
+	private ArrayList<Coordinate> alGeoAudioCoordinate = new ArrayList<Coordinate>();
+	private ArrayList<Integer> alGeoAudioMapPage = new ArrayList<Integer>();
+	private ArrayList<Integer> alGeoAudioMapMarker = new ArrayList<Integer>();
 	
 	//Video Variables
 	private ImageButton ibVid;
@@ -116,7 +165,7 @@ public class Reader extends Activity {
 	private boolean audio_included = false;	//audio flag
 	
 	//Map Image Variables
-	private ImageView mapImgView;
+	//private ImageView mapImgView;
 	private double c_x1;
 	private double c_y1;
 	private double c_x2;
@@ -128,16 +177,29 @@ public class Reader extends Activity {
 	private double c_x5;
 	private double c_y5;
 
-	private ArrayList<Double> gpsLatCoordinates = new ArrayList<Double>();
-	private ArrayList<Double> gpsLonCoordinates = new ArrayList<Double>();
-	private double[] arrGpsLatCoordinates;
-	private double[] arrGpsLonCoordinates;
+	//private ArrayList<Double> gpsLatCoordinates = new ArrayList<Double>();
+	//private ArrayList<Double> gpsLonCoordinates = new ArrayList<Double>();
+	//private double[] arrGpsLatCoordinates;
+	//private double[] arrGpsLonCoordinates;
+	
+	//public double[][] arrGps = { arrGpsLatCoordinates, arrGpsLonCoordinates };
+
+	
 	
 	//Application variables
 	private String unzippedDir;
 	private String unzippedRoot;
 	private String configFilename;
 	
+	//Book page variables
+	private boolean hasPreviousPage = false;
+	private boolean hasNextPage = true;
+	private int pageNumberAt = 0;
+	//private FileInputStream in;
+	//private FileInputStream inNext;
+	//private FileInputStream inPrevious;
+	
+	private String languageSelected;
 	
 	 		 @Override
 	     	 public void onCreate(Bundle savedInstanceState) {
@@ -150,14 +212,23 @@ public class Reader extends Activity {
 			        unzippedRoot = appState.getUnzippedRoot();
 			        configFilename = appState.getConfigFilename();
 			        
+			        languageSelected  = appState.getLanguage();  
+			        Locale locale = new Locale(languageSelected);   
+			        Locale.setDefault(locale);  
+			        Configuration config = new Configuration();  
+			        config.locale = locale;  
+			        getBaseContext().getResources().updateConfiguration(config,   
+			        getBaseContext().getResources().getDisplayMetrics()); 
+			        
 			        //Get mobile screen resolution
 			        DisplayMetrics dm = new DisplayMetrics();
 			        getWindowManager().getDefaultDisplay().getMetrics(dm);
 			        
 			        //Assign the resolution to the variables
+			        
 			        screenWidth = dm.widthPixels;	//320px on the LG phone
 			        screenHeight = dm.heightPixels;	//480px on the LG phone
-			        
+			        System.out.println("Screen width = "+screenWidth + " ,Screen height = " +screenHeight);
 			        
 			        //Get the extras (package path) out of the new intent
 			        //Retrieve the packagePath.
@@ -166,128 +237,31 @@ public class Reader extends Activity {
 			        
 			        //Set the content view to the xml reader file
 			        setContentView(R.layout.reader);
-			        flipper=(ViewFlipper)findViewById(R.id.flipper); 
-			        sv = (ScrollView)findViewById(R.id.scroller);
-			        ll = (LinearLayout)findViewById(R.id.linearLayout);
-			        sv2 = (ScrollView)findViewById(R.id.scroller2);
-			        ll2 = (LinearLayout)findViewById(R.id.linearLayout2);
-			        sv3 = (ScrollView)findViewById(R.id.scroller3);	          
-			        ll3 = (LinearLayout)findViewById(R.id.linearLayout3);
-			        sv4 = (ScrollView)findViewById(R.id.scroller4);
-			        ll4 = (LinearLayout)findViewById(R.id.linearLayout4);
-			        sv5 = (ScrollView)findViewById(R.id.scroller5);
-			        ll5 = (LinearLayout)findViewById(R.id.linearLayout5);
-			        sv6 = (ScrollView)findViewById(R.id.scroller6);
-			        ll6 = (LinearLayout)findViewById(R.id.linearLayout6); 
 			        
 			        
-			        gestureDetector = new GestureDetector(new MyGestureDetector());
-			        gestureListener = new View.OnTouchListener() {
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        };
+			        scroller = ((Pager)findViewById(R.id.scrollView));
+			        //indicator = ((PageIndicator)findViewById(R.id.indicator));
+			        //indicator.setPager(scroller);
 			        
-			        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
-			        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
-			        slideLeftIn.setDuration(350);
+			        layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			        
 
-			        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
-			        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
-
-			        slideRightIn.setDuration(350);
-			        slideRightOut.setDuration(400);
-			        
-			        sv.setOnTouchListener(gestureListener);
-			        sv2.setOnTouchListener(gestureListener);
-			        sv3.setOnTouchListener(gestureListener);
-			        sv4.setOnTouchListener(gestureListener);
-			        sv5.setOnTouchListener(gestureListener);
-			        sv6.setOnTouchListener(gestureListener);
-			        
 			        
 			        try {
-				        getMyXML();		 //Call method to parse XML		
-				        populatePages(); //Populate each page
-
+				       //AsyncTask thread processes the xml and then populates the pages
+			        new RenderPage().execute();			        	
+				    
 					} 
-					catch(FileNotFoundException fnf){
-						TextView tv = new TextView(this);
-						tv.setText(fnf.getMessage());
-						setContentView(tv);
-					}
+
 					catch (Exception e) {
 						TextView tv = new TextView(this);
 						tv.setText(e.getMessage());
 						setContentView(tv);
 					} 
 					
-								
-					//Set up action listeners for the scroll views
-					sv.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					
-					sv2.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					
-					sv3.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					
-					sv4.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					
-					sv5.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-
-					sv6.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					
+												
 			
+
 	 		 } //End of onCreate() Method
 	 		 
 	 		 
@@ -295,77 +269,115 @@ public class Reader extends Activity {
 	 		 /*
 	 		 * Method for displaying the Image Items
 	 		 */
-			 private void displayImage(final String img, final int height, final LinearLayout page){
+			 private void displayImage(final String img, final int height, final int marker){
+				 
+				    ImageView imgView = new ImageView(this);
+			    	RelativeLayout rLayout = new RelativeLayout(this);
+			    	ImageView imgMarker = new ImageView(this);
+			    	TextView text=new TextView(this); 
+
+
+				    if (marker != -1){
+				    	//RelativeLayout rLayout = new RelativeLayout(this);
+				    	LayoutParams rlParams = new LayoutParams(LayoutParams.FILL_PARENT
+				    	        ,LayoutParams.FILL_PARENT); 
+				    	rLayout.setLayoutParams(rlParams);
+				    	
+				        Bitmap bmpMarker = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+				    	//ImageView imgMarker = new ImageView(this);
+				    	imgMarker.setImageBitmap(bmpMarker);
+				    	imgMarker.setLayoutParams(rlParams);
+				    	
+				    	RelativeLayout.LayoutParams tParams = new RelativeLayout.LayoutParams
+				        (LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+				    	tParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+				    	tParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+				    	//TextView text=new TextView(this); 
+				    	text.setText(Integer.toString(marker)); 
+				    	text.setTextColor(Color.BLACK);  
+				    	text.setLayoutParams(tParams);
+
+				    	
+				    	//rLayout.addView(imgMarker);
+				    	//rLayout.addView(text);
+				    	//pageView.addView(rLayout);
+				    	
+				    }
 				 				  
-				imgView = new ImageView(this);
-				//Now register the gestureListener to the imageView
-				imgView.setOnTouchListener(gestureListener);
-				//Set the onTouchListener for the imgView
-				imgView.setOnTouchListener(new View.OnTouchListener() {
-					@Override
-			           public boolean onTouch(View v, MotionEvent event) {
-			               if (gestureDetector.onTouchEvent(event)) {
-			                   return true;
-			               }
-			               return false;
-			          }
-			       });
-					
-				    //Locate the file path where the images are stored on the SD CARD. 
 					String myImagePath = unzippedDir + packagePath + File.separator + img;
 					
-					try {
-
-							BitmapFactory.Options options = new BitmapFactory.Options();
-						    options.inSampleSize = 2;	//WAS 4 (STABLE) TRYING 2 TO SEE WHAT PERFORMANCE IS LIKE
-						    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
-						    int imageHeight=bm.getHeight();
-						    int imageWidth=bm.getWidth();
-						    double widthRatio = screenWidth/imageWidth;
-						    //double heightRatio = screenHeight/imageHeight;
-						    double heightScale = imageHeight*widthRatio;
-							
-						    if(imageWidth<=100 && imageHeight<=100){
-							    bm = Bitmap.createScaledBitmap(bm, imageWidth*2, imageHeight*2, true);	
-						    }
-						    else if (imageWidth<=200 && imageHeight<=200){
-							    bm = Bitmap.createScaledBitmap(bm, imageWidth, imageHeight, true);	
-						    }
-						    else{
-							    bm = Bitmap.createScaledBitmap(bm, screenWidth, (int) heightScale, true);	
-
-						    }
-						    
+					File imageFile = new File(myImagePath);
+					if (imageFile.exists()){
+					
+						try {
+	
+								BitmapFactory.Options options = new BitmapFactory.Options();
+							    options.inSampleSize = 2;	//WAS 4 (STABLE) TRYING 2 TO SEE WHAT PERFORMANCE IS LIKE
+							    Bitmap bm = BitmapFactory.decodeFile(myImagePath, options);
+							    
+							    //imgView.setImageDrawable(Drawable.createFromPath(myImagePath));
 						    	imgView.setImageBitmap(bm);
 						    	
-								page.addView(imgView); 	
 
-						   
-						} catch (OutOfMemoryError E) {
-					       // Release some (all) of the above objects
-							System.out.println("Out of Memory Exception");
-							TextView txtView = new TextView(Reader.this);
-							txtView.setText("Error: cannot load image. Out of memory!");
-							page.addView(txtView);
+							   
+							    if(bm.getHeight() >0 && bm.getWidth() >0 && screenWidth >0){
+
+								    /*
+								    if( height > 6000){
+								    	imgView.setLayoutParams(new LayoutParams(screenWidth-35, screenHeight-55));
+								    }
+								   
+								    else{
+								    	//imgView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));	
+								    	//imgView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));								    	
+								    	//imgView.setLayoutParams(new LayoutParams(screenWidth-35, LayoutParams.WRAP_CONTENT));
+								    	
+								    }*/
+							    	imgView.setLayoutParams(new LayoutParams(350, 350));	
+
+							    	//imgView.setLayoutParams(new LayoutParams(screenWidth-35, LayoutParams.WRAP_CONTENT));
+
+							    	//rLayout.addView(imgView);
+								    if(marker != -1){
+								    	rLayout.addView(imgMarker);
+								    	rLayout.addView(text);
+								    	pageView.addView(rLayout);
+										pageView.addView(imgView);
+								    }
+								    else{
+								    	pageView.addView(imgView);
+								    }
+
+							    }
+							    
 						}
 					
-				    				    	
+							   catch (OutOfMemoryError E) {
+								       // Release some (all) of the above objects
+										System.out.println("Out of Memory Exception");
+										TextView txtView = new TextView(Reader.this);
+										txtView.setText("Error: cannot load image. Out of memory!");
+										pageView.addView(txtView);
+									}
+						}
+						else{
+							//TextView t = new TextView(this);
+					    	//t.setText("Error: image was not downloaded properly");
+					    	//pageView.addView(t);
+						}
+					
 					//New custom view that adds a bit of spacing to the end of image items
 				    View view = new View(this);
 				    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-				    page.addView(view);
-				    				    
+				    pageView.addView(view);    
 				    
 				    //imgView.setLongClickable(true);
-					imgView.setOnLongClickListener(new OnLongClickListener() {
+					imgView.setOnClickListener(new OnClickListener() {
 			             @Override
-			             public boolean onLongClick(View v) {
+			             public void onClick(View v) {
 			            	 
-			            	//Vibration to alert users
-			            	// Get instance of Vibrator from current Context
-			            	 Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
-			            	 // Vibrate for 300 milliseconds
-			            	 vib.vibrate(300);
+			            	 //Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
+			            	 //vib.vibrate(300);
 			            	 
 			            	 Intent intent = new Intent();
 		     				 	overridePendingTransition(0, 0);
@@ -378,7 +390,7 @@ public class Reader extends Activity {
 		     				    overridePendingTransition(0, 0);
 	        	        	 startActivity(intent);	
 	        	         
-	        	        	 return true;
+	        	        	 //return true;
 			            	
 			             } //End of public void
 				 
@@ -389,101 +401,134 @@ public class Reader extends Activity {
 			/*
 			* Method for displaying the Text Items
 			*/			 
-			private void displayText(final String text, final LinearLayout page){
+			private void displayText(final String text, final int marker){
 				  
-				 //TextView tv = new TextView(this);
-				 String escapedHtml = StringEscapeUtils.escapeHtml(text);
-				 //String test = "<div style='font-size:25px; font-weight:bold;'>Header5</div>";
-				 //String unescapedHtml = StringEscapeUtils.unescapeHtml(escapedHtml);
+				System.out.println("Marker === " + marker);
+				 if (marker != -1){
+					 RelativeLayout rLayout = new RelativeLayout(this);
+				     LayoutParams rlParams = new LayoutParams(LayoutParams.FILL_PARENT
+				     ,LayoutParams.FILL_PARENT); 
+				     rLayout.setLayoutParams(rlParams);
+				    	
+				     Bitmap bmpMarker = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+				   	 ImageView imgMarker = new ImageView(this);
+				     imgMarker.setImageBitmap(bmpMarker);
+				     imgMarker.setLayoutParams(rlParams);
+				     
+				     RelativeLayout.LayoutParams tParams = new RelativeLayout.LayoutParams
+				        (LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+				    	tParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+				    	tParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+				    	TextView text2=new TextView(this); 
+				    	text2.setText(Integer.toString(marker)); 
+				    	text2.setTextColor(Color.BLACK);  
+				    	text2.setLayoutParams(tParams);
+				    	
+				    	rLayout.addView(imgMarker);
+				    	rLayout.addView(text2);
+				    	pageView.addView(rLayout);
+				 }
 				 
-				 WebView wv = new WebView(this);
-				 wv.loadData(text, "text/html", "utf-8");
-				 page.addView(wv);
-				 
-				 //tv.setText(Html.fromHtml(escapedHtml));
-				 //tv.setTextColor(0xFF000000);
-				 //page.addView(tv);
-				 
-				 //Allow users to swipe to next screen if the swipe action is across the text
-				 wv.setOnTouchListener(gestureListener);
-					//set the onTouchListener for the ibView
-					wv.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-				 
-				//New custom view that adds a bit of spacing to the end of image items
-				//View view = new View(this);
-				//view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-				//page.addView(view);
-				
+					 String escapedHtml = StringEscapeUtils.escapeHtml(text);
+					 WebView wv = new WebView(this);
+					 wv.loadData(text, "text/html", "utf-8");
+					 wv.setBackgroundColor(0x00000000);
+					 pageView.addView(wv);
+					 //TextView tv = new TextView(this);
+					 //tv.setText(escapedHtml);
+					 //pageView.addView(tv);
+
+
 			}
 			 
 			/*
 			 * Method for displaying the Video Items		 
 			 */
-			private void displayVideo(final String video, LinearLayout page){
+			private void displayVideo(final String video, final int marker){
+				
+				if (marker != -1){			    	
+			    	RelativeLayout rLayout = new RelativeLayout(this);
+			    	LayoutParams rlParams = new LayoutParams(LayoutParams.FILL_PARENT
+			    	        ,LayoutParams.FILL_PARENT); 
+			    	rLayout.setLayoutParams(rlParams);
+			    	
+			        Bitmap bmpMarker = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+			    	ImageView imgMarker = new ImageView(this);
+			    	imgMarker.setImageBitmap(bmpMarker);
+			    	imgMarker.setLayoutParams(rlParams);
+			    	
+			    	RelativeLayout.LayoutParams tParams = new RelativeLayout.LayoutParams
+			        (LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+			    	tParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+			    	tParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+			    	TextView text=new TextView(this); 
+			    	text.setText(Integer.toString(marker)); 
+			    	text.setTextColor(Color.BLACK);  
+			    	text.setLayoutParams(tParams);
+
+			    	
+			    	rLayout.addView(imgMarker);
+			    	rLayout.addView(text);
+			    	pageView.addView(rLayout);
+			    }
+				
 				//Make the button and thumbnail look like it is a TV (simple metaphor for users to understand it is a video clip)
+				String myVideoPath = unzippedDir + packagePath + File.separator + video;
+				File videoFile = new File(myVideoPath);
+				if (videoFile.exists()){
 				 					 
 					 //Locate the video and get the thumbnail image of the video file
 					 try{
 						 Bitmap thumb = android.media.ThumbnailUtils.createVideoThumbnail(unzippedDir + packagePath + File.separator + video, MediaStore.Images.Thumbnails.MINI_KIND);
 						 double w = screenWidth/1.33;	//ratio
 						 double h = screenHeight/3;		//ratio
-						 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, (int) w, (int) h, true);	//240, 160 scale the bitmap to the right size of the button
 						 
-						 ibVid = new ImageButton(this);
-						 
-						 ibVid.setOnTouchListener(gestureListener);
-							//Set the onTouchListener for the ibView
-							ibVid.setOnTouchListener(new View.OnTouchListener() {
-								@Override
-					            public boolean onTouch(View v, MotionEvent event) {
-					                if (gestureDetector.onTouchEvent(event)) {
-					                    return true;
-					                }
-					                return false;
-					            }
-					        });
-						 
-						//Assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
-						 ibVid.setImageBitmap(scaledThumb);
-						 //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-						 double w2 = screenWidth/1.23;
-						 double h2 = screenHeight/2.66;
-						 ibVid.setLayoutParams(new LayoutParams((int) w2,(int) h2));
-						 page.addView(ibVid); 
+						 if(thumb != null){
+							 Bitmap scaledThumb = Bitmap.createScaledBitmap(thumb, (int) w, (int) h, true);	//240, 160 scale the bitmap to the right size of the button
+							 ibVid = new ImageButton(Reader.this);
+							 
+							 if(scaledThumb != null){
+							    //Assign the thumbnail image to a new space in the ImageButton Thumbnail ArrayList
+							    ibVid.setImageBitmap(scaledThumb);
+							    //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+								 double w2 = screenWidth/1.23;
+								 double h2 = screenHeight/2.66;
+								 ibVid.setLayoutParams(new LayoutParams((int) w2,(int) h2));
+								 pageView.addView(ibVid); 
+							 }
+						 }
+						 else{
+							 ibVid = new ImageButton(Reader.this);
+							 //ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+							 ibVid.setImageDrawable(this.getResources().getDrawable(R.drawable.videocontent));
+							 double w2 = screenWidth/1.23;
+						 	 double h2 = screenHeight/2.66;
+						 	 ibVid.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));//(int) w2,(int) h2));
+						 	 pageView.addView(ibVid); 
+						 }
 						 
 					 } catch (OutOfMemoryError E) {
 						    //Release some (all) of the above objects
 								System.out.println("Out of Memory Exception");
 								TextView txtView = new TextView(Reader.this);
 								txtView.setText("Error: cannot load video. Out of memory!");
-								page.addView(txtView);
-							}
+								pageView.addView(txtView);
+					 	}
 					 
 					//New custom view that adds a bit of spacing to the end of image items
-					//View view = new View(this);
-					//view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-					//page.addView(view);
+					View view = new View(this);
+					view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
+					pageView.addView(view);
 					
 					/*
 					* Differentiate between which Listener was pressed by comparing the View reference.
 					*/
-					ibVid.setOnLongClickListener(new OnLongClickListener() {
+					ibVid.setOnClickListener(new OnClickListener() {
 			             @Override
-			             public boolean onLongClick(View v) {
+			             public void onClick(View v) {
 			            	 
-			            	//Vibration to alert users
-				            // Get instance of Vibrator from current Context
-				            Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
-				            // Vibrate for 300 milliseconds
-				            vib.vibrate(300);
+				            //Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
+				            //vib.vibrate(300);
 			            	 
 			            	 //Play the video - calls VideoViewer class
 			            	 //Create a new intent based on the VideoViewer class
@@ -493,16 +538,17 @@ public class Reader extends Activity {
 
 	        	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.VideoViewer");
 	        	        	 intent.putExtra("video", video);
-	        	        	 intent.putExtra("path", packagePath);
+	        	        	 intent.putExtra("path", unzippedDir+packagePath);
 		     				    overridePendingTransition(0, 0);
 	        	        	 startActivity(intent);	
 	        	        	 
-	        	        	 return true;
+	        	        	 //return true;
 			            	
 			             } //end of public void
 				 
 						});
 					
+				}//End of if videoFile exists
 				
 			} //End of displayVideo method
 			
@@ -513,7 +559,38 @@ public class Reader extends Activity {
 			  /*
 			   * Method for displaying audio items
 			   */
-		    public void displayAudio(final String audio, LinearLayout page){
+		    public void displayAudio(final String audio, final int marker){
+		    	
+		    	System.out.println("Marker === " + marker);
+				 if (marker != -1){
+					 RelativeLayout rLayout = new RelativeLayout(this);
+				     LayoutParams rlParams = new LayoutParams(LayoutParams.FILL_PARENT
+				     ,LayoutParams.FILL_PARENT); 
+				     rLayout.setLayoutParams(rlParams);
+				    	
+				     Bitmap bmpMarker = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+				   	 ImageView imgMarker = new ImageView(this);
+				     imgMarker.setImageBitmap(bmpMarker);
+				     imgMarker.setLayoutParams(rlParams);
+				     
+				     RelativeLayout.LayoutParams tParams = new RelativeLayout.LayoutParams
+				        (LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+				    	tParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+				    	tParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+				    	TextView text2=new TextView(this); 
+				    	text2.setText(Integer.toString(marker)); 
+				    	text2.setTextColor(Color.BLACK);  
+				    	text2.setLayoutParams(tParams);
+				    	
+				    	rLayout.addView(imgMarker);
+				    	rLayout.addView(text2);
+				    	pageView.addView(rLayout);
+				 }
+		    	
+		    	String myAudioPath = unzippedDir + packagePath + File.separator + audio;
+
+		    	File audioFile = new File(myAudioPath);
+				if (audioFile.exists()){
 		    	
 		    	 //Audio exists so set the audio flag to true
 		    	 audio_included = true;
@@ -540,53 +617,17 @@ public class Reader extends Activity {
 		    	 ibAudioStop.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 		    	 llAudio.addView(ibAudioStop);
 		    	 
-		    	 page.addView(llAudio);	//Add the audio linear layout to the main linear layout
+		    	 pageView.addView(llAudio);	//Add the audio linear layout to the main linear layout
 
 		    	 
-		    	 ibAudioPlay.setOnTouchListener(gestureListener);
-		    	 ibAudioPause.setOnTouchListener(gestureListener);
-		    	 ibAudioStop.setOnTouchListener(gestureListener);
-
-					//Set the onTouchListeners for each of the audio buttons
-					ibAudioPlay.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					ibAudioPause.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
-					ibAudioStop.setOnTouchListener(new View.OnTouchListener() {
-						@Override
-			            public boolean onTouch(View v, MotionEvent event) {
-			                if (gestureDetector.onTouchEvent(event)) {
-			                    return true;
-			                }
-			                return false;
-			            }
-			        });
+		    	
 					
-		    	 
+		    	/* 
 		    	 TextView tv = new TextView(this);
 				 tv.setText("Audio File: " + audio);
 				 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-				 page.addView(tv);
-				 
-				//New custom view that adds a bit of spacing to the end of image items
-			    //View view = new View(this);
-			    //view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-				//page.addView(view);
-				 		    		
+				 pageView.addView(tv);
+		    	 */
 				 
 						/*
 						 *  Set Click Listener for the buttons
@@ -620,7 +661,7 @@ public class Reader extends Activity {
 				             } //End of public void
 				 
 				         });
-				         
+				}//end of if file exists 
 				         		    	
 		    } //End of displayAudio() method
 		    
@@ -705,135 +746,103 @@ public class Reader extends Activity {
 		     * Map Image Item
 		     * Method for displaying the map tile image. Every map has a trail!
 		     */
-		    public void displayMapImage(final String mapImageFilename, final Coordinate[] mapCoordinates, final String gpxFilename, final LinearLayout page){
+		    public void displayMapImage(final String mapImageFilename, final Coordinate[] mapCoordinates, final String gpxFilename, final int pageNumber){
 		    	
 			    //Locate the file path where the images are stored on the SD CARD. 
 				String myMapImagePath = unzippedDir + packagePath + File.separator + mapImageFilename;
-				mapImgView = new ImageView(this);
-			    
-			    mapImgView.setOnTouchListener(gestureListener);
-				//Set the onTouchListener for the mapImgView
-				mapImgView.setOnTouchListener(new View.OnTouchListener() {
-					@Override
-		            public boolean onTouch(View v, MotionEvent event) {
-		                if (gestureDetector.onTouchEvent(event)) {
-		                    return true;
-		                }
-		                return false;
-		            }
-		        });
-			    
-
-			    //(1) Display map thumbnail and get the map coordinates
-			    if(mapImageFilename != null){
-					try{ 
-						
-						BitmapFactory.Options options = new BitmapFactory.Options();
-					    options.inSampleSize = 2;
-					    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
-						Uri imgUri=Uri.parse(myMapImagePath);
-					    mapImgView.setImageURI(imgUri);
-					    //mapImgView.setImageBitmap(bm);
-					    double w = screenWidth/1.28;	//ratio
-					    double h = screenHeight/1.92;	//ratio
-						mapImgView.setLayoutParams(new LayoutParams((int) w, (int) h));	//350, 350 htc hd
-						page.addView(mapImgView); 
-
-						//Map images are polygons with 5 coordinates (of lat/long)
-						c_x1 = mapCoordinates[0].x;
-						c_y1 = mapCoordinates[0].y;
-						c_x2 = mapCoordinates[1].x;
-						c_y2 = mapCoordinates[1].y;
-						c_x3 = mapCoordinates[2].x;
-						c_y3 = mapCoordinates[2].y;
-						c_x4 = mapCoordinates[3].x;
-						c_y4 = mapCoordinates[3].y;
-						c_x5 = mapCoordinates[4].x;
-						c_y5 = mapCoordinates[4].y;
-						
-						
-			    	} catch (OutOfMemoryError E) {
-				    //Release some (all) of the above objects
-						System.out.println("Out of Memory Exception");
-						TextView txtView = new TextView(Reader.this);
-						txtView.setText("Error: cannot load map file. Out of memory!");
-						page.addView(txtView);
-					}
-			    }
-			    
-			    else{
-			    	TextView t = new TextView(this);
-			    	t.setText("Error: cannot read map");
-			    	page.addView(t);
-			    }
-			    
-			    
-			    //(2) A Map will always have a Trail
-			    //Unmarshall the map trail coordinates
-
-			    try {
-					Serializer serializer = new Persister(); 
-					//Used the simple framework to convert the gpx data from xml file to java objects
-					File source = new File(unzippedDir + packagePath + File.separator + gpxFilename);
-					Gpx gpx = serializer.read(Gpx.class, source);
-
-					System.out.println("UNMARSHALLING!!!!!!!");
-					
-					 //Quick hack for the deadline -- will improve later
-					 for(int i=0; i<gpx.trk.trkseg.size(); i++){
-						
-						 String gpxLatLon =  gpx.trk.trkseg.get(i).toString();
-						 //Cut the lat and lon out of the string
-						 int start = gpxLatLon.indexOf("latitude=");
-						 int size = gpxLatLon.length();
-						 int middle = gpxLatLon.indexOf("longitude=");
-
-						 gpsLatCoordinates.add(Double.parseDouble(gpxLatLon.substring(start+9, middle)));
-						 gpsLonCoordinates.add(Double.parseDouble(gpxLatLon.substring(middle+10, size)));
-
-					 
-					 }
-					 arrGpsLatCoordinates = new double[gpsLatCoordinates.size()];
-					 arrGpsLonCoordinates = new double[gpsLonCoordinates.size()];
-					 
-					 //Copy the lat/lon arraylists to arrays
-					for (int i=0; i<gpsLatCoordinates.size(); i++){
-						arrGpsLatCoordinates[i] = gpsLatCoordinates.get(i);
-						System.out.println("arr gps lat coords = " + arrGpsLatCoordinates[i]);
-
-					}
-					for (int i=0; i<gpsLonCoordinates.size(); i++){
-						arrGpsLonCoordinates[i] = gpsLonCoordinates.get(i);
-						System.out.println("arr gps lon coordinates = " + arrGpsLonCoordinates[i]);
-
-					}
-				  //End of the quick hack 
-					 					 
-			     } catch (Exception e) {
-			          e.printStackTrace();
-			     }
-			     			    
+				ImageView mapImgView = new ImageView(this);
+				
+				
+				File mapFile = new File(myMapImagePath);
+				if (mapFile.exists()){
+				
+				
+					//String filename = "file://"+ myMapImagePath;
+					//String mapImagePath = "<img height='230' width='230' src=\""+filename+"\">";
+					//htmlPageContents.append(mapImagePath);
+				//}
+									    
+				 	
+				    //(1) Display map thumbnail and get the map coordinates
+				    if(mapImageFilename != null && myMapImagePath != null){
+						try{ 
+							
+							BitmapFactory.Options options = new BitmapFactory.Options();
+						    options.inSampleSize = 4;
+						    Bitmap bm = BitmapFactory.decodeFile(myMapImagePath, options);
+							Uri imgUri=Uri.parse(myMapImagePath);
+						    mapImgView.setImageURI(imgUri);
+						    //mapImgView.setImageBitmap(bm);
+						    /*
+						    double w = screenWidth/1.28;	//ratio
+						    double h = screenHeight/1.92;	//ratio
+							mapImgView.setLayoutParams(new LayoutParams((int) w, (int) h));	//350, 350 htc hd
+							*/
+						 
+							mapImgView.setLayoutParams(new LayoutParams(screenWidth-75, screenWidth-75));
+							pageView.addView(mapImgView);
+							
+							System.out.println("MapCoordinates == " + mapCoordinates);
+							if(mapCoordinates != null){
+								//Map images are polygons with 5 coordinates (of lat/long)
+								c_x1 = mapCoordinates[0].x;
+								c_y1 = mapCoordinates[0].y;
+								c_x2 = mapCoordinates[1].x;
+								c_y2 = mapCoordinates[1].y;
+								c_x3 = mapCoordinates[2].x;
+								c_y3 = mapCoordinates[2].y;
+								c_x4 = mapCoordinates[3].x;
+								c_y4 = mapCoordinates[3].y;
+								c_x5 = mapCoordinates[4].x;
+								c_y5 = mapCoordinates[4].y;
+							}
+							else{
+								Log.d("Reader.class","mapCoordinates = null");
+							}
+							
+							
+				    	} catch (OutOfMemoryError E) {
+					    //Release some (all) of the above objects
+							System.out.println("Out of Memory Exception");
+							TextView txtView = new TextView(Reader.this);
+							txtView.setText("Error: cannot load map file. Out of memory!");
+							//page.addView(txtView);
+							pageView.addView(txtView);
+						}
+				    }
+				    
+				    else{
+				    	TextView t = new TextView(this);
+				    	t.setText("Error: cannot read map");
+				    	//page.addView(t);
+				    	pageView.addView(t);
+				    }
+				}
+				else{
+					TextView t = new TextView(this);
+			    	t.setText("Error: map image was not downloaded properly");
+			    	//page.addView(t);
+			    	pageView.addView(t);
+				}
+			    		    
 				 
 				//New custom view that adds a bit of spacing to the end of image items
-				//View view = new View(this);
-				//view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-				//page.addView(view);
+				View view = new View(this);
+				view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
+				pageView.addView(view);
 				
-				/*
-				 * Differentiate between which Listener was pressed by comparing the View reference.
-				 */
+				
+				 // Differentiate between which Listener was pressed by comparing the View reference.
+				 
 				 //Has a map
-					mapImgView.setOnLongClickListener(new OnLongClickListener() {
+					mapImgView.setOnClickListener(new OnClickListener() {
 			             @Override
-			             public boolean onLongClick(View v) {
+			             public void onClick(View v) {
 			            	 
-				 		if(mapImageFilename!=null && arrGpsLatCoordinates!= null && arrGpsLonCoordinates!=null){
+				 		if(mapImageFilename!=null){
 
-			            	//Vibration to alert users
-				            //Get instance of Vibrator from current Context
-				            Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
-				            // Vibrate for 300 milliseconds
-				            vib.vibrate(300);
+				            //Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
+				            //vib.vibrate(300);
 	
 				            	 
 			            	 Intent intent = new Intent();
@@ -843,7 +852,7 @@ public class Reader extends Activity {
 	       	        	 intent.setClassName("org.placebooks.www", "org.placebooks.www.MapImageViewer");
 	       	        	 intent.putExtra("mapImageFilename", mapImageFilename);
 	       	        	 intent.putExtra("packagePath", unzippedDir + packagePath);
-	       	        	 System.out.println("mapImage+PackagePath = " +mapImageFilename + unzippedDir + packagePath);
+	       	        	 System.out.println("PackagePath+mapImage = " + unzippedDir + packagePath +mapImageFilename );
 	
 	       	        	 
 	       	        	 //Pass the map image lat/lon corner value
@@ -858,19 +867,69 @@ public class Reader extends Activity {
 	       	        	 intent.putExtra("c_x5", c_x5);
 	       	        	 intent.putExtra("c_y5", c_y5);
 	       	        	 
-	       	        	 //Pass the gps trail lat/lons
-	       	        	 intent.putExtra("arrLat", arrGpsLatCoordinates);
-	       	        	 intent.putExtra("arrLon", arrGpsLonCoordinates);
-	       	        	 
+	       	        	 intent.putExtra("gpxFilename", gpxFilename);
+	       /*	        	 
+	       	        	 if (gpxFilename != null){
+		       	        	 //Pass the gps trail lat/lons
+		       	        	 intent.putExtra("arrLat", arrGpsLatCoordinates);
+		       	        	 intent.putExtra("arrLon", arrGpsLonCoordinates);
+	       	        	 }
+	       */	        	 
 	       	        	 //Pass the geotagged media
+	       	        	intent.putExtra("alGeoTextData", alGeoTextData);
+	       	        	 intent.putExtra("alGeoTextMapPage", alGeoTextMapPage);
+	       	        	 intent.putExtra("alGeoTextMapMarker",alGeoTextMapMarker);
+	       	        	 int numTextCoords = alGeoTextCoordinate.size();
+		       	         intent.putExtra("text_coord_size", numTextCoords);
+		       	         intent.putExtra("pageNumber", pageNumber);
+		       	         for (int i = 0; i < numTextCoords; i++)
+		       	         {
+		       	             Coordinate coord = alGeoTextCoordinate.get(i);
+		       	             intent.putExtra("text_coord_x_" + i, coord.x);
+		       	             intent.putExtra("text_coord_y_" + i, coord.y);
+		       	         }
+		       	         
+		       	         intent.putExtra("alGeoAudioFilename", alGeoAudioFilename);
+	       	        	 intent.putExtra("alGeoAudioMapPage", alGeoAudioMapPage);
+	       	        	 intent.putExtra("alGeoAudioMapMarker",alGeoAudioMapMarker);
+	       	        	 int numAudioCoords = alGeoAudioCoordinate.size();
+		       	         intent.putExtra("audio_coord_size", numAudioCoords);
+		       	         intent.putExtra("pageNumber", pageNumber);
+		       	         for (int i = 0; i < numAudioCoords; i++)
+		       	         {
+		       	             Coordinate coord = alGeoAudioCoordinate.get(i);
+		       	             intent.putExtra("audio_coord_x_" + i, coord.x);
+		       	             intent.putExtra("audio_coord_y_" + i, coord.y);
+		       	         }
+	       	        	 
+	       	        	 
 	       	        	 intent.putExtra("alGeoImageFilename", alGeoImageFilename);
+	       	        	 intent.putExtra("alGeoImageMapPage", alGeoImageMapPage);
+	       	        	 intent.putExtra("alGeoImageMapMarker",alGeoImageMapMarker);
 	       	        	 int numCoords = alGeoImageCoordinate.size();
 		       	         intent.putExtra("coord_size", numCoords);
+		       	         intent.putExtra("pageNumber", pageNumber);
 		       	         for (int i = 0; i < numCoords; i++)
 		       	         {
 		       	             Coordinate coord = alGeoImageCoordinate.get(i);
 		       	             intent.putExtra("coord_x_" + i, coord.x);
 		       	             intent.putExtra("coord_y_" + i, coord.y);
+		       	         }
+		       	         
+		       	         intent.putExtra("alGeoVideoFilename", alGeoVideoFilename);
+	       	        	 intent.putExtra("alGeoVideoMapPage", alGeoVideoMapPage);
+	       	        	 intent.putExtra("alGeoVideoMapMarker",alGeoVideoMapMarker);
+	       	        	 int numVidCoords = alGeoVideoCoordinate.size();
+	       	        	 intent.putExtra("vid_coord_size", numVidCoords);
+	       	        	 System.out.println("vid_coord_size ======== " + numVidCoords);
+	       	        	for (int i = 0; i < numVidCoords; i++)
+		       	         {
+		       	             Coordinate coord = alGeoVideoCoordinate.get(i);
+		       	             intent.putExtra("vid_coord_x_" + i, coord.x);
+		       	             intent.putExtra("vid_coord_y_" + i, coord.y);
+		       	        	 System.out.println("vid_coord_x_ ======== " + coord.x);
+		       	        	 System.out.println("vid_coord_y_ ======== " + coord.y);
+
 		       	         }
 	
 		     		     overridePendingTransition(0, 0);
@@ -883,11 +942,12 @@ public class Reader extends Activity {
 
 		 				}
 	       	        	 
-	       	        	 return true;
+	       	        	 //return true;
 			            	
 			             } //End of public void
 				 
 						});
+
 			    	
 			    }
 		    
@@ -897,21 +957,11 @@ public class Reader extends Activity {
 		     * Web Bundle Item
 		     * Method for displaying the web bundle
 		     */
-		    public void displayWebBundle(final String filename, final String url, final String itemKey, final LinearLayout page){
+		    public void displayWebBundle(final String filename, final String url, final String itemKey){
 		    	
 			 	//ImageButton thumb = new ImageButton(this);
 			 	ImageButton thumb = new ImageButton(this);
-			 	thumb.setOnTouchListener(gestureListener);
-				//Set the onTouchListener for the thumb
-				thumb.setOnTouchListener(new View.OnTouchListener() {
-					@Override
-		            public boolean onTouch(View v, MotionEvent event) {
-		                if (gestureDetector.onTouchEvent(event)) {
-		                    return true;
-		                }
-		                return false;
-		            }
-		        });
+			 	
 			 	
 			 	Bitmap bmp = BitmapFactory.decodeResource(getResources() , R.drawable.web_bundle_thumbnail); 
 			 	thumb.setImageBitmap(bmp);
@@ -923,22 +973,19 @@ public class Reader extends Activity {
 			 	//Leave web bundle size as it is for now
 			 	thumb.setLayoutParams(new LayoutParams((int) w, (int) h));	//240x240
 			 	//Thumb.setText("WEB BUNDLE");
-			 	page.addView(thumb);
+			 	pageView.addView(thumb);
 			 	
 			 	//New custom view that adds a bit of spacing to the end of image items
-				//View view = new View(this);
-				//view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
-				//page.addView(view);
+				View view = new View(this);
+				view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
+				pageView.addView(view);
 			 	
-			 	thumb.setOnLongClickListener(new OnLongClickListener() {
+			 	thumb.setOnClickListener(new OnClickListener() {
 		             @Override
-		             public boolean onLongClick(View v) {
+		             public void onClick(View v) {
 		                 
-		            	//Vibration to alert users
-			            //Get instance of Vibrator from current Context
-			            Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
-			            //Vibrate for 300 milliseconds
-			            vib.vibrate(300);
+			            //Vibrator vib = (Vibrator) getSystemService(Reader.this.VIBRATOR_SERVICE);
+			            //vib.vibrate(300);
 		            	 
 		            	 //Display the web site in a new view (call the WebBundleViewer)
 		            	 Intent intent = new Intent();
@@ -953,7 +1000,7 @@ public class Reader extends Activity {
 	     	        	 overridePendingTransition(0, 0);
 	     	        	 startActivity(intent);	
 			            	
-	     	        	 return true;
+	     	        	 //return true;
 		            	
 		             } //end of public void
 		 
@@ -961,58 +1008,118 @@ public class Reader extends Activity {
 		    	
 		    }
 		    
+		    private void getConfigXML() throws Exception{
+		    	
+		    	try{
+
+                    SAXParserFactory spf = SAXParserFactory.newInstance();
+                    SAXParser sp = spf.newSAXParser();
+
+                    //Get the XMLReader of the SAXParser we created
+                    XMLReader xr = sp.getXMLReader();
+                    //Create a new ContentHandler and apply it to the XML-Reader
+                    XMLConfigHandler xmlHandler = new XMLConfigHandler();
+                    xr.setContentHandler(xmlHandler);
+                   
+                    // Parse the xml-data from the file
+    				FileInputStream in = new FileInputStream(unzippedRoot + packagePath + File.separator + configFilename);
+                    xr.parse(new InputSource(in));
+                    //Parsing has finished.
+
+                    Binder parsedExampleDataSet = xmlHandler.getParsedData();
+                    
+                    ArrayList<String> al = parsedExampleDataSet.getAlPages();
+                    
+                    for(int i=0; i< al.size(); i++)
+                    {   
+                    	pageFilenames.add(al.get(i));
+                    	System.out.println(al.get(i));
+                    }
+		    	
+		    	}
+				catch(Exception e){
+                    Log.e("Reader->getConfigXML", "Exception", e);	
+				}
 				
+		    }
 		    
 		    /*
 		    * Method to Parse the config.xml file and store the different types of Items into the ArrayList Variables
 		    */
 			private String getMyXML() throws Exception {
-						
+									
+				
 				StringBuffer inLine = new StringBuffer();
+		//		StringBuffer inLinePrevious = new StringBuffer();
+		//		StringBuffer inLineNext = new StringBuffer();
 				//Get a SAXParser from the SAXPArserFactory
 				SAXParserFactory spf = SAXParserFactory.newInstance();
 				SAXParser sp = spf.newSAXParser();
+				
+				//SAXParserFactory spf2 = SAXParserFactory.newInstance();
+				//SAXParser sp2 = spf2.newSAXParser();
+				
+				//SAXParserFactory spf3 = SAXParserFactory.newInstance();
+				//SAXParser sp3 = spf3.newSAXParser();
 
 				//Get the XMLReader of the SAXParser we created
 				XMLReader xr = sp.getXMLReader();
+				//XMLReader xrNext = sp2.getXMLReader();
+				//XMLReader xrPrevious = sp3.getXMLReader();
+				
 				//Create a new ContentHandler and apply it to the XML-Reader
 				XMLHandler myExampleHandler = new XMLHandler();
 				xr.setContentHandler(myExampleHandler);
-								
-				FileInputStream in = new FileInputStream(unzippedRoot + packagePath + File.separator + configFilename);
-				xr.parse(new InputSource(in));
+				//XMLHandler myExampleHandlerNext = new XMLHandler();
+				//xrNext.setContentHandler(myExampleHandlerNext);
+				//XMLHandler myExampleHandlerPrevious = new XMLHandler();
+				//xrPrevious.setContentHandler(myExampleHandlerPrevious);
+				
+				
+				for (int i=0; i<pageFilenames.size(); i++){
+				
+					System.out.println("page filename === " + pageFilenames.get(i));
+					FileInputStream in = new FileInputStream(unzippedRoot + packagePath + File.separator + pageFilenames.get(i));
+					xr.parse(new InputSource(in));
+					
+					
+					Book thePage = myExampleHandler.getParsedData();
+					
+						try{
+							inLine.append(thePage.toString());	
 
-				Book book = myExampleHandler.getParsedData();
-				
-				try{
-				inLine.append(book.toString());	
+						}
+						catch(NullPointerException npe){
+							Log.e("TRACE = ",npe.getMessage());
+							System.out.println("Null pointer exception has been caught");
+							TextView textView = new TextView(Reader.this);
+							textView.setText("Error: Null Pointer Exception");
+							setContentView(textView);
+						}
+						
+						
+						pageCol1 = (ArrayList<Point>)thePage.getPage();
+						System.out.println("pageCol1 ===== " + pageCol1);
+						pageCol2 = (ArrayList<Point>)thePage.getPage2();
+						System.out.println("pageCol2 ===== " + pageCol2);
+						allPages.add(pageCol1);
+						allPages.add(pageCol2);
+						
+						in.close();
+						
 				}
-				catch(NullPointerException npe){
-					Log.e("TRACE = ",npe.getMessage());
-					System.out.println("Null pointer exception has been caught");
-					TextView textView = new TextView(Reader.this);
-					textView.setText("Error: Null Pointer Exception");
-					setContentView(textView);
-				}
-				pbkey = book.getKey();		//The book key (folder name) is also stored in the config.xml file - so we can pull it out from that
-				pbtimestamp = book.getTimestamp();	//The book's DOB
 				
-				page1 = (ArrayList<Point>)book.getPage1();
-				page2 = (ArrayList<Point>)book.getPage2();
-				page3 = (ArrayList<Point>)book.getPage3();
-				page4 = (ArrayList<Point>)book.getPage4();
-				page5 = (ArrayList<Point>)book.getPage5();
-				page6 = (ArrayList<Point>)book.getPage6();
-			
-				in.close();
 				
-				return inLine.toString();    
+				
+				return "";//inLine.toString();    
 				
 			}
 			
-			public void populatePages(){
-				//Pass the data into the data ArrayLists
-				for(Point item: page1) {
+			
+			public void populatePage(ArrayList<Point> page, int pageNumber){
+		
+				
+				for(Point item: page) {
 					
 					String type = item.getType();	//Types - Text, Audio, Video, Images..etc
 					String data = item.getData();	//Can be Text, Filename (e.g 123.jpg, song.mp3)..etc 
@@ -1021,15 +1128,38 @@ public class Reader extends Activity {
 		        	Coordinate[] geomCo = item.getGeometryCoordinates();	//Some items are geotagged and have geometries
 		        	String gpxFilename = item.getGpxFilename();				//Trails have a gpx file name. In this case data = map filename
 		        	int height = item.getImageHeight();
+		        	int mapPage = item.getMapPage();
+		        	int marker = item.getMapMarker();
+		        	System.out.println("Map Marker === " + marker);
 		        	
 					if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll);
+						//displayText(data);
+						if(geomCo!=null && data!=null && mapPage != -1 && marker != -1){
+							try{
+								alGeoTextData.add(data);
+								alGeoTextMapPage.add(mapPage);
+								alGeoTextMapMarker.add(marker);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoTextCoordinate.add(geomCo[i]);
+								}
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+					if(data != null){	
+					displayText(data, marker);
+					}
+						
 					}
 					else if (type.equalsIgnoreCase("Image")){
 						
-							if(geomCo!=null && data!=null){
+							if(geomCo!=null && data!=null && mapPage != -1 && marker != -1){
 								try{
 									alGeoImageFilename.add(data);
+									alGeoImageMapPage.add(mapPage);
+									alGeoImageMapMarker.add(marker);
 									for (int i=0; i<geomCo.length; i++){
 										alGeoImageCoordinate.add(geomCo[i]);
 									}
@@ -1038,326 +1168,70 @@ public class Reader extends Activity {
 								catch(Exception e){
 									e.printStackTrace();
 								}
-								displayImage(data.toString(),height,ll);
 							}
-							
-						//displayImage(data.toString(),height,ll);
+						if(data != null){	
+						displayImage(data.toString(),height, marker);
+						}
 					}
 					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll);
+						
+						if(geomCo!=null && data!=null && mapPage != -1 && marker !=-1){
+							try{
+								alGeoVideoFilename.add(data);
+								alGeoVideoMapPage.add(mapPage);
+								alGeoVideoMapMarker.add(marker);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoVideoCoordinate.add(geomCo[i]);
+								}
+
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+						if(data != null){	
+							displayVideo(data, marker);
+						}
 					}
 					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll);	
+						
+						if(geomCo!=null && data!=null && mapPage != -1 && marker !=-1){
+							try{
+								alGeoAudioFilename.add(data);
+								alGeoAudioMapPage.add(mapPage);
+								alGeoAudioMapMarker.add(marker);
+								for (int i=0; i<geomCo.length; i++){
+									alGeoAudioCoordinate.add(geomCo[i]);
+								}
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+						if(data != null){	
+							displayAudio(data, marker);	
+						}
 					}
 					
 					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll );
+						 displayWebBundle(data,url, itemKey);
 					}
 					else if (type.equalsIgnoreCase("MapImage")){
-
-							displayMapImage(data, geomCo, gpxFilename, ll);
-							
+						if (data != null){
+							displayMapImage(data, geomCo, gpxFilename, pageNumber);
+							System.out.println("page number ==== " + pageNumber);
+						}
 					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-					
-					}*/
+
 					
 				}
 				
-				for(Point item: page2) {
-		        	String type = item.getType();
-		        	String data = item.getData();
-		        	String itemKey = item.getItemKey();
-		        	String url = item.getUrl();
-		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	String gpxFilename = item.getGpxFilename();
-		        	int height = item.getImageHeight();
-
-		        	if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll2);
-					}
-					else if (type.equalsIgnoreCase("Image")){
-
-						if(geomCo!=null && data!=null){
-							try{
-								alGeoImageFilename.add(data);
-								for (int i=0; i<geomCo.length; i++){
-									alGeoImageCoordinate.add(geomCo[i]);
-								}
-								
-							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-							displayImage(data.toString(), height, ll2);
-
-						}
-						//displayImage(data.toString(), height, ll2);
-					}
-					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll2);
-					}
-					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll2);	
-					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, gpxFilename, ll2);
-					}
-					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll2);
-					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						//msg.show();
-					}*/
-		        
-
-				}
-				for(Point item: page3) {
-		        	String type = item.getType();
-		        	String data = item.getData();
-		        	String itemKey = item.getItemKey();
-		        	String url = item.getUrl();
-		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	String gpxFilename = item.getGpxFilename();
-		        	int height = item.getImageHeight();
-
-		        	if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll3);
-					}
-					else if (type.equalsIgnoreCase("Image")){
-						
-						if(geomCo!=null && data!=null){
-							try{
-								alGeoImageFilename.add(data);
-								for (int i=0; i<geomCo.length; i++){
-									alGeoImageCoordinate.add(geomCo[i]);
-								}
-
-							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-							displayImage(data.toString(),height, ll3);
-
-						}
-						//displayImage(data.toString(),height, ll3);
-					}
-					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll3);
-					}
-					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll3);	
-					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, gpxFilename, ll3);
-					}
-					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll3);
-					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						//msg.show();
-					}*/		        	
-		        	
-
-				}
-				for(Point item: page4) {
-		        	String type = item.getType();
-		        	String data = item.getData();
-		        	String itemKey = item.getItemKey();
-		        	String url = item.getUrl();
-		        	//Geometry geom = item.getGeometryCoordinates();
-		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	String gpxFilename = item.getGpxFilename();
-		        	int height = item.getImageHeight();
-
-		        	if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll4);
-					}
-					else if (type.equalsIgnoreCase("Image")){
-						
-						if(geomCo!=null && data!=null){
-							try{
-								alGeoImageFilename.add(data);
-								for (int i=0; i<geomCo.length; i++){
-									alGeoImageCoordinate.add(geomCo[i]);
-								}
-
-							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-							displayImage(data.toString(),height, ll4);
-						}
-						//displayImage(data.toString(),height, ll4);
-					}
-					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll4);
-					}
-					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll4);	
-					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, gpxFilename, ll4);
-					}
-					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll4);
-					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						//msg.show();
-					}*/	
-		        	
-
-				}
-				for(Point item: page5) {
-		        	String type = item.getType();
-		        	String data = item.getData();
-		        	String itemKey = item.getItemKey();
-		        	String url = item.getUrl();
-		        	//Geometry geom = item.getGeometryCoordinates();
-		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	String gpxFilename = item.getGpxFilename();
-		        	int height = item.getImageHeight();
-
-		        	if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll5);
-					}
-					else if (type.equalsIgnoreCase("Image")){
-						
-						if(geomCo!=null && data!=null){
-							try{
-								alGeoImageFilename.add(data);
-								for (int i=0; i<geomCo.length; i++){
-									alGeoImageCoordinate.add(geomCo[i]);
-								}
-
-							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-							displayImage(data.toString(),height, ll5);
-						}
-						//displayImage(data.toString(),height, ll5);
-					}
-					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll5);
-					}
-					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll5);	
-					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, gpxFilename, ll5);
-					}
-					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll5);
-					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						//msg.show();
-					}*/	
-
-				}
-				for(Point item: page6) {
-		        	String type = item.getType();
-					String data = item.getData();
-		        	String itemKey = item.getItemKey();
-		        	String url = item.getUrl();
-		        	//Geometry geom = item.getGeometryCoordinates();
-		        	Coordinate[] geomCo = item.getGeometryCoordinates();
-		        	String gpxFilename = item.getGpxFilename();
-		        	int height = item.getImageHeight();
-
-		        	if (type.equalsIgnoreCase("Text")){
-						displayText(data, ll6);
-					}
-					else if (type.equalsIgnoreCase("Image")){
-						
-						if(geomCo!=null && data!=null){
-							try{
-								alGeoImageFilename.add(data);
-								for (int i=0; i<geomCo.length; i++){
-									alGeoImageCoordinate.add(geomCo[i]);
-								}
-
-							}
-							catch(Exception e){
-								e.printStackTrace();
-							}
-							displayImage(data.toString(),height, ll6);
-						}
-						//displayImage(data.toString(),height, ll6);
-					}
-					else if (type.equalsIgnoreCase("Video")){
-						displayVideo(data, ll6);
-					}
-					else if (type.equalsIgnoreCase("Audio")){
-						displayAudio(data, ll6);	
-					}
-					else if (type.equalsIgnoreCase("MapImage")){
-						displayMapImage(data, geomCo, gpxFilename, ll6);
-					}
-					else if (type.equalsIgnoreCase("WebBundle")){
-						 displayWebBundle(data,url, itemKey, ll6);
-					}
-					/*else if (type.equalsIgnoreCase("GPSTrace")){
-						//Toast msg = Toast.makeText(Reader.this, "data= \n" + gpxData + "\n key= " + itemKey, Toast.LENGTH_LONG);
-						//msg.show();
-					}*/
-
-				}
+				
+			
 				
 			}
 			
-			/*
-			 *  Extends SimpleOnGestureListener for implementing my own handling on swipe/fling action
-			 */
-			 class MyGestureDetector extends SimpleOnGestureListener {
-
-
-			        @Override
-			        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			            try {
-			                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-			                    return false;
-			                //Right to left swipe
-			                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-			                	flipper.setInAnimation(slideLeftIn);
-			                    flipper.setOutAnimation(slideLeftOut);
-			                	flipper.showNext();
-			                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-			                	flipper.setInAnimation(slideRightIn);
-			                    flipper.setOutAnimation(slideRightOut);
-			                	flipper.showPrevious();
-			                }
-			            } catch (Exception e) {
-			                // nothing
-			            }
-			            return false;
-			        }
-			    }
-
-			 
-			 public boolean canFlipRight() {
-					// TODO Auto-generated method stub
-					return true;
-				}
-			 
-			 public boolean canFlipLeft() {
-					// TODO Auto-generated method stub
-					return true;
-				}
-			 
-		//Important. makes sure that in the activity, it is catching the gesture event by overriding the onTouch() method	 
-			 @Override
-			 public boolean onTouchEvent(MotionEvent event) {
-			 if (gestureDetector.onTouchEvent(event))
-			 return true;
-			 else
-			 return false;
-			 }
-			 
+	
 			 
 		/*	 @Override
 			 public void onResume(){
@@ -1414,6 +1288,92 @@ public class Reader extends Activity {
 		    	
 			    }
 			 
+			 
+
+			   private class RenderPage extends AsyncTask<Void, Void, Void> {
+					
+				   ProgressDialog bookDialog;
+
+				   @Override
+			        protected void onPreExecute() {
+			            super.onPreExecute();
+			            bookDialog = new ProgressDialog(Reader.this);
+			            bookDialog.setMessage(getResources().getString(R.string.rendering_pages));
+			            bookDialog.setIndeterminate(true);
+			            bookDialog.setCancelable(false);
+			            bookDialog.show();
+			        }
+					 
+					@Override 
+					protected Void doInBackground(Void... strings) {
+												
+						        try{	
+						        	//call a method that parses the config.xml file in order to get an arraylist of xml filenames
+						        	getConfigXML();
+						        	getMyXML();	//call method to parse XML from a page in the book
+					             }
+					             catch(Exception e){
+					            	 e.printStackTrace();
+					            	 bookDialog.dismiss();
+					             }
+					             
+					    
+						return null;
+				 	}
+				 	
+					 
+					   @Override
+				        protected void onPostExecute(Void unused) {
+						   
+
+				            
+						   for (int i = 0; i < allPages.size(); i++) {
+							  
+							   pageView = new LinearLayout(Reader.this);
+							   pageView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+							   //pageView.setBackgroundResource(R.drawable.book_background);//Color(Color.WHITE);
+							   pageView.setGravity(Gravity.CENTER_HORIZONTAL);  
+							   pageView.setOrientation(LinearLayout.VERTICAL);
+							   pageScroll = new ScrollView(Reader.this);
+							   pageScroll.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+							   //pageScroll.setBackgroundResource(R.drawable.book_background);//Color(Color.WHITE);//setBackgroundColor(Color.WHITE);
+							   
+							    //add a bit of space between the top of the page and the pagination
+							   	View view = new View(Reader.this);
+							    view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 10));
+							    pageView.addView(view);  
+							   
+					            //final TextView t = (TextView)findViewById(R.id.pageText);
+					            TextView t = new TextView(Reader.this);
+					            t.setText(getResources().getString(R.string.page) + " " +(i+1) + " " + getResources().getString(R.string.of) + " " + allPages.size());
+					            t.setTextColor(Color.BLACK);
+					            t.setGravity(Gravity.CENTER_HORIZONTAL);
+					            pageView.addView(t);
+					            
+					            populatePage(allPages.get(i), i);
+					            System.out.println("allPages ====" + allPages.get(i));
+								///((WebView) pageView.findViewById(R.id.pageWeb)).loadDataWithBaseURL("",htmlPage.get(i).toString(), "text/html", "utf-8", "");
+					            			         
+					            pageScroll.addView(pageView);
+					            scroller.addPage(pageScroll);
+					        }
+				           //populatePage(currentPage);									
+				           bookDialog.dismiss();
+				        }
+				 
+				
+				     }
+			   
+			   @Override
+			   public boolean onKeyDown(int keyCode, KeyEvent event) {
+			       if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			           Log.d(this.getClass().getName(), "back button pressed");
+			          finish();
+			          
+			       }
+			       return super.onKeyDown(keyCode, event);
+			   }
+			   
 
 			
 } //End of class

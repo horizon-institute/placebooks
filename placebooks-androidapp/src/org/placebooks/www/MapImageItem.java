@@ -18,7 +18,7 @@ public class MapImageItem extends Item {
 	@Override
 	public String toString() {
 
-		return "<Filename>" + filename + "</Filename>" + "<Geometry>" + super.getGeometry() + "</Geometry>" + "\nPanel=" +super.getPanel() + "\nOrder=" +super.getOrder();
+		return "<Filename>" + filename + "</Filename>" + "<Geometry>" + super.getGeometry() + "</Geometry>" + "\nColumn=" +super.getColumn() + "\nOrder=" +super.getOrder();
 		
 	}
 

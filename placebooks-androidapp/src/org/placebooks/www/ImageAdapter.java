@@ -69,22 +69,23 @@ public class ImageAdapter extends BaseAdapter {
 				 	redImageButton.setBackgroundColor(android.R.color.transparent);	//Makes the button background transparent
 			        redImageButton.setOnClickListener(item.dl_listener);
 		
-			        ImageButton greenImageButton = (ImageButton)view.findViewById(R.id.icon_greenbutton);
-				 	greenImageButton.setBackgroundColor(android.R.color.transparent);
-			        greenImageButton.setOnClickListener(item.view_listener);
+			        ImageButton greyImageButton = (ImageButton)view.findViewById(R.id.icon_greybutton);
+				 	greyImageButton.setBackgroundColor(android.R.color.transparent);
+			        greyImageButton.setOnClickListener(item.view_listener);
 			        
 			        //Check if the package has already been downloaded to the SDCard
-					File f = new File(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped" + item.getPackagePath());
-					if(f.exists()){
+					//File f = new File(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped" + item.getPackagePath());
+					File f = new File(unzippedDir + item.getPackagePath());
+			        if(f.exists()){
 						//If exists then hide 'download' button and show 'view' button
 						redImageButton.setVisibility(View.GONE);
-						greenImageButton.setVisibility(View.VISIBLE);
+						greyImageButton.setVisibility(View.VISIBLE);
 					}
 					else{
 						//If it does not exist then hide 'view' button and show 'download' button
 						
 						redImageButton.setVisibility(View.VISIBLE);
-						greenImageButton.setVisibility(View.GONE);
+						greyImageButton.setVisibility(View.GONE);
 					}
 			        
 			        TextView textView = (TextView)view.findViewById(R.id.icon_text);

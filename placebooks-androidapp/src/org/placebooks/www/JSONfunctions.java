@@ -7,26 +7,54 @@ import java.io.InputStreamReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import android.preference.PreferenceManager;
 import java.io.IOException;
+import java.util.List;
+import 	android.content.Context;
+
 
 public class JSONfunctions {
 
-	public static JSONObject getJSONfromURL(String url){
+	public static JSONObject getJSONfromURL(String url, String cookieName, String cookieValue, int cookieVersion, String cookieDomain, String cookiePath){
 		InputStream is = null;
 		JSONObject json = new JSONObject();
+		
 
 	    try{
-	            HttpClient httpclient = new DefaultHttpClient();
+	            //HttpClient httpclient = new DefaultHttpClient();
+            	DefaultHttpClient httpclient = new DefaultHttpClient();
+            	          	
+                BasicClientCookie cookie = new BasicClientCookie(cookieName, cookieValue);
+                cookie.setVersion(cookieVersion);
+                cookie.setDomain(cookieDomain);
+                cookie.setPath(cookiePath);
+                cookie.setExpiryDate(null);
+                
+                
+                httpclient.setCookieStore(new BasicCookieStore());
+                httpclient.getCookieStore().addCookie(cookie);
+            	
+            	 
 	            HttpGet httpget = new HttpGet(url);
 	            HttpResponse response = httpclient.execute(httpget);
 	            HttpEntity entity = response.getEntity();

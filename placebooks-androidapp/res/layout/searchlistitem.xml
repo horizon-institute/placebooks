@@ -33,7 +33,7 @@
 	    android:layout_height="wrap_content"
         android:clickable="true"
         android:visibility="invisible" 
-        android:text="Download"
+        android:text="@string/download"
      />
      
      <Button
@@ -42,7 +42,7 @@
 	    android:layout_height="wrap_content"
         android:clickable="true"
         android:visibility="invisible" 
-        android:text= "     View     "
+        android:text= "@string/view"
      />
      
 
