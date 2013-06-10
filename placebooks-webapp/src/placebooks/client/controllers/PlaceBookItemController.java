@@ -1,8 +1,5 @@
 package placebooks.client.controllers;
 
-import org.wornchaos.controllers.SomethingController;
-import org.wornchaos.controllers.DelegateController;
-
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;

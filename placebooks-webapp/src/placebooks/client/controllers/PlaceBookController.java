@@ -1,11 +1,9 @@
 package placebooks.client.controllers;
 
-import org.wornchaos.client.controller.AbstractController;
-import org.wornchaos.client.logger.Log;
-import org.wornchaos.client.parser.JavaScriptObjectParser;
-
 import placebooks.client.PlaceBooks;
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookBinder;
+import placebooks.client.parser.JavaScriptObjectParser;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -56,7 +54,7 @@ public class PlaceBookController extends AbstractController<PlaceBookBinder>
 	@Override
 	protected void load(final String id, final AsyncCallback<PlaceBookBinder> callback)
 	{
-		if (id.equals("new"))
+		if (id == null || id.equals("new"))
 		{
 			callback.onSuccess(PlaceBooks.getServer().parse(PlaceBookBinder.class, newPlaceBook));
 			return;

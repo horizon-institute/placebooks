@@ -1,6 +1,6 @@
 package placebooks.client.ui.dialogs;
 
-import placebooks.client.ui.elements.ProgressPanel;
+import placebooks.client.ui.widgets.ProgressPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;

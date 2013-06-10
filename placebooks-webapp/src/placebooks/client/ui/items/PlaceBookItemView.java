@@ -1,10 +1,9 @@
 package placebooks.client.ui.items;
 
-import org.wornchaos.client.logger.Log;
-import org.wornchaos.client.ui.CompositeView;
-
 import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookItem;
+import placebooks.client.ui.views.CompositeView;
 
 public abstract class PlaceBookItemView extends CompositeView<PlaceBookItem>
 {

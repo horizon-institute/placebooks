@@ -5,9 +5,9 @@ import java.util.List;
 
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookMapsDialog;
-import placebooks.client.ui.elements.DragController;
-import placebooks.client.ui.elements.PlaceBookPage;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.views.DragController;
+import placebooks.client.ui.views.PlaceBookPage;
 
 import com.google.gwt.core.client.GWT;
 

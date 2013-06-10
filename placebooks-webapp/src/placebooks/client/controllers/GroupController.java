@@ -1,10 +1,8 @@
 package placebooks.client.controllers;
 
-import org.wornchaos.client.controller.AbstractController;
-import org.wornchaos.client.parser.JavaScriptObjectParser;
-
 import placebooks.client.PlaceBooks;
 import placebooks.client.model.Shelf;
+import placebooks.client.parser.JavaScriptObjectParser;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

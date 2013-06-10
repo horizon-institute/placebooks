@@ -5,9 +5,9 @@ import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.PlaceBookItemViewFactory;
+import placebooks.client.ui.views.DragController;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;

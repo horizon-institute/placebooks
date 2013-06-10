@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:p="urn:import:placebooks.client.ui.elements" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	xmlns:w="urn:import:placebooks.client.ui.widgets" xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:style type="placebooks.client.ui.palette.PaletteItem.PaletteStyle">
 		.panel {
 			padding: 5px;
@@ -40,9 +40,9 @@
 	</ui:style>
 
 	<g:FlowPanel>
-		<p:MousePanel styleName="{style.panel}" ui:field="panel">
+		<w:MousePanel styleName="{style.panel}" ui:field="panel">
 			<g:Image ui:field="image" />
 				<g:Label styleName="{style.text}" ui:field="text" />
-		</p:MousePanel>
+		</w:MousePanel>
 	</g:FlowPanel>
 </ui:UiBinder> 

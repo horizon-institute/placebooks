@@ -1,6 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.logger.Log;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -26,12 +27,12 @@ public class WebBundleItem extends PlaceBookItemView
 			@Override
 			public void onLoad(final LoadEvent event)
 			{
-				GWT.log("Loaded: " + frame.getElement());
-				GWT.log("Loaded: " + getContentDocument(frame.getElement()));
-				GWT.log("Loaded: " + getURL(frame.getElement()));
-				GWT.log("Loaded: " + getURL2(frame.getElement()));
-				GWT.log("Loaded: " + frame.getElement().getPropertyJSO("contentDocument"));
-				GWT.log("Loaded: " + frame.getElement().getPropertyJSO("contentWindow"));
+				Log.info("Loaded: " + frame.getElement());
+				Log.info("Loaded: " + getContentDocument(frame.getElement()));
+				Log.info("Loaded: " + getURL(frame.getElement()));
+				Log.info("Loaded: " + getURL2(frame.getElement()));
+				Log.info("Loaded: " + frame.getElement().getPropertyJSO("contentDocument"));
+				Log.info("Loaded: " + frame.getElement().getPropertyJSO("contentWindow"));
 			}
 		});
 	}

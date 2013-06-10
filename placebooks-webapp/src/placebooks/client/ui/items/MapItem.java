@@ -1,23 +1,23 @@
 package placebooks.client.ui.items;
 
-import org.wornchaos.client.logger.Log;
-import org.wornchaos.views.View;
-
 import placebooks.client.controllers.PlaceBookItemController;
 import placebooks.client.controllers.ServerInfoController;
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.ServerInfo;
-import placebooks.client.ui.openlayers.Bounds;
-import placebooks.client.ui.openlayers.ClickControl;
-import placebooks.client.ui.openlayers.Event;
-import placebooks.client.ui.openlayers.EventHandler;
-import placebooks.client.ui.openlayers.LonLat;
-import placebooks.client.ui.openlayers.Map;
-import placebooks.client.ui.openlayers.Marker;
-import placebooks.client.ui.openlayers.MarkerLayer;
-import placebooks.client.ui.openlayers.OSLayer;
-import placebooks.client.ui.openlayers.RouteLayer;
+import placebooks.client.ui.items.maps.Bounds;
+import placebooks.client.ui.items.maps.ClickControl;
+import placebooks.client.ui.items.maps.Event;
+import placebooks.client.ui.items.maps.EventHandler;
+import placebooks.client.ui.items.maps.LonLat;
+import placebooks.client.ui.items.maps.Map;
+import placebooks.client.ui.items.maps.Marker;
+import placebooks.client.ui.items.maps.MarkerLayer;
+import placebooks.client.ui.items.maps.OSLayer;
+import placebooks.client.ui.items.maps.OSMLayer;
+import placebooks.client.ui.items.maps.RouteLayer;
+import placebooks.client.ui.views.View;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -247,8 +247,8 @@ public class MapItem extends PlaceBookItemView
 		map = Map.create(panel.getElement(), getController().canEdit());
 
 		// map.addLayer(GoogleLayer.create("glayer", map.getMaxExtent()));
-		map.addLayer(OSLayer.create("oslayer", serverInfo));
-		// map.addLayer(OSMLayer.create("Osmarender"));
+		//map.addLayer(OSLayer.create("oslayer", serverInfo));
+		map.addLayer(OSMLayer.create("Osmarender"));
 
 		markerLayer = MarkerLayer.create("markerLayer");
 		map.addLayer(markerLayer);

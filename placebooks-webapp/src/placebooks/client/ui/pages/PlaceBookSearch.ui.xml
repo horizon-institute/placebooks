@@ -1,0 +1,100 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:v="urn:import:placebooks.client.ui.views" xmlns:w="urn:import:placebooks.client.ui.widgets" xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.title {
+			font-style: mako, sans-serif;
+			font-size: 26px;
+			font-weight: bold;
+			margin: 20px 0 10px 0;
+			color: #384967;
+		}
+		
+		.search {
+			font-size: 20px;
+			position: absolute;
+			left: 0px;
+			top: 2px;
+			right: 60px;
+	
+		}
+		
+		.searchButton {
+			margin-top: 2px;
+			background-color: #346;
+			padding: 3px 15px;
+			border: 1px solid #346;
+			float: right;
+			border-radius: 3px;
+		}
+		
+		.searchButton:HOVER {
+			background-color: #457;
+			border: 1px outset #569;
+		}
+		
+		.searchBlock {
+			padding: 30px 0;
+			background-color: #EEE;
+			border-bottom: 1px solid #CCC;
+			height: 40px;
+		}
+		
+		.searchBar {
+			margin: 0 auto;
+			width: 80%;
+			position: relative;
+			height: 35px;
+		}
+		
+		.parent {
+			height: 100%;
+		}
+		
+		.nearbyLink {
+ 			margin: 0 auto;
+			width: 80%;
+			display: block;
+		}
+		
+		.shelf {
+			position: absolute;
+			top: 122px;
+			left: 0px;
+			right: 0px;
+			bottom: 20px;
+		}
+		
+				.footer {
+			width: 100%;
+			text-align: center;
+			clear: both;
+			font-size: smaller;
+			position: absolute;
+			bottom: 5px;
+			color: #555;
+		}
+	</ui:style>
+	<ui:with field='images' type='placebooks.client.ui.images.Images' />
+	<ui:with field='styles' type='placebooks.client.ui.styles.Styles' />
+	<g:FlowPanel styleName="{style.parent}">
+		<v:PlaceBookToolbar ui:field="toolbar" />
+
+		<g:FlowPanel styleName="{style.searchBlock}">
+
+			<g:FlowPanel styleName="{style.searchBar}">
+				<g:TextBox ui:field="searchBox" styleName="{style.search}"><ui:msg>Search PlaceBooks</ui:msg></g:TextBox>
+				<w:MousePanel styleName="{style.searchButton}" ui:field="searchButton">
+					<g:Image resource="{images.search}" />
+				</w:MousePanel>
+			</g:FlowPanel>
+			<g:Anchor ui:field="nearbyLink" styleName="{style.nearbyLink}"><ui:msg>Find Nearby PlaceBooks</ui:msg></g:Anchor>
+		</g:FlowPanel>
+
+		<v:PlaceBookShelf ui:field="shelf" styleName="{style.shelf}" />
+		
+		<g:Label styleName="{style.footer}"><ui:msg>This work was supported by the Research Councils UK (RCUK) [grant number - EP/J000604/2]</ui:msg></g:Label>		
+	</g:FlowPanel>
+</ui:UiBinder>

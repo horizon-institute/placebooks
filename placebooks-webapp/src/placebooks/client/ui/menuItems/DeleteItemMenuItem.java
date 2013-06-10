@@ -5,8 +5,8 @@ import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.views.PlaceBookColumn;
 
 import com.google.gwt.core.client.GWT;
 

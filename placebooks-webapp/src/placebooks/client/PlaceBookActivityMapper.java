@@ -1,6 +1,6 @@
 package placebooks.client;
 
-import placebooks.client.ui.places.PlaceBookPlace;
+import placebooks.client.ui.pages.places.PlaceBookPlace;
 
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
