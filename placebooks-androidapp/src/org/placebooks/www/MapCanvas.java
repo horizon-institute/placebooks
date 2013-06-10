@@ -96,6 +96,7 @@ public class MapCanvas extends ImageView {
 			//System.out.println("pixel lon== " +px_lon + "pixel lat== " +px_lat);
 			Bitmap yah = BitmapFactory.decodeResource(getResources(), R.drawable.yah_marker_30) ;
 			canvas.drawBitmap(yah ,px_lon-20, px_lat-50,  null) ; //marker is 30px and drawn downwards so we need to take this into account
+
 			//-10 and -30 seem to be the best for plotting our marker (taking into account it is 30x30px and how android draws it on the screen
 		}
 		

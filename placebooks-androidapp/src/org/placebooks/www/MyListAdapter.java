@@ -1,11 +1,14 @@
 package org.placebooks.www;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 
 import java.io.File;
 import java.util.*;
+
 import android.widget.*;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ public class MyListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private Context context;
     private String unzippedDir;
+    private String languageSelected;
 
     /*
      * Constructor takes in the context from the shelf class and
@@ -28,6 +32,14 @@ public class MyListAdapter extends BaseAdapter {
        //this.renderer = renderer;
     	this.context=c;
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        
+        CustomApp appState = ((CustomApp)c.getApplicationContext());
+        languageSelected  = appState.getLanguage();  
+        Locale locale = new Locale(languageSelected);   
+        Locale.setDefault(locale);  
+        Configuration config = new Configuration();  
+        config.locale = locale;  
+        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());  
 
     }
     
@@ -73,21 +85,26 @@ public class MyListAdapter extends BaseAdapter {
     	
         if(convertView==null){
             //convertView = renderer;
-            convertView = mInflater.inflate(R.layout.shelf, null);
+            convertView = mInflater.inflate(R.layout.searchlistitem, null);
            
         }
         MyListItemModel item = items.get(position);
         TextView label = (TextView)convertView.findViewById(R.id.item_title);
         label.setText(item.getBookTitle());
         TextView label2 = (TextView)convertView.findViewById(R.id.item_subtitle);
-        label2.setText(item.getDescription());  
+        Double distanceMiles = (item.getDistance()*100)/1.609344;
+        String dString = Double.toString(distanceMiles);
+        String sString = dString.substring(0,5);
+        label2.setText(sString + " " + context.getResources().getString(R.string.miles_away));  
         final Button button = (Button)convertView.findViewById(R.id.btn_download);
         button.setOnClickListener(item.dl_listener);
         final Button button2 = (Button)convertView.findViewById(R.id.btn_view);
         button2.setOnClickListener(item.view_listener);
         
         //Check if the package has already been downloaded to the SDCard
-		File f = new File(Environment.getExternalStorageDirectory() + unzippedDir + item.getPackagePath());
+        //File f = new File(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped" + item.getPackagePath());
+		File f = new File(unzippedDir + item.getPackagePath());
+		Log.d("File-->", f.toString());
 		if(f.exists()){
 			//If exists then hide 'download' button and show 'view' button
 			//button2.setText("View");

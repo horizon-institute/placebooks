@@ -60,9 +60,10 @@ public class Pager extends HorizontalScrollView {
         firePageCountChanged();
     }*/
     
-    public void addPage(ScrollView child) {
+    public void addPage(View child) {
         int width = getWidth();
         child.setLayoutParams(new LayoutParams(width, LayoutParams.FILL_PARENT));
+        child.setBackgroundResource(R.drawable.book_background);
         contents.addView(child);
         contents.requestLayout();
         
@@ -93,11 +94,11 @@ public class Pager extends HorizontalScrollView {
         }
     }
 
-    public boolean hasPage(ScrollView v) {
+    public boolean hasPage(View v) {
         return contents.indexOfChild(v) != -1;
     }
 
-    public void removePage(ScrollView v) {
+    public void removePage(View v) {
         contents.removeView(v);
         firePageCountChanged();
 

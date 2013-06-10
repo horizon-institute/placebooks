@@ -23,7 +23,7 @@
 	       	   android:layout_marginLeft="0dip"
 			   android:src="@drawable/nearbybooks"		   
 		   />
-		   
+<!--  		   
 	       <ImageButton
 	        android:id="@+id/logoutButton"
 	        android:layout_width="35dp"
@@ -32,14 +32,14 @@
 			android:layout_alignParentRight="true"
 	        android:layout_marginRight="8dp"        
 	        />
-	     
+-->	     
 	  </RelativeLayout>
 
 	<TextView
         android:id="@+id/textViewDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Distance" 
+        android:text="@string/distance" 
         android:textColor="#000000"
       	android:textSize="16sp"
       	android:textStyle="bold"
@@ -57,7 +57,7 @@
         android:id="@+id/textViewActivities"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Activity"
+        android:text="@string/activity"
         android:textColor="#000000"
       	android:textSize="16sp"
       	android:textStyle="bold"
@@ -82,7 +82,7 @@
       android:id="@+id/searchButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Search" 
+      android:text="@string/search" 
       android:gravity="center_vertical"
       />
   

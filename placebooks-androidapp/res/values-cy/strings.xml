@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LlyffrLe</string>
+    <string name="run_task">Dechrau</string>
+    <string name="task_working">Gweithio (%1$d)...</string>
+    <string name="task_starting">Starting...</string>
+    <string name="task_cancelled">Cafodd y tasg ei canslo gan yr defnyddwyr</string>
+    <string name="task_completed">Swydd wedi gorffen gyda\'r canlyniad (%1$s)</string>
+    <string name="download">Lawrlwythwch</string>
+    <string name="prompt">Dewiswch pellter</string>
+    <string name="prompt2">Dewiswch gweithgaredd</string>
+    
+     
+    <string name="email_address">E-Bost</string>
+    <string name="password">Cyfrinair</string>
+    <string name="sign_in">Lofnodi Mewn</string>
+    <string name="signing_in">Llofnodi Mewn</string>
+    <string name="open">Agor</string>
+    <string name="downloading_placebook">Larlwytho Llyfrle</string>
+    <string name="downloaded">Wedi llwytho i lawr</string>
+    <string name="downloads">Llwytho i Lawr</string>
+    <string name="online_shelf">Ar-lein</string>
+    <string name="search">Chwilio</string>
+    <string name="delete_q">Ydych yn siŵr eich bod eisiau dileu y Llyfrle?"</string>
+    <string name="delete">Dileu</string>
+    <string name="deleted">Wedi Dileu</string>
+    <string name="cancel">Ganslo</string>
+    <string name="sign_out">Lofnodi Mas</string>
+    <string name="sign_out_q">Ydych yn siŵr eich bod eisiau lofnodi mas?</string>
+    <string name="yes">Ydw</string>
+    <string name="accessing_online_shelf">Mynediad silff ar-lein</string>
+    <string name="refreshing">Adfywiol</string>
+    <string name="click_to_open">Cliciwch i Agor</string>
+    <string name="click_to_download">Cliciwch i Larlwythwch</string>
+    <string name="click_to_search_download">Cliciwch i chwilio a Lawrlwythwch</string>
+    <string name="nearby_books">Llyfrau Cyfagos</string>
+    <string name="my_downloads">Fy Lawrwythau</string>
+    <string name="distance">Pellter</string>
+    <string name="select_distance">Dewiswch pellter</string>
+        <string name="distance1">Lan i 10 Milltir</string>
+        <string name="distance2">Lan i 25 Milltir</string>
+        <string name="distance3">Lan i 50 Milltir</string>
+        <string name="distance4">Ym Mhob Man</string>
+   <string name="activity">Gweithgaredd</string>
+   <string name="select_an_activity">Dewiswch gweithgaredd</string>
+    	<string name="activity_list_item1">Dim gewithgaredd</string>
+    	<string name="activity_list_item2">Cerdded</string>
+    	<string name="activity_list_item3">Rhedeg</string>
+    	<string name="activity_list_item4">Gyrru</string>
+    	<string name="activity_list_item5">Ffordd Beicio</string>
+    	<string name="activity_list_item6">Beicio Mynydd</string>
+    	<string name="activity_list_item7">Heicio</string>
+    	<string name="activity_list_item8">Beicio Modur</string>
+    	<string name="activity_list_item9">Golygfeydd</string>
+    	<string name="activity_list_item10">Trywydd Rhedeg</string>
+    	<string name="activity_list_item11">Sgïo Alpaidd</string>
+    	<string name="activity_list_item12">Caiacio/Canŵio</string>
+    	<string name="activity_list_item13">Geocaching</string>
+    	<string name="activity_list_item14">Traws-gwlad Sgio</string>
+    	<string name="activity_list_item15">Hedfan</string>
+    	<string name="activity_list_item16">Mynydda</string>
+    	<string name="activity_list_item17">Hwylio</string>
+    	<string name="activity_list_item18">Bacpacio</string>
+    	<string name="activity_list_item19">Trên</string>
+    	<string name="activity_list_item20">Back Sgïo Gwlad</string>
+    	<string name="activity_list_item21">Gyrru Oddi Ar y Ffordd</string>
+    	<string name="activity_list_item22">Rholio Sglefrio</string>
+    	<string name="activity_list_item23">Esgidiau Eira</string>
+    	<string name="activity_list_item24">Cerbydau Pob Tirwedd</string>
+    	<string name="activity_list_item25">Cychod</string>
+    	<string name="activity_list_item26">Ymlacio</string>
+    	<string name="activity_list_item27">Marchogaeth</string>
+    	<string name="activity_list_item28">Ffotograffiaeth</string>
+    	<string name="activity_list_item29">Eirafyrddio</string>
+    	<string name="activity_list_item30">Sglefrio Iâ</string>
+    	<string name="activity_list_item31">Ceir Eira</string>
+    	<string name="activity_list_item32">Barcuta / Paragleidio</string>
+    	<string name="activity_list_item33">Pysgota Pluen</string>
+    	<string name="activity_list_item34">Dihangfa Ramantus</string>
+    	<string name="activity_list_item35">Sglefrfyrddio</string>
+    	<string name="activity_list_item36">Gwylio Adar</string>
+    	<string name="activity_list_item37">Dringo</string>
+    	<string name="activity_list_item38">Rhwyf-fyrddio</string>
+    	<string name="activity_list_item39">Pysgota</string>
+    	<string name="activity_list_item40">Eraill</string>
+    <string name="search_results_found">0 Canlyniadau chwilio dod o hyd</string>
+    <string name="rendering_pages">Rendro dudalennau Llyffrle</string>
+    <string name="page">Tudalen</string>
+    <string name="of">o</string>
+    <string name="ok">Iawn</string> 
+    <string name="rendering_map">Rendro map</string>
+    <string name="gps_location">Ceisio dod o hyd i eich GPS lleoliad</string>
+    <string name="no_connection">Dim Cysylltiad Rhyngrwyd</string>
+      <string name="unable_to_reach">Methu cyrraedd silff lyfrau ar-lein</string>
+    <string name="no_connectivity">Dim Cysylltiad Rhyngrwyd</string>
+      <string name="need_signed_in">eich anghenion symudol i fod ar-lein i lofnodi mewn</string>
+    <string name="usr_pass_needed">angen gael e-bost a cyfrinair </string>
+      <string name="please_use_pass">Rhowch ei e-bost a cyfrinair mewn!</string>
+    <string name="invalid_usr_pass">E-bost/Cyfrinair anghywir</string>
+      <string name="please_check_usr_pass">Gwirio bod y e-bost a cyfrinair yn cywiro</string>
+    <string name="no_sdcard">Dim SD Card!</string>
+      <string name="sdcard_needed">Mae na ddim SD Card yn yr dyfais! Angen gael SD Card i\'w gael yr app i weithio!</string>
+    <string name="good_bad_news">Newyddion da, Newyddion drwg</string>
+       <string name="good_bad_news2">Y newyddion drwg mae\'r gwasanaeth yn darganfod gwall, newyddion da yw y gallwch chi geisio eto</string>
+    <string name="server_problem">Problem gyda Gweinydd!</string>
+       <string name="server_problem2">Mae\'n ymddangos i fod yn broblem cysylltu a\'r gweinydd. Ceisiwch eto yn nes ymlaen</string>
+    
+     <string name="unable_search_location">Methu chwilio heb wasanaethau lleoliad arno!</string>
+           <string name="unable_search_location2">Lleoliad gwasanaethau yn anabl yn eich dyfais. Hoffech chi eu galluogi nhw?</string>
+           <string name="goto_settings">Ewch i Gosodiadau At Alluoga GPS</string>
+           
+     <string name="unable_search">Methu chwilio!</string>
+        <string name="unable_search2">Gwnewch yn siŵr eich bod yn ar-lein!</string>
+      
+     <string name="searching">Chwilio..</string>
+     <string name="gps_off">troi GPS arno i chwilio am Llyfrle o\'ch cwmpas</string>
+    
+     <string name="no_sdcard_download">Nid oes unrhyw gerdyn sd yn y ddyfais! Mae angen cerdyn sd i lawrlwytho Llyfrle!</string>
+
+     <string name="view">Agor</string>
+     
+  	<string name="no_location_found">Dim lleoliad dod o hyd</string>
+  <string name="unable_connect_internet">Methu cysylltu a\'r Rhyngrwyd</string>
+ 
+  <string name="miles_away">Milltir i ffwrdd oddi wrthych</string>
+  <string name="gps_tracking">troi ar GPS ar gyfer olrhain byw</string>
+  
+  
+  <string name="settings">Lleoliadau</string>
+  
+   <string name="languages">Ieithoedd</string>
+   <string name="languages2">Mae\'r dewis hwn yn caniatáu i chi osod yr iaith</string>
+   <string name="signoutpref">Mae\'r dewis hwn yn caniatáu i chi gofrestru allan</string>
+  
+</resources>

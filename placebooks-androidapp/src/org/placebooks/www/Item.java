@@ -12,7 +12,8 @@ public abstract class Item {
 	private Geometry geometry;
 	private String type;
 	//Parameters
-	private int panel;
+	//private int panel;
+	private int column;
 	private int order;
 	//metadata
 	//key, value
@@ -65,13 +66,21 @@ public abstract class Item {
 	public void setOrder(int o){
 		this.order = o;
 	}
-	
+/*	
 	public int getPanel(){
 		return panel;
 	}
 	
 	public void setPanel(int p){
 		this.panel = p;
+	}
+*/	
+	public int getColumn(){
+		return column;
+	}
+	
+	public void setColumn(int c){
+		this.column = c;
 	}
 	
 	//String getMetadata()

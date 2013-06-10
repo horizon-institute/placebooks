@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import android.os.Environment;
 
 import java.io.*;
+import java.util.Locale;
 
 
 public class BookDownloads extends ActivityGroup {
@@ -44,18 +46,29 @@ public class BookDownloads extends ActivityGroup {
     public static final int dialogDownloadProgress = 0;
     private ProgressDialog mProgressDialog;
     private String filename= "downloadFile.zip"; 
+    
+    private String languageSelected;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.bookdownloads);
 	        getWindow().setWindowAnimations(0);	//Do not animate the view when it gets pushed on the screen		   
-
+	        
 	        
 	        CustomApp appState = ((CustomApp)getApplicationContext());
 	        unzippedRoot = appState.getUnzippedRoot();
 	        root = appState.getRoot();
 	        unzippedDir = appState.getUnzippedDir();
+	        
+	        languageSelected  = appState.getLanguage();  
+	        Locale locale = new Locale(languageSelected);   
+	        Locale.setDefault(locale);  
+	        Configuration config = new Configuration();  
+	        config.locale = locale;  
+	        getBaseContext().getResources().updateConfiguration(config,   
+	        getBaseContext().getResources().getDisplayMetrics()); 
+	        
 	        
 	        //Retrieve the username.
 	        Intent intent = getIntent();
@@ -63,14 +76,14 @@ public class BookDownloads extends ActivityGroup {
 	        //if(intent != null) password = intent.getStringExtra("password");
 	        System.out.println("Username = " + username);
 	        
-	        ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
+//	        ImageButton logoutButton = (ImageButton) findViewById(R.id.logoutButton);
 
 	        
 	      //Load cached shelf on startup
 	      //getCachedShelf();
 		  displayCachedShelf();
 		  
-		  logoutButton.setOnClickListener(new View.OnClickListener() {
+/*		  logoutButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 	        	
@@ -79,9 +92,9 @@ public class BookDownloads extends ActivityGroup {
 		            
 		            //ask user are they sure they want to log out
 		            AlertDialog.Builder helpBuilder = new AlertDialog.Builder(BookDownloads.this);
-		            helpBuilder.setTitle("Logout");
-		            helpBuilder.setMessage("Are you sure you want to logout?");
-		            helpBuilder.setPositiveButton("Yes",
+		            helpBuilder.setTitle(getResources().getString(R.string.sign_out));
+		            helpBuilder.setMessage(getResources().getString(R.string.sign_out_q));
+		            helpBuilder.setPositiveButton(getResources().getString(R.string.yes),
 		              new DialogInterface.OnClickListener() {
 
 		               public void onClick(DialogInterface dialog, int which) {
@@ -97,7 +110,7 @@ public class BookDownloads extends ActivityGroup {
 		               }
 		               });
 	          	 
-		            helpBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+		            helpBuilder.setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
 			             @Override
 			             public void onClick(DialogInterface dialog, int which) {
@@ -112,6 +125,7 @@ public class BookDownloads extends ActivityGroup {
 		          
 		            
 				});
+*/
 
 	        
 	}
@@ -198,8 +212,8 @@ public class BookDownloads extends ActivityGroup {
 						            	AlertDialog.Builder helpBuilder = new AlertDialog.Builder(BookDownloads.this);
 	        							helpBuilder.setIcon(R.drawable.icon);
 	        				            helpBuilder.setTitle(item.getBookTitle());
-	        				            helpBuilder.setMessage("Are you sure you want to delete this Placebook?");
-	        				            helpBuilder.setPositiveButton("Delete",
+	        				            helpBuilder.setMessage(getResources().getString(R.string.delete_q));
+	        				            helpBuilder.setPositiveButton(getResources().getString(R.string.delete),
 	        				              new DialogInterface.OnClickListener() {
 
 	        				               public void onClick(DialogInterface dialog, int which) {
@@ -283,7 +297,7 @@ public class BookDownloads extends ActivityGroup {
 				   						        	  startActivity(intent);
 				   						        	  
 				   						        	  //Display a message to the user to let them know that the book has been deleted
-				   						        	  Toast msg = Toast.makeText(BookDownloads.this, "Placebook deleted!", Toast.LENGTH_SHORT);
+				   						        	  Toast msg = Toast.makeText(BookDownloads.this, getResources().getString(R.string.deleted), Toast.LENGTH_SHORT);
 				   						        	  msg.show();
 		        				            	      
 		        				            	    }
@@ -298,7 +312,7 @@ public class BookDownloads extends ActivityGroup {
 	        				               }
 	        				              });
 						            	 
-	        				            helpBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+	        				            helpBuilder.setNeutralButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
 		        				             @Override
 		        				             public void onClick(DialogInterface dialog, int which) {

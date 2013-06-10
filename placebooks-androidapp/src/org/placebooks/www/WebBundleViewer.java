@@ -93,12 +93,14 @@ public class WebBundleViewer extends Activity  {
 				   //otherwise if the mobile client is not online we display the cached webstie from the sdcard     
 				   if (packagePath != null && filename != null && url != null){
 					   
-					   File directory = new File(Environment.getExternalStorageDirectory()+ unzippedDir + packagePath + wbKey + url + "index.html");
+					   //File directory = new File(unzippedDir + packagePath + "/" + wbKey + "/" + url + "/" +"index.html");
+					   File directory = new File(unzippedDir + filename + "/" +"index.html");
+					  try{
 					   //check if the filename is a directory					   
 			    		if(directory.exists()){
 			    			//if it is a directory then try getting the web page inside it
 			    			 WebView webView = new WebView(WebBundleViewer.this);
-					    	 webView.loadUrl("file://" + unzippedDir + packagePath + wbKey + url + "index.html");
+					    	 webView.loadUrl("file://" + unzippedDir + filename + "/" +"index.html");
 						   	 webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
 						   	 webView.getSettings().setBuiltInZoomControls(true);
 						   	 webView.getSettings().setJavaScriptEnabled(true);
@@ -118,7 +120,16 @@ public class WebBundleViewer extends Activity  {
 			    		}*/
 					   	 //loading feedback
 					   //  MyDialog = ProgressDialog.show( WebBundleViewer.this, " " , " Loading Website. Please wait .. ", true);				   	 
-				   }
+				
+					  }
+					  catch(Exception e){
+						 TextView tv = new TextView(this);
+						 tv.setText("A problem has occurred when trying to access the website");
+						 tv.setText("currently working on the caching of web sites");	
+						 tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+						 setContentView(tv);
+					  }
+				}
 			   
 		   }
 		   else{	//ERROR

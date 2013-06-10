@@ -1,19 +1,23 @@
 package org.placebooks.www;
 
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
 import android.content.Context;
+import android.view.View.OnLongClickListener;
 
 
 public class MyListItemModel { //that's our book
     private String title; // the book's title
     private String description;	//the book's description
     private int id; //book owner id
-    private String owner;  //book owner name e.g stuart
+    private int owner;  //book owner name e.g stuart
     private String key;	//book key
     private String packagePath;	//package path for the book
+    private double distance;
+    private int timestamp;
+    private String previewImage;
+    private int numItems;
     private Context context;
 
     
@@ -22,6 +26,7 @@ public class MyListItemModel { //that's our book
 
      }
      
+ 
     
     public String getBookTitle() {
         return title;
@@ -43,11 +48,11 @@ public class MyListItemModel { //that's our book
     	this.key = key;
     }
     
-    public String getOwner(){
+    public int getOwner(){
     	return owner;
     }
     
-    public void setOwner(String theOwner){
+    public void setOwner(int theOwner){
     	this.owner = theOwner;
     }
     
@@ -65,6 +70,33 @@ public class MyListItemModel { //that's our book
     
     public void setPackagePath(String p){
     	this.packagePath = p;
+    }
+    
+    public double getDistance(){
+    	return distance;
+    }
+    
+    public void setDistance(double distance){
+    	this.distance = distance;
+    }
+    
+    public int getTimestamp(){
+    	return timestamp;
+    }
+    public void setTimestamp(int t){
+    	timestamp = t;
+    }
+    public String getPreviewImage(){
+    	return previewImage;
+    }
+    public void setPreviewImage(String pi){
+    	previewImage = pi;
+    }
+    public int getNumItems(){
+    	return numItems;
+    }
+    public void setNumItems(int n){
+    	numItems = n;
     }
     
     
@@ -89,6 +121,15 @@ public class MyListItemModel { //that's our book
         }
     };
     
+    //delete button
+    OnLongClickListener delete_listener = new OnLongClickListener(){
+    	@Override
+    	public boolean onLongClick(View v){
+    		
+    		return true;
+    	}
+    };
+  
     
     int getBookId(){
       

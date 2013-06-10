@@ -5,6 +5,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import java.io.File;
 import java.util.*;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.cookie.Cookie;
+
 import android.app.Application;
 import android.os.Environment;
 
@@ -24,6 +27,9 @@ public class CustomApp extends Application {
 	private String unzippedRoot;
 	private String packageUrl;
     private String configFilename;
+    private List<Cookie> cookies;
+    private String language;
+    private String searchUrl;
 
 	
 	 @Override
@@ -33,17 +39,19 @@ public class CustomApp extends Application {
 	        //Set the root
 	        setRoot(Environment.getExternalStorageDirectory() + File.separator + "PlaceBooks");
 	        //Set the authentication url
-	        setAuthenticationUrl("http://horizac1.miniserver.com/placebooks/j_spring_security_check");
+	        setAuthenticationUrl("http://placebooks.peoplescollectionwales.com/placebooks/j_spring_security_check");//("http://www.placebooks.org/placebooks/j_spring_security_check");//("http://horizab1.miniserver.com:8080/placebooks/j_spring_security_check");//("http://horizac1.miniserver.com/placebooks/j_spring_security_check");
 	        //Set the book shelf url
-	        setShelfUrl("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/");
+	        setShelfUrl("http://placebooks.peoplescollectionwales.com/placebooks/a/admin/shelf/");//("http://www.placebooks.org/placebooks/placebooks/a/admin/shelf/");//("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/shelf/");//("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/shelf/");
 	        //Set the unzipped dir
 	        setUnzippedDir(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped");
 	        //Set the unzipped root
 	        setUnzippedRoot(Environment.getExternalStorageDirectory() + "/PlaceBooks/Unzipped/");
 	        //Set the url for downloading a package
-	        setPackageUrl("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/");   //Package Url for Dev Server is = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/"
-	        //Set the confi file name to whatever it is called in the package
+	        setPackageUrl("http://placebooks.peoplescollectionwales.com/placebooks/a/admin/package/");//("http://www.placebooks.org/placebooks/placebooks/a/admin/package/");//("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/");//("http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/");//("http://horizac1.miniserver.com/placebooks/placebooks/a/admin/package/");   //Package Url for Dev Server is = "http://horizab1.miniserver.com:8080/placebooks/placebooks/a/admin/package/"
+	        //Set the config file name to whatever it is called in the package
 	        setConfigFilename("config.xml");
+	        setSearchUrl("http://placebooks.peoplescollectionwales.com/placebooks/a/admin/location_search/placebookbinder/POINT");
+	        setLanguage("En");
 	        
 	    }
 	 
@@ -104,7 +112,30 @@ public class CustomApp extends Application {
 		 this.configFilename = filename;
 	 }
 	 
-
+	 public List<Cookie> getCookies(){
+		 return cookies;
+	 }
+	 
+	 public void setCookies(List<Cookie> cookies){
+		 this.cookies = cookies;
+	 }
+	 
+	 public void setSearchUrl(String searchUrl){
+		 this.searchUrl = searchUrl;
+	 }
+	 
+	 public String getSearchUrl(){
+		 return searchUrl;
+	 }
+	 
+	 public String getLanguage(){
+		 return language;
+	 }
+	 
+	 public void setLanguage(String lang){
+		 language = lang;
+	 }
+	 
 	
 
 }

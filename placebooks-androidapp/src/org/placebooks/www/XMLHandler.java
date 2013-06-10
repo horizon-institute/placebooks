@@ -25,7 +25,7 @@ public class XMLHandler extends DefaultHandler {
 	MapImageItem mimitem;
 	WebBundleItem wbitem;
 	
-	StringBuilder url,text,filename, panel, order, geometry, name, timestamp, data, gpx, attrLatLon, height;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
+	StringBuilder url,text,filename, column, order, mapPage, geometry, name, timestamp, data, gpx, attrLatLon, height, mapMarker;  //<timestamp>Tue Mar 22 17:26:21 GMT 2011</timestamp>
 
 	
 	/*
@@ -38,46 +38,57 @@ public class XMLHandler extends DefaultHandler {
 	 private boolean in_textGeometry = false;
 	 private boolean in_textUrl = false;
 	 private boolean in_textText = false;
-	 private boolean in_textPanel = false;
+	 private boolean in_textColumn = false;
 	 private boolean in_textOrder = false;
+	 private boolean in_textMapPage = false;
+	 private boolean in_textMapMarker = false;
 
 	 private boolean in_placebooksImage = false;
 	 private boolean in_imageGeometry = false;
 	 private boolean in_imageUrl = false;
 	 private boolean in_imageFilename = false;
-	 private boolean in_imagePanel = false;
+	 private boolean in_imageColumn = false;
 	 private boolean in_imageOrder = false;
+	 private boolean in_imageMapPage = false;
 	 private boolean in_imageHeight = false;
+	 private boolean in_imageMapMarker = false;
 	 
 	 private boolean in_placebooksVideo = false;
 	 private boolean in_videoGeometry = false;
 	 private boolean in_videoFilename = false;
-	 private boolean in_videoPanel = false;
+	 private boolean in_videoColumn = false;
 	 private boolean in_videoOrder = false;
+	 private boolean in_videoMapPage = false;
+	 private boolean in_videoHeight = false;
+	 private boolean in_videoMapMarker = false;
+
 	 
 	 private boolean in_placebooksAudio = false;
 	 private boolean in_audioGeometry = false;
 	 private boolean in_audioFilename = false;
-	 private boolean in_audioPanel = false;
+	 private boolean in_audioColumn = false;
 	 private boolean in_audioOrder = false;
+	 private boolean in_audioMapPage = false;
+	 private boolean in_audioMapMarker = false;
+
 	 
 	 private boolean in_placebooksMapImage = false;
 	 private boolean in_mapImageGeometry = false;
 	 private boolean in_mapImageFilename = false;
-	 /*private boolean in_mapImagePanel = false;
+	 /*private boolean in_mapImageColumn = false;
 	 private boolean in_mapImageOrder = false;*/
 	 
 	 private boolean in_placebooksWebBundle = false;
 	 private boolean in_webBundleGeometry = false;
 	 private boolean in_webBundleFilename = false;
 	 private boolean in_webBundleUrl = false;
-	 private boolean in_webBundlePanel = false;
+	 private boolean in_webBundleColumn = false;
 	 private boolean in_webBundleOrder = false;
 	 
 	 private boolean in_placebooksGPSTrace = false;
 	 private boolean in_gpsTraceFilename = false;
 	 private boolean in_gpsTraceGeometry = false;
-	 private boolean in_gpsTracePanel = false;
+	 private boolean in_gpsTraceColumn = false;
 	 private boolean in_gpsTraceOrder = false;
 	 
 	 
@@ -205,7 +216,8 @@ public class XMLHandler extends DefaultHandler {
 			 if(this.in_placebooksImage){
 				 this.in_imageFilename = true;
 			 	filename = new StringBuilder();
-			 } else if (this.in_placebooksVideo){
+			 } 
+			 else if (this.in_placebooksVideo){
 				 this.in_videoFilename = true;
 				 filename = new StringBuilder();
 			 }
@@ -226,39 +238,39 @@ public class XMLHandler extends DefaultHandler {
 				 filename = new StringBuilder();
 			 }
 		  }
-		 else if(localName.equalsIgnoreCase("panel")){
+		 else if(localName.equalsIgnoreCase("column")){
 			 
 			 if(this.in_placebooksText){
-				 this.in_textPanel = true;
-				 panel = new StringBuilder();
+				 this.in_textColumn = true;
+				 column = new StringBuilder();
 			 }
 			 else if (this.in_placebooksImage){
-				 this.in_imagePanel = true;
-				 panel = new StringBuilder();
+				 this.in_imageColumn = true;
+				 column = new StringBuilder();
 			 }
 			 else if (this.in_placebooksVideo){
-				 this.in_videoPanel = true;
-				 panel = new StringBuilder();
+				 this.in_videoColumn = true;
+				 column = new StringBuilder();
 			 }
 			 else if (this.in_placebooksAudio){
-				 this.in_audioPanel = true;
-				 panel = new StringBuilder();
+				 this.in_audioColumn = true;
+				 column = new StringBuilder();
 			 }
 			/* else if (this.in_placebooksMapImage){
 				  this.in_mapImagePanel = true;
 				  panel = new StringBuilder();
 			  }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			 else if (this.in_placebooksWebBundle){
-				 this.in_webBundlePanel= true;
-				 panel = new StringBuilder();
+				 this.in_webBundleColumn= true;
+				 column = new StringBuilder();
 			 }
 			 else if(this.in_placebooksGPSTrace){
-				 this.in_gpsTracePanel = true;
-				 panel = new StringBuilder();
+				 this.in_gpsTraceColumn = true;
+				 column = new StringBuilder();
 			 }
 			 
 			 
-		 } //End of else if panel
+		 } //End of else if column
 		 else if(localName.equalsIgnoreCase("order")){
 			 
 			  if(this.in_placebooksText){
@@ -293,10 +305,52 @@ public class XMLHandler extends DefaultHandler {
 			  
 		   }//End of else if order
 		 
+		 else if(localName.equalsIgnoreCase("mapPage")){
+			 if(this.in_placebooksText){
+				 this.in_textMapPage = true;
+				 mapPage = new StringBuilder();
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imageMapPage = true;
+				 mapPage = new StringBuilder();
+			 }
+			 else if (this.in_placebooksVideo){
+				 this.in_videoMapPage = true;
+				 mapPage = new StringBuilder();
+			 }
+			 else if (this.in_placebooksAudio){
+				 this.in_audioMapPage = true;
+				 mapPage = new StringBuilder();
+			 }
+		 }
+		 
+		 else if(localName.equalsIgnoreCase("marker")){
+			 if(this.in_placebooksText){
+				 this.in_textMapMarker = true;
+				 mapMarker = new StringBuilder();
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imageMapMarker = true;
+				 mapMarker = new StringBuilder();
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoMapMarker = true;
+				 mapMarker = new StringBuilder();
+			 }
+			 else if(this.in_placebooksAudio){
+				 this.in_audioMapMarker = true;
+				 mapMarker = new StringBuilder();
+			 }
+		 }
+		 
 		 else if(localName.equalsIgnoreCase("height")){
 			 
 			 if(this.in_placebooksImage){
 				 this.in_imageHeight = true;
+				 height = new StringBuilder();
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoHeight = true;
 				 height = new StringBuilder();
 			 }
 		 }
@@ -450,27 +504,27 @@ public class XMLHandler extends DefaultHandler {
 			 
 		 }
 		 
-		 else if(localName.equalsIgnoreCase("panel")){
+		 else if(localName.equalsIgnoreCase("column")){
 			 
 			 if(this.in_placebooksText){
-				 this.in_textPanel = false;
-				 titem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_textColumn = false;
+				 titem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 else if(this.in_placebooksImage){
-				 this.in_imagePanel = false;
-				 imitem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_imageColumn = false;
+				 imitem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 else if(this.in_placebooksVideo){
-				 this.in_videoPanel = false;
-				 vitem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_videoColumn = false;
+				 vitem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 else if(this.in_placebooksAudio){
-				 this.in_audioPanel = false;
-				 aitem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_audioColumn = false;
+				 aitem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 /*else if(this.in_placebooksMapImage){
 				 this.in_mapImagePanel = false;
@@ -479,15 +533,15 @@ public class XMLHandler extends DefaultHandler {
 			 }*/ //MAP IMAGES DO NOT HAVE PANELS OR ORDERS AS OF NOW..APPARENTLY..
 			 
 			 else if(this.in_placebooksWebBundle){
-				 this.in_webBundlePanel = false;
-				 wbitem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_webBundleColumn = false;
+				 wbitem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 
 			 else if(this.in_placebooksGPSTrace){
-				 this.in_gpsTracePanel = false;
-				 gpsitem.setPanel(Integer.parseInt(panel.toString()));
-				 panel = null;
+				 this.in_gpsTraceColumn = false;
+				 gpsitem.setColumn(Integer.parseInt(column.toString()));
+				 column = null;
 			 }
 			 
 		 }
@@ -532,11 +586,58 @@ public class XMLHandler extends DefaultHandler {
 			 
 		 }//end of else if order
 		 
+		 else if (localName.equalsIgnoreCase("mapPage")){
+			 if(this.in_placebooksText){
+				 this.in_textMapPage = false;
+				 titem.setMapPage(Integer.parseInt(mapPage.toString()));
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imageMapPage = false;
+				 imitem.setMapPage(Integer.parseInt(mapPage.toString()));
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoMapPage = false;
+				 vitem.setMapPage(Integer.parseInt(mapPage.toString()));
+			 }
+			 else if(this.in_placebooksAudio){
+				 this.in_audioMapPage = false;
+				 aitem.setMapPage(Integer.parseInt(mapPage.toString()));
+			 }
+		 }
+		 
+		 else if (localName.equalsIgnoreCase("marker")){
+			 if(this.in_placebooksText){
+				 this.in_textMapMarker = false;
+				 titem.setMapMarker(Integer.parseInt(mapMarker.toString()));
+				 mapMarker = null;
+			 }
+			 else if(this.in_placebooksImage){
+				 this.in_imageMapMarker = false;
+				 imitem.setMapMarker(Integer.parseInt(mapMarker.toString()));
+				 mapMarker = null;
+			 }
+			 else if (this.in_placebooksVideo){
+				 this.in_videoMapMarker = false;
+				 vitem.setMapMarker(Integer.parseInt(mapMarker.toString()));
+				 mapMarker = null;
+			 }
+			 else if (this.in_placebooksAudio){
+				 this.in_audioMapMarker = false;
+				 aitem.setMapMarker(Integer.parseInt(mapMarker.toString()));
+				 mapMarker = null;
+			 }
+		 }
+		 
 		 else if (localName.equalsIgnoreCase("height")){
 			 
 			 if(this.in_placebooksImage){
 				 this.in_imageHeight = false;
 				 imitem.setImageHeight(Integer.parseInt(height.toString()));
+				 height = null;
+			 }
+			 else if(this.in_placebooksVideo){
+				 this.in_videoHeight = false;
+				 vitem.setVideoHeight(Integer.parseInt(height.toString()));
 				 height = null;
 			 }
 		 }
@@ -652,13 +753,18 @@ public class XMLHandler extends DefaultHandler {
 		 else if(this.in_textText){
 			 text.append(ch, start, length).toString();
 		 }
-		 else if(this.in_textPanel){
-			 panel.append(ch, start, length).toString();
+		 else if(this.in_textColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if (this.in_textOrder){
 			 order.append(ch, start, length).toString();
 		 }
-		 
+		 else if (this.in_textMapPage){
+			 mapPage.append(ch, start, length).toString();
+		 }
+		 else if (this.in_textMapMarker){
+			 mapMarker.append(ch, start, length).toString();
+		 }
 		 
 		 //Image item
 		 
@@ -672,11 +778,17 @@ public class XMLHandler extends DefaultHandler {
 		 else if(this.in_imageFilename){
 			 filename.append(ch, start, length).toString();
 		 } 
-		 else if(this.in_imagePanel){
-			 panel.append(ch, start, length).toString();
+		 else if(this.in_imageColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if (this.in_imageOrder){
 			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_imageMapPage){
+			 mapPage.append(ch, start, length).toString();
+		 }
+		 else if (this.in_imageMapMarker){
+			 mapMarker.append(ch, start, length).toString();
 		 }
 		 else if (this.in_imageHeight){
 			 height.append(ch, start, length).toString();
@@ -691,11 +803,20 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_videoFilename){
 			 filename.append(ch, start, length).toString();
 		 }
-		 else if(this.in_videoPanel){
-			 panel.append(ch, start, length).toString();
+		 else if(this.in_videoColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if (this.in_videoOrder){
 			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_videoMapPage){
+			 mapPage.append(ch, start, length).toString();
+		 }
+		 else if (this.in_videoMapMarker){
+			 mapMarker.append(ch, start, length).toString();
+		 }
+		 else if (this.in_videoHeight){
+			 height.append(ch, start, length).toString();
 		 }
 		 
 		 //Audio item
@@ -706,11 +827,17 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_audioFilename){
 			 filename.append(ch, start, length).toString();
 		 }
-		 else if(this.in_audioPanel){
-			 panel.append(ch, start, length).toString();
+		 else if(this.in_audioColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if (this.in_audioOrder){
 			 order.append(ch, start, length).toString();
+		 }
+		 else if (this.in_audioMapPage){
+			 mapPage.append(ch, start, length).toString();
+		 }
+		 else if (this.in_audioMapMarker){
+			 mapMarker.append(ch, start, length).toString();
 		 }
 		
 		 //Map image item
@@ -739,8 +866,8 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_webBundleFilename){
 			 filename.append(ch, start, length).toString();
 		 }
-		 else if(this.in_webBundlePanel){
-			 panel.append(ch, start, length).toString();
+		 else if(this.in_webBundleColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if(this.in_webBundleOrder){
 			 order.append(ch, start, length).toString();
@@ -751,8 +878,8 @@ public class XMLHandler extends DefaultHandler {
 		 else if (this.in_gpsTraceFilename){
 			 filename.append(ch, start, length).toString();
 		 }
-		 else if (this.in_gpsTracePanel){
-			 panel.append(ch, start, length).toString();
+		 else if (this.in_gpsTraceColumn){
+			 column.append(ch, start, length).toString();
 		 }
 		 else if (this.in_gpsTraceOrder){
 			 order.append(ch, start, length).toString();

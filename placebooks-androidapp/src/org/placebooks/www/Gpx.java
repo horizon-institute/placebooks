@@ -25,6 +25,9 @@ public class Gpx {
 		@Attribute(required=false)
 		private String schemaLocation;
 		
+		@Element(required=false)
+		public Metadata metadata;
+		
 		@Element
 		public Trk trk;
 		
@@ -48,6 +51,10 @@ public class Gpx {
 		public Trk getTrk(){
 			return trk;
 		}
+		
+		public Metadata getMetadata() {
+		      return metadata;           
+		   }
 
 
 	}
