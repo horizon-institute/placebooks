@@ -6,6 +6,7 @@ import placebooks.client.controllers.UserController;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.User;
 import placebooks.client.ui.UIMessages;
+import placebooks.client.ui.dialogs.PlaceBookDialog;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 import placebooks.client.ui.pages.places.Home;
 import placebooks.client.ui.views.DragController;
@@ -14,6 +15,7 @@ import placebooks.client.ui.views.View;
 import placebooks.client.ui.widgets.FacebookLikeButton;
 import placebooks.client.ui.widgets.GooglePlusOne;
 import placebooks.client.ui.widgets.ProgressPanel;
+import placebooks.client.ui.widgets.ToolbarItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,7 +26,9 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -70,6 +74,9 @@ public class KioskPlaceBookView extends Page implements View<PlaceBookBinder>
 
 	@UiField
 	ProgressPanel loadingPanel;
+	
+	@UiField
+	Image qrcode;
 
 	@UiField
 	Anchor authorLabel;
@@ -135,6 +142,8 @@ public class KioskPlaceBookView extends Page implements View<PlaceBookBinder>
 		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 
 		infoPanel.setVisible(true);
+		
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/" + controller.getItem().getId());		
 
 		if ("PUBLISHED".equals(placebook.getState()))
 		{
@@ -162,6 +171,26 @@ public class KioskPlaceBookView extends Page implements View<PlaceBookBinder>
 	void back(ClickEvent event)
 	{
 		History.back();
+	}
+	
+	@UiHandler("qrcode")
+	void showQRCode(ClickEvent event)
+	{
+		PlaceBookDialog dialog = new PlaceBookDialog()
+		{
+			
+		};
+		if (controller.getItem().hasMetadata("title"))
+		{
+			dialog.setTitle("QR Code for " + controller.getItem().getMetadata("title"));
+		}
+		else
+		{
+			dialog.setTitle("QR Code");
+		}
+
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/" + controller.getItem().getId()));
+		dialog.show();
 	}
 	
 	@Override

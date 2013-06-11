@@ -214,6 +214,46 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	}
 
+	public boolean canBeRead(User user)
+	{
+		if(getState() == PlaceBookBinder.State.PUBLISHED)
+		{
+			return true;
+		}
+		
+		if (user == null)
+		{
+			return false;
+		}
+		
+		if (getOwner() != user)
+		{
+			log.debug("This user is not the owner");
+			final PlaceBookBinder.Permission perms = getPermission(user);
+			if (perms == null)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public boolean canBeWriten(User user)
+	{
+		if (getOwner() != user)
+		{
+			log.debug("This user is not the owner");
+			final PlaceBookBinder.Permission perms = getPermission(user);
+			if (perms == null || (perms != null && perms == PlaceBookBinder.Permission.R))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public PlaceBookBinder(final User owner)
 	{
 		this();

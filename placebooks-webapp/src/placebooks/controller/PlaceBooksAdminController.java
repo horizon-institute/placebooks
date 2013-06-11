@@ -1,5 +1,6 @@
 package placebooks.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.zip.GZIPOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -41,7 +43,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 import placebooks.client.logger.Log;
 import placebooks.model.AudioItem;
@@ -54,7 +55,6 @@ import placebooks.model.PlaceBookBinder;
 import placebooks.model.PlaceBookBinder.State;
 import placebooks.model.PlaceBookGroup;
 import placebooks.model.PlaceBookItem;
-import placebooks.model.TextItem;
 import placebooks.model.User;
 import placebooks.model.VideoItem;
 import placebooks.model.json.GroupShelf;
@@ -68,6 +68,9 @@ import placebooks.model.json.UserShelf;
 import placebooks.services.Service;
 import placebooks.services.ServiceRegistry;
 
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -178,9 +181,10 @@ public class PlaceBooksAdminController
 	{
 		return "account";
 	}
-	
+
 	@RequestMapping(value = "/addgroup", method = RequestMethod.POST)
-	public void addGroup(@RequestParam final String groupID, @RequestParam final String placebookID, final HttpServletResponse res)
+	public void addGroup(@RequestParam final String groupID, @RequestParam final String placebookID,
+			final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = authUser(manager, res);
@@ -190,19 +194,16 @@ public class PlaceBooksAdminController
 		{
 			final PlaceBookGroup group = manager.find(PlaceBookGroup.class, groupID);
 			final PlaceBookBinder placebook = manager.find(PlaceBookBinder.class, placebookID);
-			
-			if(group == null || placebook == null)
-			{
-				return;
-			}
-			
+
+			if (group == null || placebook == null) { return; }
+
 			manager.getTransaction().begin();
-			
+
 			placebook.add(group);
 			group.add(placebook);
 
 			manager.getTransaction().commit();
-			
+
 			try
 			{
 				res.setContentType("application/json; charset=UTF-8");
@@ -228,7 +229,7 @@ public class PlaceBooksAdminController
 			manager.close();
 		}
 	}
-	
+
 	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
 	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
 			@RequestParam final String service, final HttpServletResponse res)
@@ -434,12 +435,12 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/deletebinder/{key}", method = RequestMethod.GET)
-	public ModelAndView deletePlaceBookBinder(final HttpServletRequest req, final HttpServletResponse res,
+	public void deletePlaceBookBinder(final HttpServletRequest req, final HttpServletResponse res,
 			@PathVariable("key") final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
-		if (authUser(pm, res) == null) { return null; }
+		if (authUser(pm, res) == null) { return; }
 
 		try
 		{
@@ -467,8 +468,6 @@ public class PlaceBooksAdminController
 		}
 
 		log.info("Deleted PlaceBook");
-
-		return new ModelAndView("message", "text", "Deleted PlaceBook: " + key);
 	}
 
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
@@ -490,8 +489,8 @@ public class PlaceBooksAdminController
 		final ArrayList<PlaceBookItem> presetItems = PresetItemsHelper.getPresetItems(user);
 		pbs.addAll(presetItems);
 
-		//log.info("Converting " + pbs.size() + " PlaceBookItems to JSON");
-		//log.info("User " + user.getName());
+		// log.info("Converting " + pbs.size() + " PlaceBookItems to JSON");
+		// log.info("User " + user.getName());
 
 		res.setContentType("application/json; charset=UTF-8");
 		try
@@ -528,7 +527,7 @@ public class PlaceBooksAdminController
 			public void run()
 			{
 				final EntityManager manager = EMFSingleton.getEntityManager();
-				//log.info("Updating Services");
+				// log.info("Updating Services");
 				ServiceRegistry.updateServices(manager, user);
 				manager.close();
 			}
@@ -538,56 +537,35 @@ public class PlaceBooksAdminController
 	@RequestMapping(value = "/placebookbinder/{key}", method = RequestMethod.GET)
 	public void getPlaceBookBinderJSON(final HttpServletResponse res, @PathVariable("key") final String key)
 	{
-		final EntityManager manager = EMFSingleton.getEntityManager();
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
 
 		try
 		{
-			final PlaceBookBinder pb = manager.find(PlaceBookBinder.class, key);
-			if (pb != null)
+			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, key);
+			if (placebook != null)
 			{
-				if (pb.getState() != PlaceBookBinder.State.PUBLISHED)
+				final User user = UserManager.getCurrentUser(entityManager);
+				if (!placebook.canBeRead(user))
 				{
-					final User user = authUser(manager, res);
-					if (user == null)
+					try
 					{
+						log.info("User doesn't have sufficient permissions");
+						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						res.setContentType("application/json; charset=UTF-8");
+						res.getWriter().write("User doesn't have sufficient permissions");
 						return;
 					}
-					else if (pb.getOwner() != user)
+					catch (final Exception e)
 					{
-						log.debug("This user is not the owner");
-						final PlaceBookBinder.Permission perms = pb.getPermission(user);
-						if (perms == null)
-						{
-							try
-							{
-								log.info("User doesn't have sufficient permissions");
-								res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-								res.setContentType("application/json; charset=UTF-8");
-								res.getWriter().write("User doesn't have sufficient permissions");
-								return;
-							}
-							catch (final Exception e)
-							{
-								log.error(e.getMessage(), e);
-								return;
-							}
-						}
+						log.error(e.getMessage(), e);
+						return;
 					}
 				}
+
 				try
 				{
-					for (final PlaceBook p : pb.getPlaceBooks())
-					{
-						for (final PlaceBookItem pi : p.getItems())
-						{
-							if (pi instanceof TextItem)
-							{
-								log.info(pi.getKey() + ": " + ((TextItem) pi).getText());
-							}
-						}
-					}
 					res.setContentType("application/json; charset=UTF-8");
-					jsonMapper.writeValue(res.getWriter(), pb);
+					jsonMapper.writeValue(res.getWriter(), placebook);
 					res.flushBuffer();
 				}
 				catch (final IOException e)
@@ -606,7 +584,7 @@ public class PlaceBooksAdminController
 		}
 		finally
 		{
-			manager.close();
+			entityManager.close();
 		}
 	}
 
@@ -857,43 +835,35 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/admin/package/{key}", method = RequestMethod.GET)
-	public ModelAndView makePackage(final HttpServletResponse res, @PathVariable("key") final String key)
+	public void makePackage(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
 	{
-		final EntityManager pm = EMFSingleton.getEntityManager();
-
-		final User currentUser = authUser(pm, res);
-		if (currentUser == null) { return null; }
-
-		final PlaceBookBinder p = pm.find(PlaceBookBinder.class, key);
-
-		if (p.getState() != PlaceBookBinder.State.PUBLISHED)
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		final User currentUser = UserManager.getCurrentUser(entityManager);
+		final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, key);
+		if (!placebook.canBeRead(currentUser))
 		{
-
-			if (p.getOwner() != currentUser)
+			try
 			{
-				log.debug("This user is not the owner");
-				final PlaceBookBinder.Permission perms = p.getPermission(currentUser);
-				if (perms == null)
-				{
-					try
-					{
-						log.info("User doesn't have sufficient permissions");
-						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-						res.setContentType("application/json; charset=UTF-8");
-						res.getWriter().write("User doesn't have sufficient permissions");
-						return null;
-					}
-					catch (final Exception e)
-					{
-						log.error(e.getMessage(), e);
-						return null;
-					}
-				}
+				log.info("User doesn't have sufficient permissions");
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				res.setContentType("application/json; charset=UTF-8");
+				res.getWriter().write("User doesn't have sufficient permissions");
+				return;
+			}
+			catch (final Exception e)
+			{
+				log.error(e.getMessage(), e);
+				return;
 			}
 		}
 
-		final File zipFile = PlaceBooksAdminHelper.makePackage(pm, p);
-		if (zipFile == null) { return new ModelAndView("message", "text", "Making and compressing package"); }
+		final File zipFile = PlaceBooksAdminHelper.makePackage(entityManager, placebook);
+		if (zipFile == null)
+		{
+			log.info("Failed to create zip file");
+			return;
+		}
 
 		try
 		{
@@ -911,8 +881,8 @@ public class PlaceBooksAdminController
 			fis.close();
 
 			final ServletOutputStream sos = res.getOutputStream();
-			res.setContentType("application/zip");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" + p.getKey() + ".zip\"");
+			res.setContentType("application/x-placebook");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" + placebook.getKey() + ".zip\"");
 			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
@@ -921,14 +891,12 @@ public class PlaceBooksAdminController
 		catch (final IOException e)
 		{
 			log.error(e.toString(), e);
-			return new ModelAndView("message", "text", "Error sending package");
+			return;
 		}
 		finally
 		{
-			pm.close();
+			entityManager.close();
 		}
-
-		return null;
 	}
 
 	@RequestMapping("/oauth")
@@ -1015,9 +983,130 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	@RequestMapping(value = "/qrcode/{key}", method = RequestMethod.GET)
+	public void qrcode(final HttpServletRequest req, final HttpServletResponse res,
+			@PathVariable("key") final String key)
+	{
+
+		try
+		{
+			log.debug("QR Code: " + key);
+
+			final String eTag = key;
+
+			final String ifNoneMatch = req.getHeader("If-None-Match");
+			if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag))
+			{
+				res.setHeader("ETag", eTag);
+				res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+				return;
+			}
+
+			final long ifModifiedSince = req.getDateHeader("If-Modified-Since");
+			if (ifNoneMatch == null && ifModifiedSince != -1)
+			{
+				res.setHeader("ETag", eTag);
+				res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+				return;
+			}
+
+			final String ifMatch = req.getHeader("If-Match");
+			if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag))
+			{
+				res.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+				return;
+			}
+
+			final QRCodeWriter writer = new QRCodeWriter();
+			try
+			{
+				final String url = "http://www.placebooks.org/index.html#placebook:" + key;
+				final BitMatrix matrix = writer.encode(url, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
+				final BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix);
+
+				res.reset();
+
+				res.setBufferSize(MediaHelper.DEFAULT_BUFFER_SIZE);
+				res.setContentType("image/png");
+				res.setHeader("ETag", eTag);
+				res.setDateHeader("Last-Modified", System.currentTimeMillis());
+				res.setDateHeader("Expires", System.currentTimeMillis() + MediaHelper.DEFAULT_EXPIRE_TIME);
+
+				final OutputStream out = res.getOutputStream();
+				ImageIO.write(image, "png", out);
+				out.close();
+			}
+			catch (final Exception e)
+			{
+				// exit the method
+				return;
+			}
+
+		}
+		catch (final Exception ex)
+		{
+			log.error("Exception in serving file: " + ex.toString());
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/saveplacebookbinder", method = RequestMethod.POST)
+	public void savePlaceBookBinderJSON(final HttpServletResponse res,
+			@RequestParam("placebookbinder") final String json)
+	{
+		log.info("Save PlacebookBinder: " + json);
+		final EntityManager manager = EMFSingleton.getEntityManager();
+		final User currentUser = authUser(manager, res);
+		if (currentUser == null) { return; }
+
+		try
+		{
+			final PlaceBookBinder placebookBinder = jsonMapper.readValue(json, PlaceBookBinder.class);
+
+			if (placebookBinder.getKey() != null)
+			{
+				final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, placebookBinder.getKey());
+				if (!dbBinder.canBeWriten(currentUser))
+				{
+					try
+					{
+						log.info("User doesn't have sufficient permissions");
+						res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						res.setContentType("application/json; charset=UTF-8");
+						res.getWriter().write("User doesn't have sufficient permissions");
+						return;
+					}
+					catch (final Exception e)
+					{
+						log.error(e.getMessage(), e);
+						return;
+					}
+				}
+			}
+
+			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
+
+			res.setContentType("application/json; charset=UTF-8");
+			jsonMapper.writeValue(res.getWriter(), result);
+			res.flushBuffer();
+		}
+		catch (final Throwable e)
+		{
+			log.info(json);
+			log.warn(e.getMessage(), e);
+		}
+		finally
+		{
+			if (manager.getTransaction().isActive())
+			{
+				manager.getTransaction().rollback();
+			}
+			manager.close();
+		}
+	}
+
 	@RequestMapping(value = "/savegroup", method = RequestMethod.POST)
-	public void savePlaceBookGroupJSON(final HttpServletResponse res,
-			@RequestParam("group") final String json)
+	public void savePlaceBookGroupJSON(final HttpServletResponse res, @RequestParam("group") final String json)
 	{
 		log.info("Save PlacebookGroup: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
@@ -1028,12 +1117,12 @@ public class PlaceBooksAdminController
 		{
 			final GroupShelf shelf = jsonMapper.readValue(json, GroupShelf.class);
 			PlaceBookGroup group;
-			
+
 			if (shelf.getGroup() != null && shelf.getGroup().getId() != null)
 			{
 				group = manager.find(PlaceBookGroup.class, shelf.getGroup().getId());
 
-				if(group.getOwner() == null)
+				if (group.getOwner() == null)
 				{
 					group.setOwner(currentUser);
 				}
@@ -1060,99 +1149,37 @@ public class PlaceBooksAdminController
 			}
 
 			final Collection<PlaceBookBinder> placebooks = new HashSet<PlaceBookBinder>();
-			for(ShelfEntry entry: shelf.getEntries())
+			for (final ShelfEntry entry : shelf.getEntries())
 			{
-				PlaceBookBinder binder = manager.find(PlaceBookBinder.class, entry.getKey());
-				if(binder != null)
+				final PlaceBookBinder binder = manager.find(PlaceBookBinder.class, entry.getKey());
+				if (binder != null)
 				{
 					placebooks.add(binder);
 					binder.add(group);
 				}
 			}
-			
-			for(PlaceBookBinder binder: group.getPlaceBooks())
+
+			for (final PlaceBookBinder binder : group.getPlaceBooks())
 			{
-				if(!placebooks.contains(binder))
+				if (!placebooks.contains(binder))
 				{
 					binder.remove(group);
 				}
 			}
-			
+
 			group.update(shelf.getGroup());
 			group.setPlaceBooks(placebooks);
-			
+
 			manager.getTransaction().begin();
-			
+
 			group = manager.merge(group);
-			
+
 			currentUser.add(group);
-			
-			
+
 			manager.getTransaction().commit();
-						
+
 			res.setContentType("application/json; charset=UTF-8");
 			jsonMapper.writeValue(res.getWriter(), new GroupShelf(group));
-			res.flushBuffer();
-		}
-		catch (final Throwable e)
-		{
-			log.info(json);
-			log.warn(e.getMessage(), e);
-		}
-		finally
-		{
-			if (manager.getTransaction().isActive())
-			{
-				manager.getTransaction().rollback();
-			}
-			manager.close();
-		}
-	}
-	
-	@RequestMapping(value = "/saveplacebookbinder", method = RequestMethod.POST)
-	public void savePlaceBookBinderJSON(final HttpServletResponse res,
-			@RequestParam("placebookbinder") final String json)
-	{
-		log.info("Save PlacebookBinder: " + json);
-		final EntityManager manager = EMFSingleton.getEntityManager();
-		final User currentUser = authUser(manager, res);
-		if (currentUser == null) { return; }
-
-		try
-		{
-			final PlaceBookBinder placebookBinder = jsonMapper.readValue(json, PlaceBookBinder.class);
-
-			if (placebookBinder.getKey() != null)
-			{
-				final PlaceBookBinder dbBinder = manager.find(PlaceBookBinder.class, placebookBinder.getKey());
-
-				if (dbBinder.getOwner() != currentUser)
-				{
-					log.debug("This user is not the owner");
-					final PlaceBookBinder.Permission perms = dbBinder.getPermission(currentUser);
-					if (perms == null || (perms != null && perms == PlaceBookBinder.Permission.R))
-					{
-						try
-						{
-							log.info("User doesn't have sufficient permissions");
-							res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-							res.setContentType("application/json; charset=UTF-8");
-							res.getWriter().write("User doesn't have sufficient permissions");
-							return;
-						}
-						catch (final Exception e)
-						{
-							log.error(e.getMessage(), e);
-							return;
-						}
-					}
-				}
-			}
-
-			final PlaceBookBinder result = PlaceBooksAdminHelper.savePlaceBookBinder(manager, placebookBinder);
-
-			res.setContentType("application/json; charset=UTF-8");
-			jsonMapper.writeValue(res.getWriter(), result);
 			res.flushBuffer();
 		}
 		catch (final Throwable e)
@@ -1481,7 +1508,7 @@ public class PlaceBooksAdminController
 
 					final long length = serveFile.length();
 					final long lastModified = serveFile.lastModified();
-					final String eTag = itemPath + "_" + length + "_" + lastModified;
+					final String eTag = hash;
 
 					final String ifNoneMatch = req.getHeader("If-None-Match");
 					if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag))
@@ -1817,7 +1844,7 @@ public class PlaceBooksAdminController
 			if (itemKey != null)
 			{
 				item = manager.find(PlaceBookItem.class, itemKey);
-				if(item.getPlaceBook() != null)
+				if (item.getPlaceBook() != null)
 				{
 					final PlaceBookBinder dbBinder = item.getPlaceBook().getPlaceBookBinder();
 					if (dbBinder.getOwner() != currentUser)
@@ -2011,7 +2038,6 @@ public class PlaceBooksAdminController
 
 	private final User authUser(final EntityManager em, final HttpServletResponse res)
 	{
-
 		final User user = UserManager.getCurrentUser(em);
 		if (user == null)
 		{

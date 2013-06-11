@@ -113,7 +113,7 @@ public class ToolbarItem extends Composite implements HasClickHandlers, HasMouse
 	{
 		label.setHTML(html);
 	}
-
+	
 	public void setImage(final ImageResource imageResource)
 	{
 		if (imageResource != null)

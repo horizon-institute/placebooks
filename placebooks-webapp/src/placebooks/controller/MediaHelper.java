@@ -30,7 +30,7 @@ public class MediaHelper
 
 	private static final Logger log = Logger.getLogger(MediaHelper.class.getName());
 	public static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
-	public static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
+	public static final long DEFAULT_EXPIRE_TIME = 31556952000l; // ..ms = 1 year.
 
 	public static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 

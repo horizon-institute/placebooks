@@ -61,10 +61,18 @@
 			float: right;
 			margin-top: 15px;
 		}
+
+		.qrcode {
+			cursor: pointer;
+			width: 50px;
+			height: 50px;
+			margin: 0 10px;
+		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
-			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">			
+			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
+  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.right}" />			    			
 				<w:ToolbarItem ui:field="back"
 					addStyleNames="{style.actionMenu} {style.right}"><ui:msg>Back</ui:msg></w:ToolbarItem>				    
 				<w:GooglePlusOne ui:field="googlePlus" styleName="{style.right}" />
