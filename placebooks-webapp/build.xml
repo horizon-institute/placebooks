@@ -189,13 +189,13 @@
 
 	<target name="compile-gwt" depends="compile" 
 			description="Compile GWT web interface">
-		<!-- <java classpathref="classpath.gwt" failonerror="true" fork="true"
+		<java classpathref="classpath.gwt" failonerror="true" fork="true"
 			maxmemory="512m"
 	        classname="com.google.gwt.dev.Compiler"> 
 	        <arg line="-war ${war.dir}"/> 
 			<arg line="-logLevel INFO"/>
 	        <arg line="${editor.name}"/>
-		</java> -->
+		</java>
 	</target>
 	
 	<target name="compile-test" depends="compile"

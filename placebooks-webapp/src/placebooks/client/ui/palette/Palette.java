@@ -7,8 +7,8 @@ import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.DragController;
-import placebooks.client.ui.places.Home;
+import placebooks.client.ui.pages.places.Home;
+import placebooks.client.ui.views.DragController;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;

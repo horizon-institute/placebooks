@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
 import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.views.DragController;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;

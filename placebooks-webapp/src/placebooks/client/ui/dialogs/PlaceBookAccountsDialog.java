@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.wornchaos.views.View;
-
 import placebooks.client.AbstractCallback;
 import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.ServerInfoController;
@@ -18,8 +16,9 @@ import placebooks.client.model.ServiceInfo;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.DatePrinter;
-import placebooks.client.ui.elements.EnabledButtonCell;
+import placebooks.client.ui.views.DatePrinter;
+import placebooks.client.ui.views.EnabledButtonCell;
+import placebooks.client.ui.views.View;
 
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;

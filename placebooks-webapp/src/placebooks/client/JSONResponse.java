@@ -1,6 +1,6 @@
 package placebooks.client;
 
-import org.wornchaos.client.logger.Log;
+import placebooks.client.logger.Log;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;

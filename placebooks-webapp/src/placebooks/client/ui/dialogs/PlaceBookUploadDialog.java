@@ -1,18 +1,17 @@
 package placebooks.client.ui.dialogs;
 
-import org.wornchaos.client.logger.Log;
-import org.wornchaos.controllers.SomethingController;
-import org.wornchaos.controllers.ControllerState;
-import org.wornchaos.controllers.ControllerStateListener;
-import org.wornchaos.views.View;
-
 import placebooks.client.PlaceBooks;
+import placebooks.client.controllers.ControllerState;
+import placebooks.client.controllers.ControllerStateListener;
 import placebooks.client.controllers.ServerInfoController;
+import placebooks.client.controllers.SomethingController;
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.model.ServerInfo;
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.items.PlaceBookItemView;
+import placebooks.client.ui.views.View;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

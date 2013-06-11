@@ -1,8 +1,8 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.model.PlaceBookItem;
-import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemView;
+import placebooks.client.ui.views.PlaceBookColumn;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;

@@ -8,10 +8,10 @@ import placebooks.client.PlaceBooks;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.PlaceBookPage;
-import placebooks.client.ui.elements.PlaceBookPages;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.places.PlaceBook;
+import placebooks.client.ui.pages.places.PlaceBook;
+import placebooks.client.ui.views.PlaceBookPage;
+import placebooks.client.ui.views.PlaceBookPages;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

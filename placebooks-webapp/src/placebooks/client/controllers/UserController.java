@@ -1,11 +1,9 @@
 package placebooks.client.controllers;
 
-import org.wornchaos.client.controller.CachedController;
-import org.wornchaos.client.parser.JavaScriptObjectParser;
-
 import placebooks.client.PlaceBooks;
 import placebooks.client.model.Shelf;
 import placebooks.client.model.User;
+import placebooks.client.parser.JavaScriptObjectParser;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;

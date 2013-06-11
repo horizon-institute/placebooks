@@ -1,0 +1,78 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:w="urn:import:placebooks.client.ui.widgets" xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.loading
+		{
+			text-align: center;
+			margin-top: 100px;
+		}
+		
+		.loadingLabel 
+		{
+			font-size: 18px;
+			margin-left: 5px;
+			color: #555;
+		}
+		
+		.placebookList
+		{
+			overflow: auto;
+			left: 0px;
+			top: 20px;
+			bottom: 0px;
+			padding-left: 10px;
+			padding-top: 20px;
+			position: absolute;
+		}
+		
+		.mapPanel
+		{
+			position: absolute;
+			top: 20px;
+			bottom: 0px;
+			right: 0px;
+			left: 200px;
+		}
+		
+		.mapToggle
+		{
+			position:absolute;
+			top: 0px;
+			right: 0px;
+			height: 20px;
+			padding: 0 10px;
+			cursor: default;
+			color: #777;
+			z-index: 20;
+		}
+		
+		.mapToggleText
+		{
+			padding-right: 5px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
+		
+		.mapToggle:HOVER
+		{
+			background-color: #DDD;
+
+		}		
+	</ui:style>	
+	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
+	<g:FlowPanel>		
+		<g:FlowPanel styleName="{style.loading}" ui:field="progress"><g:Image resource='{images.progress3}' /><g:InlineLabel ui:field="progressLabel" styleName="{style.loadingLabel}">SEARCHING</g:InlineLabel></g:FlowPanel>
+		<g:FlowPanel ui:field="placebooks" styleName="{style.placebookList}" />
+		<w:MousePanel ui:field="mapToggle" styleName="{style.mapToggle}">
+			<g:InlineLabel ui:field="mapToggleText" styleName="{style.mapToggleText}"><ui:msg>Hide Map</ui:msg></g:InlineLabel>	
+			<g:Image ui:field="mapToggleImage" resource="{images.arrow_right}"/>			
+		</w:MousePanel>
+
+		<g:FlowPanel ui:field="mapPanel" styleName="{style.mapPanel}"/>	
+	</g:FlowPanel>
+</ui:UiBinder>

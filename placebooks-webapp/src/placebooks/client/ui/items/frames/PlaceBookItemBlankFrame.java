@@ -1,7 +1,7 @@
 package placebooks.client.ui.items.frames;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.elements.DragController;
+import placebooks.client.ui.views.DragController;
 
 public class PlaceBookItemBlankFrame extends PlaceBookItemFrame
 {

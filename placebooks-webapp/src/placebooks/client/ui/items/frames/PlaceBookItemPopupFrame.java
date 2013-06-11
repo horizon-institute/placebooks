@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import placebooks.client.Resources;
-import placebooks.client.ui.elements.DragController;
-import placebooks.client.ui.elements.DragController.DragState;
-import placebooks.client.ui.elements.PlaceBookColumn;
 import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.menuItems.DeleteItemMenuItem;
 import placebooks.client.ui.menuItems.EditMapMenuItem;
@@ -16,6 +13,9 @@ import placebooks.client.ui.menuItems.HideTrailMenuItem;
 import placebooks.client.ui.menuItems.MenuItem;
 import placebooks.client.ui.menuItems.ShowTrailMenuItem;
 import placebooks.client.ui.menuItems.UploadMenuItem;
+import placebooks.client.ui.views.DragController;
+import placebooks.client.ui.views.PlaceBookColumn;
+import placebooks.client.ui.views.DragController.DragState;
 
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;

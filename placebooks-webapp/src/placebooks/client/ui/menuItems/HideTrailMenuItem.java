@@ -1,8 +1,8 @@
 package placebooks.client.ui.menuItems;
 
 import placebooks.client.ui.UIMessages;
-import placebooks.client.ui.elements.DragController;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
+import placebooks.client.ui.views.DragController;
 
 import com.google.gwt.core.client.GWT;
 
