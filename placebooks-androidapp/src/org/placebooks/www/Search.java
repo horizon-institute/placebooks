@@ -587,7 +587,8 @@ public class Search extends ListActivity  {
 			                URL url = new URL(aurl[0]);
 			                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 			                urlConnection.setRequestMethod("GET");
-			                urlConnection.setDoOutput(true); 
+			                //urlConnection.setDoOutput(true);
+			                urlConnection.setDoInput(true);  
 			                System.out.println("Cookie:"+cookieName+"="+ cookieVal);
 			                urlConnection.setRequestProperty("Cookie:" , cookieName + "="+ cookieVal);
 			                urlConnection.connect();
