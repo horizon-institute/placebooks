@@ -1,12 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, PlaceBooks!</string>
-    <string name="app_name">PlaceBooks</string>
+    <string name="app_name">Placebooks</string>
     <string name="run_task">Run</string>
     <string name="task_working">Working (%1$d)...</string>
     <string name="task_starting">Starting...</string>
     <string name="task_cancelled">Task is cancelled by user</string>
     <string name="task_completed">Task is completed with result (%1$s)</string>
     <string name="download">Download</string>
+    <string name="prompt">Select a distance</string>
+    <string name="prompt2">Select an activity</string>
+    
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="signing_in">Signing In</string>
+    <string name="open">Open</string>
+    <string name="downloading_placebook">Downloading Placebook</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="downloads">Downloads</string>
+    <string name="online_shelf">Online</string>
+    <string name="search">Search</string>
+    <string name="delete_q">Are you sure you want to delete this Placebook?"</string>
+    <string name="delete">Delete</string>
+    <string name="deleted">Deleted</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_q">Are you sure you want to sign out?</string>
+    <string name="yes">Yes</string>
+    <string name="accessing_online_shelf">Accessing online shelf</string>
+    <string name="refreshing">Refreshing</string>
+    <string name="click_to_open">Click to Open</string>
+    <string name="click_to_download">Click to Download</string>
+    <string name="click_to_search_download">Click to search &amp; download</string>
+    <string name="nearby_books">Nearby Books</string>
+    <string name="my_downloads">My Downloads</string>
+    <string name="distance">Distance</string>
+    <string name="select_distance">Select a distance</string>
+        <string name="distance1">Up to 10 Miles</string>
+        <string name="distance2">Up to 25 Miles</string>
+        <string name="distance3">Up to 50 Miles</string>
+        <string name="distance4">Everywhere</string>
+   <string name="activity">Activity</string>
+   <string name="select_an_activity">Select an activity</string>
+    	<string name="activity_list_item1">No Activity</string>
+    	<string name="activity_list_item2">Walking</string>
+    	<string name="activity_list_item3">Running</string>
+    	<string name="activity_list_item4">Driving</string>
+    	<string name="activity_list_item5">Road Biking</string>
+    	<string name="activity_list_item6">Mountain Biking</string>
+    	<string name="activity_list_item7">Hiking</string>
+    	<string name="activity_list_item8">Motor Cycling</string>
+    	<string name="activity_list_item9">Sightseeing</string>
+    	<string name="activity_list_item10">Trail Running</string>
+    	<string name="activity_list_item11">Alpine Skiing</string>
+    	<string name="activity_list_item12">Kayaking/Canoeing</string>
+    	<string name="activity_list_item13">Geocaching</string>
+    	<string name="activity_list_item14">Cross-Country Skiing</string>
+    	<string name="activity_list_item15">Flying</string>
+    	<string name="activity_list_item16">Mountaineering</string>
+    	<string name="activity_list_item17">Sailing</string>
+    	<string name="activity_list_item18">Backpacking</string>
+    	<string name="activity_list_item19">Train</string>
+    	<string name="activity_list_item20">Back-Country Skiing</string>
+    	<string name="activity_list_item21">Offroading</string>
+    	<string name="activity_list_item22">Roller Skating</string>
+    	<string name="activity_list_item23">Snowshoeing</string>
+    	<string name="activity_list_item24">ATV / Offroading</string>
+    	<string name="activity_list_item25">Boating</string>
+    	<string name="activity_list_item26">Relaxation</string>
+    	<string name="activity_list_item27">Horseback Riding</string>
+    	<string name="activity_list_item28">Photography</string>
+    	<string name="activity_list_item29">Snowboarding</string>
+    	<string name="activity_list_item30">Ice Skating</string>
+    	<string name="activity_list_item31">Snowmobiling</string>
+    	<string name="activity_list_item32">Hang Gliding / Paragliding</string>
+    	<string name="activity_list_item33">Fly-Fishing</string>
+    	<string name="activity_list_item34">Romantic Getaway</string>
+    	<string name="activity_list_item35">Skateboarding</string>
+    	<string name="activity_list_item36">Bird Watching</string>
+    	<string name="activity_list_item37">Rock Climbing</string>
+    	<string name="activity_list_item38">Paddleboarding</string>
+    	<string name="activity_list_item39">Fishing</string>
+    	<string name="activity_list_item40">Other</string>
+    <string name="search_results_found">0 Search results found</string>
+    <string name="rendering_pages">Rendering placebook pages</string>
+    <string name="page">Page</string>
+    <string name="of">of</string>
+    <string name="ok">OK</string> 
+    <string name="rendering_map">Rendering map</string>
+    <string name="gps_location">Trying to find your GPS location</string>
+    <string name="no_connection">No Internet Connection</string>
+      <string name="unable_to_reach">Unable to reach online book shelf</string>
+    <string name="no_connectivity">No Internet Connectivity</string>
+      <string name="need_signed_in">your mobile needs to be online to sign in</string>
+    <string name="usr_pass_needed">Username &amp; Password needs to be entered</string>
+      <string name="please_use_pass">please enter a username and a password!</string>
+    <string name="invalid_usr_pass">Invalid Username/Password</string>
+      <string name="please_check_usr_pass">Please check that the username and password are correct</string>
+    <string name="no_sdcard">No SD Card!</string>
+      <string name="sdcard_needed">There is no SD Card mounted to this device! You need an SD Card for this app!</string>
+    <string name="good_bad_news">Good news, bad news</string>
+       <string name="good_bad_news2">Bad news is the service encountered an error, good news is you can try again</string>
+    <string name="server_problem">Problem with Server!</string>
+       <string name="server_problem2">There appears to be a problem connecting with the server. Please try again later</string>
+       
+        <string name="unable_search_location">Unable to search without location services on!</string>
+           <string name="unable_search_location2">Location services are disabled in your device. Would you like to enable them?</string>
+           <string name="goto_settings">Go to Settings Page To Enable GPS</string>
+      
+        <string name="unable_search">Unable to search!</string>
+            <string name="unable_search2">Please make sure you are online!</string>
+        
+   <string name="searching">Searching..</string>
+   <string name="gps_off">Please turn on GPS to search for Placebooks around you</string>
+   
+      <string name="no_sdcard_download">There is no sd card mounted to this device! You need an sd card to download a Placebook!</string>
+     
+     <string name="view">View</string>
+      
+  <string name="no_location_found">No location found</string>
+  <string name="unable_connect_internet">Unable to connect to the Internet</string>
+ 
+    <string name="miles_away">Miles away from you</string>
+  
+      <string name="gps_tracking">turn on GPS for live tracking</string>
+      
+    
+    <string name="settings">Settings</string>
+      
+    <string name="languages">Languages</string>
+    <string name="languages2">This preference allows you to set the language</string>
+    <string name="signoutpref">This preference allows you to sign out</string>
+    
     
 </resources>
