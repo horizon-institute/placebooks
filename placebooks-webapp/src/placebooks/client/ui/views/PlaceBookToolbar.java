@@ -13,8 +13,10 @@ import placebooks.client.ui.pages.places.Groups;
 import placebooks.client.ui.pages.places.Home;
 import placebooks.client.ui.pages.places.Library;
 import placebooks.client.ui.pages.places.PlaceBook;
+import placebooks.client.ui.pages.places.PlaceBook.Type;
 import placebooks.client.ui.widgets.DropMenu;
 import placebooks.client.ui.widgets.ToolbarItem;
+import placebooks.client.ui.widgets.ToolbarLink;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -50,13 +52,13 @@ public class PlaceBookToolbar extends CompositeView<User>
 	private static final PlaceBookToolbarUiBinder uiBinder = GWT.create(PlaceBookToolbarUiBinder.class);
 
 	@UiField
-	ToolbarItem homeItem;
+	ToolbarLink homeItem;
 
 	@UiField
-	ToolbarItem createItem;
+	ToolbarLink createItem;
 
 	@UiField
-	ToolbarItem libraryItem;
+	ToolbarLink libraryItem;
 
 	@UiField
 	DropMenu dropMenu;
@@ -65,7 +67,7 @@ public class PlaceBookToolbar extends CompositeView<User>
 	ToolbarItem accountItem;
 
 	@UiField
-	ToolbarItem languageItem;
+	ToolbarLink languageItem;
 
 	@UiField
 	Panel languagePanel;
@@ -80,6 +82,10 @@ public class PlaceBookToolbar extends CompositeView<User>
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 
+		homeItem.setURL("#" + PlaceBooks.getToken(new Home()));
+		createItem.setURL("#" + PlaceBooks.getToken(new PlaceBook(Type.create)));
+		libraryItem.setURL("#" + PlaceBooks.getToken(new Library()));		
+		
 		final String[] languageNames = LocaleInfo.getAvailableLocaleNames();
 		if (languageNames.length <= 3)
 		{
@@ -89,33 +95,27 @@ public class PlaceBookToolbar extends CompositeView<User>
 				{
 					final String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
 					languageItem.setText(displayName);
-					languageItem.addClickHandler(new ClickHandler()
+					
+					final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+					urlBuilder.setHash(Window.Location.getHash());
+					urlBuilder.setHost(Window.Location.getHost());
+					urlBuilder.setPath(Window.Location.getPath());
+					try
 					{
-						@Override
-						public void onClick(final ClickEvent event)
-						{
-							final UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
-							urlBuilder.setHash(Window.Location.getHash());
-							urlBuilder.setHost(Window.Location.getHost());
-							urlBuilder.setPath(Window.Location.getPath());
-							try
-							{
-								urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
-							}
-							catch (final Exception e)
-							{
+						urlBuilder.setPort(Integer.parseInt(Window.Location.getPort()));
+					}
+					catch (final Exception e)
+					{
 
-							}
-							urlBuilder.setProtocol(Window.Location.getProtocol());
-							for (final String key : Window.Location.getParameterMap().keySet())
-							{
-								urlBuilder.setParameter(key, Window.Location.getParameter(key));
-							}
-							urlBuilder.setParameter("locale", localeName);
-
-							Window.Location.replace(urlBuilder.buildString());
-						}
-					});
+					}
+					urlBuilder.setProtocol(Window.Location.getProtocol());
+					for (final String key : Window.Location.getParameterMap().keySet())
+					{
+						urlBuilder.setParameter(key, Window.Location.getParameter(key));
+					}
+					urlBuilder.setParameter("locale", localeName);
+					
+					languageItem.setURL(urlBuilder.buildString());
 				}
 			}
 			languagePanel.setVisible(false);
@@ -226,33 +226,6 @@ public class PlaceBookToolbar extends CompositeView<User>
 		homeItem.setEnabled(!(place instanceof Home));
 		libraryItem.setEnabled(!(place instanceof Library) && user != null);
 		createItem.setEnabled(user != null);
-	}
-
-	@UiHandler("homeItem")
-	void goHome(final ClickEvent event)
-	{
-		if (homeItem.isEnabled())
-		{
-			PlaceBooks.goTo(new Home());
-		}
-	}
-
-	@UiHandler("libraryItem")
-	void goLibrary(final ClickEvent event)
-	{
-		if (libraryItem.isEnabled())
-		{
-			PlaceBooks.goTo(new Library());
-		}
-	}
-
-	@UiHandler("createItem")
-	void goNewEditor(final ClickEvent event)
-	{
-		if (createItem.isEnabled())
-		{
-			PlaceBooks.goTo(new PlaceBook(PlaceBook.Type.create));
-		}
 	}
 
 	@UiHandler("loginLabel")

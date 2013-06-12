@@ -110,7 +110,7 @@ public class PlaceBookGroupEditor extends Page implements View<Shelf>
 			final Group place = (Group) PlaceBooks.getPlace();
 			if (!place.getId().equals(shelf.getGroup().getId()))
 			{
-				History.newItem(placebooks.client.PlaceBooks.historyMapper.getToken(new Group(shelf.getGroup().getId(),
+				History.newItem(placebooks.client.PlaceBooks.getToken(new Group(shelf.getGroup().getId(),
 						Group.Type.edit)), false);
 			}
 		}

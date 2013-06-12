@@ -232,7 +232,7 @@ public class PlaceBookEditor extends Page implements View<PlaceBookBinder>
 			final PlaceBook place = (PlaceBook) PlaceBooks.getPlace();
 			if (newPlacebook.getId() != null && !newPlacebook.getId().equals(place.getId()))
 			{
-				History.newItem(placebooks.client.PlaceBooks.historyMapper.getToken(new PlaceBook(newPlacebook,
+				History.newItem(placebooks.client.PlaceBooks.getToken(new PlaceBook(newPlacebook,
 						PlaceBook.Type.edit)), false);
 			}
 		}

@@ -26,7 +26,7 @@ public class PlaceBooks implements EntryPoint
 	private static final EventBus eventBus = new SimpleEventBus();
 	private static final PlaceController placeController = new PlaceController(eventBus);
 
-	public static final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
+	private static final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 
 	public static Place getPlace()
 	{
@@ -46,6 +46,11 @@ public class PlaceBooks implements EntryPoint
 	public static void goTo(final PlaceBookPlace place)
 	{
 		placeController.goTo(place);
+	}
+	
+	public static String getToken(final PlaceBookPlace place)
+	{
+		return historyMapper.getToken(place);
 	}
 
 	private SimplePanel appWidget = new SimplePanel();

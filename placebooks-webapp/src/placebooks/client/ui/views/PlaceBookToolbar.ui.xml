@@ -53,20 +53,38 @@
 			float: right;
 			margin-right: 50px;
 		}
+
+		.link a {
+			color: #ccc;			
+			text-decoration: none;
+			padding: 0 10px;
+			display: block;
+		}
+
+		.link img {
+			margin: 0 5px -2px 0;
+		}
+
+
+		.link a:HOVER {
+			color: #fff;
+			background-color: rgba(128, 128, 128, 0.3);
+			text-decoration: none;
+		}
 	</ui:style>	
 	<ui:with field='styles' type='placebooks.client.ui.styles.Styles'/>
 	<ui:with field='images' type='placebooks.client.ui.images.Images'/>
 	<g:FlowPanel styleName="{style.toolbar}">
-		<w:ToolbarItem ui:field="homeItem" addStyleNames="{style.left}"><ui:msg>PlaceBooks</ui:msg></w:ToolbarItem>
-		<w:ToolbarItem ui:field="createItem" addStyleNames="{style.left}" image="{images.toolbar_create}"><ui:msg>Create</ui:msg></w:ToolbarItem>
-		<w:ToolbarItem ui:field="libraryItem" addStyleNames="{style.left}" image="{images.toolbar_library}"><ui:msg>My Library</ui:msg></w:ToolbarItem>
+		<w:ToolbarLink ui:field="homeItem" addStyleNames="{style.link} {style.left}"><img /><ui:msg>PlaceBooks</ui:msg></w:ToolbarLink>
+		<w:ToolbarLink ui:field="createItem" addStyleNames="{style.link} {style.left}" resource="{images.toolbar_create}"><ui:msg>Create</ui:msg></w:ToolbarLink>
+		<w:ToolbarLink ui:field="libraryItem" addStyleNames="{style.link} {style.left}" resource="{images.toolbar_library}"><ui:msg>My Library</ui:msg></w:ToolbarLink>
 		<g:FlowPanel styleName="{style.toolbarLogin}" ui:field="loginPanel">
 			<w:ToolbarItem ui:field="loginLabel" addStyleNames="{style.loginItem}"><ui:msg>Login</ui:msg></w:ToolbarItem>		
 			<g:InlineLabel> | </g:InlineLabel>
 			<w:ToolbarItem ui:field="signupLabel" addStyleNames="{style.loginItem}"><ui:msg>SignUp</ui:msg></w:ToolbarItem>			
 		</g:FlowPanel>
 		<w:ToolbarItem addStyleNames="{style.toolbarLogin}" ui:field="accountItem" />
-		<w:ToolbarItem addStyleNames="{style.toolbarLogin}" ui:field="languageItem" />
+		<w:ToolbarLink addStyleNames="{style.link} {style.toolbarLogin}" ui:field="languageItem" />
 		<w:DropMenu ui:field="dropMenu" styleName="{style.toolbarMenu}">
 			<g:FlowPanel ui:field="languagePanel"></g:FlowPanel>
 			<g:Label ui:field="groups" styleName="{style.toolbarMenuItem}"><ui:msg>Groups</ui:msg></g:Label>			
