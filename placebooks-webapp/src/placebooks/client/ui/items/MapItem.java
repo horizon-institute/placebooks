@@ -14,7 +14,6 @@ import placebooks.client.ui.items.maps.LonLat;
 import placebooks.client.ui.items.maps.Map;
 import placebooks.client.ui.items.maps.Marker;
 import placebooks.client.ui.items.maps.MarkerLayer;
-import placebooks.client.ui.items.maps.OSLayer;
 import placebooks.client.ui.items.maps.OSMLayer;
 import placebooks.client.ui.items.maps.RouteLayer;
 import placebooks.client.ui.views.View;
@@ -44,7 +43,7 @@ public class MapItem extends PlaceBookItemView
 
 	private SimplePanel panel = new SimplePanel();
 
-	private PlaceBookItem positionItem = null;
+	private PlaceBookItemController positionItem = null;
 
 	private RouteLayer routeLayer;
 
@@ -74,7 +73,7 @@ public class MapItem extends PlaceBookItemView
 		createMap();
 	}
 
-	public void moveMarker(final PlaceBookItem item, final ChangeHandler changeHandler)
+	public void moveMarker(final PlaceBookItemController item, final ChangeHandler changeHandler)
 	{
 		positionItem = item;
 		refreshMarkers();
@@ -88,12 +87,13 @@ public class MapItem extends PlaceBookItemView
 																						map.getDisplayProjection());
 				if (positionItem != null)
 				{
-					// Log.info("Clicked at " + lonLat);
-					positionItem.setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
-
+					Log.info("Clicked at " + lonLat);
+					positionItem.getItem().setGeometry(POINT_PREFIX + lonLat.getLat() + " " + lonLat.getLon() + ")");
+					positionItem.markChanged();
+					Log.info("Item GEOM: " + positionItem.getItem().getGeometry());
+					
 					fireChanged();
 					fireFocusChanged(true);
-					getController().markChanged();
 					refreshMarkers();
 					changeHandler.onChange(null);
 					createGeometry();

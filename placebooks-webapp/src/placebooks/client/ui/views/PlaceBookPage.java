@@ -13,12 +13,11 @@ import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PlaceBookPage extends Composite
+public class PlaceBookPage extends CompositeView<PlaceBook>
 {
 	interface PlaceBookPageUiBinder extends UiBinder<Widget, PlaceBookPage>
 	{
@@ -126,7 +125,7 @@ public class PlaceBookPage extends Composite
 		reflow();
 	}
 
-	public void update(final PlaceBook newPage)
+	public void itemChanged(final PlaceBook newPage)
 	{
 		page = newPage;
 		page.removeMetadata("tempID");
@@ -136,7 +135,7 @@ public class PlaceBookPage extends Composite
 			final PlaceBookItemFrame frame = getFrame(item);
 			if (frame != null)
 			{
-				frame.getItemWidget().itemChanged(item);
+				frame.getItemWidget().getController().setItem(item);
 			}
 			else
 			{

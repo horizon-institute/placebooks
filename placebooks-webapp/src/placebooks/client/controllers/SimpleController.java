@@ -1,6 +1,6 @@
 package placebooks.client.controllers;
 
-public interface SomethingController<T> extends Controller<T>
+public interface SimpleController<T> extends Controller<T>
 {
 	public void add(final ControllerStateListener listener);
 

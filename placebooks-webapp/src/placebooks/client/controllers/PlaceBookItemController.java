@@ -1,23 +1,22 @@
 package placebooks.client.controllers;
 
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookItem;
 
 public class PlaceBookItemController extends DelegateController<PlaceBookItem>
 {
-	private PlaceBookItem item;
-
 	private final boolean canEdit;
 
-	public PlaceBookItemController(final PlaceBookItem item, final SomethingController<?> controller)
+	public PlaceBookItemController(final PlaceBookItem item, final SimpleController<?> controller)
 	{
 		super(controller);
 		canEdit = false;
 		setItem(item);
 	}
 
-	public PlaceBookItemController(final PlaceBookItem item, final SomethingController<?> controller, final boolean canEdit)
+	public PlaceBookItemController(final PlaceBookItem item, final SimpleController<?> controller, final boolean canEdit)
 	{
 		super(controller);
 		this.canEdit = canEdit;
@@ -27,12 +26,6 @@ public class PlaceBookItemController extends DelegateController<PlaceBookItem>
 	public boolean canEdit()
 	{
 		return canEdit;
-	}
-
-	@Override
-	public PlaceBookItem getItem()
-	{
-		return item;
 	}
 
 	public PlaceBookBinder getPlaceBook()
@@ -45,6 +38,35 @@ public class PlaceBookItemController extends DelegateController<PlaceBookItem>
 	{
 		// TODO!
 	}
+	
+	public void removeParameter(final String name)
+	{
+		if(getItem().hasParameter(name))
+		{
+			Log.info("Removed " + name + " parameter");
+			getItem().removeParameter(name);
+			markChanged();
+		}
+	}
+	
+	public void setParameter(final String name, final int value)
+	{
+		if(getItem().hasParameter(name))
+		{
+			int oldValue = getItem().getParameter(name);
+			if(oldValue != value)
+			{
+				Log.info("Set " + name + " parameter to " + value);				
+				markChanged();
+			}
+		}
+		else
+		{
+			Log.info("Set " + name + " parameter to " + value);			
+			markChanged();			
+		}
+		getItem().setParameter(name, value);
+	}
 
 	public void gotoPage(final PlaceBook page)
 	{
@@ -53,6 +75,11 @@ public class PlaceBookItemController extends DelegateController<PlaceBookItem>
 
 	public void setItem(final PlaceBookItem item)
 	{
-		this.item = item;
+		if(item.getKey() != null)
+		{
+			item.removeMetadata("tempID");
+		}
+		
+		super.setItem(item);		
 	}
 }

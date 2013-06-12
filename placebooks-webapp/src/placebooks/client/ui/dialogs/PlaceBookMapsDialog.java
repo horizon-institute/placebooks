@@ -3,12 +3,12 @@ package placebooks.client.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
+import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.logger.Log;
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.images.markers.Markers;
 import placebooks.client.ui.items.MapItem;
-import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
-import placebooks.client.ui.views.DragController;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
@@ -83,18 +83,14 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 	private MapItem map;
 
-	private final PlaceBookItemView item;
+	private final PlaceBookItemController item;
 	private final List<PlaceBookItemFrame> mapItems;
-
-	private final DragController controller;
 
 	private final CellList<ImageResource> markers;
 
-	public PlaceBookMapsDialog(final PlaceBookItemView item, final List<PlaceBookItemFrame> mapItems,
-			final DragController controller)
+	public PlaceBookMapsDialog(final PlaceBookItemController item, final List<PlaceBookItemFrame> mapItems)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
-		this.controller = controller;
 		this.item = item;
 		this.mapItems = mapItems;
 		setTitle(uiMessages.locateOnMap(item.getItem().getMetadata("title", "Item")));
@@ -128,6 +124,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 		markers.setRowData(markerList);
 
 		final SingleSelectionModel<ImageResource> selectionModel = new SingleSelectionModel<ImageResource>();
+		selectionModel.setSelected(item.getItem().getMarkerImage(), true);		
 		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler()
 		{
 			@Override
@@ -138,30 +135,26 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 				{
 					if (marker.getName().equals("marker"))
 					{
-						item.getItem().removeParameter("marker");
+						item.removeParameter("marker");
 					}
 					else
 					{
 						final int markerIndex = marker.getName().charAt(6);
-						item.getItem().setParameter("marker", markerIndex);
+						item.setParameter("marker", markerIndex);
 					}
 				}
 				catch (final Exception e)
 				{
-					item.getItem().removeParameter("marker");
+					item.removeParameter("marker");
 				}
 				markerShow(null);
 				if (map != null)
 				{
 					map.refreshMarkers();
 				}
-				controller.markChanged();
-				item.refresh();
 			}
 		});
 		markers.setSelectionModel(selectionModel);
-
-		selectionModel.setSelected(item.getItem().getMarkerImage(), true);
 
 		markerListPanel.add(markers);
 
@@ -185,7 +178,8 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 			selectMap(Integer.parseInt(value));
 		}
 
-		controller.markChanged();
+		Log.info("Map Select");		
+		item.markChanged();
 		// item.getItem().setMetadata("mapItemID", mapItems.iterator().next().getKey());
 		// item.getItemWidget().refresh();
 		// controller.getContext().markChanged();
@@ -196,14 +190,12 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	{
 		if (markerShow.getValue())
 		{
-			item.getItem().setParameter("markerShow", 1);
+			item.setParameter("markerShow", 1);
 		}
 		else
 		{
-			item.getItem().removeParameter("markerShow");
+			item.removeParameter("markerShow");
 		}
-		controller.markChanged();
-		item.refresh();
 	}
 
 	private void onInitialize()
@@ -233,11 +225,11 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 	{
 		if (page == -1)
 		{
-			item.getItem().removeParameter("mapPage");
+			item.removeParameter("mapPage");
 		}
 		else
 		{
-			item.getItem().setParameter("mapPage", page);
+			item.setParameter("mapPage", page);
 		}
 
 		mapPanel.clear();
@@ -265,7 +257,7 @@ public class PlaceBookMapsDialog extends PlaceBookDialog
 
 					mapPanel.add(map);
 
-					map.moveMarker(item.getItem(), new ChangeHandler()
+					map.moveMarker(item, new ChangeHandler()
 					{
 						@Override
 						public void onChange(final ChangeEvent event)

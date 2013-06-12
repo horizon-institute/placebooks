@@ -4,7 +4,7 @@ import placebooks.client.PlaceBooks;
 import placebooks.client.controllers.ControllerState;
 import placebooks.client.controllers.ControllerStateListener;
 import placebooks.client.controllers.ServerInfoController;
-import placebooks.client.controllers.SomethingController;
+import placebooks.client.controllers.SimpleController;
 import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.model.PlaceBookItem.ItemType;
@@ -61,9 +61,9 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 
 	private final PlaceBookItemView item;
 
-	private final SomethingController<?> controller;
+	private final SimpleController<?> controller;
 
-	public PlaceBookUploadDialog(final SomethingController<?> controller, final PlaceBookItemView item)
+	public PlaceBookUploadDialog(final SimpleController<?> controller, final PlaceBookItemView item)
 	{
 		setWidget(uiBinder.createAndBindUi(this));
 

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class AbstractController<U> extends CachedController<U> implements AsyncCallback<U>,
-		SomethingController<U>
+		SimpleController<U>
 {
 	private ControllerState state = ControllerState.saved;
 

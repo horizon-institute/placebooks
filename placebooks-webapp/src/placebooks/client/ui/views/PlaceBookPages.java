@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import placebooks.client.PlaceBooks;
-import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBook;
 import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.ui.UIMessages;
@@ -299,7 +298,7 @@ public class PlaceBookPages extends CompositeView<PlaceBookBinder>
 			final PlaceBookPage pageUI = getPage(page);
 			if (pageUI != null)
 			{
-				pageUI.update(page);
+				pageUI.itemChanged(page);
 			}
 			else
 			{

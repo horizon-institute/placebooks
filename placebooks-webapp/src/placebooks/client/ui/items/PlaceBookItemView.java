@@ -1,7 +1,6 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.controllers.PlaceBookItemController;
-import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookItem;
 import placebooks.client.ui.views.CompositeView;
 
@@ -42,13 +41,7 @@ public abstract class PlaceBookItemView extends CompositeView<PlaceBookItem>
 	@Override
 	public void itemChanged(final PlaceBookItem newItem)
 	{
-		Log.info("Item " + newItem.getKey() + " updated");
-		controller.setItem(newItem);
-		if(newItem.getKey() != null)
-		{
-			newItem.removeMetadata("tempID");
-		}
-
+		//Log.info("Item " + newItem.getKey() + " updated");
 		refresh();
 	}
 
