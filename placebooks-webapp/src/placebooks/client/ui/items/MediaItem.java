@@ -1,6 +1,7 @@
 package placebooks.client.ui.items;
 
 import placebooks.client.controllers.PlaceBookItemController;
+import placebooks.client.logger.Log;
 import placebooks.client.model.PlaceBookItem.ItemType;
 import placebooks.client.ui.UIMessages;
 import placebooks.client.ui.dialogs.PlaceBookUploadDialog;
@@ -58,6 +59,7 @@ public abstract class MediaItem extends PlaceBookItemView
 	@Override
 	public void refresh()
 	{
+		Log.info("Refreshed Media Item");
 		if (getItem().showMarker())
 		{
 			markerImage.setResource(getItem().getMarkerImage());

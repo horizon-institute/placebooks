@@ -320,7 +320,7 @@ public class PlaceBookEditor extends Page implements View<PlaceBookBinder>
 	void handleTitleEdit(final KeyUpEvent event)
 	{
 		bookPanel.getPlaceBook().setMetadata("title", title.getText());
-		controller.markChanged();
+		controller.markChanged(false);
 	}
 
 	@UiHandler("zoomIn")

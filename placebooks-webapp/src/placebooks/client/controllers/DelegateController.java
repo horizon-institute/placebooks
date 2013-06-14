@@ -43,7 +43,19 @@ public abstract class DelegateController<T> extends ControllerBase<T> implements
 	@Override
 	public void markChanged()
 	{
-		controller.markChanged();
+		markChanged(true);
+	}
+	
+	
+
+	@Override
+	public void markChanged(boolean refresh)
+	{
+		controller.markChanged(false);
+		if(refresh)
+		{
+			fireChange();
+		}
 	}
 
 	@Override

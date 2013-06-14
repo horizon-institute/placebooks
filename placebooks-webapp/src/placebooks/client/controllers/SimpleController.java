@@ -7,6 +7,8 @@ public interface SimpleController<T> extends Controller<T>
 	public ControllerState getState();
 
 	public void markChanged();
+	
+	public void markChanged(final boolean refresh);	
 
 	public void pause();
 

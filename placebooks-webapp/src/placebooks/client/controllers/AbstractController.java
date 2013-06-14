@@ -61,6 +61,11 @@ public abstract class AbstractController<U> extends CachedController<U> implemen
 	@Override
 	public void markChanged()
 	{
+		markChanged(true);
+	}
+
+	public void markChanged(final boolean refresh)
+	{
 		timer.cancel();
 		timer.schedule(saveDelay);
 		lastChange = new Date().getTime();
@@ -68,10 +73,13 @@ public abstract class AbstractController<U> extends CachedController<U> implemen
 		{
 			setState(ControllerState.not_saved);
 		}
-		setItem(getItem());
-		// changed = true;
+		if(refresh)
+		{
+			setItem(getItem());
+		}
+		// changed = true;		
 	}
-
+	
 	@Override
 	public void onFailure(final Throwable throwable)
 	{
