@@ -11,6 +11,7 @@ import placebooks.client.model.PlaceBookBinder;
 import placebooks.client.model.PlaceBookGroup;
 import placebooks.client.model.User;
 import placebooks.client.ui.UIMessages;
+import placebooks.client.ui.dialogs.PlaceBookDialog;
 import placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 import placebooks.client.ui.pages.places.Group;
 import placebooks.client.ui.pages.places.Home;
@@ -23,6 +24,7 @@ import placebooks.client.ui.widgets.FacebookLikeButton;
 import placebooks.client.ui.widgets.GooglePlusOne;
 import placebooks.client.ui.widgets.ProgressPanel;
 import placebooks.client.ui.widgets.ToolbarItem;
+import placebooks.client.ui.widgets.ToolbarLink;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,6 +39,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -51,8 +54,8 @@ public class PlaceBookView extends Page implements View<PlaceBookBinder>
 		String groupTag();
 
 		String menuItem();
-
-		String right();
+	
+		String inline();
 	}
 
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
@@ -95,8 +98,14 @@ public class PlaceBookView extends Page implements View<PlaceBookBinder>
 	FacebookLikeButton facebookLike;
 
 	@UiField
+	Image qrcode;
+	
+	@UiField
 	Label titleLabel;
 
+	@UiField
+	FlowPanel groups;
+	
 	@UiField
 	ProgressPanel loadingPanel;
 
@@ -162,6 +171,26 @@ public class PlaceBookView extends Page implements View<PlaceBookBinder>
 		return preview;
 	}
 
+	@UiHandler("qrcode")
+	void showQRCode(ClickEvent event)
+	{
+		PlaceBookDialog dialog = new PlaceBookDialog()
+		{
+			
+		};
+		if (controller.getItem().hasMetadata("title"))
+		{
+			dialog.setTitle("QR Code for " + controller.getItem().getMetadata("title"));
+		}
+		else
+		{
+			dialog.setTitle("QR Code");
+		}
+
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId()));
+		dialog.show();
+	}
+	
 	public PlaceBookPages getCanvas()
 	{
 		return bookPanel;
@@ -177,6 +206,8 @@ public class PlaceBookView extends Page implements View<PlaceBookBinder>
 		authorLabel.setHref("mailto:" + placebook.getOwner().getEmail());
 
 		infoPanel.setVisible(true);
+		
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId());			
 
 		if ("PUBLISHED".equals(placebook.getState()))
 		{
@@ -286,28 +317,16 @@ public class PlaceBookView extends Page implements View<PlaceBookBinder>
 			actionMenu.setVisible(false);
 		}
 
-		for (final Widget widget : infoPanel)
-		{
-			if (widget instanceof Label)
-			{
-				infoPanel.remove(widget);
-			}
-		}
-
+		groups.clear();
+		
 		for (final PlaceBookGroup group : controller.getItem().getGroups())
 		{
-			final Label label = new Label(group.getTitle());
-			label.setStyleName(style.groupTag());
-			label.addStyleName(style.right());
-			label.addClickHandler(new ClickHandler()
-			{
-				@Override
-				public void onClick(final ClickEvent event)
-				{
-					PlaceBooks.goTo(new Group(group.getId()));
-				}
-			});
-			infoPanel.insert(label, 1);
+			final ToolbarLink link = new ToolbarLink();
+			link.setText(group.getTitle());
+			link.setStyleName(style.groupTag());
+			link.addStyleName(style.inline());
+			link.setURL(GWT.getHostPageBaseURL() + "#" + PlaceBooks.getToken(new Group(group.getId())));
+			groups.add(link);
 		}
 
 		bookPanel.resized();

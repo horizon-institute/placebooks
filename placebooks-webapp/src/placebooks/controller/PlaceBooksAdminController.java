@@ -11,9 +11,12 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,6 +71,7 @@ import placebooks.model.json.UserShelf;
 import placebooks.services.Service;
 import placebooks.services.ServiceRegistry;
 
+import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -164,6 +168,8 @@ public class PlaceBooksAdminController
 	private final ObjectMapper jsonMapper = new ObjectMapper();
 
 	private static final int MEGABYTE = 1048576;
+
+	private final static LinkedList<String> recentBooks = new LinkedList<String>();
 
 	public PlaceBooksAdminController()
 	{
@@ -534,6 +540,81 @@ public class PlaceBooksAdminController
 		}).start();
 	}
 
+	private void placebookViewed(final String key)
+	{
+		while (recentBooks.remove(key))
+		{
+		}
+
+		while(recentBooks.size() >= 10)
+		{
+			recentBooks.removeLast();
+		}
+		
+		recentBooks.addFirst(key);
+	}
+
+	@RequestMapping(value = "/atom/recent", method = RequestMethod.GET)
+	public void getRecentPlaceBooksAtom(final HttpServletRequest req, final HttpServletResponse res)
+	{
+		final EntityManager entityManager = EMFSingleton.getEntityManager();
+		final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+		try
+		{
+			final PrintWriter writer = res.getWriter();
+			res.setContentType("application/atom+xml; charset=UTF-8");
+			writer.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+			writer.println();
+			writer.println("<feed xmlns=\"http://www.w3.org/2005/Atom\">");
+			writer.println("<title>Recent PlaceBooks</title>");
+
+			try
+			{
+				final int index = req.getRequestURL().indexOf("placebooks/a/");
+				final String url = req.getRequestURL().substring(0, index);
+				final User user = UserManager.getCurrentUser(entityManager);
+
+				writer.println("<updated>" + formatter.format(new Date()) + "</updated>");
+				writer.println("<id>" + req.getRequestURL() + "</id>");
+
+				for (String key : recentBooks)
+				{
+					final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, key);
+					if (placebook != null && placebook.canBeRead(user))
+					{
+						writer.println("<entry>");
+						writer.println("<title>" + placebook.getMetadata().get("title") + "</title>");
+						writer.println("<summary>" + placebook.getMetadata().get("description") + "</summary>");
+						writer.println("<id>" + url + "#placebook:" + key + "</id>");
+						writer.println("<updated>" + formatter.format(placebook.getTimestamp()) + "</updated>");
+						writer.println("<link rel=\"self\" href=\"" + url + "#placebook:" + key + "\" />");
+						writer.println("<link rel=\"enclosure\" href=\"" + url + "/placebooks/a/admin/package/" + key
+								+ "\" />");
+						writer.println("<link rel=\"edit\" href=\"" + url + "#placebook:edit:" + key + "\" />");
+
+						writer.println("</entry>");
+					}
+				}
+			}
+			catch (final Throwable e)
+			{
+				log.error(e);
+			}
+			finally
+			{
+				entityManager.close();
+
+				writer.println("</feed>");
+				res.flushBuffer();
+			}
+		}
+		catch (Exception e)
+		{
+			log.error(e);
+		}
+	}
+
 	@RequestMapping(value = "/placebookbinder/{key}", method = RequestMethod.GET)
 	public void getPlaceBookBinderJSON(final HttpServletResponse res, @PathVariable("key") final String key)
 	{
@@ -564,6 +645,7 @@ public class PlaceBooksAdminController
 
 				try
 				{
+					placebookViewed(key);
 					res.setContentType("application/json; charset=UTF-8");
 					jsonMapper.writeValue(res.getWriter(), placebook);
 					res.flushBuffer();
@@ -983,9 +1065,9 @@ public class PlaceBooksAdminController
 		}
 	}
 
-	@RequestMapping(value = "/qrcode/{key}", method = RequestMethod.GET)
+	@RequestMapping(value = "/qrcode/{type}/{key}", method = RequestMethod.GET)
 	public void qrcode(final HttpServletRequest req, final HttpServletResponse res,
-			@PathVariable("key") final String key)
+			@PathVariable("type") final String type, @PathVariable("key") final String key)
 	{
 
 		try
@@ -994,21 +1076,21 @@ public class PlaceBooksAdminController
 
 			final String eTag = key;
 
-			final String ifNoneMatch = req.getHeader("If-None-Match");
-			if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag))
-			{
-				res.setHeader("ETag", eTag);
-				res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-				return;
-			}
-
-			final long ifModifiedSince = req.getDateHeader("If-Modified-Since");
-			if (ifNoneMatch == null && ifModifiedSince != -1)
-			{
-				res.setHeader("ETag", eTag);
-				res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-				return;
-			}
+			// final String ifNoneMatch = req.getHeader("If-None-Match");
+			// if (ifNoneMatch != null && MediaHelper.matches(ifNoneMatch, eTag))
+			// {
+			// res.setHeader("ETag", eTag);
+			// res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+			// return;
+			// }
+			//
+			// final long ifModifiedSince = req.getDateHeader("If-Modified-Since");
+			// if (ifNoneMatch == null && ifModifiedSince != -1)
+			// {
+			// res.setHeader("ETag", eTag);
+			// res.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+			// return;
+			// }
 
 			final String ifMatch = req.getHeader("If-Match");
 			if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag))
@@ -1020,9 +1102,14 @@ public class PlaceBooksAdminController
 			final QRCodeWriter writer = new QRCodeWriter();
 			try
 			{
-				final String url = "http://www.placebooks.org/index.html#placebook:" + key;
+				int index = req.getRequestURL().indexOf("placebooks/a/qrcode");
+
+				final String url = req.getRequestURL().substring(0, index) + "?utm_medium=qrcode&utm_source=qrcode#"
+						+ type + ":" + key;
+				log.debug(url);
 				final BitMatrix matrix = writer.encode(url, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
-				final BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix);
+				final MatrixToImageConfig config = new MatrixToImageConfig(MatrixToImageConfig.BLACK, 0x00FFFFFF);
+				final BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix, config);
 
 				res.reset();
 

@@ -22,7 +22,8 @@
 
 		.actionMenu {
 			font: 16px verdana, arial, sans-serif;
-			padding: 5px;
+			padding: 7px 15px 8px !important;
+			border-radius: 5px;
 		}
 		
 		.dropArrow {
@@ -41,14 +42,6 @@
 			padding: 7px 0;
 		}
 		
-		.groupTag {
-			padding: 3px 8px;
-			background: #999;
-			border-radius: 3px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
-
 		.bookPanel {
 			position: absolute;
 			top: 51px;
@@ -59,24 +52,40 @@
 		
 		.right {
 			float: right;
-			margin-top: 15px;
+			display: -webkit-flex;
+			-webkit-align-items: center; 
+		}
+
+		.inline {
+			display: inline-block;
 		}
 
 		.qrcode {
 			cursor: pointer;
 			width: 50px;
 			height: 50px;
-			margin: 0 10px;
+			margin-right: 10px;
+		}
+
+		.android {
+			height: 35px;
+			margin-right: 10px;
+			float: right;
+			display: inline-block;
 		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
-  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.right}" />			    			
-				<w:ToolbarItem ui:field="back"
-					addStyleNames="{style.actionMenu} {style.right}"><ui:msg>Back</ui:msg></w:ToolbarItem>				    
-				<w:GooglePlusOne ui:field="googlePlus" styleName="{style.right}" />
-				<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.right}" />
+			    <g:FlowPanel styleName="{style.right}">		    						
+					<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.inline}" />			        				    
+					<w:GooglePlusOne ui:field="googlePlus" styleName="{style.inline}" />
+					<w:AndroidLink styleName="{style.android}" package="com.peoplescollection.placebooks" />					
+	  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.inline}" />					
+					<w:ToolbarItem ui:field="back"
+						addStyleNames="{style.actionMenu} {style.inline}"><ui:msg>Back</ui:msg></w:ToolbarItem>			    
+										
+				</g:FlowPanel>
 				<g:FlowPanel styleName="{style.titleBlock}">
 					<g:Label ui:field="titleLabel" styleName="{style.title}" />
 					<g:FlowPanel>

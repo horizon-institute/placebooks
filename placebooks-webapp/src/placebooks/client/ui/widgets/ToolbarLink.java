@@ -1,6 +1,8 @@
 package placebooks.client.ui.widgets;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -22,6 +24,21 @@ public class ToolbarLink extends Widget implements HasText
 	public ToolbarLink()
 	{
 		setElement(DOM.createDiv());
+
+		addDomHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				if (!(event.getNativeEvent() instanceof Event)) { return; }
+				if ((url.startsWith("#") || (url.contains("#") && (url.startsWith(GWT.getHostPageBaseURL()))))
+						&& impl.handleAsClick((Event) event.getNativeEvent()))
+				{
+					History.newItem(url.substring(url.indexOf('#') + 1));
+					event.preventDefault();
+				}
+			}
+		}, ClickEvent.getType());
 	}
 
 	@Override
@@ -33,20 +50,6 @@ public class ToolbarLink extends Widget implements HasText
 	public boolean isEnabled()
 	{
 		return enabled;
-	}
-
-	@Override
-	public void onBrowserEvent(final Event event)
-	{
-		super.onBrowserEvent(event);
-		if (DOM.eventGetType(event) == Event.ONCLICK && impl.handleAsClick(event))
-		{
-			if(url.startsWith("#"))
-			{
-				History.newItem(url.substring(1));
-				DOM.eventPreventDefault(event);
-			}
-		}
 	}
 
 	public void setEnabled(final boolean enabled)

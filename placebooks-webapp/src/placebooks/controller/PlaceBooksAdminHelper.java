@@ -119,7 +119,7 @@ public final class PlaceBooksAdminHelper
 					if (p.getGeometry() != null)
 					{
 						em.getTransaction().begin();
-						final MapMetadata md = TileHelper.getMap(p);
+						final MapMetadata md = OSMTileHelper.getMap(p);
 						p.setGeometry(md.getBoundingBox());
 						final MapImageItem mii = new MapImageItem(null, null, null, null);
 						p.addItem(mii);
@@ -138,7 +138,7 @@ public final class PlaceBooksAdminHelper
 							{
 								if (!(pbi instanceof GPSTraceItem) && pbi.getMetadataValue("mapItemID") != null)
 								{
-									final MapMetadata md_ = TileHelper.getMap(pbi);
+									final MapMetadata md_ = OSMTileHelper.getMap(pbi);
 									final MapImageItem mii_ = new MapImageItem(null, null, null, null);
 									mii_.setPlaceBook(p);
 									mii_.setOwner(p.getOwner());

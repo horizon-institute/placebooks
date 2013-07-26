@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import placebooks.client.logger.Log;
 import placebooks.client.ui.items.PlaceBookItemView;
 import placebooks.client.ui.items.frames.PlaceBookItemFrame;
 

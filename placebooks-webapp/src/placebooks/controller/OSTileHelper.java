@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-public final class TileHelper
+public final class OSTileHelper
 {
 
 	private static final class MapParam
@@ -38,7 +38,7 @@ public final class TileHelper
 		}
 	}
 
-	private static final Logger log = Logger.getLogger(TileHelper.class.getName());
+	private static final Logger log = Logger.getLogger(OSTileHelper.class.getName());
 	// Note, these are WGS84 converted coords from OSRefs corresponding to
 	// min/max of (0.0, 0.0) -> (800000.0, 1400000.0)
 	public static final LatLng TILE_MIN = new OSRef(0, 0).toLatLng();
@@ -74,29 +74,29 @@ public final class TileHelper
 
 		try
 		{
-			layer = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			layer = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_LAYER, "5").split(" ");
-			product = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			product = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_PRODUCT, null).split(" ");
-			incX_ = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			incX_ = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_EASTING, "1000").split(" ");
-			incY_ = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			incY_ = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_NORTHING, "1000").split(" ");
-			maxTiles_ = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			maxTiles_ = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_MAX_TILES, "100").split(" ");
-			pixelX = Integer.parseInt(PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			pixelX = Integer.parseInt(PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_X, "200"));
-			pixelY = Integer.parseInt(PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			pixelY = Integer.parseInt(PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_PIXEL_Y, "200"));
-			fmt = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			fmt = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_FMT, "png").toLowerCase().trim();
-			maxAttempts = Integer.parseInt(PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			maxAttempts = Integer.parseInt(PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_MAX_ATTEMPTS, "10"));
-			square = Boolean.parseBoolean(PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			square = Boolean.parseBoolean(PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_SQUARE, "true"));
-			singleMap = Boolean.parseBoolean(PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			singleMap = Boolean.parseBoolean(PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_TILER_SINGLE_MAP, "true"));
-			mediaPath = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+			mediaPath = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
 
 		}
@@ -322,13 +322,13 @@ public final class TileHelper
 	private static final String buildOpenSpaceQuery(final String layer, final int blockSizeX, final int blockSizeY,
 			final int width, final int height, final OSRef ref, final String format, final String product)
 	{
-		final String baseURL = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+		final String baseURL = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_BASEURL, "");
 
-		final String host = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+		final String host = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_HOST, "");
 
-		final String apiKey = PropertiesSingleton.get(TileHelper.class.getClassLoader())
+		final String apiKey = PropertiesSingleton.get(OSTileHelper.class.getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_OPENSPACE_APIKEY, "");
 
 		final int x1 = (int) ref.getEasting();

@@ -12,69 +12,82 @@ public class GoogleAnalytics
 		init(userAccount);
 	}
 
-	public native void addAccount(String trackerName, String userAccount) /*-{
-																			$wnd._gaq.push([ '" + trackerName + "._setAccount', '" + userAccount + "' ]);
-																			}-*/;
+	public native void addAccount(String trackerName, String userAccount)
+	/*-{
+		$wnd._gaq.push([ '" + trackerName + "._setAccount', '" + userAccount + "' ]);
+	}-*/;
 
-	public native void trackEvent(String category, String action) /*-{
-																	$wnd._gaq.push([ '_trackEvent', category, action ]);
-																	}-*/;
+	public native void trackEvent(String category, String action)
+	/*-{
+		$wnd._gaq.push([ '_trackEvent', category, action ]);
+	}-*/;
 
-	public native void trackEvent(String category, String action, String optLabel) /*-{
-																					$wnd._gaq.push([ '_trackEvent', category, action, optLabel ]);
-																					}-*/;
+	public native void trackEvent(String category, String action, String optLabel)
+	/*-{
+		$wnd._gaq.push([ '_trackEvent', category, action, optLabel ]);
+	}-*/;
 
-	public native void trackEvent(String category, String action, String optLabel, int optValue) /*-{
-																									$wnd._gaq.push([ '_trackEvent', category, action, optLabel, optValue ]);
-																									}-*/;
+	public native void trackEvent(String category, String action, String optLabel, int optValue)
+	/*-{
+		$wnd._gaq.push([ '_trackEvent', category, action, optLabel, optValue ]);
+	}-*/;
 
 	public native void trackEvent(String category, String action, String optLabel, int optValue,
-			boolean optNonInteraction) /*-{
-										$wnd._gaq.push([ '_trackEvent', category, action, optLabel, optValue, optNonInteraction ]);
-										}-*/;
+			boolean optNonInteraction)
+	/*-{
+		$wnd._gaq.push([ '_trackEvent', category, action, optLabel, optValue, optNonInteraction ]);
+	}-*/;
 
-	public native void trackEventWithTracker(String trackerName, String category, String action) /*-{
-																									$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action ]);
-																									}-*/;
+	public native void trackEventWithTracker(String trackerName, String category, String action)
+	/*-{
+		$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action ]);
+	}-*/;
 
-	public native void trackEventWithTracker(String trackerName, String category, String action, String optLabel) /*-{
-																													$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel ]);
-																													}-*/;
-
-	public native void trackEventWithTracker(String trackerName, String category, String action, String optLabel,
-			int optValue) /*-{
-							$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel, optValue ]);
-							}-*/;
+	public native void trackEventWithTracker(String trackerName, String category, String action, String optLabel)
+	/*-{
+		$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel ]);
+	}-*/;
 
 	public native void trackEventWithTracker(String trackerName, String category, String action, String optLabel,
-			int optValue, boolean optNonInteraction) /*-{
-														$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel, optValue, optNonInteraction ]);
-														}-*/;
+			int optValue) 
+	/*-{
+		$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel, optValue ]);
+	}-*/;
+
+	public native void trackEventWithTracker(String trackerName, String category, String action, String optLabel,
+			int optValue, boolean optNonInteraction)
+	/*-{
+		$wnd._gaq.push([ '" + trackerName + "._trackEvent', category, action, optLabel, optValue, optNonInteraction ]);
+	}-*/;
 
 	public final native void trackPage()
 	/*-{
 		$wnd._gaq.push(['_trackPageview', $wnd.location.pathname + $wnd.location.search + $wnd.location.hash]);
 	}-*/;
 
-	public native void trackPageview() /*-{
-										$wnd._gaq.push([ '_trackPageview' ]);
-										}-*/;
+	public native void trackPageview()
+	/*-{
+		$wnd._gaq.push([ '_trackPageview' ]);
+	}-*/;
 
-	public native void trackPageview(String pageName) /*-{
-														if (!pageName.match("^/") == "/") {
-														pageName = "/" + pageName;
-														}
+	public native void trackPageview(String pageName)
+	/*-{
+		if (!pageName.match("^/") == "/")
+		{
+			pageName = "/" + pageName;
+		}
+		$wnd._gaq.push([ '_trackPageview', pageName ]);
+	}-*/;
 
-														$wnd._gaq.push([ '_trackPageview', pageName ]);
-														}-*/;
+	public native void trackPageview(String trackerName, String pageName)
+	/*-{
+		if (!pageName.match("^/") == "/")
+		{
+			pageName = "/" + pageName;
+		}
 
-	public native void trackPageview(String trackerName, String pageName) /*-{
-																			if (!pageName.match("^/") == "/") {
-																			pageName = "/" + pageName;
-																			}
-
-																			$wnd._gaq.push([ '" + trackerName + "._trackPageview', pageName ]);
-																			}-*/;
+		$wnd._gaq.push([ '" + trackerName + "._trackPageview', pageName ]);
+	}-*/;
 
 	private void init(final String userAccount)
 	{

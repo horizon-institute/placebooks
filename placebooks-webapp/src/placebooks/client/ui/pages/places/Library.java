@@ -8,7 +8,7 @@ import com.google.gwt.place.shared.Prefix;
 
 public class Library extends PlaceBookPlace
 {
-	@Prefix("browse")
+	@Prefix("library")
 	public static class Tokenizer implements PlaceTokenizer<Library>
 	{
 		@Override
@@ -20,7 +20,7 @@ public class Library extends PlaceBookPlace
 		@Override
 		public String getToken(final Library place)
 		{
-			return "library";
+			return "";
 		}
 	}
 

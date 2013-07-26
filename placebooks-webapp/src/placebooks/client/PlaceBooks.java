@@ -37,7 +37,7 @@ public class PlaceBooks implements EntryPoint
 	// {
 	// return placeController;
 	// }
-
+	
 	public static PlaceBookService getServer()
 	{
 		return server;
@@ -64,8 +64,8 @@ public class PlaceBooks implements EntryPoint
 		final ActivityMapper activityMapper = new PlaceBookActivityMapper(placeController);
 		final ActivityManager activityManager = new ActivityManager(activityMapper, eventBus);
 
-		final GoogleAnalytics analytics = new GoogleAnalytics("UA-32206649-1");
-
+		final GoogleUniversalAnalytics analytics = new GoogleUniversalAnalytics("UA-7942548-5");
+  
 		eventBus.addHandler(PlaceChangeEvent.TYPE, new PlaceChangeEvent.Handler()
 		{
 			@Override
@@ -73,7 +73,12 @@ public class PlaceBooks implements EntryPoint
 			{
 				try
 				{
-					analytics.trackPage();
+					String token = historyMapper.getToken(event.getNewPlace());
+					if(token.endsWith(":") || token.endsWith(":null"))
+					{
+						token = token.substring(0, token.indexOf(':'));
+					}
+					analytics.trackPageview(token + Window.Location.getQueryString());
 				}
 				catch (final Exception e)
 				{

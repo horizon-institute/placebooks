@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.type.JavaType;
 import org.junit.Test;
 
 import placebooks.controller.EMFSingleton;

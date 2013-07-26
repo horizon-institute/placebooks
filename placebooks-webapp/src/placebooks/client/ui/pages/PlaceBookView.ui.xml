@@ -38,15 +38,24 @@
 		
 		.actionMenu {
 			font: 16px verdana, arial, sans-serif;
-			padding: 5px;
+			padding: 7px 15px 8px !important;
+			border-radius: 5px;
+			display: inline-block;
 		}
 		
-		.groupTag {
-			padding: 3px 8px;
-			background: #999;
-			border-radius: 3px;
-			margin-right: 10px;
+		.groupTag a {
+			padding: 7px 15px 8px;
+			color: #555 !important;
+			text-decoration: none;
+			border-radius: 5px;
+			border-bottom: 1px solid rgba(0,0,0,0.25);
 			cursor: pointer;
+			background: #BBB;
+			margin-right: 10px;
+		}
+
+		.groupTag a:HOVER {
+			background: #AAA;
 		}
 
 		.bookPanel {
@@ -84,17 +93,40 @@
 		
 		.right {
 			float: right;
-			margin-top: 15px;
+			display: -webkit-flex;
+			-webkit-align-items: center; 
+			height: 50px;
+		}
+
+		.android {
+			height: 35px;
+			margin-right: 10px;
+			display: inline-block;
+		}
+
+		.qrcode {
+			cursor: pointer;
+			width: 50px;
+			height: 50px;
+			margin-right: 10px;
+		}
+
+		.inline {
+			display: inline-block;
 		}
 	</ui:style>
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="printHidden">
 			<v:PlaceBookToolbar ui:field="toolbar" />
 			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
-				<w:ToolbarItem ui:field="actionMenu"
-					addStyleNames="{style.actionMenu} {style.right}"><ui:msg>Actions</ui:msg></w:ToolbarItem>				
-				<w:GooglePlusOne ui:field="googlePlus" styleName="{style.right}" />
-				<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.right}" />
+			    <g:FlowPanel styleName="{style.right}">
+					<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.inline}" />
+	   				<w:GooglePlusOne ui:field="googlePlus" styleName="{style.inline}" />
+	   				<g:FlowPanel ui:field="groups" styleName="{style.inline}" />
+					<w:AndroidLink styleName="{style.android}" package="com.peoplescollection.placebooks" />
+	  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.inline}" />					
+					<w:ToolbarItem ui:field="actionMenu" addStyleNames="{style.actionMenu}"><ui:msg>Actions</ui:msg></w:ToolbarItem>							
+				</g:FlowPanel>	
 				<g:FlowPanel styleName="{style.titleBlock}">
 					<g:Label ui:field="titleLabel" styleName="{style.title}" />
 					<g:FlowPanel>

@@ -15,7 +15,6 @@ import placebooks.client.ui.views.View;
 import placebooks.client.ui.widgets.FacebookLikeButton;
 import placebooks.client.ui.widgets.GooglePlusOne;
 import placebooks.client.ui.widgets.ProgressPanel;
-import placebooks.client.ui.widgets.ToolbarItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,7 +25,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -143,7 +141,7 @@ public class KioskPlaceBookView extends Page implements View<PlaceBookBinder>
 
 		infoPanel.setVisible(true);
 		
-		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/" + controller.getItem().getId());		
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId());		
 
 		if ("PUBLISHED".equals(placebook.getState()))
 		{
@@ -189,7 +187,7 @@ public class KioskPlaceBookView extends Page implements View<PlaceBookBinder>
 			dialog.setTitle("QR Code");
 		}
 
-		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/" + controller.getItem().getId()));
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId()));
 		dialog.show();
 	}
 	
