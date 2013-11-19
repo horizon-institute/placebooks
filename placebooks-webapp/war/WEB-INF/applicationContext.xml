@@ -14,7 +14,7 @@
 	   http://www.springframework.org/schema/security/spring-security.xsd">
 	   
 	<bean id="userDetailsService" 
-		  class="placebooks.controller.PlaceBooksUserDetailsService" />
+		  class="org.placebooks.controller.PlaceBooksUserDetailsService" />
 	
 	<security:authentication-manager>
 		<security:authentication-provider user-service-ref='userDetailsService'>

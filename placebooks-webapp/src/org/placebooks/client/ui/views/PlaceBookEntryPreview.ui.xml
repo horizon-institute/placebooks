@@ -1,0 +1,37 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.image {
+			width: 160px;
+			float: left;
+			margin-right: 30px;
+		}
+		
+		.title {
+			color: #384A6B;
+			font-weight: bold;
+			font-size: 18px;
+		}
+		
+		.author {
+			color: #4E81B2;
+			margin-bottom: 3px;
+		}
+		
+		.bookpreview { 
+			margin: 10px;
+			padding: 10px 15px;
+			height: 302px;
+			background-repeat: no-repeat;
+			cursor: pointer;			
+		}		
+	</ui:style>
+	<ui:with field='styles' type='org.placebooks.client.ui.styles.Styles'/>		
+	<g:FlowPanel styleName="{style.bookpreview}" ui:field="container">
+		<g:Label styleName="{style.title}" ui:field="title" />
+		<g:Label styleName="{style.author}" ui:field="author" />
+		<g:Image styleName="{style.image}" ui:field="image" />		
+		<g:Label ui:field="description" />
+	</g:FlowPanel>
+</ui:UiBinder> 

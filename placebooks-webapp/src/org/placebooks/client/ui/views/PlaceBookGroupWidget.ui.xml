@@ -1,0 +1,54 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:w="urn:import:org.placebooks.client.ui.widgets"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.placebookEntry {
+			padding: 5px;
+			margin: 0;
+			width: 150px;
+			text-align: center;
+			border-radius: 16px;
+			display: inline-block;
+			vertical-align: top;
+			position: relative;
+			cursor: pointer;
+		}
+		
+		.textPanel {
+			display: inline-block;
+			max-width: 132px;
+			vertical-align: top;
+		}
+		
+		.placebookEntry:HOVER {
+			background-color: #DDD;
+		}
+
+		.title {
+			font-family: mako, sans-serif;
+			font-size: 16px;
+		}		
+
+		.deleteIcon {
+			position: absolute;
+			top: 0px;
+			right: 20px;
+			cursor: pointer;
+		}
+
+		.image {
+			max-width: 100px;
+			max-height: 128px;
+		}
+	</ui:style>
+	<ui:with field='images' type='org.placebooks.client.ui.images.Images'/>
+	<w:MousePanel ui:field="container" styleName="{style.placebookEntry}">
+		<g:Image ui:field="delete" resource="{images.delete}" styleName="{style.deleteIcon}" />	    
+		<g:Image ui:field="image" styleName="{style.image}" />
+		<g:FlowPanel>
+			<g:FlowPanel styleName="{style.textPanel}">			
+				<g:Label ui:field="title" styleName="{style.title}" />
+			</g:FlowPanel>			
+		</g:FlowPanel>
+	</w:MousePanel>
+</ui:UiBinder> 

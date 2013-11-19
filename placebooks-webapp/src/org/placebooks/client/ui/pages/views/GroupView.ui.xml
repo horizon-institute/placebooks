@@ -1,0 +1,120 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:org.placebooks.client.ui.palette" xmlns:v="urn:import:org.placebooks.client.ui.views" xmlns:w="urn:import:org.placebooks.client.ui.widgets"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.title {
+			font-style: mako, sans-serif;
+			font-size: 26px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #384967;
+			width: 80%;
+		}
+
+		.description {
+			font-style: mako, sans-serif;
+			color: #384967;
+			width: 80%;
+		}
+		
+		.parent {
+			height: 100%;
+		}
+		
+		.topPanel {
+			padding: 10px 30px;
+			background-color: #eee;
+			border-bottom: 1px solid #ccc;
+			height: 170px;
+			position: absolute;
+			right: 0px;
+			left: 0px;
+			top: 41px;
+		}
+		
+		.shelf {
+			position: absolute;
+			top: 212px;
+			left: 0px;
+			right: 0px;
+			bottom: 20px;
+		}
+		
+		.footer {
+			width: 100%;
+			text-align: center;
+			clear: both;
+			font-size: smaller;
+			position: absolute;
+			bottom: 5px;
+			color: #555;
+		}
+
+		.image {
+			max-width: 200px;
+			max-height: 150px;
+			float: left;
+			margin-right: 20px;
+			overflow: hidden;
+			
+		}
+
+		.edit {
+			display: inline-block;
+			margin-right: 10px;
+			cursor: pointer;
+			padding: 6px 15px;
+			border-radius: 3px;
+			text-decoration: none;
+		}
+
+		.edit:hover {
+			background: #999;
+		}
+
+		.right {
+			float: right;
+			display: -webkit-flex;
+			-webkit-align-items: center; 
+		}
+
+		.inline {
+			display: inline-block;
+		}
+
+		.qrcode {
+			cursor: pointer;
+			width: 50px;
+			height: 50px;
+			margin-right: 10px;
+			display: inline-block;
+		}
+
+		.android {
+			height: 35px;
+			margin-right: 10px;
+			float: right;
+		}
+	</ui:style>
+	<g:FlowPanel styleName="{style.parent}">
+		<v:PlaceBookToolbar ui:field="toolbar" />
+
+		<g:FlowPanel styleName="{style.topPanel}">
+			<g:FlowPanel styleName="{style.right}">
+				<w:ToolbarLink ui:field="edit" styleName="{style.edit}">Edit</w:ToolbarLink>
+				<w:AndroidLink ui:field="android" styleName="{style.android}" />
+				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode}" />
+			</g:FlowPanel>
+
+
+			<g:SimplePanel ui:field="imagePanel" styleName="{style.image}" />
+			<g:Label ui:field="title" styleName="{style.title}" />
+			<g:Label ui:field="description" styleName="{style.description}" />			
+		</g:FlowPanel>		
+		<v:PlaceBookShelf ui:field="shelf" styleName="{style.shelf}"/>
+		<g:Label styleName="{style.footer}"><ui:msg>This work was supported by the Research Councils UK (RCUK) [grant number - EP/J000604/2]</ui:msg></g:Label>
+	</g:FlowPanel>
+</ui:UiBinder>

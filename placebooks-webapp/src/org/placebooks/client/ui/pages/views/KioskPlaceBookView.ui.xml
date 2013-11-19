@@ -1,0 +1,101 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:pal="urn:import:org.placebooks.client.ui.palette" xmlns:v="urn:import:org.placebooks.client.ui.views" xmlns:w="urn:import:org.placebooks.client.ui.widgets"
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+	ui:generateLocales="en">
+	<ui:style>
+		.infoPanel {
+			padding: 0px 30px;
+			background: #EEE;
+			border-bottom: 1px solid #CCC;
+		}
+		
+		.title {
+			font-size: 18px;
+			margin-right: 5px;
+		}
+		
+		.author {
+			margin-right: 5px;
+		}
+
+		.actionMenu {
+			font: 16px verdana, arial, sans-serif;
+			padding: 7px 15px 8px !important;
+			border-radius: 5px;
+		}
+		
+		.dropArrow {
+			vertical-align: 20%;
+		}
+		
+		.parent {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+		}
+		
+		.titleBlock {
+			padding: 7px 0;
+		}
+		
+		.bookPanel {
+			position: absolute;
+			top: 51px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+		}
+		
+		.right {
+			float: right;
+			display: -webkit-flex;
+			-webkit-align-items: center; 
+		}
+
+		.inline {
+			display: inline-block;
+		}
+
+		.qrcode {
+			cursor: pointer;
+			width: 50px;
+			height: 50px;
+			margin-right: 10px;
+		}
+
+		.android {
+			height: 35px;
+			margin-right: 10px;
+			float: right;
+			display: inline-block;
+		}
+	</ui:style>
+	<g:FlowPanel styleName="{style.parent}">
+		<g:FlowPanel styleName="printHidden">
+			<g:FlowPanel ui:field="infoPanel" styleName="{style.infoPanel}">
+			    <g:FlowPanel styleName="{style.right}">		    						
+					<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.inline}" />			        				    
+					<w:GooglePlusOne ui:field="googlePlus" styleName="{style.inline}" />
+					<w:AndroidLink styleName="{style.android}" package="com.peoplescollection.placebooks" />					
+	  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.inline}" />					
+					<w:ToolbarItem ui:field="back"
+						addStyleNames="{style.actionMenu} {style.inline}"><ui:msg>Back</ui:msg></w:ToolbarItem>			    
+										
+				</g:FlowPanel>
+				<g:FlowPanel styleName="{style.titleBlock}">
+					<g:Label ui:field="titleLabel" styleName="{style.title}" />
+					<g:FlowPanel>
+						<g:InlineLabel>&nbsp;by&nbsp;</g:InlineLabel>
+						<g:Anchor ui:field="authorLabel" styleName="{style.author}" />
+					</g:FlowPanel>
+				</g:FlowPanel>				
+			</g:FlowPanel>
+		</g:FlowPanel>
+		<v:PagesView ui:field="bookPanel" styleName="{style.bookPanel}" />
+		<w:ProgressPanel ui:field="loadingPanel" text="Loading..." />
+	</g:FlowPanel>
+</ui:UiBinder>

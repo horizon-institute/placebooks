@@ -1,12 +1,13 @@
 <!-- Build file for compiling, deploying and testing PlaceBooks webapp -->
 
-<project default="install" basedir=".">
-
-	<!-- Set catalina.home, hamcrest.home and junit.home in build.properties -->
+<project name="placebooks-webapp" default="install" basedir=".">
 	<property file="build.properties" />
+
+	<property name="basepackage.name" value="org.placebooks" />
 
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
+	<property name="war.name" value="${basepackage.name}.war" />	
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
 	<property name="warlib.dir" value="${war.dir}/WEB-INF/lib" />
 	<property name="lib.dir" value="lib" />
@@ -14,7 +15,7 @@
 	<property name="xsd.dir" value="xsd" />
 	<property name="test.dir" value="test" />
 	<property name="javadoc.dir" value="docs/api" />
-	<property name="basepackage.name" value="placebooks" />
+
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
 	<property name="git.url" value="https://github.com/horizon-institute/Bridging-the-Rural-Divide--Placebooks/commit/" />
 
@@ -37,6 +38,13 @@
 			  value="${basepackage.name}.model.jaxb.GPX10" />
 	<property name="GPX11.package" 
 			  value="${basepackage.name}.model.jaxb.GPX11" />
+
+	<property name="generated.dir" value="generated" />
+
+	<property name="work.dir" value="${warfile.dir}/gwt" />
+
+	<property name="style" value="DETAILED" />
+	<property name="logging" value="INFO" />
 
 	<condition property="git.file" value="git.cmd">
 	   <os family="windows"/>
@@ -127,8 +135,6 @@
 	<target name="staging" depends="makedirs"
 			description="Stage configs to classes dir">
 
-		<copy file="${log4j.props}" todir="${classes.dir}" />
-
 		<antcall target="properties.server" />
 		<antcall target="properties.personal" />
 		<antcall target="properties.dev-server" />
@@ -192,8 +198,12 @@
 		<java classpathref="classpath.gwt" failonerror="true" fork="true"
 			maxmemory="512m"
 	        classname="com.google.gwt.dev.Compiler"> 
-	        <arg line="-war ${war.dir}"/> 
-			<arg line="-logLevel INFO"/>
+			<arg line="-war ${war.dir}" />
+			<arg line="-workDir ${work.dir}" />
+			
+			<arg line="-logLevel ${logging}" />
+			<arg line="-style ${style}" />			
+			<arg line="-gen ${generated.dir}" />			
 	        <arg line="${editor.name}"/>
 		</java>
 	</target>
@@ -210,7 +220,7 @@
 	
 	<target name="war" depends="compile,staging,git.revision"
 			description="Create the web archive file">
-		<jar jarfile="${warfile.dir}/${basepackage.name}.war" 
+		<jar jarfile="${warfile.dir}/${war.name}" 
 			 basedir="${war.dir}">
 			<include name="**/*" />
 		</jar>
@@ -224,11 +234,11 @@
 				<pathelement path="${classes.dir}" />
 			</classpath>
       		<formatter type="brief" usefile="false" />
-      		<test name="placebooks.test.UserTest" />
-			<test name="placebooks.test.PlaceBookTests" />
-			<test name="placebooks.test.PersistenceTests" />			
-			<test name="placebooks.test.EverytrailHelperTest" />
-			<test name="placebooks.test.PlacebooksIntegrationTests" />
+      		<test name="org.placebooks.test.UserTest" />
+			<test name="org.placebooks.test.PlaceBookTests" />
+			<test name="org.placebooks.test.PersistenceTests" />			
+			<test name="org.placebooks.test.EverytrailHelperTest" />
+			<test name="org.placebooks.test.PlacebooksIntegrationTests" />
     	</junit>
 	</target>
 
@@ -247,7 +257,7 @@
 	</target>
 
 	<target name="initdb" depends="compile,staging,proxy">
-        <java classname="placebooks.utils.InitializeDatabase">
+        <java classname="org.placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />
 				<pathelement path="${classes.dir}" />
@@ -259,7 +269,7 @@
    			description="Install application to servlet container">
 		<deploy url="${manager.url}" username="${manager.username}"
        			password="${manager.password}" path="/${basepackage.name}"
-       			war="file:${basedir}/${warfile.dir}/${basepackage.name}.war" />
+       			war="file:${basedir}/${warfile.dir}/${war.name}" />
   	</target>
 
 	<target name="uninstall"
@@ -282,7 +292,7 @@
 	</target>
 
 	<target name="clean-dist" description="Clean web archive file">
-		<delete file="${warfile.dir}/${basepackage.name}.war" />
+		<delete file="${warfile.dir}/${war.name}" />
 	</target>
 
 	<target name="clean-docs" description="Clean API documentation">
@@ -302,5 +312,12 @@
 
 	<target name="reinstall" description="Uninstalls and reinstalls project"
 		    depends="uninstall,install" />
+		    
+	<target name="install-ssh" depends="war">	
+		<scp file="${warfile.dir}/${war.name}" todir="${user}@${server}:~" password="${password}" trust="true" />
+		
+		<sshexec host="${server}" username="${user}" password="${password}" trust="true"
+		  command="/bin/sh -c '~/ltomcat.sh stop; mv ~/${war.name} ${server.dir};~/ltomcat.sh start'" />	
+	</target>
 
 </project>
