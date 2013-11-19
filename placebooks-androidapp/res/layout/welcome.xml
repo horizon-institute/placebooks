@@ -1,73 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
+    android:orientation="vertical" >
 
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/linearlayout"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:fillViewport="true"
-  android:background="@drawable/welcome_background"
->
-    
-    <ImageView 
-		   android:id="@+id/imgLogo"
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:layout_x="-6px"
-           android:layout_y="32px"
-           android:background="@drawable/pcw_logo"
-	   />
-	   
-	   
-	  <LinearLayout
-    	android:layout_width="wrap_content"
-    	android:layout_height="0dp"
-   	 	android:layout_centerVertical="true"
-   	    android:gravity="bottom"
-   	    android:layout_alignParentBottom="true"
-    	android:layout_weight="1"
-    	android:orientation="vertical" >
-    	
-				 <TextView android:id="@+id/txtPlacebooks"
-				  android:layout_width="wrap_content" 
-				  android:layout_height="wrap_content" 
-			      android:text="Welcome to Placebooks. Please select your preferred language"      
-				  android:textColor="#FFFFFF"
-			      android:textSize="20sp"
-			      android:gravity="center"
-			      android:layout_marginBottom="15dip"
-				  />
-					  	  		  
-				  <LinearLayout
-					android:layout_width="fill_parent"
-	        		android:layout_height="wrap_content"		        
-	        		android:layout_below="@+id/TextView01"
-			        android:layout_centerInParent="true"
-			        android:background="@android:drawable/bottom_bar"
-			        android:gravity="center"
-			        android:orientation="horizontal"
-			        android:paddingLeft="4.0dip"
-			        android:paddingTop="5.0dip"
-			        android:paddingRight="4.0dip"
-			        android:paddingBottom="1.0dip"
-			       >
-				  
-					  <Button
-			 			android:id="@+id/btnEnglish"
-			           	android:layout_width="0.0dip"
-			           	android:layout_height="fill_parent" 
-			           	android:layout_weight="1.0"
-			            android:text="English"
-				       /> 
-				       <Button
-				 			android:id="@+id/btnCymraeg"
-            				android:layout_width="0.0dip"
-            				android:layout_height="fill_parent"
-            				android:layout_weight="1.0"
-				            android:text="Cymraeg"		
-				       /> 
-			    </LinearLayout>
-	  </LinearLayout>			    
- </LinearLayout>	   
-	 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/welcome" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#88000000"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="CREATE, SHARE, DOWNLOAD AND ENJOY"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFF" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="PlaceBooks enable you to create digital booklets about your favourite places and interests.  You can take them with you on your mobile phone to find your way around the places you visit and to locate the things that interest you.  You can also share them with your friends and other PlaceBook users."
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#DDD" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@android:id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/list_container_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@android:id/empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center" />
+
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="false" >
+            </ListView>
+        </FrameLayout>
+    </FrameLayout>
+
+</LinearLayout>
