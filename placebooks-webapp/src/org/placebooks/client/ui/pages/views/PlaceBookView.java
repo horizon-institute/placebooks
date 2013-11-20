@@ -228,7 +228,7 @@ public class PlaceBookView extends PageView implements View<PlaceBook>
 			Window.setTitle(uiMessages.placebooks());
 		}
 
-		android.setPackage("com.peoplescollection.placebooks", PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId());
+		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId());
 		
 		refresh();
 		loadingPanel.setVisible(false);

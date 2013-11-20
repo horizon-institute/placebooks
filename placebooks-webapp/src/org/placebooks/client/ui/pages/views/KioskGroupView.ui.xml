@@ -84,8 +84,7 @@
 	<g:FlowPanel styleName="{style.parent}">
 		<g:FlowPanel styleName="{style.topPanel}">
 			<g:FlowPanel styleName="{style.right}">
-				<w:AndroidLink styleName="{style.android}"
-					package="com.peoplescollection.placebooks" />
+				<w:AndroidLink ui:field="android" styleName="{style.android}" />
 				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode}" />
 			</g:FlowPanel>		    
 			<g:SimplePanel ui:field="imagePanel" styleName="{style.image}" />		    

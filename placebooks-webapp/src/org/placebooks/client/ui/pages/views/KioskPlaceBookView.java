@@ -11,6 +11,7 @@ import org.placebooks.client.ui.items.frames.PlaceBookItemBlankFrame;
 import org.placebooks.client.ui.pages.WelcomePage;
 import org.placebooks.client.ui.views.DragController;
 import org.placebooks.client.ui.views.PagesView;
+import org.placebooks.client.ui.widgets.AndroidLink;
 import org.placebooks.client.ui.widgets.FacebookLikeButton;
 import org.placebooks.client.ui.widgets.GooglePlusOne;
 import org.placebooks.client.ui.widgets.ProgressPanel;
@@ -64,6 +65,9 @@ public class KioskPlaceBookView extends PageView implements View<PlaceBook>
 	@UiField
 	GooglePlusOne googlePlus;
 
+	@UiField
+	AndroidLink android;
+	
 	@UiField
 	FacebookLikeButton facebookLike;
 
@@ -159,6 +163,8 @@ public class KioskPlaceBookView extends PageView implements View<PlaceBook>
 			Window.setTitle(uiMessages.placebooks());
 		}
 
+		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId());
+		
 		refresh();
 		loadingPanel.setVisible(false);
 

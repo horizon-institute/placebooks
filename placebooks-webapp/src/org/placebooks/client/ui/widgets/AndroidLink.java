@@ -16,7 +16,7 @@ public class AndroidLink extends Composite
 
 	public void setPackage(final String packageName, final String url)
 	{
-		if(Window.Navigator.getUserAgent().contains("Android"))
+		if(Window.Navigator.getUserAgent().toLowerCase().contains("android"))
 		{
 			String uri = url;
 			if(uri.startsWith("http://"))

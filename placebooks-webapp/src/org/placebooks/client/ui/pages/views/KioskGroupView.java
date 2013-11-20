@@ -9,6 +9,7 @@ import org.placebooks.client.ui.dialogs.PlaceBookDialog;
 import org.placebooks.client.ui.items.ImageItem;
 import org.placebooks.client.ui.pages.PlaceBookPage;
 import org.placebooks.client.ui.views.PlaceBookShelf;
+import org.placebooks.client.ui.widgets.AndroidLink;
 import org.wornchaos.views.View;
 
 import com.google.gwt.core.client.GWT;
@@ -34,6 +35,9 @@ public class KioskGroupView extends PageView implements View<Shelf>
 
 	@UiField
 	Label title;
+	
+	@UiField
+	AndroidLink android;	
 
 	@UiField
 	Label description;
@@ -88,6 +92,8 @@ public class KioskGroupView extends PageView implements View<Shelf>
 		this.shelf.setType(PlaceBookPage.Type.kiosk);
 		
 		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/group/" + controller.getItem().getGroup().getId());
+		
+		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "group/" + controller.getItem().getGroup().getId());		
 		
 		if (imagePanel.getWidget() == null)
 		{

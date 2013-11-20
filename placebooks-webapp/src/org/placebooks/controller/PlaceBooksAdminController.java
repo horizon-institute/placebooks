@@ -369,7 +369,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/createaccount", method = RequestMethod.POST)
-	public String createAccount(@RequestParam final String name, @RequestParam final String email,
+	public void createAccount(final HttpServletRequest req, final HttpServletResponse res, @RequestParam final String name, @RequestParam final String email,
 			@RequestParam final String password)
 	{
 		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
@@ -381,6 +381,28 @@ public class PlaceBooksAdminController
 			manager.getTransaction().begin();
 			manager.persist(user);
 			manager.getTransaction().commit();
+			
+			UserManager.setUser(req, user);
+			
+			final TypedQuery<PlaceBookBinder> q = manager
+					.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
+									PlaceBookBinder.class);
+			q.setParameter("user", user);
+			q.setParameter("email", "%" + user.getEmail() + "%");
+
+			final Collection<PlaceBookBinder> pbs = q.getResultList();
+			log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
+			log.info("User " + user.getName());
+			try
+			{
+				res.setContentType("application/json; charset=UTF-8");
+				res.getWriter().write(gson.toJson(new UserShelf(pbs, user)));
+				res.flushBuffer();
+			}
+			catch (final Exception e)
+			{
+				log.log(Level.SEVERE, e.toString(), e);
+			}			
 		}
 		catch (final Exception e)
 		{
@@ -395,8 +417,8 @@ public class PlaceBooksAdminController
 			}
 			manager.close();
 		}
+		
 
-		return "redirect:/index.html";
 	}
 
 	@RequestMapping(value = "/deleteplacebook", method = RequestMethod.GET)

@@ -80,7 +80,7 @@
 			    <g:FlowPanel styleName="{style.right}">		    						
 					<w:FacebookLikeButton ui:field="facebookLike" styleName="{style.inline}" />			        				    
 					<w:GooglePlusOne ui:field="googlePlus" styleName="{style.inline}" />
-					<w:AndroidLink styleName="{style.android}" package="com.peoplescollection.placebooks" />					
+					<w:AndroidLink ui:field="android" styleName="{style.android}" />					
 	  				<g:Image ui:field="qrcode" addStyleNames="{style.qrcode} {style.inline}" />					
 					<w:ToolbarItem ui:field="back"
 						addStyleNames="{style.actionMenu} {style.inline}"><ui:msg>Back</ui:msg></w:ToolbarItem>			    

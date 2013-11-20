@@ -112,7 +112,7 @@ public class GroupView extends PageView implements View<Shelf>
 		
 		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/group/" + controller.getItem().getGroup().getId());
 		
-		android.setPackage("com.peoplescollection.placebooks", PlaceBooks.getServer().getHostURL() + "group/" + controller.getItem().getGroup().getId());
+		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "group/" + controller.getItem().getGroup().getId());
 		
 		if (imagePanel.getWidget() == null)
 		{
