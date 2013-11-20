@@ -235,6 +235,13 @@ public class PlaceBookView extends PageView implements View<PlaceBook>
 
 		bookPanel.resized();
 	}
+	
+	@UiHandler("downloadBook")
+	void downloadBook(final ClickEvent event)
+	{
+		Window.Location.replace(PlaceBooks.getServer().getHostURL() + "placebooks/a/package?id=" + controller.getItem().getId());
+	}
+	
 
 	@Override
 	public void onStop()

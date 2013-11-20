@@ -2,7 +2,6 @@ package org.placebooks.model.json;
 
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

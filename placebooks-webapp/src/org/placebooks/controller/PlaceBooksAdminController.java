@@ -2003,9 +2003,23 @@ public class PlaceBooksAdminController
 			{
 				final TypedQuery<User> query = manager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
 				query.setParameter("email", binder.getOwner().getEmail());
-				existing = query.getSingleResult();
+				try
+				{
+					existing = query.getSingleResult();
+				}
+				catch(Exception e)
+				{
+					
+				}
 			}
 
+			if(existing == null)
+			{
+				manager.persist(binder.getOwner());
+				existing = binder.getOwner();
+				binder.setState(State.PUBLISHED);
+			}
+			
 			if(existing != null)
 			{
 				binder.setOwner(existing);

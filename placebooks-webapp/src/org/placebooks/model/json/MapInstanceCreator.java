@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.google.gson.InstanceCreator;
 
+@SuppressWarnings("rawtypes")
 public class MapInstanceCreator implements InstanceCreator<Map>
 {
 	@Override

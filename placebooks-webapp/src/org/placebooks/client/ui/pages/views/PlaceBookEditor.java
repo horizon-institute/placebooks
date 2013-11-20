@@ -276,7 +276,6 @@ public class PlaceBookEditor extends PageView implements View<PlaceBook>
 		}
 	}
 
-
 	@UiHandler("downloadBook")
 	void downloadBook(final ClickEvent event)
 	{

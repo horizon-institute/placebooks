@@ -53,7 +53,7 @@ public interface PlaceBookService extends JSONServer
 	@Request(value = "placebooks/a/publishplacebook", method=Method.POST)
 	public void publishPlaceBook(final PlaceBook placebook, final AsyncCallback<PlaceBook> callback);
 
-	@Request(value = "placebooks/a/createaccount")
+	@Request(value = "placebooks/a/createaccount", method=Method.POST)
 	public void registerAccount(@RequestParam("name") final String name, @RequestParam("email") final String email, @RequestParam("password") final String password,
 			final AsyncCallback<Shelf> callback);
 

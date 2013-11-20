@@ -137,6 +137,7 @@
 			</g:FlowPanel>
 			<w:DropMenu ui:field="dropMenu" styleName="{style.dropMenu}">
 				<g:Label ui:field="delete" styleName="{style.menuItem}"><ui:msg>Delete PlaceBook</ui:msg></g:Label>
+				<g:Label ui:field="downloadBook" styleName="{style.menuItem}"><ui:msg>Download PlaceBook</ui:msg></g:Label>				
 			</w:DropMenu>
 		</g:FlowPanel>
 		<v:PagesView ui:field="bookPanel" styleName="{style.bookPanel}" />
