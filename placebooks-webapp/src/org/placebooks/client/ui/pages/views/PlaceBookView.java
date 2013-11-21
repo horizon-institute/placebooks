@@ -138,7 +138,6 @@ public class PlaceBookView extends PageView implements View<PlaceBook>
 		if (binder.getOwner() == null) { return; }
 		if (user.getEmail().equals(binder.getOwner().getEmail()))
 		{
-			UserController.getController().setItem(binder.getOwner());
 			return;
 		}
 		if (binder.getPermissions().containsKey(user.getEmail())) { return; }

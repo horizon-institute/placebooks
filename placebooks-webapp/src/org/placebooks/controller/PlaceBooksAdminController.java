@@ -201,7 +201,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/addgroup", method = RequestMethod.POST)
-	public void addGroup(@RequestParam final String groupID, @RequestParam final String placebookID,
+	public void addGroup(@RequestParam("group") final String groupID, @RequestParam("placebook") final String placebookID,
 			final HttpServletResponse res)
 	{
 		final EntityManager manager = EMFSingleton.getEntityManager();
@@ -249,8 +249,8 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/addLoginDetails", method = RequestMethod.POST)
-	public void addLoginDetails(@RequestParam final String username, @RequestParam final String password,
-			@RequestParam final String service, final HttpServletResponse res)
+	public void addLoginDetails(@RequestParam("username") final String username, @RequestParam("password") final String password,
+			@RequestParam("service") final String service, final HttpServletResponse res)
 	{
 
 		final EntityManager manager = EMFSingleton.getEntityManager();
