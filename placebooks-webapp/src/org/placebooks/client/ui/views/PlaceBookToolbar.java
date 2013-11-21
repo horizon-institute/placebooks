@@ -350,6 +350,7 @@ public class PlaceBookToolbar extends CompositeView<User>
 			public void onSuccess(final Shelf result)
 			{
 				itemChanged(result.getUser());
+				account.hide();
 			}
 		});
 		account.show();

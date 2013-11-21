@@ -90,6 +90,7 @@ import eu.medsea.mimeutil.MimeUtil2;
 @Controller
 public class PlaceBooksAdminController
 {
+	private static final String session_name = "placebook_session";
 
 	// Helper class for passing around general PlaceBookItem data
 	public static class ItemData
@@ -369,7 +370,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/createaccount", method = RequestMethod.POST)
-	public void createAccount(final HttpServletRequest req, final HttpServletResponse res, @RequestParam final String name, @RequestParam final String email,
+	public void createAccount(final HttpServletResponse res, @RequestParam final String name, @RequestParam final String email,
 			@RequestParam final String password)
 	{
 		final Md5PasswordEncoder encoder = new Md5PasswordEncoder();
@@ -382,7 +383,7 @@ public class PlaceBooksAdminController
 			manager.persist(user);
 			manager.getTransaction().commit();
 			
-			UserManager.setUser(req, user);
+			UserManager.setUser(user);
 			
 			final TypedQuery<PlaceBookBinder> q = manager
 					.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
@@ -622,7 +623,7 @@ public class PlaceBooksAdminController
 
 			final ServletOutputStream sos = res.getOutputStream();
 			res.setContentType("application/x-placebook");
-			res.setHeader("Content-Disposition", "attachment; filename=\"" + placebook.getKey() + ".zip\"");
+			res.setHeader("Content-Disposition", "attachment; filename=\"" + placebook.getKey() + ".placebook\"");
 			res.addHeader("Content-Length", Integer.toString(bos.size()));
 			sos.write(bos.toByteArray());
 			sos.flush();
@@ -639,10 +640,21 @@ public class PlaceBooksAdminController
 		}
 	}
 
+	@RequestMapping(value="/login")
+	public void login(final HttpServletResponse res, @RequestParam final String email, @RequestParam final String password)
+	{
+		
+	}
+
+	@RequestMapping(value="/logout")
+	public void logout(final HttpServletResponse res)
+	{
+		
+	}
+	
 	@RequestMapping(value = "/palette", method = RequestMethod.GET)
 	public void getPaletteItems(final HttpServletResponse res)
 	{
-
 		final EntityManager manager = EMFSingleton.getEntityManager();
 		final User user = authUser(manager, res);
 		if (user == null) { return; }

@@ -9,7 +9,7 @@ import org.wornchaos.client.server.RequestParam;
 
 public interface PlaceBookService extends JSONServer
 {
-	@Request(value = "placebooks/a/addgroup")
+	@Request(value = "placebooks/a/addgroup", method=Method.POST)
 	public void addGroup(@RequestParam("placebook") final String placebook, @RequestParam("group") final String group, final AsyncCallback<PlaceBook> callback);
 
 	@Request(value = "placebooks/a/deleteplacebook")
@@ -40,7 +40,7 @@ public interface PlaceBookService extends JSONServer
 	@Request("placebooks/a/user")
 	public void getUser(final AsyncCallback<User> callback);
 
-	@Request("placebooks/a/addLoginDetails")
+	@Request(value = "placebooks/a/addLoginDetails", method=Method.POST)
 	public void linkAccount(@RequestParam("username") final String username, @RequestParam("password") final String password, @RequestParam("service") final String service,
 			final AsyncCallback<Shelf> callback);
 
@@ -61,7 +61,7 @@ public interface PlaceBookService extends JSONServer
 	@Request(value= "placebooks/a/saveplacebook", method=Method.POST)
 	public void savePlaceBook(@RequestParam("placebook") final PlaceBook placebook, final AsyncCallback<PlaceBook> callback);
 
-	@Request(value = "placebooks/a/savegroup")
+	@Request(value = "placebooks/a/savegroup", method=Method.POST)
 	public void saveGroup(final Shelf shelf, final AsyncCallback<Shelf> callback);
 
 	@Request(value = "placebooks/a/search")
