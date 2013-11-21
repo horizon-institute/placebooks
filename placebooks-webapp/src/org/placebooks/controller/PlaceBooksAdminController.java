@@ -422,7 +422,7 @@ public class PlaceBooksAdminController
 
 	@RequestMapping(value = "/deleteplacebook", method = RequestMethod.GET)
 	public void deletePlaceBook(final HttpServletRequest req, final HttpServletResponse res,
-			@RequestParam final String key)
+			@RequestParam("placebook") final String key)
 	{
 
 		final EntityManager pm = EMFSingleton.getEntityManager();
