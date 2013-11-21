@@ -1159,7 +1159,7 @@ public class PlaceBooksAdminController
 	}
 
 	@RequestMapping(value = "/savegroup", method = RequestMethod.POST)
-	public void savePlaceBookGroupJSON(final HttpServletResponse res, @RequestParam("group") final String json)
+	public void savePlaceBookGroupJSON(final HttpServletResponse res, @RequestParam("shelf") final String json)
 	{
 		log.info("Save PlacebookGroup: " + json);
 		final EntityManager manager = EMFSingleton.getEntityManager();
