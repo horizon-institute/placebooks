@@ -48,6 +48,9 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 	Hidden itemKey;
 
 	@UiField
+	Hidden type;
+	
+	@UiField
 	FileUpload upload;
 
 	@UiField
@@ -73,10 +76,12 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 
 		ServerInfoController.getController().add(this);
 
-		itemKey.setName("itemKey");
-
-		final String type = item.getItem().getType().name().toLowerCase();
-		upload.setName(type + "." + item.getItem().getId());
+		type.setValue("test");
+		
+		if(item != null && item.getItem() != null && item.getItem().getType() != null)
+		{
+			type.setValue(item.getItem().getType().name());
+		}
 
 		form.setAction(PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/add_item/upload");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);

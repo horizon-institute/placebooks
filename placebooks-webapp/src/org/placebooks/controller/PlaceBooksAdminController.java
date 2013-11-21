@@ -40,7 +40,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.placebooks.client.model.ServerInfo;
 import org.placebooks.client.model.ServiceInfo;
-import org.placebooks.model.AudioItem;
 import org.placebooks.model.GPSTraceItem;
 import org.placebooks.model.ImageItem;
 import org.placebooks.model.LoginDetails;
@@ -51,7 +50,6 @@ import org.placebooks.model.PlaceBookBinder.State;
 import org.placebooks.model.PlaceBookGroup;
 import org.placebooks.model.PlaceBookItem;
 import org.placebooks.model.User;
-import org.placebooks.model.VideoItem;
 import org.placebooks.model.json.DateAdapter;
 import org.placebooks.model.json.GeometryAdapter;
 import org.placebooks.model.json.GroupShelf;
@@ -1782,21 +1780,46 @@ public class PlaceBooksAdminController
 			String name = null;
 			String type = null;
 			String itemKey = null;
-			String placebookKey = null;
 
 			manager.getTransaction().begin();
 			@SuppressWarnings("unchecked")
 			final List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(req);
 			for (final FileItem item : items)
 			{
+				log.info(""+item);
 				if (item.isFormField())
 				{
 					final String value = Streams.asString(item.getInputStream());
 					if (!itemData.processItemData(manager, item.getFieldName(), value))
 					{
-						if (item.getFieldName().equals("key"))
+						if (item.getFieldName().equals("type"))
 						{
-							placebookKey = value;
+							type = value;
+							String dLimit = null, iden = null;
+							if (type.equals("markerImage"))
+							{
+								iden = PropertiesSingleton.IDEN_IMAGE_MAX_SIZE;
+								dLimit = "1";
+							}
+							else if (type.equals("video"))
+							{
+								iden = PropertiesSingleton.IDEN_VIDEO_MAX_SIZE;
+								dLimit = "20";
+							}
+							else if (type.equals("audio"))
+							{
+								iden = PropertiesSingleton.IDEN_AUDIO_MAX_SIZE;
+								dLimit = "10";
+							}
+
+							if (dLimit != null && iden != null)
+							{
+								final int maxSize = Integer.parseInt(PropertiesSingleton.get(	PlaceBooksAdminHelper.class
+																										.getClassLoader())
+										.getProperty(iden, dLimit));
+								if ((item.getSize() / MEGABYTE) > maxSize) { throw new Exception("File too big, limit = "
+										+ Integer.toString(maxSize) + "Mb"); }
+							}
 						}
 						else if (item.getFieldName().equals("itemKey"))
 						{
@@ -1808,39 +1831,6 @@ public class PlaceBooksAdminController
 				{
 					name = item.getName();
 					fileData = item;
-					final String[] split = PlaceBooksAdminHelper.getExtension(item.getFieldName());
-					if (split == null)
-					{
-						continue;
-					}
-
-					type = split[0];
-
-					String dLimit = null, iden = null;
-					if (type.equals("markerImage"))
-					{
-						iden = PropertiesSingleton.IDEN_IMAGE_MAX_SIZE;
-						dLimit = "1";
-					}
-					else if (type.equals("video"))
-					{
-						iden = PropertiesSingleton.IDEN_VIDEO_MAX_SIZE;
-						dLimit = "20";
-					}
-					else if (type.equals("audio"))
-					{
-						iden = PropertiesSingleton.IDEN_AUDIO_MAX_SIZE;
-						dLimit = "10";
-					}
-
-					if (dLimit != null && iden != null)
-					{
-						final int maxSize = Integer.parseInt(PropertiesSingleton.get(	PlaceBooksAdminHelper.class
-																								.getClassLoader())
-								.getProperty(iden, dLimit));
-						if ((item.getSize() / MEGABYTE) > maxSize) { throw new Exception("File too big, limit = "
-								+ Integer.toString(maxSize) + "Mb"); }
-					}
 				}
 			}
 
@@ -1851,7 +1841,6 @@ public class PlaceBooksAdminController
 
 			PlaceBookBinder.Permission perms = PlaceBookBinder.Permission.R_W;
 
-			log.info("Upload: " + itemKey);
 			PlaceBookItem item = null;
 			if (itemKey != null)
 			{
@@ -1863,37 +1852,6 @@ public class PlaceBooksAdminController
 					{
 						perms = dbBinder.getPermission(currentUser);
 					}
-				}
-			}
-			else if (placebookKey != null)
-			{
-				final PlaceBook placebook = manager.find(PlaceBook.class, placebookKey);
-
-				if (type.equals("gpstrace"))
-				{
-					item = new GPSTraceItem(itemData.getOwner(), itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);
-				}
-				else if (type.equals("markerImage"))
-				{
-					item = new ImageItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);
-				}
-				else if (type.equals("video"))
-				{
-					item = new VideoItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);
-				}
-				else if (type.equals("audio"))
-				{
-					item = new AudioItem(itemData.getOwner(), itemData.getGeometry(), itemData.getSourceURL(), null);
-					item.setPlaceBook(placebook);
-				}
-
-				final PlaceBookBinder dbBinder = placebook.getPlaceBookBinder();
-				if (dbBinder.getOwner() != currentUser)
-				{
-					perms = dbBinder.getPermission(currentUser);
 				}
 			}
 
