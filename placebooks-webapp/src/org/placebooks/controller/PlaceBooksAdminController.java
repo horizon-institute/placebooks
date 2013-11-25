@@ -1990,14 +1990,14 @@ public class PlaceBooksAdminController
 			log.info(this.gson.toJson(binder));			
 			manager.getTransaction().begin();
 			
-			User existing = null;
+			User user = null;
 			if(binder.getOwner() != null)
 			{
 				final TypedQuery<User> query = manager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
 				query.setParameter("email", binder.getOwner().getEmail());
 				try
 				{
-					existing = query.getSingleResult();
+					user = query.getSingleResult();
 				}
 				catch(Exception e)
 				{
@@ -2005,33 +2005,35 @@ public class PlaceBooksAdminController
 				}
 			}
 
-			if(existing == null)
+			if(user == null)
 			{
 				manager.persist(binder.getOwner());
-				existing = binder.getOwner();
+				user = binder.getOwner();
 				binder.setState(State.PUBLISHED);
 			}
 			
-			if(existing != null)
+			if(user != null)
 			{
-				binder.setOwner(existing);
+				binder.setOwner(user);
+				user.add(binder);				
 			}
 			for(PlaceBook pb: binder.getPlaceBooks())
 			{
-				if(existing != null)
+				if(user != null)
 				{
-					pb.setOwner(existing);
+					pb.setOwner(user);
 				}
 				for(PlaceBookItem pbi: pb.getItems())
 				{
-					if(existing != null)	
+					if(user != null)	
 					{
-						pbi.setOwner(existing);
+						pbi.setOwner(user);
 					}
 					manager.persist(pbi);
 				}
 				manager.persist(pb);
 			}
+			
 			
 			manager.persist(binder);
 			manager.getTransaction().commit();
