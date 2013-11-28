@@ -4,16 +4,14 @@ import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.wornchaos.logger.Log;
 
 public final class SearchHelper
 {
-	protected static final Logger log = Logger.getLogger(SearchHelper.class.getName());
-
 	public static Set<String> getIndex(final String input)
 	{
 		return getIndex(input, 0);
@@ -41,14 +39,13 @@ public final class SearchHelper
 					sb.append(attr.toString());
 					sb.append("\" ");
 					returnSet.add(attr.toString());
-
 				}
 			}
-			log.debug("getIndex() terms: " + sb.toString());
+			Log.debug("getIndex() terms: " + sb.toString());
 		}
 		catch (final Exception e)
 		{
-			log.error(e.toString());
+			Log.error(e);
 		}
 		finally
 		{
@@ -57,5 +54,4 @@ public final class SearchHelper
 
 		return returnSet;
 	}
-
 }

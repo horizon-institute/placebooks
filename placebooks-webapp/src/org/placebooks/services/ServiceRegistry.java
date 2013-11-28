@@ -44,22 +44,28 @@ public class ServiceRegistry
 		return infos;
 	}
 
+	public static void updateService(final EntityManager manager, final User user, final String serviceName)
+	{
+		if (user == null) { return; }
+		final Service service = services.get(serviceName);
+		if (service != null)
+		{
+			service.sync(manager, user, false, Double.parseDouble(PropertiesSingleton.get(	CommunicationHelper.class
+																									.getClassLoader())
+					.getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")), Double.parseDouble(PropertiesSingleton
+					.get(CommunicationHelper.class.getClassLoader()).getProperty(PropertiesSingleton.IDEN_SEARCH_LAT,
+																					"0")), Double
+					.parseDouble(PropertiesSingleton.get(CommunicationHelper.class.getClassLoader())
+							.getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0")));
+		}
+	}
+
 	public static void updateServices(final EntityManager manager, final User user)
 	{
 		if (user == null) { return; }
 		for (final LoginDetails details : user.getLoginDetails())
 		{
-			final Service service = services.get(details.getService());
-			if (service != null)
-			{
-				service.sync(manager, user, false, Double.parseDouble(PropertiesSingleton
-						.get(CommunicationHelper.class.getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_SEARCH_LON, "0")), Double.parseDouble(PropertiesSingleton
-						.get(CommunicationHelper.class.getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_SEARCH_LAT, "0")), Double.parseDouble(PropertiesSingleton
-						.get(CommunicationHelper.class.getClassLoader())
-						.getProperty(PropertiesSingleton.IDEN_SEARCH_RADIUS, "0")));
-			}
+			updateService(manager, user, details.getService());
 		}
 	}
 }

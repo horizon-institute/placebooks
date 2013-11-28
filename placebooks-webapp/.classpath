@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/gpx-bindings.jar"/>
 	<classpathentry kind="lib" path="lib/xuggle-xuggler.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-codeserver.jar"/>
-	<classpathentry kind="lib" path="lib/wornchaos.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-openlayers-client-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>

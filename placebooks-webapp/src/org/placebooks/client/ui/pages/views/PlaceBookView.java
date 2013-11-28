@@ -189,7 +189,7 @@ public class PlaceBookView extends PageView implements View<PlaceBook>
 			dialog.setTitle("QR Code");
 		}
 
-		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId()));
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=placebook&id=" + controller.getItem().getId()));
 		dialog.show();
 	}
 	
@@ -209,7 +209,7 @@ public class PlaceBookView extends PageView implements View<PlaceBook>
 
 		infoPanel.setVisible(true);
 		
-		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getId());			
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=placebook&id=" + controller.getItem().getId());			
 
 		if ("PUBLISHED".equals(placebook.getState()))
 		{

@@ -30,5 +30,25 @@ public abstract class UICallback<T> extends AsyncCallback<T>
 		});
 	}
 	
-	public abstract void onPostSuccess(T item); 
+
+	
+	@Override
+	public void onFailure(final Throwable caught)
+	{
+		view.post(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				onPostFailure(caught);
+			}
+		});
+	}
+
+	public abstract void onPostSuccess(T item);
+	
+	public void onPostFailure(final Throwable caught)
+	{
+		
+	}
 }

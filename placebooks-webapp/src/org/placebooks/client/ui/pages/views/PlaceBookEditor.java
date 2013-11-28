@@ -279,7 +279,7 @@ public class PlaceBookEditor extends PageView implements View<PlaceBook>
 	@UiHandler("downloadBook")
 	void downloadBook(final ClickEvent event)
 	{
-		Window.Location.replace(PlaceBooks.getServer().getHostURL() + "placebooks/a/package?id=" + controller.getItem().getId());
+		Window.Location.replace(PlaceBooks.getServer().getHostURL() + "command/package?id=" + controller.getItem().getId());
 	}
 	
 	@UiHandler("deleteBook")

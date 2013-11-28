@@ -7,7 +7,6 @@ import java.util.Properties;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.placebooks.client.model.ServiceInfo;
 import org.placebooks.controller.ItemFactory;
 import org.placebooks.controller.PlaceBooksAdminHelper;
@@ -17,6 +16,7 @@ import org.placebooks.model.MediaItem;
 import org.placebooks.model.PlaceBookItem;
 import org.placebooks.model.TextItem;
 import org.placebooks.model.User;
+import org.wornchaos.logger.Log;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DeltaEntry;
@@ -35,8 +35,6 @@ import com.google.gson.Gson;
 
 public class DropBoxService extends Service
 {
-	private static final Logger log = Logger.getLogger(DropBoxService.class.getName());
-
 	private static final ServiceInfo SERVICE_INFO = new ServiceInfo("Dropbox", "http://www.dropbox.com", true);
 
 	@Override
@@ -76,9 +74,9 @@ public class DropBoxService extends Service
 
 			return authInfo.url;
 		}
-		catch (final Exception e)
+		catch(final Exception e)
 		{
-			log.info(e.getMessage(), e);
+			Log.error(e.getMessage(), e);
 			return null;
 		}
 	}
@@ -156,16 +154,16 @@ public class DropBoxService extends Service
 		{
 			if (e.error == 304)
 			{
-				log.info("No changes");
+				Log.info("No changes");
 			}
 			else
 			{
-				log.info(e.error + ":" + e.body);
+				Log.info(e.error + ":" + e.body);
 			}
 		}
 		catch (final Exception e)
 		{
-			log.info(e.getMessage(), e);
+			Log.error(e.getMessage(), e);
 		}
 	}
 
@@ -185,7 +183,7 @@ public class DropBoxService extends Service
 			try
 			{
 				final String displayName = api.accountInfo().displayName;
-				log.info("Dropbox Display Name: " + displayName);
+				Log.info("Dropbox Display Name: " + displayName);
 				if (displayName != null)
 				{
 					login.setUsername(displayName);
@@ -193,7 +191,7 @@ public class DropBoxService extends Service
 			}
 			catch (final Exception e)
 			{
-				log.info(e.getMessage(), e);
+				Log.info(e.getMessage(), e);
 			}
 
 			manager.getTransaction().begin();
@@ -203,7 +201,7 @@ public class DropBoxService extends Service
 		catch (final Exception e)
 		{
 			// TODO If dropbox auth refused - delete logindetails
-			log.info(e.getMessage(), e);
+			Log.error(e);
 		}
 	}
 
@@ -227,7 +225,7 @@ public class DropBoxService extends Service
 		try
 		{
 			final Gson gson = new Gson();
-			log.info(gson.toJson(entry));
+			Log.info(gson.toJson(entry));
 
 			if (entry.metadata == null)
 			{
@@ -266,15 +264,14 @@ public class DropBoxService extends Service
 
 							if (item instanceof MediaItem)
 							{
-								((MediaItem) item).writeDataToDisk(	entry.metadata.fileName(),
-																	api.getFileStream(entry.metadata.path, null));
+								((MediaItem) item).writeDataToDisk(api.getFileStream(entry.metadata.path, null));
 								// ((MediaItem)item).
 							}
 							else if (item instanceof TextItem)
 							{
 								final StringWriter writer = new StringWriter();
 								final DropboxInputStream inputStream = api.getFileStream(entry.metadata.path, null);
-								log.info("Charset:" + inputStream.getFileInfo().getCharset());
+								Log.info("Charset:" + inputStream.getFileInfo().getCharset());
 								if (inputStream.getFileInfo().getCharset() != null)
 								{
 									IOUtils.copy(inputStream, writer, inputStream.getFileInfo().getCharset());
@@ -284,7 +281,7 @@ public class DropBoxService extends Service
 									IOUtils.copy(inputStream, writer);
 								}
 
-								log.info("Text: " + writer.toString());
+								Log.info("Text: " + writer.toString());
 
 								((TextItem) item).setText(writer.toString());
 							}
@@ -301,7 +298,7 @@ public class DropBoxService extends Service
 			{
 				manager.getTransaction().rollback();
 			}
-			log.info(e.getMessage(), e);
+			Log.error(e);
 		}
 	}
 }

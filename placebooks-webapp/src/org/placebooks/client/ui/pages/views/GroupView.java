@@ -90,7 +90,7 @@ public class GroupView extends PageView implements View<Shelf>
 		};
 
 		dialog.setTitle("QR Code");
-		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/placebook/" + controller.getItem().getGroup().getId()));
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=group&id=" + controller.getItem().getGroup().getId()));
 		dialog.show();
 	}
 
@@ -110,7 +110,7 @@ public class GroupView extends PageView implements View<Shelf>
 			edit.setVisible(false);
 		}
 		
-		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "placebooks/a/qrcode/group/" + controller.getItem().getGroup().getId());
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=group&id=" + controller.getItem().getGroup().getId());
 		
 		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "group/" + controller.getItem().getGroup().getId());
 		
@@ -124,6 +124,8 @@ public class GroupView extends PageView implements View<Shelf>
 		{
 			((ImageItem) imagePanel.getWidget()).itemChanged(shelf.getGroup().getImage());
 		}
+
+		this.shelf.itemChanged(shelf);
 	}
 
 	private boolean hasGroup(final Iterable<Group> groups, final Group group)

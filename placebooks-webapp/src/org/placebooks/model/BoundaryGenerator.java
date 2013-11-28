@@ -2,7 +2,7 @@ package org.placebooks.model;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -10,8 +10,6 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class BoundaryGenerator
 {
-	protected static final Logger log = Logger.getLogger(BoundaryGenerator.class.getName());
-
 	public abstract void calcBoundary();
 
 	protected final Geometry calcBoundary(final Set<Geometry> geoms)
@@ -61,7 +59,7 @@ public abstract class BoundaryGenerator
 			if (minLat == Float.POSITIVE_INFINITY || maxLat == Float.NEGATIVE_INFINITY
 					|| minLon == Float.POSITIVE_INFINITY || maxLon == Float.NEGATIVE_INFINITY)
 			{
-				log.error("Warning: empty bounds to calculate were not valid, ignoring");
+				Log.error("Warning: empty bounds to calculate were not valid, ignoring");
 			}
 			else
 			{
@@ -70,7 +68,7 @@ public abstract class BoundaryGenerator
 					final Geometry empty = new WKTReader().read("POLYGON ((" + minLat + " " + minLon + ", " + minLat
 							+ " " + maxLon + ", " + maxLat + " " + maxLon + ", " + maxLat + " " + minLon + ", "
 							+ minLat + " " + minLon + "))");
-					log.info("empty=" + empty);
+					Log.info("empty=" + empty);
 					if (bounds != null)
 					{
 						bounds = empty.union(bounds);
@@ -82,7 +80,7 @@ public abstract class BoundaryGenerator
 				}
 				catch (final Throwable e)
 				{
-					log.error(e.toString());
+					Log.error(e.toString());
 				}
 			}
 

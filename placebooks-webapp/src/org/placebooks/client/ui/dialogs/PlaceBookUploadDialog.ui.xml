@@ -24,7 +24,7 @@
 			<g:FlowPanel>
 				<g:FileUpload ui:field="upload" name="file" />
 				<g:Label ui:field="infoLabel" />				
-				<g:Hidden ui:field="itemKey" name="itemKey" />
+				<g:Hidden ui:field="itemKey" name="id" />
 				<g:Hidden ui:field="type" name="type" />				
 				<g:Label styleName="{style.copyright}"><ui:msg>Copyright Information</ui:msg></g:Label>
 				<g:TextArea styleName="{style.textArea}" ui:field="copyright"/>

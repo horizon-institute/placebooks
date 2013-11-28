@@ -43,7 +43,7 @@ public class UserController extends ControllerBase<User>
 
 	public void login(final String username, final String password, final AsyncCallback<Shelf> callback)
 	{
-		PlaceBooks.getServer().login(username, password, true, new AsyncCallback<Shelf>()
+		PlaceBooks.getServer().login(username, password, new AsyncCallback<Shelf>()
 		{
 
 			@Override

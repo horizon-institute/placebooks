@@ -103,17 +103,7 @@ public class ItemController extends DelegateController<Item>
 			itemType = Item.Type.ImageItem;
 		}
 		
-		String id = item.getId();
-		if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/serve/media/"
-				+ itemType.name() + "/" + item.getHash(); }
-
-		if (id == null)
-		{
-			id = item.getMetadata("originalItemID", null);
-		}
-
-		if (id != null && item.isMedia()) { return PlaceBooks.getServer().getHostURL()
-				+ "placebooks/a/admin/serve/item/media/" + item.getType().name() + "/" + id; }
+		if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL() + "command/media?hash=" + item.getHash() + "&type=" + itemType.name(); }
 
 		return null;
 	}
@@ -123,7 +113,7 @@ public class ItemController extends DelegateController<Item>
 		if (item.isMedia())
 		{
 			if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL()
-					+ "placebooks/a/admin/serve/media/thumb/" + item.getHash(); }
+					+ "command/media?type=thumb&hash=" + item.getHash(); }
 		}
 
 		return getURL(item, null);
@@ -175,7 +165,7 @@ public class ItemController extends DelegateController<Item>
 
 	public void setItem(final Item item)
 	{
-		if(item.getId() != null)
+		if(item != null && item.getId() != null)
 		{
 			item.getMetadata().remove("tempID");
 		}

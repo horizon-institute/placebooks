@@ -116,4 +116,9 @@ public class PlaceBookGroup
 	{
 		placebooks.add(binder);		
 	}
+
+	public void remove(PlaceBookBinder binder)
+	{
+		placebooks.remove(binder);		
+	}
 }

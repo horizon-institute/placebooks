@@ -102,10 +102,7 @@ public final class OSMTileHelper
 		}
 
 		graphics.dispose();
-
-		final String name = area.zoom + "." + area.tileMin.x + "-" + area.tileMax.x + "." + area.tileMin.y + "-"
-				+ area.tileMax.y;
-		
+	
 		final MapImageItem result = new MapImageItem(placebook.getOwner(), placebook.getGeometry(), null, null);
 		result.setPlaceBook(placebook);
 		
@@ -116,7 +113,7 @@ public final class OSMTileHelper
 
 			final ByteArrayInputStream byteis = new ByteArrayInputStream(byteos.toByteArray());
 
-			result.writeDataToDisk(name, byteis);
+			result.writeDataToDisk(byteis);
 		}
 		catch (final Throwable e)
 		{

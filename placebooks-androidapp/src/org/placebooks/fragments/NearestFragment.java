@@ -66,6 +66,12 @@ public class NearestFragment extends ShelfFragment
 
 					setShelf(result);
 				}
+
+				@Override
+				public void onPostFailure(Throwable caught)
+				{
+					setError(caught.getMessage());
+				}
 			});
 		}
 	}

@@ -27,8 +27,6 @@ import org.placebooks.controller.EMFSingleton;
 import org.placebooks.controller.ItemFactory;
 import org.placebooks.controller.SearchHelper;
 import org.placebooks.model.json.JsonIgnore;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -357,60 +355,6 @@ public abstract class PlaceBookItem
 	}
 
 	/**
-	 * Header common to all items
-	 * 
-	 * @param config
-	 * @return
-	 */
-	protected Element getConfigurationHeader(final Document config)
-	{
-		log.debug(getEntityName() + ": getConfigurationHeader");
-		final Element item = config.createElement(getEntityName());
-		item.setAttribute("key", getKey());
-		item.setAttribute("owner", getOwner().getKey());
-		if (getOwner() == null)
-		{
-			log.error("Fatal error: PlaceBookItem " + getKey() + " has no owner");
-		}
-
-		// Timestamp is ok to be null
-		if (getTimestamp() != null)
-		{
-			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
-			item.appendChild(timestamp);
-		}
-
-		// Geometry and sourceURL are acceptable as null
-
-		if (getGeometry() != null)
-		{
-			final Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(getGeometry().toText()));
-			item.appendChild(geometry);
-		}
-
-		if (getSourceURL() != null)
-		{
-			final Element url = config.createElement("url");
-			url.appendChild(config.createTextNode(getSourceURL().toExternalForm()));
-			item.appendChild(url);
-		}
-
-		// Write metadata and parameters
-		if (hasMetadata())
-		{
-			item.appendChild(setToConfig(config, getMetadata(), "metadata"));
-		}
-		if (hasParameters())
-		{
-			item.appendChild(setToConfig(config, getParameters(), "parameters"));
-		}
-
-		return item;
-	}
-
-	/**
 	 * Implementation of 'update' for placebook item superclass to update all base fields. This
 	 * should be called from descendant classes in their implementation of 'update'
 	 * 
@@ -446,23 +390,5 @@ public abstract class PlaceBookItem
 		{
 			item.setTimestamp(new Date());
 		}
-	}
-
-	private Element setToConfig(final Document config, final Map<String, ?> m, final String name)
-	{
-		if (!m.isEmpty())
-		{
-			final Element sElem = config.createElement(name);
-			for (final Map.Entry<String, ?> e : m.entrySet())
-			{
-				final Element elem = config.createElement(e.getKey());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
-				sElem.appendChild(elem);
-			}
-
-			return sElem;
-		}
-
-		return null;
 	}
 }

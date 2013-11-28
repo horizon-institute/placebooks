@@ -83,7 +83,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 			type.setValue(item.getItem().getType().name());
 		}
 
-		form.setAction(PlaceBooks.getServer().getHostURL() + "placebooks/a/admin/add_item/upload");
+		form.setAction(PlaceBooks.getServer().getHostURL() + "command/upload_item");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler()

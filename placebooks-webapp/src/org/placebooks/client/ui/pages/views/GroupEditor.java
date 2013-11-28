@@ -102,7 +102,7 @@ public class GroupEditor extends PageView implements View<Shelf>
 		}
 		else
 		{
-			((ImageItem) imagePanel.getWidget()).itemChanged(shelf.getGroup().getImage());
+			((ImageItem) imagePanel.getWidget()).getController().setItem(shelf.getGroup().getImage());			
 		}
 
 		if (PlaceBooks.getPage() instanceof GroupPage && shelf.getGroup().getId() != null)

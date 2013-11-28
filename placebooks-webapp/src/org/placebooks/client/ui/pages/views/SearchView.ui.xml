@@ -14,19 +14,23 @@
 		
 		.search {
 			font-size: 20px;
-			position: absolute;
-			left: 0px;
-			top: 2px;
-			right: 60px;
-	
+			font-family: Verdana, Arial, sans-serif;
+			border: 1px solid #999;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) inset;
+			padding: 5px 10px;
+			border-radius: 3px;
+			-webkit-box-flex: 1;
+			-moz-box-flex: 1;
+			-webkit-flex: 1;
+			-moz-flex: 1;
+			-ms-flex: 1;
+			flex: 1;	
 		}
 		
 		.searchButton {
-			margin-top: 2px;
 			background-color: #346;
 			padding: 3px 15px;
 			border: 1px solid #346;
-			float: right;
 			border-radius: 3px;
 		}
 		
@@ -45,8 +49,15 @@
 		.searchBar {
 			margin: 0 auto;
 			width: 80%;
-			position: relative;
 			height: 35px;
+			display: -webkit-flex;
+			display: -moz-flex;
+			display: -ms-flex;
+			display: flex;
+			-webkit-align-items: center;
+			-moz-align-items: center;
+			-ms-align-items: center;
+			align-items: center;
 		}
 		
 		.parent {
@@ -55,8 +66,9 @@
 		
 		.nearbyLink {
  			margin: 0 auto;
-			width: 80%;
+			width: 79%;
 			display: block;
+			margin-top: 3px;
 		}
 		
 		.shelf {
@@ -67,7 +79,7 @@
 			bottom: 20px;
 		}
 		
-				.footer {
+		.footer {
 			width: 100%;
 			text-align: center;
 			clear: both;

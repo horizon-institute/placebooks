@@ -186,7 +186,7 @@ public class PlaceBookShelf extends CompositeView<Shelf>
 		mapToggle.setVisible(true);
 		placebooks.clear();
 		widgets.clear();
-
+		
 		final List<Entry> entries = new ArrayList<Entry>();
 		for (final Entry entry : shelf.getEntries())
 		{

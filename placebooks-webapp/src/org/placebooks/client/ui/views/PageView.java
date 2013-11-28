@@ -68,6 +68,11 @@ public class PageView extends CompositeView<Page>
 
 			left += widthPCT;
 		}
+		
+		if(page.getId() == null)
+		{
+			page.getMetadata().put("tempID", ""+System.currentTimeMillis());
+		}
 
 		for (final Item item : page.getItems())
 		{
@@ -129,7 +134,10 @@ public class PageView extends CompositeView<Page>
 	public void itemChanged(final Page newPage)
 	{
 		page = newPage;
-		page.getMetadata().remove("tempID");
+		if(page.getId() != null)
+		{
+			page.getMetadata().remove("tempID");
+		}
 
 		for (final Item item : newPage.getItems())
 		{

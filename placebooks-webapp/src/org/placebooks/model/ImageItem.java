@@ -1,13 +1,10 @@
 package org.placebooks.model;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -15,9 +12,8 @@ import javax.imageio.ImageReader;
 import javax.persistence.Entity;
 
 import org.imgscalr.Scalr;
-import org.placebooks.controller.CommunicationHelper;
-import org.placebooks.controller.FileHelper;
 import org.placebooks.controller.PropertiesSingleton;
+import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -73,36 +69,38 @@ public class ImageItem extends MediaItem
 
 	public String getThumbPath() throws IOException
 	{
-		final String thumbPath = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_THUMBS, "") + File.separator + getHash();
-		final File thumbFile = new File(thumbPath);
+		final File thumbFile = getThumbFile();
 		if (!thumbFile.exists() || (thumbFile.length() == 0))
 		{
-			log.warn("Thumbnail file " + thumbPath + " doesn't exist - attempting to fix");
-			generateThumbnail(thumbPath);
+			Log.warn("Thumbnail file " + thumbFile.getAbsolutePath() + " doesn't exist - attempting to fix");
+			createThumbnail();
 		}
-		return thumbPath;
+		return thumbFile.getAbsolutePath();
 	}
 
+	private File getThumbFile() throws IOException
+	{
+		final String thumbPath = PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_THUMBS, "");
+		return new File(thumbPath, getHash());
+	}
+	
 	@Override
-	public void writeDataToDisk(final String name, final InputStream is) throws IOException
+	public void writeDataToDisk(final InputStream is) throws IOException
 	{
 		// User this for now before replacing later
-		super.writeDataToDisk(name, is);
+		super.writeDataToDisk(is);
 		is.close();
 		createThumbnail();
 	}
 
 	protected void createThumbnail() throws IOException
 	{
-		log.debug("Generating thumbnail from markerImage: " + getPath());
+		Log.debug("Generating thumbnail from markerImage: " + getPath());
 		final File imageFile = new File(getPath());
 		final BufferedImage originalImage = ImageIO.read(imageFile);
 
-		final String thumbPath = FileHelper.GetSavePath(PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_THUMBS, ""));
-		final File thumbFile = new File(thumbPath + File.separator + getHash());
-
+		final File thumbFile = getThumbFile();
 		if (!thumbFile.exists() || (thumbFile.length() == 0))
 		{
 			final BufferedImage resizedImage = Scalr.resize(originalImage, THUMB_WIDTH);
@@ -115,51 +113,11 @@ public class ImageItem extends MediaItem
 				read.dispose();
 			}
 
-			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(resizedImage, fmt, os);
-			final InputStream thumbImageStream = new ByteArrayInputStream(os.toByteArray());
-			final String savedAs = FileHelper.WriteFile(thumbPath, getHash(), thumbImageStream);
-			thumbImageStream.close();
-
-			log.debug("Saved thumbnail as: " + savedAs);
+			ImageIO.write(resizedImage, fmt, thumbFile);
 		}
 		else
 		{
-			log.debug("Thumbnail already existed for " + thumbFile.getAbsoluteFile());
-		}
-	}
-
-	private void generateThumbnail(final String thumbPath) throws IOException
-	{
-		log.debug("Generating thumbnail for: " + getKey());
-		final File thumbFile = new File(thumbPath);
-		if (!thumbFile.exists() || (thumbFile.length() == 0))
-		{
-			// Generate thumbnail and save with hash of original file
-			final String originalPath = getPath();
-			if (originalPath != null)
-			{
-				log.debug("Creating thumbnail from existing file: " + getPath());
-				createThumbnail();
-			}
-			else
-			{
-				log.warn("Original markerImage '" + getPath() + "' does not exist for ImageItem " + getKey());
-				if (getSourceURL() != null)
-				{
-					log.warn("Attempting to redownload from " + getSourceURL());
-					final URLConnection conn = CommunicationHelper.getConnection(getSourceURL());
-					writeDataToDisk(getSourceURL().getPath(), conn.getInputStream(), getSourceURL().toString());
-				}
-				else
-				{
-					log.error("Can't locate source markerImage for ImageItem " + getKey());
-				}
-			}
-		}
-		else
-		{
-			log.debug("Thumbnail file exists already for " + getHash());
+			Log.debug("Thumbnail already existed for " + thumbFile.getAbsoluteFile());
 		}
 	}
 }

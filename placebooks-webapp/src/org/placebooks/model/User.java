@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.placebooks.model.json.JsonIgnore;
+import org.placebooks.model.json.JsonDownloadIgnore;
 
 @Entity
 public class User
@@ -29,9 +30,11 @@ public class User
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private String id;
 
+	@JsonDownloadIgnore
 	@OneToMany(mappedBy = "user", cascade = ALL)
 	private Collection<LoginDetails> loginDetails = new HashSet<LoginDetails>();
-	
+
+	@JsonDownloadIgnore	
 	@OneToMany(mappedBy = "owner", cascade = ALL)
 	private Collection<PlaceBookGroup> groups = new HashSet<PlaceBookGroup>();
 
@@ -150,5 +153,10 @@ public class User
 	public void setName(final String name)
 	{
 		this.name = name;
+	}
+
+	public Iterable<PlaceBookGroup> getGroups()
+	{
+		return groups;
 	}
 }

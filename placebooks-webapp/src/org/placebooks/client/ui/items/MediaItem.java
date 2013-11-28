@@ -58,6 +58,10 @@ public abstract class MediaItem extends PlaceBookItemView
 	@Override
 	public void refresh()
 	{
+		if(getItem() == null)
+		{
+			return;
+		}
 		if (getItem().showMarker())
 		{
 			markerImage.setResource(ItemController.getMarkerImage(getItem()));

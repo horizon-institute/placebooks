@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -37,14 +35,13 @@ import org.placebooks.model.PlaceBookItem;
 import org.placebooks.model.PlaceBookItemSearchIndex;
 import org.placebooks.model.User;
 import org.placebooks.model.WebBundleItem;
+import org.wornchaos.logger.Log;
+import org.wornchaos.parser.Parser;
 
-import com.google.gson.Gson;
 import com.vividsolutions.jts.geom.Geometry;
 
 public final class PlaceBooksAdminHelper
 {
-	private static final Logger log = Logger.getLogger(PlaceBooksAdminHelper.class.getName());
-
 	public static final String[] getExtension(final String field)
 	{
 		final int delim = field.indexOf(".");
@@ -57,7 +54,7 @@ public final class PlaceBooksAdminHelper
 		return out;
 	}
 
-	public static final File makePackage(final EntityManager em, final PlaceBookBinder pb, final Gson gson)
+	public static final File makePackage(final EntityManager em, final PlaceBookBinder pb, final Parser parser)
 	{
 		for (final PlaceBook p : pb.getPlaceBooks())
 		{
@@ -86,14 +83,14 @@ public final class PlaceBooksAdminHelper
 			}
 			catch (final Throwable e)
 			{
-				log.log(Level.SEVERE, e.getMessage(), e);
+				Log.error(e);
 			}
 			finally
 			{
 				if (em.getTransaction().isActive())
 				{
 					em.getTransaction().rollback();
-					log.severe("Rolling current persist transaction back");
+					Log.error("Rolling current persist transaction back");
 				}
 			}
 
@@ -111,7 +108,7 @@ public final class PlaceBooksAdminHelper
 							final MapImageItem mii = OSMTileHelper.getMap(p);
 							p.addItem(mii);			
 							mii.setParameters(item.getParameters());
-							log.fine("Adding overview MapImageItem");
+							Log.debug("Adding overview MapImageItem");
 
 							em.getTransaction().commit();
 							
@@ -119,19 +116,19 @@ public final class PlaceBooksAdminHelper
 						}
 						else
 						{
-							log.severe("Fatal error in creating map, boundary for " + "PlaceBook page was null");
+							Log.error("Fatal error in creating map, boundary for " + "PlaceBook page was null");
 						}
 					}
 					catch (final Throwable e)
 					{
-						log.log(Level.SEVERE, e.getMessage(), e);
+						Log.error(e);
 					}
 					finally
 					{
 						if (em.getTransaction().isActive())
 						{
 							em.getTransaction().rollback();
-							log.severe("Rolling current persist transaction back");
+							Log.error("Rolling current persist transaction back");
 						}
 					}
 				}
@@ -149,7 +146,7 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Throwable e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 		}
 
 		final String pkgPath = pb.getPackagePath();
@@ -158,12 +155,12 @@ public final class PlaceBooksAdminHelper
 			try
 			{
 				final FileWriter fw = new FileWriter(new File(pkgPath + "/data.json"));
-				fw.write(gson.toJson(pb));
+				fw.write(parser.write(pb));
 				fw.close();
 			}
 			catch (final IOException e)
 			{
-				log.log(Level.SEVERE, e.getMessage(), e);
+				Log.error(e);
 				return null;
 			}
 		}
@@ -178,7 +175,7 @@ public final class PlaceBooksAdminHelper
 				}
 				catch (final Exception e)
 				{
-					log.log(Level.SEVERE, e.getMessage(), e);
+					Log.error(e);
 				}
 			}
 		}
@@ -201,13 +198,13 @@ public final class PlaceBooksAdminHelper
 				getFileListRecursive(new File(pkgPath), files);
 
 				final File currentDir = new File(".");
-				log.info("Current working directory is " + currentDir.getAbsolutePath());
+				Log.info("Current working directory is " + currentDir.getAbsolutePath());
 
 				final byte data[] = new byte[2048];
 				BufferedInputStream bis = null;
 				for (final File file : files)
 				{
-					log.info("Adding file to archive: " + file.getPath());
+					Log.info("Adding file to archive: " + file.getPath());
 					final FileInputStream fis = new FileInputStream(file);
 					bis = new BufferedInputStream(fis, 2048);
 					zos.putNextEntry(new ZipEntry(file.getName()));
@@ -224,13 +221,13 @@ public final class PlaceBooksAdminHelper
 			}
 			else
 			{
-				log.severe("Package path doesn't exist or can't be created");
+				Log.error("Package path doesn't exist or can't be created");
 				return null;
 			}
 		}
 		catch (final IOException e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 			return null;
 		}
 
@@ -269,30 +266,28 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Throwable e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 		}
 		finally
 		{
 			if (em.getTransaction().isActive())
 			{
 				em.getTransaction().rollback();
-				log.severe("Rolling back PlaceBookBinder copy");
+				Log.error("Rolling back PlaceBookBinder copy");
 			}
 		}
 		return pb_;
 	}
 
 	public static final PlaceBookBinder savePlaceBookBinder(final EntityManager manager,
-			final PlaceBookBinder placeBookBinder)
+			final PlaceBookBinder placeBookBinder, final User user)
 	{
-		final User currentUser = UserManager.getCurrentUser(manager);
-
 		try
 		{
 			manager.getTransaction().begin();
 
 			final Collection<PlaceBookItem> updateMedia = new ArrayList<PlaceBookItem>();
-			PlaceBookBinder binder = updatePlaceBookBinder(manager, placeBookBinder, currentUser, updateMedia);
+			PlaceBookBinder binder = updatePlaceBookBinder(manager, placeBookBinder, user, updateMedia);
 			for (PlaceBook placeBook : binder.getPlaceBooks())
 			{
 				placeBook = manager.merge(placeBook);
@@ -343,13 +338,15 @@ public final class PlaceBooksAdminHelper
 				}
 				catch (final Exception e)
 				{
-					log.log(Level.SEVERE, e.getMessage(), e);
+					Log.error(e);
 				}
 			}
 
 			// Rebuild search index
 			binder.rebuildSearchIndex();
 
+			Log.info("Search Indexes " + binder.getSearchIndex().getIndex().size());
+			
 			binder = manager.merge(binder);
 
 			manager.getTransaction().commit();
@@ -358,14 +355,14 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Throwable e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 		}
 		finally
 		{
 			if (manager.getTransaction().isActive())
 			{
 				manager.getTransaction().rollback();
-				log.severe("Rolling back");
+				Log.error("Rolling back");
 			}
 		}
 		return null;
@@ -392,7 +389,7 @@ public final class PlaceBooksAdminHelper
 
 		wgetCmd.append(" -P " + webBundlePath + " " + wbi.getSourceURL().toString());
 
-		log.info("wgetCmd=" + wgetCmd.toString());
+		Log.info("wgetCmd=" + wgetCmd.toString());
 
 		if (new File(webBundlePath).exists() || new File(webBundlePath).mkdirs())
 		{
@@ -404,7 +401,7 @@ public final class PlaceBooksAdminHelper
 			final int protocol = urlStr.indexOf("://");
 			wbi.setWebBundlePath(webBundlePath);
 			wbi.setWebBundleName(urlStr.substring(protocol + 3, urlStr.length()));
-			log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
+			Log.info("wbi.getWebBundle() = " + wbi.getWebBundle());
 
 			return true;
 		}
@@ -486,7 +483,7 @@ public final class PlaceBooksAdminHelper
 				}
 				catch(Exception e)
 				{
-					log.log(Level.SEVERE, "Error getting distance between "+ geometry + " and "  + p.getGeometry(), e);
+					Log.error("Error getting distance between "+ geometry + " and "  + p.getGeometry(), e);
 				}
 			}
 		}
@@ -598,7 +595,7 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Exception e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 		}
 
 		return result;
@@ -710,7 +707,7 @@ public final class PlaceBooksAdminHelper
 		}
 		catch (final Exception e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			Log.error(e);
 		}
 
 		return result;

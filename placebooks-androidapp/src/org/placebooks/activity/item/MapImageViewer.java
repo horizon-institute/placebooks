@@ -66,7 +66,6 @@ public class MapImageViewer extends Activity
 		{
 			createMap();
 			dialog.dismiss();
-
 		}
 
 		@Override
@@ -79,7 +78,6 @@ public class MapImageViewer extends Activity
 			dialog.setCancelable(false);
 			dialog.show();
 		}
-
 	}
 
 	// The MapView variable:

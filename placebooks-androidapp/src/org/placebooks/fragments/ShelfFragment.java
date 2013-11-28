@@ -26,6 +26,13 @@ public class ShelfFragment extends ListFragment
 		startActivity(intent);
 	}
 	
+	public void setError(final String error)
+	{
+		adapter = new ShelfAdapter(getView().getContext());
+		setListAdapter(adapter);			
+		setEmptyText(error);
+	}
+	
 	public void setShelf(Shelf shelf)
 	{
 		if(adapter == null)

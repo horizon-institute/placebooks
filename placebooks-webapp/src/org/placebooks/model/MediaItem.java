@@ -3,6 +3,7 @@ package org.placebooks.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -12,6 +13,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -20,10 +22,10 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.io.IOUtils;
 import org.placebooks.controller.CommunicationHelper;
 import org.placebooks.controller.EMFSingleton;
-import org.placebooks.controller.FileHelper;
 import org.placebooks.controller.ItemFactory;
 import org.placebooks.controller.PropertiesSingleton;
 import org.placebooks.model.json.JsonIgnore;
+import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -63,23 +65,84 @@ public abstract class MediaItem extends PlaceBookItem
 		if (path != null && new File(path).exists()) { return path; }
 		if ((getHash() != null) || (getKey() != null))
 		{
-			log.info("Attempting to fix media path '" + path + "' for item '" + getKey() + "' hash '" + getHash() + "'");
+			Log.info("Attempting to fix media path '" + path + "' for item '" + getKey() + "' hash '" + getHash() + "'");
 			try
 			{
-				pathToReturn = FileHelper.FindClosestFile(getSavePath().getAbsolutePath(), hash);
+				pathToReturn = FindClosestFile(getSavePath().getAbsolutePath(), hash);
 			}
 			catch (final Exception e)
 			{
-				log.warn(e.getMessage(), e);
+				Log.warn(e.getMessage(), e);
 			}
 		}
 		if (pathToReturn == null)
 		{
-			log.debug("Can't fix path for:" + path + " for item " + getKey() + " hash " + getHash());
+			Log.debug("Can't fix path for:" + path + " for item " + getKey() + " hash " + getHash());
 		}
 		setPath(pathToReturn);
-		log.info("Set media path to " + path);
+		Log.info("Set media path to " + path);
 		return path;
+	}
+	
+	public static String FindClosestFile(final String dir, final String name)
+	{
+		String itemPath = null;
+		final File serveFile = new File(dir + File.separator + name);
+		if (serveFile.exists())
+		{
+			itemPath = serveFile.getAbsolutePath();
+		}
+		else
+		{
+			final File path = new File(dir);
+			File[] files = null;
+			files = path.listFiles(new FilenameFilter()
+			{
+				@Override
+				public boolean accept(final File dir, final String name)
+				{
+					final int index = name.indexOf('.');
+					if (name.startsWith(name) && index == name.length())
+					{
+						log.debug("Found: " + name);
+						return true;
+					}
+					return false;
+				}
+			});
+			if (files != null && files.length > 0)
+			{
+				itemPath = files[0].getPath();
+			}
+		}
+		return itemPath;
+	}
+
+	@Override
+	public void copyDataToPackage() throws IOException
+	{
+		// Check package dir exists already
+		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
+
+		if (getPath() != null && path != null && (new File(path).exists() || new File(path).mkdirs()))
+		{
+			final File dataFile = new File(getPath());
+			final FileInputStream fis = new FileInputStream(dataFile);
+			final File to = new File(path + "/" + dataFile.getName());
+
+			Log.info("Copying file, from=" + dataFile.toString() + ", to=" + to.toString());
+
+			final FileOutputStream fos = new FileOutputStream(to);
+			IOUtils.copy(fis, fos);
+			fis.close();
+			fos.close();
+		}
+		else
+		{
+			throw new IOException("An error occurred copying data for PlaceBookItem " + getKey() + " (hash: "
+					+ getHash());
+		}
 	}
 
 	@Override
@@ -93,7 +156,7 @@ public abstract class MediaItem extends PlaceBookItem
 		q.setParameter("id", getKey());
 		if (q.getResultList().size() == 0)
 		{
-			log.debug("Deleting: " + path);
+			Log.debug("Deleting: " + path);
 			if (getPath() == null) { return false; }
 			final File f = new File(path);
 			if (f.exists())
@@ -103,12 +166,12 @@ public abstract class MediaItem extends PlaceBookItem
 			}
 			else
 			{
-				log.error("Problem deleting file " + f.getAbsolutePath());
+				Log.error("Problem deleting file " + f.getAbsolutePath());
 			}
 		}
 		else
 		{
-			log.debug("File in use by other items, not deleting: " + hash);
+			Log.debug("File in use by other items, not deleting: " + hash);
 		}
 		return true;
 	}
@@ -137,10 +200,10 @@ public abstract class MediaItem extends PlaceBookItem
 	public boolean RedownloadItem()
 	{
 		boolean downloaded = true;
-		log.warn("Attempting to redownload MediaItem content for " + getKey());
+		Log.warn("Attempting to redownload MediaItem content for " + getKey());
 		if (getSourceURL() != null)
 		{
-			log.warn("Attempting to redownload from " + getSourceURL());
+			Log.warn("Attempting to redownload from " + getSourceURL());
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(getSourceURL());
@@ -148,14 +211,14 @@ public abstract class MediaItem extends PlaceBookItem
 			}
 			catch (final Exception e)
 			{
-				log.error("Couldn't get media from: " + getSourceURL());
-				log.debug(e.getMessage());
+				Log.error("Couldn't get media from: " + getSourceURL());
+				Log.debug(e.getMessage());
 			}
 			downloaded = true;
 		}
 		else
 		{
-			log.error("No source URL for MediaItem " + getKey() + " so can't redownload.");
+			Log.error("No source URL for MediaItem " + getKey() + " so can't redownload.");
 		}
 		return downloaded;
 	}
@@ -178,14 +241,14 @@ public abstract class MediaItem extends PlaceBookItem
 			if (item != null)
 			{
 
-				log.debug("Existing item found so updating");
+				Log.debug("Existing item found so updating");
 				item.update(this);
 				pm.flush();
 				returnItem = item;
 			}
 			else
 			{
-				log.debug("No existing item found so creating new");
+				Log.debug("No existing item found so creating new");
 				pm.persist(this);
 			}
 			pm.getTransaction().commit();
@@ -195,7 +258,7 @@ public abstract class MediaItem extends PlaceBookItem
 			if (pm.getTransaction().isActive())
 			{
 				pm.getTransaction().rollback();
-				log.error("Rolling current delete all transaction back");
+				Log.error("Rolling current delete all transaction back");
 			}
 			pm.close();
 		}
@@ -204,7 +267,7 @@ public abstract class MediaItem extends PlaceBookItem
 
 	public void setPath(final String filepath)
 	{
-		log.debug("Setting path for item " + getKey() + " as " + filepath);
+		Log.debug("Setting path for item " + getKey() + " as " + filepath);
 		path = filepath;
 	}
 
@@ -255,15 +318,16 @@ public abstract class MediaItem extends PlaceBookItem
 	 *            InputStream for the file
 	 * @throws IOException
 	 */
-	public void writeDataToDisk(final String name, final InputStream is) throws IOException
+	public void writeDataToDisk(final InputStream is) throws IOException
 	{
 		if (path != null && (new File(path)).exists())
 		{
-			log.info("Cleaning existing file");
+			Log.info("Cleaning existing file");
 			deleteItemData();
 		}
-		log.info("Writing media item data file '" + name + "' from: " + is);
-		String saveName = null;
+		final String name = UUID.randomUUID().toString();
+		Log.info("Writing media item data file '" + name + "' from: " + is);
+		File saveName = null;
 
 		InputStream input;
 		MessageDigest md = null;
@@ -274,50 +338,46 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		catch (final Exception e)
 		{
+			Log.error(e);
 			input = is;
 		}
 
-		final String dir = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");
-		log.info("name=" + name + "; " + getSavePath().toString());
-		final File tempFile = File.createTempFile(name, "", getSavePath());
-		final String tempSaveName = tempFile.getName();
+		final File dir = new File(PropertiesSingleton.get(this.getClass().getClassLoader())
+				.getProperty(PropertiesSingleton.IDEN_MEDIA, ""));
+		Log.info("name=" + name + "; " + getSavePath().toString());
+		final File tempFile = new File(getSavePath(), name);
 		try
 		{
-			final String tempSavedAs = FileHelper.SaveFile(input, dir, tempSaveName);
-			log.debug("Created temporary file: " + tempSavedAs);
+			final FileOutputStream output = new FileOutputStream(tempFile);
+			IOUtils.copy(input, output);
+			input.close();
+			output.close();
 
 			if (md != null)
 			{
 				hash = String.format("%032x", new BigInteger(1, md.digest()));
-				log.debug("File hash is: " + hash);
+				Log.debug("File hash is: " + hash);
 			}
 			else
 			{
 				hash = Long.toString(System.currentTimeMillis());
-				log.error("Couldn't create a hash for file '" + name + "' using time instead: " + hash);
+				Log.error("Couldn't create a hash for file '" + name + "' using time instead: " + hash);
 			}
 
-			saveName = hash;
-			saveName = dir + File.separator + saveName;
-			log.info("Renaming temp file to: " + saveName);
-			final boolean renamed = tempFile.renameTo(new File(saveName));
+			saveName = new File(dir, hash);
+			Log.info("Renaming temp file to: " + saveName);
+			final boolean renamed = tempFile.renameTo(saveName);
 			if (!renamed)
 			{
-				log.warn("couldn't rename " + tempFile.getAbsolutePath() + " to " + saveName);
+				Log.warn("couldn't rename " + tempFile + " to " + saveName);
 			}
 		}
-		finally
+		catch (final Exception e)
 		{
-			final File tempCheck = new File(tempSaveName);
-			if (tempCheck.exists())
-			{
-				log.debug("Deleting: " + tempCheck.getAbsolutePath());
-				tempCheck.delete();
-			}
+			Log.error(e);
 		}
-		log.info("Wrote file " + saveName);
-		setPath(saveName);
+		Log.info("Wrote file " + saveName);
+		setPath(saveName.getPath());
 		setTimestamp(new Date());
 	}
 
@@ -342,12 +402,12 @@ public abstract class MediaItem extends PlaceBookItem
 		}
 		catch (final Exception ex)
 		{
-			log.debug(ex.getMessage());
+			Log.debug(ex.getMessage());
 		}
 		final File downloadFile = new File(urlHash);
 		if (!downloadFile.exists())
 		{
-			writeDataToDisk(urlHash, is);
+			writeDataToDisk(is);
 		}
 		else
 		{
@@ -358,38 +418,12 @@ public abstract class MediaItem extends PlaceBookItem
 			{
 				// Delete the old file and download again...
 				downloadFile.delete();
-				writeDataToDisk(urlHash, is);
+				writeDataToDisk(is);
 			}
 			else
 			{
-				log.warn("Download already in progress... do nothing");
+				Log.warn("Download already in progress... do nothing");
 			}
-		}
-	}
-
-	public void copyDataToPackage() throws IOException
-	{
-		// Check package dir exists already
-		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
-				.getProperty(PropertiesSingleton.IDEN_PKG, "") + "/" + getPlaceBook().getPlaceBookBinder().getKey();
-
-		if (getPath() != null && path != null && (new File(path).exists() || new File(path).mkdirs()))
-		{
-			final File dataFile = new File(getPath());
-			final FileInputStream fis = new FileInputStream(dataFile);
-			final File to = new File(path + "/" + dataFile.getName());
-
-			log.info("Copying file, from=" + dataFile.toString() + ", to=" + to.toString());
-
-			final FileOutputStream fos = new FileOutputStream(to);
-			IOUtils.copy(fis, fos);
-			fis.close();
-			fos.close();
-		}
-		else
-		{
-			throw new IOException("An error occurred copying data for PlaceBookItem " + getKey() + " (hash: "
-					+ getHash());
 		}
 	}
 
@@ -399,7 +433,7 @@ public abstract class MediaItem extends PlaceBookItem
 	 * @return File Folder to save files in
 	 * @throws IOException
 	 */
-	private File getSavePath() throws IOException
+	protected File getSavePath() throws IOException
 	{
 		final String path = PropertiesSingleton.get(this.getClass().getClassLoader())
 				.getProperty(PropertiesSingleton.IDEN_MEDIA, "");

@@ -22,19 +22,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 
-import org.apache.log4j.Logger;
 import org.placebooks.model.json.JsonIgnore;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 @Entity
 public class PlaceBook extends BoundaryGenerator
 {
-
-	protected static final Logger log = Logger.getLogger(PlaceBook.class.getName());
-
 	private Geometry geom; // Pertaining to the PlaceBook
 
 	@Id
@@ -87,7 +82,7 @@ public class PlaceBook extends BoundaryGenerator
 			addItem(item.deepCopy());
 		}
 
-		log.info("Created copy of PlaceBook; old key = " + p.getKey());
+		Log.info("Created copy of PlaceBook; old key = " + p.getKey());
 	}
 
 	// Make a new PlaceBook
@@ -98,7 +93,7 @@ public class PlaceBook extends BoundaryGenerator
 		this.geom = geom;
 		timestamp = new Date();
 
-		log.info("Created new PlaceBook: timestamp=" + timestamp.toString());
+		Log.info("Created new PlaceBook: timestamp=" + timestamp.toString());
 
 	}
 
@@ -148,53 +143,7 @@ public class PlaceBook extends BoundaryGenerator
 
 		final Geometry geom = calcBoundary(geoms);
 		this.geom = geom;
-		log.info("calcBoundary()= " + this.geom);
-	}
-
-	public Element createConfigurationRoot(final Document config)
-	{
-		log.info("PlaceBook.createConfigurationRoot(), key=" + getKey());
-		final Element root = config.createElement(PlaceBook.class.getName());
-		root.setAttribute("key", getKey());
-		root.setAttribute("owner", getOwner().getKey());
-		if (getOwner() == null)
-		{
-			log.error("Fatal error: PlaceBook " + getKey() + " has no owner");
-		}
-
-		if (getTimestamp() != null)
-		{
-			log.debug("Setting timestamp=" + getTimestamp().toString());
-			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
-			root.appendChild(timestamp);
-		}
-
-		if (getGeometry() != null)
-		{
-			log.debug("Setting geometry=" + getGeometry().toText());
-			final Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(getGeometry().toText()));
-			root.appendChild(geometry);
-		}
-
-		if (!metadata.isEmpty())
-		{
-			log.debug("Writing metadata to config");
-			final Element sElem = config.createElement("metadata");
-			log.info("metadata set size = " + metadata.size());
-			for (final Map.Entry<String, String> e : metadata.entrySet())
-			{
-				log.info("Metadata element key, value=" + e.getKey().toString() + ", " + e.getValue().toString());
-				final Element elem = config.createElement(e.getKey().toString());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
-				sElem.appendChild(elem);
-			}
-
-			root.appendChild(sElem);
-		}
-
-		return root;
+		Log.info("calcBoundary()= " + this.geom);
 	}
 
 	public Geometry getGeometry()

@@ -548,7 +548,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());
+				imageItem.writeDataToDisk(conn.getInputStream());
 			}
 			catch (final IOException ex)
 			{
@@ -636,7 +636,7 @@ public class ItemFactory
 			try
 			{
 				final URLConnection conn = CommunicationHelper.getConnection(sourceUrl);
-				imageItem.writeDataToDisk(picture_id + ".jpg", conn.getInputStream());
+				imageItem.writeDataToDisk(conn.getInputStream());
 			}
 			catch (final IOException ex)
 			{

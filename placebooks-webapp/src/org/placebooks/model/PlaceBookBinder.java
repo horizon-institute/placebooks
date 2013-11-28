@@ -29,12 +29,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Temporal;
 
-import org.apache.log4j.Logger;
 import org.placebooks.controller.PropertiesSingleton;
 import org.placebooks.controller.SearchHelper;
+import org.placebooks.model.json.JsonDownloadIgnore;
 import org.placebooks.model.json.JsonIgnore;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -109,8 +108,6 @@ public class PlaceBookBinder extends BoundaryGenerator
 	@Temporal(TIMESTAMP)
 	private Date timestamp;
 
-	protected static final Logger log = Logger.getLogger(PlaceBookBinder.class.getName());
-
 	private Geometry geom; // Super-geometry of all PlaceBooks in this binder
 
 	// We are relying on ArrayList to preserve PlaceBook ordering
@@ -129,7 +126,9 @@ public class PlaceBookBinder extends BoundaryGenerator
 	@ElementCollection
 	private Map<String, Permission> perms = new HashMap<String, Permission>();
 
+	// TODO Remove?
 	@ManyToMany
+	@JsonDownloadIgnore
 	private Collection<PlaceBookGroup> groups = new HashSet<PlaceBookGroup>();
 	
 	@JsonIgnore
@@ -201,7 +200,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 			addPlaceBook(new PlaceBook(page));
 		}
 
-		log.info("Created copy of PlaceBookBinder; old key = " + p.getKey());
+		Log.info("Created copy of PlaceBookBinder; old key = " + p.getKey());
 
 	}
 
@@ -219,7 +218,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 		
 		if (getOwner() != user)
 		{
-			log.debug("This user is not the owner");
+			Log.debug("This user is not the owner");
 			final PlaceBookBinder.Permission perms = getPermission(user);
 			if (perms == null)
 			{
@@ -234,7 +233,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		if (getOwner() != user)
 		{
-			log.debug("This user is not the owner");
+			Log.debug("This user is not the owner");
 			final PlaceBookBinder.Permission perms = getPermission(user);
 			if (perms == null || (perms != null && perms == PlaceBookBinder.Permission.R))
 			{
@@ -256,7 +255,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 			permsUsers = getPermissionsAsString();
 		}
 
-		log.info("Created new PlaceBookBinder: timestamp=" + timestamp.toString());
+		Log.info("Created new PlaceBookBinder: timestamp=" + timestamp.toString());
 
 	}
 
@@ -303,62 +302,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 		final Geometry geom = calcBoundary(geoms);
 		this.geom = geom;
-		log.info("calcBoundary()= " + this.geom);
-	}
-
-	public Element createConfigurationRoot(final Document config)
-	{
-		log.info("PlaceBookBinder.createConfigurationRoot(), key=" + getKey());
-		final Element root = config.createElement(PlaceBookBinder.class.getName());
-		root.setAttribute("key", getKey());
-		root.setAttribute("owner", getOwner().getKey());
-		root.setAttribute("state", getState().toString());
-		if (getOwner() == null)
-		{
-			log.error("Fatal error: PlaceBookBinder " + getKey() + " has no owner");
-		}
-
-		if (!perms.isEmpty())
-		{
-			log.debug("Setting perms=" + getPermissionsAsString());
-			final Element permissions = config.createElement("permissions");
-			permissions.appendChild(config.createTextNode(getPermissionsAsString()));
-			root.appendChild(permissions);
-		}
-
-		if (getTimestamp() != null)
-		{
-			log.debug("Setting timestamp=" + getTimestamp().toString());
-			final Element timestamp = config.createElement("timestamp");
-			timestamp.appendChild(config.createTextNode(getTimestamp().toString()));
-			root.appendChild(timestamp);
-		}
-
-		if (getGeometry() != null)
-		{
-			log.debug("Setting geometry=" + getGeometry().toText());
-			final Element geometry = config.createElement("geometry");
-			geometry.appendChild(config.createTextNode(getGeometry().toText()));
-			root.appendChild(geometry);
-		}
-
-		if (!metadata.isEmpty())
-		{
-			log.debug("Writing metadata to config");
-			final Element sElem = config.createElement("metadata");
-			log.debug("metadata set size = " + metadata.size());
-			for (final Map.Entry<String, String> e : metadata.entrySet())
-			{
-				log.debug("Metadata element key, value=" + e.getKey().toString() + ", " + e.getValue().toString());
-				final Element elem = config.createElement(e.getKey().toString());
-				elem.appendChild(config.createTextNode(e.getValue().toString()));
-				sElem.appendChild(elem);
-			}
-
-			root.appendChild(sElem);
-		}
-
-		return root;
+		Log.info("calcBoundary()= " + this.geom);
 	}
 
 	public Geometry getGeometry()
@@ -370,7 +314,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 	{
 		return id;
 	}
-
+	
 	public Map<String, String> getMetadata()
 	{
 		return Collections.unmodifiableMap(metadata);
@@ -455,7 +399,7 @@ public class PlaceBookBinder extends BoundaryGenerator
 
 	public void rebuildSearchIndex()
 	{
-		log.debug("rebuildSearchIndex...");
+		Log.info("rebuildSearchIndex...");
 		index.clear();
 		final Iterator<Map.Entry<String, String>> i = metadata.entrySet().iterator();
 		while (i.hasNext())
@@ -472,10 +416,10 @@ public class PlaceBookBinder extends BoundaryGenerator
 		}
 		/*
 		 * final Set<Map.Entry<String, String>> ss = metadata.entrySet(); for (final
-		 * Map.Entry<String, String> s : ss) log.debug("... \"" + s.getKey() + "\" => \"" +
+		 * Map.Entry<String, String> s : ss) Log.debug("... \"" + s.getKey() + "\" => \"" +
 		 * s.getValue() + "\"");
 		 * 
-		 * for (final String term : index.getIndex()) log.debug("... " + term);
+		 * for (final String term : index.getIndex()) Log.debug("... " + term);
 		 */
 
 	}
@@ -559,6 +503,11 @@ public class PlaceBookBinder extends BoundaryGenerator
 		groups.add(group);		
 	}
 
+	public Iterable<PlaceBookGroup> getGroups()
+	{
+		return groups;
+	}
+	
 	public void remove(PlaceBookGroup group)
 	{
 		groups.remove(group);		
