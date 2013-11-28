@@ -57,7 +57,11 @@ public class PlaceBookServerHandler extends JSONServerHandler
 			final AsyncCallback<PlaceBook> callback = (AsyncCallback<PlaceBook>) args[1];
 			try
 			{
-				getCachedPlaceBook(id, callback);
+				final PlaceBook cached = getPlaceBook(getPlaceBookPath(id));
+				if(cached != null)
+				{
+					callback.onSuccess(cached);
+				}
 				final List<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("id", id));
 
@@ -125,22 +129,14 @@ public class PlaceBookServerHandler extends JSONServerHandler
 	{
 		try
 		{
-			if (placebookPath.exists())
+			final PlaceBook placebook = getPlaceBook(placebookPath);
+			if(placebook == null)
 			{
-				final File placebookJSON = new File(placebookPath, "data.json");
-				Log.info("Placebook json " + placebookJSON.toString());
-				if (placebookJSON.exists())
-				{
-					Log.info("Placebook json exists");
-					final FileReader reader = new FileReader(placebookJSON);
-					final PlaceBook placebook = parser.parse(PlaceBook.class, reader);
-					placebook.setDirectory(placebookPath.getAbsolutePath());
-					callback.onSuccess(placebook);
-				}
+				callback.onFailure(new Exception("Not Found"));
 			}
 			else
 			{
-				callback.onFailure(new Exception("Not Found"));
+				callback.onSuccess(placebook);
 			}
 		}
 		catch(Exception e)
@@ -149,11 +145,25 @@ public class PlaceBookServerHandler extends JSONServerHandler
 		}
 	}
 	
-	private void getCachedPlaceBook(final String id, final AsyncCallback<PlaceBook> callback) throws IOException
+	private static PlaceBook getPlaceBook(final File placebookPath) throws IOException
 	{
-		getPlaceBook(getPlaceBookPath(id), callback);
+		if (placebookPath.exists())
+		{
+			final File placebookJSON = new File(placebookPath, "data.json");
+			Log.info("Placebook json " + placebookJSON.toString());
+			if (placebookJSON.exists())
+			{
+				Log.info("Placebook json exists");
+				final FileReader reader = new FileReader(placebookJSON);
+				final PlaceBook placebook = parser.parse(PlaceBook.class, reader);
+				placebook.setDirectory(placebookPath.getAbsolutePath());
+				return placebook;
+			}
+		}
+		
+		return null;
 	}
-
+	
 	private static void copy(final InputStream input, final OutputStream output) throws IOException
 	{
 		final byte[] buffer = new byte[4096];
