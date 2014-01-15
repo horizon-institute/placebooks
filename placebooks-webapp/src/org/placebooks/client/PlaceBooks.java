@@ -26,6 +26,8 @@ public class PlaceBooks implements EntryPoint
 	private static final EventBus eventBus = new SimpleEventBus();
 	private static final PlaceController placeController = new PlaceController(eventBus);
 
+	private static final boolean beta = false;
+	
 	private static final PlaceBookHistoryMapper historyMapper = GWT.create(PlaceBookHistoryMapper.class);
 
 	public static Place getPage()
@@ -41,6 +43,11 @@ public class PlaceBooks implements EntryPoint
 	public static PlaceBookService getServer()
 	{
 		return server;
+	}
+	
+	public static boolean isBeta()
+	{
+		return beta;
 	}
 
 	public static void goTo(final PlaceBookPlace place)

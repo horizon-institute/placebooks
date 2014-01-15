@@ -83,7 +83,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 			type.setValue(item.getItem().getType().name());
 		}
 
-		form.setAction(PlaceBooks.getServer().getHostURL() + "command/upload_item");
+		form.setAction(PlaceBooks.getServer().getHostURL() + "upload_item");
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler()
@@ -95,12 +95,22 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 				{
 					final String result = event.getResults().replaceAll("(<([^>]+)>)", "");
 					Log.info("Upload Complete: " + result);
-					setUploadState(false);
-
-					item.getItem().setHash(result);
-					item.refresh();
-					item.getController().markChanged();
-					hide();
+					
+					if(result.startsWith("Error"))
+					{
+						String[] lines = result.split("\\n");
+						setUploadState(false);						
+						setError(lines[0]);
+					}
+					else
+					{
+						setUploadState(false);
+	
+						item.getItem().setHash(result);
+						item.refresh();
+						item.getController().markChanged();
+						hide();
+					}
 				}
 				catch (final Exception e)
 				{
@@ -154,6 +164,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 	@UiHandler("upload")
 	void fileChanged(final ChangeEvent event)
 	{
+		setError(null);
 		refresh();
 	}
 

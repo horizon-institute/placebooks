@@ -103,7 +103,7 @@ public class ItemController extends DelegateController<Item>
 			itemType = Item.Type.ImageItem;
 		}
 		
-		if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL() + "command/media?hash=" + item.getHash() + "&type=" + itemType.name(); }
+		if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL() + "media?hash=" + item.getHash() + "&type=" + itemType.name(); }
 
 		return null;
 	}
@@ -113,7 +113,7 @@ public class ItemController extends DelegateController<Item>
 		if (item.isMedia())
 		{
 			if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL()
-					+ "command/media?type=thumb&hash=" + item.getHash(); }
+					+ "media?type=thumb&hash=" + item.getHash(); }
 		}
 
 		return getURL(item, null);

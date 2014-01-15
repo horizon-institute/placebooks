@@ -79,7 +79,7 @@ public class KioskGroupView extends PageView implements View<Shelf>
 			
 		};
 		dialog.setTitle("QR Code");
-		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=group&id=" + controller.getItem().getGroup().getId()));
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "qrcode?type=group&id=" + controller.getItem().getGroup().getId()));
 		dialog.show();
 	}
 
@@ -91,7 +91,7 @@ public class KioskGroupView extends PageView implements View<Shelf>
 
 		this.shelf.setType(PlaceBookPage.Type.kiosk);
 		
-		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=group&id=" + controller.getItem().getGroup().getId());
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "qrcode?type=group&id=" + controller.getItem().getGroup().getId());
 		
 		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "group/" + controller.getItem().getGroup().getId());		
 		

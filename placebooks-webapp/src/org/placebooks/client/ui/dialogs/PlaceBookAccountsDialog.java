@@ -121,7 +121,7 @@ public class PlaceBookAccountsDialog extends PlaceBookDialog implements View<Use
 					@Override
 					public void onClick(final ClickEvent arg0)
 					{
-						Window.Location.replace(PlaceBooks.getServer().getHostURL() + "command/oauth?service="
+						Window.Location.replace(PlaceBooks.getServer().getHostURL() + "oauth?service="
 								+ service.getName());
 					}
 				}));

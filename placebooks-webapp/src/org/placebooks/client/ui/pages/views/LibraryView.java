@@ -3,7 +3,9 @@ package org.placebooks.client.ui.pages.views;
 import org.placebooks.client.PlaceBooks;
 import org.placebooks.client.controllers.UserController;
 import org.placebooks.client.model.Shelf;
+import org.placebooks.client.model.User;
 import org.placebooks.client.ui.UIMessages;
+import org.placebooks.client.ui.pages.WelcomePage;
 import org.placebooks.client.ui.views.PlaceBookShelf;
 import org.wornchaos.client.server.AsyncCallback;
 import org.wornchaos.views.View;
@@ -28,6 +30,23 @@ public class LibraryView extends PageView implements View<Shelf>
 	@UiField
 	PlaceBookShelf shelf;
 
+	private final View<User> userView = new View<User>()
+	{
+		@Override
+		public void itemChanged(User item)
+		{
+			UserController.getController().remove(userView);
+			if(item == null)
+			{
+				PlaceBooks.goTo(new WelcomePage());
+			}
+			else
+			{
+				loadShelf();
+			}
+		}
+	};
+	
 	@Override
 	public Widget createView()
 	{
@@ -35,6 +54,20 @@ public class LibraryView extends PageView implements View<Shelf>
 
 		Window.setTitle(uiMessages.placebooksLibrary());
 
+		if(UserController.getUser() == null)
+		{
+			UserController.getController().add(userView);
+		}
+		else
+		{
+			loadShelf();
+		}
+
+		return library;
+	}
+
+	private void loadShelf()
+	{
 		PlaceBooks.getServer().getShelf(new AsyncCallback<Shelf>()
 		{
 			@Override
@@ -43,10 +76,8 @@ public class LibraryView extends PageView implements View<Shelf>
 				itemChanged(item);				
 			}
 		});
-		
-		return library;
 	}
-
+	
 	@Override
 	public void itemChanged(Shelf item)
 	{

@@ -11,12 +11,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.placebooks.client.model.PlaceBook;
 import org.placebooks.client.model.PlaceBookService;
 import org.wornchaos.client.server.AsyncCallback;
@@ -62,13 +60,12 @@ public class PlaceBookServerHandler extends JSONServerHandler
 				{
 					callback.onSuccess(cached);
 				}
-				final List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("id", id));
 
 				final Request request = method.getAnnotation(Request.class);
-				final String url = getURL(method, request);
+				String url = getURL(method, request);
+				url = url.replace("{id}", id);
 				
-				call(	url, params, org.wornchaos.client.server.Request.Method.GET,
+				call(	url, new ArrayList<NameValuePair>(), org.wornchaos.client.server.Request.Method.GET,
 						new AsyncCallback<InputStream>()
 						{
 							@Override

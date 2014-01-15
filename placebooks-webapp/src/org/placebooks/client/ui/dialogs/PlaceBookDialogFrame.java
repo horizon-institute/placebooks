@@ -76,6 +76,6 @@ class PlaceBookDialogFrame extends PopupPanel
 	void setError(final String error)
 	{
 		errorLabel.setText(error);
-		errorLabel.setVisible(true);
+		errorLabel.setVisible(error != null);
 	}
 }

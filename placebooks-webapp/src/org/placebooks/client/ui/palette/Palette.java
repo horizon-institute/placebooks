@@ -90,7 +90,7 @@ public class Palette extends FlowPanel
 		this.controller = controller;
 		setPalette(null);
 		updatePalette();
-		timer.scheduleRepeating(6000);
+		timer.scheduleRepeating(60000);
 	}
 
 	public void setPaletteFolder(final PaletteFolder folder)

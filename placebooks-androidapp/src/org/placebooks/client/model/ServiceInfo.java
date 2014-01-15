@@ -4,7 +4,6 @@ package org.placebooks.client.model;
 public class ServiceInfo
 {
 	private String name;
-
 	private String url;
 	private boolean oAuth;
 
@@ -39,7 +38,7 @@ public class ServiceInfo
 		this.name = name;
 	}
 
-	public void setOauth(final boolean oauth)
+	public void setOAuth(final boolean oauth)
 	{
 		this.oAuth = oauth;
 	}

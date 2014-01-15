@@ -1,7 +1,6 @@
 package org.placebooks.activities;
 
 import java.io.File;
-import java.util.List;
 
 import org.placebooks.PlaceBookServerHandler;
 import org.placebooks.PlaceBooks;
@@ -98,28 +97,22 @@ public class PlaceBookActivity extends ActionBarActivity
 				else if(intent.getData().getScheme().equals("placebooks"))
 				{
 					id = intent.getData().getLastPathSegment();
-					String host = "http://" + intent.getData().getHost();
-					final List<String> pathSegments = intent.getData().getPathSegments();
-					for(String pathSegment: pathSegments)
+					final String url = intent.getDataString();
+					if(url.contains("placebooks/group"))
 					{
-						if(pathSegment.equals("placebook"))
-						{
-							break;
-						}
-						else if(pathSegment.equals("group"))
-						{
-							final Intent newIntent = new Intent(getApplicationContext(), GroupActivity.class);
-							newIntent.putExtra("id", id);
-							newIntent.putExtra("host", host + "/");
-							newIntent.setAction(Intent.ACTION_VIEW);
-							startActivity(newIntent);
-							return;
-						}						
-						host = host + "/" + pathSegment;
+						final Intent newIntent = new Intent(getApplicationContext(), GroupActivity.class);
+						newIntent.putExtra("id", id);
+						newIntent.putExtra("host", url.substring(0, url.indexOf("placebooks/group")).replace("placebooks://", "http://"));
+						newIntent.setAction(Intent.ACTION_VIEW);
+						startActivity(newIntent);
+						return;						
+					}
+					else if(!url.contains("placebooks/placebook"))
+					{
+						return;
 					}
 					
-					host = host + "/";
-					
+					final String host = url.substring(0, url.indexOf("placebooks/placebook")).replace("placebooks://", "http://");
 					Log.info(host);
 					Log.info(id);
 					

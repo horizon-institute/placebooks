@@ -34,6 +34,7 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
+import org.apache.commons.fileupload.FileItem;
 import org.placebooks.client.model.Entry;
 import org.placebooks.client.model.Group;
 import org.placebooks.client.model.Item;
@@ -64,9 +65,8 @@ import org.placebooks.services.ServiceRegistry;
 import org.wornchaos.client.server.AsyncCallback;
 import org.wornchaos.logger.Log;
 import org.wornchaos.parser.Parser;
-import org.wornchaos.server.JSONMethod;
-import org.wornchaos.server.JSONServerImpl;
-import org.wornchaos.server.JSONServletException;
+import org.wornchaos.server.HTTPException;
+import org.wornchaos.server.Transact;
 
 import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -75,25 +75,13 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServerFull
+public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServerExt
 {
 	private static final String sessionName = "placebook_session";
 
 	private final static LinkedList<String> recentBooks = new LinkedList<String>();
 
-	private static EntityManagerFactory entityManagerFactory = null;
-
 	private static MessageDigest passwordDigest;
-
-	private static EntityManager createEntityManager()
-	{
-		if (entityManagerFactory == null)
-		{
-			final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
-			entityManagerFactory = Persistence.createEntityManagerFactory("placebooks", properties);
-		}
-		return entityManagerFactory.createEntityManager();
-	}
 
 	private static Entry createEntry(final PlaceBookBinder binder)
 	{
@@ -218,22 +206,22 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 	private static User getUser(final EntityManager entityManager, final AsyncCallback<?> callback)
 	{
 		final String sessionID = getResponse(callback).getSessionID(sessionName);
-		if (sessionID == null) { return null; }
+		if (sessionID == null) { return null; }		
 
-		final Session session = entityManager.find(Session.class, sessionID);
+		final Session session = entityManager.find(Session.class, sessionID);	
 		if (session == null) { return null; }
 
 		return session.getUser();
 	}
 
-	private static void runSync(final AsyncCallback<?> callback, final String service)
+	private void runSync(final AsyncCallback<?> callback, final String service)
 	{
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				final EntityManager entityManager = createEntityManager();
+				final EntityManager entityManager = getEntityManager(callback);
 				try
 				{
 					final User user = verifyUser(entityManager, callback);
@@ -287,18 +275,19 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 	}
 
 	private static User verifyUser(final EntityManager entityManager, final AsyncCallback<?> callback)
-			throws JSONServletException
+			throws HTTPException
 	{
 		final User user = getUser(entityManager, callback);
-		if (user == null) { throw new JSONServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"); }
+		if (user == null) { throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"); }
 		return user;
 	}
 
+	@Transact
 	@Override
 	public void addGroup(final String placebookID, final String groupID,
 			final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 
 		try
 		{
@@ -306,9 +295,9 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			final PlaceBookGroup group = entityManager.find(PlaceBookGroup.class, groupID);
 			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, placebookID);
 
-			if (placebook == null) { throw new JSONServletException(HttpServletResponse.SC_NOT_FOUND,
+			if (placebook == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND,
 					"PlaceBook not found"); }
-			if (group == null) { throw new JSONServletException(HttpServletResponse.SC_NOT_FOUND, "Group not found"); }
+			if (group == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND, "Group not found"); }
 
 			entityManager.getTransaction().begin();
 
@@ -323,27 +312,18 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				Log.error("Rolling login detail creation");
-			}
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void deletePlaceBook(final String placebookID, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			verifyUser(entityManager, callback);
 			entityManager.getTransaction().begin();
 			final PlaceBookBinder binder = entityManager.find(PlaceBookBinder.class, placebookID);
-			if (binder == null) { throw new JSONServletException(HttpServletResponse.SC_NOT_FOUND,
+			if (binder == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND,
 					"PlaceBook not found"); }
 			for (final PlaceBook placebook : binder.getPlaceBooks())
 			{
@@ -368,22 +348,12 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				Log.error("Rolling current delete single transaction back");
-			}
-
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void getFeaturedPlaceBooks(final int count, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final TypedQuery<PlaceBookBinder> q = entityManager
@@ -409,30 +379,22 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			Log.error(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void getGroup(final String id, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final PlaceBookGroup group = entityManager.find(PlaceBookGroup.class, id);
-			if (group == null) { throw new JSONServletException(HttpServletResponse.SC_NOT_FOUND, "Group not found"); }
+			if (group == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND, "Group not found"); }
 
 			callback.onSuccess(createShelf(group.getPlaceBooks(), group));
 		}
 		catch (final Exception e)
 		{
 			callback.onFailure(e);
-		}
-		finally
-		{
-			entityManager.close();
 		}
 	}
 
@@ -468,7 +430,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		}
 		else
 		{
-			callback.onFailure(new JSONServletException(HttpServletResponse.SC_NOT_FOUND));
+			callback.onFailure(new HTTPException(HttpServletResponse.SC_NOT_FOUND));
 			return;
 		}
 
@@ -495,14 +457,14 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		}
 		else
 		{
-			callback.onFailure(new JSONServletException(HttpServletResponse.SC_NOT_FOUND));
+			callback.onFailure(new HTTPException(HttpServletResponse.SC_NOT_FOUND));
 		}
 	}
 
 	@Override
 	public void getPaletteItems(final AsyncCallback<Iterable<Item>> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User user = verifyUser(entityManager, callback);
@@ -529,30 +491,20 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
-	}
-
-	@Override
-	public String getParseGroup(final JSONMethod method)
-	{
-		return null;
 	}
 
 	@Override
 	public void getPlaceBook(final String id, final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 
 		try
 		{
 			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, id);
 			if (placebook != null)
 			{
-				final User user = verifyUser(entityManager, callback);
-				if (!placebook.canBeRead(user)) { throw new JSONServletException(HttpServletResponse.SC_UNAUTHORIZED,
+				final User user = getUser(entityManager, callback);
+				if (!placebook.canBeRead(user)) { throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED,
 						"User doesn't have sufficient permissions"); }
 
 				placebookViewed(id);
@@ -560,23 +512,19 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			}
 			else
 			{
-				throw new JSONServletException(404, "PlaceBook not found");
+				throw new HTTPException(404, "PlaceBook not found");
 			}
 		}
 		catch (final Exception e)
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void getRecentPlaceBooks(final AsyncCallback<String> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		try
@@ -638,27 +586,17 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 	@Override
 	public Class<?> getServerInterface()
 	{
-		return PlaceBookServerFull.class;
+		return PlaceBookServerExt.class;
 	}
 
 	@Override
 	public void getShelf(final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User user = verifyUser(entityManager, callback);
-			final TypedQuery<PlaceBookBinder> q = entityManager
-					.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
-									PlaceBookBinder.class);
-			q.setParameter("user", user);
-			q.setParameter("email", "%" + user.getEmail() + "%");
-
-			final Collection<PlaceBookBinder> pbs = q.getResultList();
-			Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
-			Log.info("User " + user.getName());
-
-			callback.onSuccess(createShelf(pbs, null));
+			getShelf(user, entityManager, callback);
 
 			runSync(callback, null);
 		}
@@ -666,16 +604,12 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void getUser(final AsyncCallback<org.placebooks.client.model.User> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User user = verifyUser(entityManager, callback);
@@ -688,17 +622,13 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void linkAccount(final String username, final String password, final String service,
 			final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User user = verifyUser(entityManager, callback);
@@ -719,13 +649,13 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			if (ll.size() > 0)
 			{
 				Log.error("LoginDetails already linked to user");
-				throw new JSONServletException(HttpServletResponse.SC_UNAUTHORIZED);
+				throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 
 			final Service serviceImpl = ServiceRegistry.getService(service);
 			if (service != null)
 			{
-				if (!serviceImpl.checkLogin(username, password)) { throw new JSONServletException(
+				if (!serviceImpl.checkLogin(username, password)) { throw new HTTPException(
 						HttpServletResponse.SC_BAD_REQUEST); }
 			}
 
@@ -745,15 +675,6 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				Log.error("Rolling login detail creation");
-			}
-			entityManager.close();
-		}
 
 		runSync(callback, service);
 	}
@@ -761,48 +682,29 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 	@Override
 	public void login(final String email, final String password, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final TypedQuery<User> query = entityManager.createQuery(	"SELECT u FROM User u WHERE u.email = :email",
 																		User.class);
 			query.setParameter("email", email);
 			final User user = query.getSingleResult();
-			if (user == null) { throw new JSONServletException(400, "Unknown email"); }
+			if (user == null) { throw new HTTPException(400, "Unknown email"); }
 
 			Log.info("Password Hash " + encodePassword(password) + " " + user.getPasswordHash());
 
-			if (!user.getPasswordHash().equals(encodePassword(password))) { throw new JSONServletException(400,
+			if (!user.getPasswordHash().equals(encodePassword(password))) { throw new HTTPException(400,
 					"Incorrect Password"); }
 
 			startUserSession(entityManager, callback, user);
 
-			final TypedQuery<PlaceBookBinder> q = entityManager
-					.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
-									PlaceBookBinder.class);
-			q.setParameter("user", user);
-			q.setParameter("email", "%" + user.getEmail() + "%");
-
-			final Collection<PlaceBookBinder> pbs = q.getResultList();
-			Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
-			Log.info("User " + user.getName());
-
-			callback.onSuccess(createShelf(pbs, user));
+			getShelf(user, entityManager, callback);
 
 			runSync(callback, null);
 		}
 		catch (final Exception e)
 		{
 			callback.onFailure(e);
-		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				Log.error("Rolling login detail creation");
-			}
-			entityManager.close();
 		}
 	}
 
@@ -812,7 +714,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		final String sessionID = getResponse(callback).getSessionID(sessionName);
 		if (sessionID == null) { return; }
 
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final Session session = entityManager.find(Session.class, sessionID);
@@ -831,10 +733,6 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
@@ -846,7 +744,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			if (serv != null)
 			{
 				Log.info(serv.getInfo().getName());
-				final EntityManager entityManager = EMFSingleton.getEntityManager();
+				final EntityManager entityManager = getEntityManager(callback);
 				final User user = verifyUser(entityManager, callback);
 
 				final String result = serv.getAuthenticationURL(entityManager, user, null);
@@ -870,17 +768,16 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 	@Override
 	public void placebookPackage(final String id, final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User currentUser = getUser(entityManager, callback);
 			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, id);
-			if (!placebook.canBeRead(currentUser)) { throw new JSONServletException(
+			if (!placebook.canBeRead(currentUser)) { throw new HTTPException(
 					HttpServletResponse.SC_UNAUTHORIZED, "User doesn't have sufficient permissions"); }
 
 			@SuppressWarnings("unchecked")
-			final File zipFile = PlaceBooksAdminHelper.makePackage(entityManager, placebook, new GsonParserFactory()
-					.create(JsonDownloadIgnore.class, JsonIgnore.class));
+			final File zipFile = PlaceBooksAdminHelper.makePackage(entityManager, placebook, new GsonParser(JsonDownloadIgnore.class, JsonIgnore.class));
 			if (zipFile == null)
 			{
 				Log.info("Failed to create zip file");
@@ -897,26 +794,22 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void publishPlaceBook(final org.placebooks.client.model.PlaceBook placebook,
 			final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User user = verifyUser(entityManager, callback);
 			final PlaceBookBinder dbBinder = entityManager.find(PlaceBookBinder.class, placebook.getId());
-			if (dbBinder == null) { throw new JSONServletException(HttpServletResponse.SC_NOT_FOUND); }
+			if (dbBinder == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND); }
 			if (dbBinder.getOwner() != user)
 			{
 				final PlaceBookBinder.Permission perms = dbBinder.getPermission(user);
-				if (perms == null) { throw new JSONServletException(HttpServletResponse.SC_UNAUTHORIZED,
+				if (perms == null) { throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED,
 						"User doesn't have sufficient permissions"); }
 			}
 
@@ -932,14 +825,6 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-			entityManager.close();
-		}
 	}
 
 	@Override
@@ -950,14 +835,19 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			Log.debug("QR Code: " + key);
 
 			final String eTag = key;
-			final String ifMatch = getResponse(callback).getRequest().getHeader("If-Match");
-			if (ifMatch != null && !MediaHelper.matches(ifMatch, eTag)) { throw new JSONServletException(
-					HttpServletResponse.SC_PRECONDITION_FAILED); }
-
-			final QRCodeWriter writer = new QRCodeWriter();
-
-			final String url = getResponse(callback).getHostURL() + "?utm_medium=qrcode&utm_source=qrcode#" + type + ":" + key;
-			Log.debug(url);
+			final String ifNoneMatch = getResponse(callback).getRequest().getHeader("If-None-Match");
+			if(ifNoneMatch != null && ifNoneMatch.equals(eTag))
+			{
+				throw new HTTPException(304);
+			}			
+			
+			String hostURL = getResponse(callback).getHostURL();
+			if(!hostURL.endsWith("/"))
+			{
+				hostURL = hostURL + "/";
+			}
+			final String url = hostURL + "?utm_medium=qrcode&utm_source=qrcode#" + type + ":" + key;
+			final QRCodeWriter writer = new QRCodeWriter();			
 			final BitMatrix matrix = writer.encode(url, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
 			final MatrixToImageConfig config = new MatrixToImageConfig(MatrixToImageConfig.BLACK, 0x00FFFFFF);
 			final BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix, config);
@@ -980,12 +870,27 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			callback.onFailure(e);
 		}
 	}
+	
+	private void getShelf(final User user, final EntityManager entityManager, final AsyncCallback<Shelf> callback)
+	{
+		final TypedQuery<PlaceBookBinder> q = entityManager
+				.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
+								PlaceBookBinder.class);
+		q.setParameter("user", user);
+		q.setParameter("email", "%" + user.getEmail() + "%");
 
+		final Collection<PlaceBookBinder> pbs = q.getResultList();
+		Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
+		Log.info("User " + user.getName());
+
+		callback.onSuccess(createShelf(pbs, user));		
+	}
+	
 	@Override
 	public void registerAccount(final String name, final String email, final String password,
 			final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final String encodedPassword = encodePassword(password);
@@ -997,37 +902,20 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 
 			startUserSession(entityManager, callback, user);
 
-			final TypedQuery<PlaceBookBinder> q = entityManager
-					.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
-									PlaceBookBinder.class);
-			q.setParameter("user", user);
-			q.setParameter("email", "%" + user.getEmail() + "%");
-
-			final Collection<PlaceBookBinder> pbs = q.getResultList();
-			Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
-			Log.info("User " + user.getName());
-
-			callback.onSuccess(new Shelf());
+			getShelf(user, entityManager, callback);
+			
+			runSync(callback, null);
 		}
 		catch (final Exception e)
 		{
 			callback.onFailure(e);
-		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-				Log.error("Rolling back user creation");
-			}
-			entityManager.close();
 		}
 	}
 
 	@Override
 	public void saveGroup(final Shelf shelf, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User currentUser = verifyUser(entityManager, callback);
@@ -1042,7 +930,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 				{
 					group.setOwner(currentUser);
 				}
-				else if (group.getOwner() != currentUser) { throw new JSONServletException(
+				else if (group.getOwner() != currentUser) { throw new HTTPException(
 						HttpServletResponse.SC_UNAUTHORIZED, "User doesn't have sufficient permissions"); }
 			}
 			else
@@ -1094,21 +982,13 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void savePlaceBook(final org.placebooks.client.model.PlaceBook placebook,
 			final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 
 		try
 		{
@@ -1116,7 +996,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			if (placebook.getId() != null)
 			{
 				final PlaceBookBinder dbBinder = entityManager.find(PlaceBookBinder.class, placebook.getId());
-				if (!dbBinder.canBeWriten(user)) { throw new JSONServletException(HttpServletResponse.SC_UNAUTHORIZED,
+				if (!dbBinder.canBeWriten(user)) { throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED,
 						"User doesn't have sufficient permissions"); }
 			}
 
@@ -1131,20 +1011,12 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void search(final String search, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final Shelf shelf = new Shelf();
@@ -1181,16 +1053,12 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
 	public void searchLocation(final String geometry, final AsyncCallback<Shelf> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final Geometry geometry_ = new WKTReader().read(geometry);
@@ -1214,10 +1082,6 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			entityManager.close();
-		}
 	}
 
 	@Override
@@ -1231,17 +1095,43 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		// res.setStatus(200);
 	}
 
+	@Transact
 	@Override
-	public void uploadFile(final String type, final String id, final InputStream file,
+	public void uploadFile(final String type, final String id, final FileItem file,
 			final AsyncCallback<String> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		Log.info("Uploading " + type + " for item " + id);
 		try
 		{
 			final User currentUser = verifyUser(entityManager, callback);
 			entityManager.getTransaction().begin();
 
+			if(type != null)
+			{
+				ServerInfo info = getServerInfo();
+				long size = 0;
+				if(type.equals("ImageItem"))
+				{
+					size = info.getImageSize();
+				}
+				else if(type.equals("AudioItem"))
+				{
+					size = info.getAudioSize();
+				}
+				else if(type.equals("VideoItem"))
+				{
+					size = info.getVideoSize();
+				}
+				
+				size = size * 1024 * 1024;
+				
+				if(file.getSize() > size)
+				{
+					throw new HTTPException(413, "Error: Item too Large\n");
+				}
+			}
+			
 			PlaceBookItem item = null;
 			if (id != null)
 			{
@@ -1261,14 +1151,14 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 				if (item instanceof MediaItem)
 				{
 					((MediaItem) item).setSourceURL(null);
-					((MediaItem) item).writeDataToDisk(file);
+					((MediaItem) item).writeDataToDisk(file.getInputStream());
 
 					callback.onSuccess(((MediaItem) item).getHash());
 				}
 				else if (item instanceof GPSTraceItem)
 				{
 					((GPSTraceItem) item).setSourceURL(null);
-					((GPSTraceItem) item).readTrace(file);
+					((GPSTraceItem) item).readTrace(file.getInputStream());
 				}
 
 				entityManager.getTransaction().commit();
@@ -1278,22 +1168,14 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-
-			entityManager.close();
-		}
 	}
 
+	@Transact
 	@Override
 	public void uploadPackage(final InputStream file,
 			final AsyncCallback<org.placebooks.client.model.PlaceBook> callback)
 	{
-		final EntityManager entityManager = createEntityManager();
+		final EntityManager entityManager = getEntityManager(callback);
 		try
 		{
 			final User currentUser = verifyUser(entityManager, callback);
@@ -1355,7 +1237,7 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 			}
 
 			@SuppressWarnings("unchecked")
-			final Parser parser = new GsonParserFactory().create(Id.class, JsonIgnore.class, JsonDownloadIgnore.class);
+			final Parser parser = new GsonParser(Id.class, JsonIgnore.class, JsonDownloadIgnore.class);
 			final File dataJson = new File(outputFolder, "data.json");
 			final PlaceBookBinder binder = parser.parse(PlaceBookBinder.class, new FileReader(dataJson));
 
@@ -1419,15 +1301,6 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		{
 			callback.onFailure(e);
 		}
-		finally
-		{
-			if (entityManager.getTransaction().isActive())
-			{
-				entityManager.getTransaction().rollback();
-			}
-
-			entityManager.close();
-		}
 	}
 
 	private void placebookViewed(final String key)
@@ -1442,5 +1315,12 @@ public class PlaceBookServerImpl extends JSONServerImpl implements PlaceBookServ
 		}
 
 		recentBooks.addFirst(key);
+	}
+
+	@Override
+	protected EntityManagerFactory createEntityManagerFactory()
+	{
+		final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
+		return Persistence.createEntityManagerFactory("placebooks", properties);
 	}
 }

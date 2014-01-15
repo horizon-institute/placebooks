@@ -74,6 +74,9 @@ public class PlaceBookToolbar extends CompositeView<User>
 	ToolbarStyle style;
 
 	@UiField
+	Label linkedAccounts;
+	
+	@UiField
 	Panel loginPanel;
 
 	public PlaceBookToolbar()
@@ -162,6 +165,9 @@ public class PlaceBookToolbar extends CompositeView<User>
 
 		UserController.getController().add(this);
 		UserController.getController().load();
+		
+		linkedAccounts.setVisible(PlaceBooks.isBeta());
+		
 		//
 		// userStore.get(null, new JSONResponse<User>()
 		// {

@@ -1,6 +1,7 @@
 package org.placebooks.client.ui.widgets;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -31,6 +32,11 @@ public class ToolbarLink extends Widget implements HasText
 			public void onClick(final ClickEvent event)
 			{
 				if (!(event.getNativeEvent() instanceof Event)) { return; }
+				if(!isEnabled())
+				{
+					event.preventDefault();
+					return;
+				}
 				if ((url.startsWith("#") || (url.contains("#") && (url.startsWith(GWT.getHostPageBaseURL()))))
 						&& impl.handleAsClick((Event) event.getNativeEvent()))
 				{
@@ -99,10 +105,14 @@ public class ToolbarLink extends Widget implements HasText
 		if (url != null && enabled)
 		{
 			getElement().setInnerHTML("<a href=\"" + url + "\">" + getInnerHTML() + "</a>");
+			getElement().getStyle().setOpacity(1);
+			getElement().getStyle().clearCursor();			
 		}
 		else
 		{
 			getElement().setInnerHTML(getInnerHTML());
+			getElement().getStyle().setOpacity(0.2);
+			getElement().getStyle().setCursor(Cursor.DEFAULT);			
 		}
 	}
 }

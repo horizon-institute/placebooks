@@ -72,6 +72,9 @@
 		<fileset dir="${lib.dir}">
 			<include name="**.jar"/>
 		</fileset>
+  		<fileset dir="${warlib.dir}">
+    		<include name="*.jar"/>
+  		</fileset>		
 		<pathelement path="${classes.dir}" />
     </path>
 	

@@ -31,6 +31,6 @@
 	
 	<servlet-mapping>
 		<servlet-name>dispatcher</servlet-name>
-		<url-pattern>/command/*</url-pattern>
+		<url-pattern>/placebooks/*</url-pattern>
 	</servlet-mapping>
 </web-app>

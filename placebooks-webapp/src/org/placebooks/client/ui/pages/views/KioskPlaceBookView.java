@@ -145,11 +145,11 @@ public class KioskPlaceBookView extends PageView implements View<PlaceBook>
 
 		infoPanel.setVisible(true);
 		
-		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=placebook&id=" + controller.getItem().getId());		
+		qrcode.setUrl(PlaceBooks.getServer().getHostURL() + "qrcode?type=placebook&id=" + controller.getItem().getId());		
 
 		if ("PUBLISHED".equals(placebook.getState()))
 		{
-			final String url = PlaceBooks.getServer().getHostURL() + "placebooks/a/view/" + placebook.getId();
+			final String url = PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId();
 			facebookLike.setURL(url);
 			googlePlus.setURL(url);
 		}
@@ -193,7 +193,7 @@ public class KioskPlaceBookView extends PageView implements View<PlaceBook>
 			dialog.setTitle("QR Code");
 		}
 
-		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "command/qrcode?type=placebook&id=" + controller.getItem().getId()));
+		dialog.setWidget(new Image(PlaceBooks.getServer().getHostURL() + "qrcode?type=placebook&id=" + controller.getItem().getId()));
 		dialog.show();
 	}
 	

@@ -74,6 +74,9 @@ public class PlaceBookEditor extends PageView implements View<PlaceBook>
 	Label zoomLabel;
 
 	@UiField
+	Label permissions;
+	
+	@UiField
 	TextBox title;
 
 	@UiField
@@ -174,6 +177,8 @@ public class PlaceBookEditor extends PageView implements View<PlaceBook>
 		controller.add(this);
 		controller.add(bookPanel);
 		controller.add(saveItem);
+		
+		permissions.setVisible(PlaceBooks.isBeta());
 
 		UserController.getController().add(checkAuthorized);
 
@@ -279,7 +284,7 @@ public class PlaceBookEditor extends PageView implements View<PlaceBook>
 	@UiHandler("downloadBook")
 	void downloadBook(final ClickEvent event)
 	{
-		Window.Location.replace(PlaceBooks.getServer().getHostURL() + "command/package?id=" + controller.getItem().getId());
+		Window.Location.replace(PlaceBooks.getServer().getHostURL() + "placebook/" + controller.getItem().getId() + "/download");
 	}
 	
 	@UiHandler("deleteBook")

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.placebooks"
-    android:versionCode="4"
-    android:versionName="2.4" >
+    android:versionCode="6"
+    android:versionName="2.6" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -42,6 +42,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />                
                 <data android:mimeType="application/x-placebook" />
             </intent-filter>
             <intent-filter>
@@ -81,5 +82,4 @@
         <activity android:name="org.placebooks.activity.item.WebBundleViewer" />
         <activity android:name="org.placebooks.activity.item.MapImageViewer" />
     </application>
-
 </manifest>

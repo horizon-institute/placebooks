@@ -66,7 +66,7 @@ public final class OSMTileHelper
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 
-		final TileArea area = getTileArea(placebook.getGeometry(), 25);
+		final TileArea area = getTileArea(placebook.getGeometry(), 10);
 		final int imageWidth = (1 + Math.abs(area.tileMax.x - area.tileMin.x)) * tileWidth;
 		final int imageHeight = (1 + Math.abs(area.tileMax.y - area.tileMin.y)) * tileHeight;
 
@@ -156,8 +156,8 @@ public final class OSMTileHelper
 			final Point pointMin = getTileNumber(envelope.getMaxX(), envelope.getMinY(), zoom);
 			final Point pointMax = getTileNumber(envelope.getMinX(), envelope.getMaxY(), zoom);
 
-			final int area = Math.abs((pointMax.x - pointMin.x) * (pointMax.y - pointMin.y));
-
+			final int area = (Math.abs((pointMax.x - pointMin.x)) + 1) * (Math.abs(pointMax.y - pointMin.y) + 1);
+			
 			if (area <= maxTiles)
 			{
 				final TileArea tileArea = new TileArea();

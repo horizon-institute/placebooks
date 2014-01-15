@@ -10,7 +10,7 @@
 		.disabled {
 			padding: 0 10px;
 			cursor: default;
-			opacity: 0.5;
+			opacity: 0.3;
 		}
 		
 		.enabled:HOVER {
