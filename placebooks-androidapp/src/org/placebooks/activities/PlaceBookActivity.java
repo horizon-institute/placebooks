@@ -5,10 +5,12 @@ import java.io.File;
 import org.placebooks.PlaceBookServerHandler;
 import org.placebooks.PlaceBooks;
 import org.placebooks.R;
+import org.placebooks.client.model.Item;
 import org.placebooks.client.model.Page;
 import org.placebooks.client.model.PlaceBook;
 import org.placebooks.client.model.PlaceBookService;
 import org.placebooks.fragments.ColumnFragment;
+import org.placebooks.fragments.ColumnFragment.GotoItemListener;
 import org.placebooks.views.adapters.ColumnsAdapter;
 import org.wornchaos.client.server.AsyncCallback;
 import org.wornchaos.logger.Log;
@@ -24,6 +26,7 @@ public class PlaceBookActivity extends ActionBarActivity
 	private String id;
 	private ColumnsAdapter adapter;
 	private PlaceBookService server;
+	private ViewPager pager;
 
 	private final AsyncCallback<PlaceBook> callback = new AsyncCallback<PlaceBook>()
 	{
@@ -46,6 +49,26 @@ public class PlaceBookActivity extends ActionBarActivity
 						{
 							final ColumnFragment fragment = new ColumnFragment();
 							fragment.setPage(placebook, page, pageNumber, column);
+							fragment.setGotoItemListener(new GotoItemListener()
+							{
+								@Override
+								public void gotoItem(Item item)
+								{
+									int pageNumber = 0;
+									for (final Page page : placebook.getPages())
+									{
+										for(final Item pageItem: page.getItems())
+										{
+											if(pageItem == item)
+											{
+												pager.setCurrentItem(pageNumber + item.getParameter("column", 0));
+												return;
+											}
+										}
+										pageNumber+=2;
+									}
+								}
+							});
 							adapter.add(fragment);
 						}
 						pageNumber++;
@@ -70,7 +93,7 @@ public class PlaceBookActivity extends ActionBarActivity
 
 		adapter = new ColumnsAdapter(getSupportFragmentManager());
 
-		final ViewPager pager = ((ViewPager) findViewById(R.id.pager));
+		pager = ((ViewPager) findViewById(R.id.pager));
 		pager.setAdapter(adapter);
 
 		handleIntent(getIntent());

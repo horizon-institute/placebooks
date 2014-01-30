@@ -9,6 +9,7 @@ import java.util.List;
 import org.placebooks.R;
 import org.placebooks.activity.item.MapCanvas;
 import org.placebooks.client.model.Item;
+import org.placebooks.client.model.Item.Type;
 import org.placebooks.client.model.Page;
 import org.placebooks.client.model.PlaceBook;
 import org.wornchaos.logger.Log;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -29,10 +31,16 @@ import android.widget.VideoView;
 
 public class ColumnFragment extends Fragment
 {
+	public interface GotoItemListener
+	{
+		void gotoItem(Item item);
+	}
+	
 	private int pageNumber;
 	private int column;
 	private Page page;
 	private PlaceBook placebook;
+	private GotoItemListener listener;
 
 	public ColumnFragment()
 	{
@@ -49,6 +57,11 @@ public class ColumnFragment extends Fragment
 		return pageNumber;
 	}
 
+	public void setGotoItemListener(GotoItemListener listener)
+	{
+		this.listener = listener;
+	}
+	
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState)
 	{
@@ -191,12 +204,27 @@ public class ColumnFragment extends Fragment
 			{
 				if (item.getParameter("markerShow", 0) == 1)
 				{
+					final Item mapItem = getMapForItem(item);
 					final LinearLayout layout = new LinearLayout(container.getContext());
 					final ImageView imageView = new ImageView(container.getContext());
 					layout.setBackgroundColor(Color.WHITE);
 					imageView.setBackgroundColor(Color.WHITE);
 					imageView.setPadding(20, 40, 0, 0);
 					imageView.setImageResource(getMarkerResource(item));
+					if(mapItem != null)
+					{
+						imageView.setOnClickListener(new OnClickListener()
+						{						
+							@Override
+							public void onClick(View v)
+							{
+								if(listener != null)
+								{
+									listener.gotoItem(mapItem);
+								}
+							}
+						});
+					}
 
 					layout.addView(imageView);
 					layout.addView(view);
@@ -210,4 +238,27 @@ public class ColumnFragment extends Fragment
 			}
 		}
 	}
+	
+	private Item getMapForItem(Item item)
+	{
+		final int pageNumber = item.getParameter("mapPage", -1);
+		
+		try
+		{
+			final Page page = placebook.getPages().get(pageNumber);
+			for(Item pageItem: page.getItems())
+			{
+				if(pageItem.is(Type.GPSTraceItem))
+				{
+					return pageItem;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+		}
+		return null;
+	}
 }
+
+	
