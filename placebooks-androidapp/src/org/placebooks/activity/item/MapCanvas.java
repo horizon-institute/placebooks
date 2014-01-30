@@ -103,7 +103,7 @@ public class MapCanvas extends ImageView
 
 		if (location != null)
 		{
-			//drawBitmap(canvas, bitmap, location.getLatitude(), location.getLongitude());
+			//TODO drawBitmap(canvas, bitmap, location.getLatitude(), location.getLongitude());
 		}
 	}
 

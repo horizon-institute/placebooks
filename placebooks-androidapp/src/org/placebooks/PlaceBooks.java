@@ -19,8 +19,6 @@ public class PlaceBooks extends Application
 		final SharedPreferences preferences = getSharedPreferences(PREFS_NAME, 0);
 		final String serverURL = preferences.getString("server", "http://severn.cs.nott.ac.uk/ktg-servlets/");
 
-		server = PlaceBookServerHandler.createServer(getApplicationContext());
-		server.setHostURL(serverURL);
-		server.setConnectionStatus(new AndroidConnectionStatus(getApplicationContext()));
+		server = PlaceBookServerHandler.createServer(serverURL, getApplicationContext());
 	}
 }

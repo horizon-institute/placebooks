@@ -116,8 +116,7 @@ public class PlaceBookActivity extends ActionBarActivity
 					Log.info(host);
 					Log.info(id);
 					
-					server = PlaceBookServerHandler.createServer(getApplicationContext());
-					server.setHostURL(host);
+					server = PlaceBookServerHandler.createServer(host, getApplicationContext());
 					
 					new Thread(new Runnable()
 					{
@@ -135,8 +134,7 @@ public class PlaceBookActivity extends ActionBarActivity
 				final String host = intent.getStringExtra("host");
 				if (host != null)
 				{
-					server = PlaceBookServerHandler.createServer(getApplicationContext());
-					server.setHostURL(host);
+					server = PlaceBookServerHandler.createServer(host, getApplicationContext());
 				}
 				else
 				{

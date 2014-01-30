@@ -53,8 +53,7 @@ public class GroupActivity extends ActionBarActivity
 			final String host = intent.getStringExtra("host");
 			if (host != null)
 			{
-				server = PlaceBookServerHandler.createServer(getApplicationContext());
-				server.setHostURL(host);
+				server = PlaceBookServerHandler.createServer(host, getApplicationContext());
 			}
 			else
 			{

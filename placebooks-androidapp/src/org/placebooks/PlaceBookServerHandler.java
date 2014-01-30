@@ -31,11 +31,14 @@ public class PlaceBookServerHandler extends JSONServerHandler
 	private static final Parser parser = new GsonParser();
 	private final Context context;
 
-	public static final PlaceBookService createServer(Context context)
+	public static final PlaceBookService createServer(String host, Context context)
 	{
-		return (PlaceBookService) Proxy.newProxyInstance(	PlaceBookService.class.getClassLoader(),
+		final PlaceBookService service = (PlaceBookService) Proxy.newProxyInstance(	PlaceBookService.class.getClassLoader(),
 															new Class[] { PlaceBookService.class },
 															new PlaceBookServerHandler(context));
+		service.setHostURL(host);
+		service.setConnectionStatus(new AndroidConnectionStatus(context));
+		return service;
 	}
 
 	public PlaceBookServerHandler(Context context)

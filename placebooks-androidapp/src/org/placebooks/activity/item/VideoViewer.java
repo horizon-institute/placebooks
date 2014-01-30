@@ -7,7 +7,6 @@ import org.placebooks.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Gallery;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -50,8 +49,8 @@ public class VideoViewer extends Activity
 				videoView = new VideoView(VideoViewer.this);
 				videoView.setVideoPath(clip.getAbsolutePath());
 
-				videoView.setLayoutParams(new Gallery.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,
-						android.view.ViewGroup.LayoutParams.FILL_PARENT));
+//				videoView.setLayoutParams(new Gallery.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,
+//						android.view.ViewGroup.LayoutParams.FILL_PARENT));
 
 				ctlr = new MediaController(VideoViewer.this);
 				ctlr.setMediaPlayer(videoView);
