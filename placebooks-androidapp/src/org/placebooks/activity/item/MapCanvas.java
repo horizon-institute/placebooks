@@ -27,7 +27,8 @@ public class MapCanvas extends ImageView
 	private double maxLat;
 	private double minLong;
 	private double maxLong;
-
+	
+	
 	public MapCanvas(final Context c)
 	{
 		super(c);

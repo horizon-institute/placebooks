@@ -13,6 +13,7 @@ import org.placebooks.client.model.Page;
 import org.placebooks.client.model.PlaceBook;
 import org.wornchaos.logger.Log;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -79,6 +80,19 @@ public class ColumnFragment extends Fragment
 		return Uri.fromFile(file);
 	}
 
+	private int getMarkerResource(final Item item)
+	{
+		if (item.getParameters().containsKey("marker"))
+		{
+			return getResources().getIdentifier("marker" + (char) item.getParameters().get("marker").intValue(),
+												"drawable", "org.placebooks");
+		}
+		else
+		{
+			return R.drawable.marker;
+		}
+	}
+
 	private void populate(final ViewGroup container)
 	{
 		if (page == null) { return; }
@@ -107,12 +121,16 @@ public class ColumnFragment extends Fragment
 
 		for (final Item item : items)
 		{
+			View view = null;
 			switch (item.getType())
 			{
 				case TextItem:
 					final WebView textView = new WebView(container.getContext());
 					textView.loadData(item.getText(), "text/html", null);
-					container.addView(textView);
+					textView.setLayoutParams(new LinearLayout.LayoutParams(
+							android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+					view = textView;
 					break;
 
 				case ImageItem:
@@ -120,7 +138,12 @@ public class ColumnFragment extends Fragment
 					imageView.setImageURI(getURI(item));
 					imageView.setScaleType(ScaleType.FIT_XY);
 					imageView.setAdjustViewBounds(true);
-					container.addView(imageView);
+					imageView.setPadding(20,20,20,20);
+					imageView.setBackgroundColor(Color.WHITE);
+					imageView.setLayoutParams(new LinearLayout.LayoutParams(
+							android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+					view = imageView;
 					break;
 
 				case MapImageItem:
@@ -129,6 +152,11 @@ public class ColumnFragment extends Fragment
 					mapView.setScaleType(ScaleType.FIT_XY);
 					mapView.setAdjustViewBounds(true);
 					mapView.setGeometry(item.getGeom());
+					mapView.setPadding(20,20,20,20);
+					mapView.setBackgroundColor(Color.WHITE);
+					mapView.setLayoutParams(new LinearLayout.LayoutParams(
+							android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 					for (final Page page : placebook.getPages())
 					{
 						for (final Item mapItem : page.getItems())
@@ -140,11 +168,10 @@ public class ColumnFragment extends Fragment
 						}
 					}
 
-					container.addView(mapView);
+					view = mapView;
 					break;
 
 				case VideoItem:
-					Log.info("Adding video");
 					final VideoView videoView = new VideoView(container.getContext());
 					final MediaController controller = new MediaController(container.getContext(), false);
 					controller.setAnchorView(videoView);
@@ -153,11 +180,33 @@ public class ColumnFragment extends Fragment
 					videoView.setMediaController(controller);
 					videoView.setVideoPath(getPath(item));
 
-					container.addView(videoView);
+					view = videoView;
 					break;
 
 				default:
 					break;
+			}
+
+			if (view != null)
+			{
+				if (item.getParameter("markerShow", 0) == 1)
+				{
+					final LinearLayout layout = new LinearLayout(container.getContext());
+					final ImageView imageView = new ImageView(container.getContext());
+					layout.setBackgroundColor(Color.WHITE);
+					imageView.setBackgroundColor(Color.WHITE);
+					imageView.setPadding(20, 40, 0, 0);
+					imageView.setImageResource(getMarkerResource(item));
+
+					layout.addView(imageView);
+					layout.addView(view);
+
+					container.addView(layout);
+				}
+				else
+				{
+					container.addView(view);
+				}
 			}
 		}
 	}

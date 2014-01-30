@@ -23,6 +23,11 @@ public class ColumnsAdapter extends FragmentStatePagerAdapter
 		fragments.add(fragment);
 	}
 
+	public void clear()
+	{
+		fragments.clear();
+	}
+	
 	@Override
 	public int getCount()
 	{
