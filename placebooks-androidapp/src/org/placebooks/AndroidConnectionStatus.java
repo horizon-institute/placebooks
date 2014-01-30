@@ -1,6 +1,7 @@
 package org.placebooks;
 
 import org.wornchaos.client.server.ConnectionStatus;
+import org.wornchaos.logger.Log;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -8,20 +9,20 @@ import android.net.NetworkInfo;
 
 public class AndroidConnectionStatus implements ConnectionStatus
 {
-	private Context context;
+	private final ConnectivityManager connectivityManager;
 
 	public AndroidConnectionStatus(final Context context)
 	{
-		this.context = context;
+		connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 
 	@Override
 	public boolean isOnline()
 	{
-		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		final NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
 
-		if (netInfo != null && netInfo.isConnected()) { return true; }
-		return false;
+		Log.info("Connected: " + (netInfo != null && netInfo.isConnected()));
+		
+		return netInfo != null && netInfo.isConnected();
 	}
 }
