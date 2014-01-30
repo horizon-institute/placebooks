@@ -30,13 +30,15 @@ public class PlaceBookActivity extends ActionBarActivity
 		@Override
 		public void onSuccess(final PlaceBook placebook)
 		{
-			runOnUiThread(new Runnable()
+			runOnUiThread(new Runnable() 
 			{
 				@Override
 				public void run()
 				{
 					setTitle(placebook.getMetadata("title", "PlaceBook " + placebook.getId()));
 
+					adapter.clear();
+					
 					int pageNumber = 1;
 					for (final Page page : placebook.getPages())
 					{
