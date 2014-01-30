@@ -61,6 +61,11 @@ public class PlaceBookServerHandler extends JSONServerHandler
 					callback.onSuccess(cached);
 				}
 
+				if (!isOnline())
+				{
+					return null;
+				}
+				
 				final Request request = method.getAnnotation(Request.class);
 				String url = getURL(method, request);
 				url = url.replace("{id}", id);
