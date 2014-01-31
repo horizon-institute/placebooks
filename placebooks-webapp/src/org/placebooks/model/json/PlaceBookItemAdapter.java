@@ -1,10 +1,12 @@
 package org.placebooks.model.json;
 
 import java.lang.reflect.Type;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+
 
 import org.placebooks.model.PlaceBookItem;
+import org.wornchaos.logger.Log;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -17,7 +19,6 @@ import com.google.gson.JsonSerializer;
 public class PlaceBookItemAdapter implements JsonSerializer<PlaceBookItem>, JsonDeserializer<PlaceBookItem>
 {
 	private static final String CLASSNAME = "type";
-	private final Logger logger = Logger.getLogger(PlaceBookItemAdapter.class.getName());
 
 	@Override
 	public PlaceBookItem deserialize(final JsonElement src, final Type type, final JsonDeserializationContext context)
@@ -35,7 +36,7 @@ public class PlaceBookItemAdapter implements JsonSerializer<PlaceBookItem>, Json
 			}
 			catch (final Exception e)
 			{
-				logger.log(Level.SEVERE, e.getMessage(), e);
+				Log.error(e);
 			}
 		}
 		return null;

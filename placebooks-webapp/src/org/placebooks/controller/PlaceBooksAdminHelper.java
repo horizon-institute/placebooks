@@ -325,7 +325,7 @@ public final class PlaceBooksAdminHelper
 
 							if (gpsItem.getSourceURL() != null)
 							{
-								gpsItem.readTrace(CommunicationHelper.getConnection(gpsItem.getSourceURL())
+								gpsItem.readText(CommunicationHelper.getConnection(gpsItem.getSourceURL())
 										.getInputStream());
 							}
 						}

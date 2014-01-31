@@ -29,12 +29,16 @@ public class EMFServerMethod extends ServerMethod
 		final EntityManager entityManager = factory.createEntityManager();
 		try
 		{
+			Log.info(request.getRequest().getRequestURI());
 			request.put("em", entityManager);
 			invoke(server, parameters);
 		}
 		catch (Exception e)
 		{
-			entityManager.getTransaction().rollback();			
+			if (entityManager.getTransaction().isActive())
+			{
+				entityManager.getTransaction().rollback();
+			}		
 			Log.error(e);
 		}
 		finally
@@ -42,7 +46,6 @@ public class EMFServerMethod extends ServerMethod
 			if (entityManager.getTransaction().isActive())
 			{
 				entityManager.getTransaction().rollback();
-				Log.error("Rolling login detail creation");
 			}
 			entityManager.close();
 		}		

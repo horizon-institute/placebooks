@@ -102,6 +102,15 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 						setUploadState(false);						
 						setError(lines[0]);
 					}
+					else if(result == null || result.trim().isEmpty())
+					{
+						setUploadState(false);
+						
+						item.getItem().setHash(null);
+						item.refresh();
+						item.getController().markChanged();
+						hide();						
+					}
 					else
 					{
 						setUploadState(false);

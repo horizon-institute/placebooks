@@ -1,5 +1,5 @@
-<!-- Build file for compiling, deploying and testing PlaceBooks webapp -->
-
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE project>
 <project name="placebooks-webapp" default="install" basedir=".">
 	<property file="build.properties" />
 
@@ -7,7 +7,7 @@
 
 	<property name="warfile.dir" value="build" />
 	<property name="war.dir" value="war" />
-	<property name="war.name" value="${basepackage.name}.war" />	
+	<property name="war.name" value="${basepackage.name}.war" />
 	<property name="classes.dir" value="${war.dir}/WEB-INF/classes" />
 	<property name="warlib.dir" value="${war.dir}/WEB-INF/lib" />
 	<property name="lib.dir" value="lib" />
@@ -17,27 +17,21 @@
 	<property name="javadoc.dir" value="docs/api" />
 
 	<property name="editor.name" value="${basepackage.name}.PlaceBookEditor" />
-	<property name="git.url" value="https://github.com/horizon-institute/Bridging-the-Rural-Divide--Placebooks/commit/" />
+	<property name="git.url"
+		value="https://github.com/horizon-institute/Bridging-the-Rural-Divide--Placebooks/commit/" />
 
-	<property name="placebooks.props.dev-server" 
-			  value="${src.dir}/dev-server-placebooks.properties" />
-	<property name="placebooks.props.server" 
-			  value="${src.dir}/server-placebooks.properties" />
-	<property name="placebooks.props.personal" 
-			  value="${src.dir}/personal-placebooks.properties" />
-	<property name="placebooks.props.pcw" 
-			  value="${src.dir}/pcw-placebooks.properties" />
+	<property name="placebooks.props.dev-server" value="${src.dir}/dev-server-placebooks.properties" />
+	<property name="placebooks.props.server" value="${src.dir}/server-placebooks.properties" />
+	<property name="placebooks.props.personal" value="${src.dir}/personal-placebooks.properties" />
+	<property name="placebooks.props.pcw" value="${src.dir}/pcw-placebooks.properties" />
 
-	<property name="placebooks.props.target"
-			  value="${classes.dir}/placebooks.properties" />
+	<property name="placebooks.props.target" value="${classes.dir}/placebooks.properties" />
 
 	<property name="log4j.props" value="${src.dir}/log4j.properties" />
 
 	<property name="jaxb.dir" value="${basepackage.name}/model/jaxb" />
-	<property name="GPX10.package" 
-			  value="${basepackage.name}.model.jaxb.GPX10" />
-	<property name="GPX11.package" 
-			  value="${basepackage.name}.model.jaxb.GPX11" />
+	<property name="GPX10.package" value="${basepackage.name}.model.jaxb.GPX10" />
+	<property name="GPX11.package" value="${basepackage.name}.model.jaxb.GPX11" />
 
 	<property name="generated.dir" value="generated" />
 
@@ -47,20 +41,17 @@
 	<property name="logging" value="INFO" />
 
 	<condition property="git.file" value="git.cmd">
-	   <os family="windows"/>
+		<os family="windows" />
 	</condition>
 
 	<property name="git.file" value="git" />
 
 	<path id="classpath">
-  		<fileset dir="${warlib.dir}">
-    		<include name="*.jar"/>
-  		</fileset>
-		<fileset dir="${lib.dir}">
-			<include name="*.jar"/>
+		<fileset dir="${warlib.dir}">
+			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${catalina.home}">
-			<include name="*.jar"/>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
 		</fileset>
 		<pathelement path="${java.class.path}" />
 		<pathelement path="${hamcrest.home}" />
@@ -68,49 +59,40 @@
 	</path>
 
 	<path id="classpath.gwt">
-		<path path="${src.dir}"/>
+		<path path="${src.dir}" />
 		<fileset dir="${lib.dir}">
-			<include name="**.jar"/>
+			<include name="**.jar" />
 		</fileset>
-  		<fileset dir="${warlib.dir}">
-    		<include name="*.jar"/>
-  		</fileset>		
+		<fileset dir="${warlib.dir}">
+			<include name="*.jar" />
+		</fileset>
 		<pathelement path="${classes.dir}" />
-    </path>
-	
-	<!-- Configure the custom Ant tasks for the Manager application -->
-  	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
-		<classpath refid="classpath" />
-	</taskdef>
-  	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
-		<classpath refid="classpath" />
-	</taskdef>
-  	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
-		<classpath refid="classpath" />
-	</taskdef>
-	
- 	<target name="git.revision" description="Store git revision in ${repository.version}">
- 	    <exec executable="${git.file}" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
-	        <arg value="rev-parse"/>
-	        <arg value="HEAD"/>	        
-	    </exec>
-	    
-	    <exec executable="${git.file}" outputproperty="git.describe" failifexecutionfails="false" errorproperty="">
-	        <arg value="describe"/>
-	        <arg value="--all" />
-	        <arg value="--long" />        
-	    </exec>
-	    
+	</path>
+
+	<target name="git.revision" description="Store git revision in ${repository.version}">
+		<exec executable="${git.file}" outputproperty="git.revision"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="rev-parse" />
+			<arg value="HEAD" />
+		</exec>
+
+		<exec executable="${git.file}" outputproperty="git.describe"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="describe" />
+			<arg value="--all" />
+			<arg value="--long" />
+		</exec>
+
 		<echo>Version: ${git.describe} - ${git.revision}</echo>
 
-		<tstamp/>	
+		<tstamp />
 		<echo file="${war.dir}/version.html" append="false"><![CDATA[<html><body>
 <p>Description: ${git.describe}</p>
 <p>Version: <a href="${git.url}${git.revision}">${git.revision}</a></p>
 <p>Built: ${TODAY}</p>
 </body></html>]]></echo>
 	</target>
-	
+
 	<target name="makedirs">
 		<mkdir dir="${warfile.dir}" />
 		<mkdir dir="${classes.dir}" />
@@ -118,25 +100,24 @@
 	</target>
 
 	<target name="properties.dev-server" if="pfile.dev">
-		<copy file="${placebooks.props.dev-server}" 
-			  tofile="${placebooks.props.target}" overwrite="true" />
+		<copy file="${placebooks.props.dev-server}" tofile="${placebooks.props.target}"
+			overwrite="true" />
 	</target>
 	<target name="properties.personal" if="pfile.personal">
-		<copy file="${placebooks.props.personal}" 
-			  tofile="${placebooks.props.target}" overwrite="true" />
+		<copy file="${placebooks.props.personal}" tofile="${placebooks.props.target}"
+			overwrite="true" />
 	</target>
 	<target name="properties.server" if="pfile.server">
-		<copy file="${placebooks.props.server}" 
-			  tofile="${placebooks.props.target}" overwrite="true" />
+		<copy file="${placebooks.props.server}" tofile="${placebooks.props.target}"
+			overwrite="true" />
 	</target>
 	<target name="properties.pcw" if="pfile.pcw">
-		<copy file="${placebooks.props.pcw}" 
-			  tofile="${placebooks.props.target}" overwrite="true" />
+		<copy file="${placebooks.props.pcw}" tofile="${placebooks.props.target}"
+			overwrite="true" />
 	</target>
 
 
-	<target name="staging" depends="makedirs"
-			description="Stage configs to classes dir">
+	<target name="staging" depends="makedirs" description="Stage configs to classes dir">
 
 		<antcall target="properties.server" />
 		<antcall target="properties.personal" />
@@ -150,10 +131,10 @@
 
 	<target name="probe-proxy">
 		<condition property="proxy.enabled">
-		 	<and>
-				<isset property="proxy.host"/>
-				<!-- <isreachable host="${proxy.host}"/>-->
-		  	</and>
+			<and>
+				<isset property="proxy.host" />
+				<!-- <isreachable host="${proxy.host}"/> -->
+			</and>
 		</condition>
 	</target>
 
@@ -163,135 +144,108 @@
 
 
 	<target name="jaxb-jar" description="Generate JAR from GPX bindings">
-		<jar jarfile="${lib.dir}/gpx-bindings.jar" 
-			 basedir="${classes.dir}" includes="${jaxb.dir}/**" />
+		<jar jarfile="${lib.dir}/gpx-bindings.jar" basedir="${classes.dir}"
+			includes="${jaxb.dir}/**" />
 	</target>
 
 	<target name="jaxb" description="Generate Java bindings from GPX XSD">
 		<!-- GPS 1.0 spec -->
 		<java classname="com.sun.tools.internal.xjc.XJCFacade">
-            <arg value="-p" />
-            <arg value="${GPX10.package}" />
-            <arg value="${xsd.dir}/gpx-1.0.xsd" />
+			<arg value="-p" />
+			<arg value="${GPX10.package}" />
+			<arg value="${xsd.dir}/gpx-1.0.xsd" />
 			<arg value="-d" />
 			<arg value="${src.dir}" />
-	    </java>
+		</java>
 		<!-- GPS 1.1 spec -->
 		<java classname="com.sun.tools.internal.xjc.XJCFacade">
-            <arg value="-p" />
-            <arg value="${GPX11.package}" />
-            <arg value="${xsd.dir}/gpx-1.1.xsd" />
+			<arg value="-p" />
+			<arg value="${GPX11.package}" />
+			<arg value="${xsd.dir}/gpx-1.1.xsd" />
 			<arg value="-d" />
 			<arg value="${src.dir}" />
-	    </java>
+		</java>
 	</target>
 
 	<target name="compile" depends="makedirs"
-			description="Compile classes into web archive dir">
-		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
-			   includeAntRuntime="no">
-			<src path="${src.dir}"/>
+		description="Compile classes into web archive dir">
+		<javac destdir="${classes.dir}" debug="on" deprecation="on"
+			includeAntRuntime="no">
+			<src path="${src.dir}" />
 			<compilerarg value="-Xlint:unchecked" />
-			<classpath refid="classpath"/>
+			<classpath refid="classpath" />
 		</javac>
 	</target>
 
-	<target name="compile-gwt" depends="compile" 
-			description="Compile GWT web interface">
+	<target name="compile-gwt" depends="compile" description="Compile GWT web interface">
 		<java classpathref="classpath.gwt" failonerror="true" fork="true"
-			maxmemory="512m"
-	        classname="com.google.gwt.dev.Compiler"> 
+			maxmemory="512m" classname="com.google.gwt.dev.Compiler">
 			<arg line="-war ${war.dir}" />
 			<arg line="-workDir ${work.dir}" />
-			
+
 			<arg line="-logLevel ${logging}" />
-			<arg line="-style ${style}" />			
-			<arg line="-gen ${generated.dir}" />			
-	        <arg line="${editor.name}"/>
+			<arg line="-style ${style}" />
+			<arg line="-gen ${generated.dir}" />
+			<arg line="${editor.name}" />
 		</java>
 	</target>
-	
-	<target name="compile-test" depends="compile"
-			description="Compile test classes">
-		<javac destdir="${classes.dir}" debug="on" deprecation="on" 
-			   includeAntRuntime="no">
+
+	<target name="compile-test" depends="compile" description="Compile test classes">
+		<javac destdir="${classes.dir}" debug="on" deprecation="on"
+			includeAntRuntime="no">
 			<src path="${test.dir}" />
 			<compilerarg value="-Xlint:unchecked" />
-			<classpath refid="classpath"/>
+			<classpath refid="classpath" />
 		</javac>
 	</target>
-	
+
 	<target name="war" depends="compile,staging,git.revision"
-			description="Create the web archive file">
-		<jar jarfile="${warfile.dir}/${war.name}" 
-			 basedir="${war.dir}">
+		description="Create the web archive file">
+		<jar jarfile="${warfile.dir}/${war.name}" basedir="${war.dir}">
 			<include name="**/*" />
 		</jar>
 	</target>
 
-	<target name="test" depends="compile-test,staging" 
-			description="JUnit testing">
+	<target name="test" depends="compile-test,staging" description="JUnit testing">
 		<junit fork="yes" haltonfailure="yes" showoutput="yes">
 			<classpath>
 				<path refid="classpath" />
 				<pathelement path="${classes.dir}" />
 			</classpath>
-      		<formatter type="brief" usefile="false" />
-      		<test name="org.placebooks.test.UserTest" />
+			<formatter type="brief" usefile="false" />
+			<test name="org.placebooks.test.UserTest" />
 			<test name="org.placebooks.test.PlaceBookTests" />
-			<test name="org.placebooks.test.PersistenceTests" />			
+			<test name="org.placebooks.test.PersistenceTests" />
 			<test name="org.placebooks.test.EverytrailHelperTest" />
 			<test name="org.placebooks.test.PlacebooksIntegrationTests" />
-    	</junit>
+		</junit>
 	</target>
 
 	<target name="docs" depends="makedirs">
-		<javadoc sourcepath="${src.dir}"
-				 defaultexcludes="yes" destdir="${javadoc.dir}"
-				 author="true" version="true" use="true"
-           	 	windowtitle="PlaceBooks API documentation">
+		<javadoc sourcepath="${src.dir}" defaultexcludes="yes"
+			destdir="${javadoc.dir}" author="true" version="true" use="true"
+			windowtitle="PlaceBooks API documentation">
 			<doctitle>
 				<![CDATA[<h1>PlaceBooks API documentation</h1>]]>
 			</doctitle>
 			<fileset dir="${src.dir}" defaultexcludes="yes">
-	            <include name="**/*.java"/>
-        	</fileset>
+				<include name="**/*.java" />
+			</fileset>
 		</javadoc>
 	</target>
 
 	<target name="initdb" depends="compile,staging,proxy">
-        <java classname="org.placebooks.utils.InitializeDatabase">
+		<java classname="org.placebooks.utils.InitializeDatabase">
 			<classpath>
 				<path refid="classpath" />
 				<pathelement path="${classes.dir}" />
 			</classpath>
 		</java>
-    </target>
-
-  	<target name="install" depends="war,proxy"
-   			description="Install application to servlet container">
-		<deploy url="${manager.url}" username="${manager.username}"
-       			password="${manager.password}" path="/${basepackage.name}"
-       			war="file:${basedir}/${warfile.dir}/${war.name}" />
-  	</target>
-
-	<target name="uninstall"
-   			description="Remove application on servlet container" 
-			depends="proxy">
-	    <undeploy url="${manager.url}" username="${manager.username}"
-		          password="${manager.password}" path="/${basepackage.name}"/>
-  	</target>
-
- 	<target name="reload" depends="war,proxy"
-   			description="Reload application on servlet container">
-
-    	<reload url="${manager.url}" username="${manager.username}"
-       			password="${manager.password}" path="/${basepackage.name}"/>
-  	</target>
+	</target>
 
 	<target name="clean" description="Clean compiled classes">
 		<delete dir="${classes.dir}" />
-		<delete file="datanucleus.log"/>
+		<delete file="datanucleus.log" />
 	</target>
 
 	<target name="clean-dist" description="Clean web archive file">
@@ -300,7 +254,7 @@
 
 	<target name="clean-docs" description="Clean API documentation">
 		<delete includeemptydirs="true">
-    		<fileset dir="${javadoc.dir}" includes="**/*" />
+			<fileset dir="${javadoc.dir}" includes="**/*" />
 		</delete>
 	</target>
 
@@ -309,18 +263,16 @@
 		<delete dir="${war.dir}/WEB-INF/deploy" />
 	</target>
 
-	<target name="clean-all" description="Clean everything" 
-			depends="clean,clean-dist,clean-gwt">
+	<target name="clean-all" description="Clean everything"
+		depends="clean,clean-dist,clean-gwt">
 	</target>
 
-	<target name="reinstall" description="Uninstalls and reinstalls project"
-		    depends="uninstall,install" />
-		    
-	<target name="install-ssh" depends="war">	
-		<scp file="${warfile.dir}/${war.name}" todir="${user}@${server}:~" password="${password}" trust="true" />
-		
-		<sshexec host="${server}" username="${user}" password="${password}" trust="true"
-		  command="/bin/sh -c '~/ltomcat.sh stop; mv ~/${war.name} ${server.dir};~/ltomcat.sh start'" />	
-	</target>
+	<target name="install-ssh" depends="war">
+		<scp file="${warfile.dir}/${war.name}" todir="${user}@${server}:~"
+			password="${password}" trust="true" />
 
+		<sshexec host="${server}" username="${user}" password="${password}"
+			trust="true"
+			command="/bin/sh -c '~/ltomcat.sh stop; mv ~/${war.name} ${server.dir};~/ltomcat.sh start'" />
+	</target>
 </project>

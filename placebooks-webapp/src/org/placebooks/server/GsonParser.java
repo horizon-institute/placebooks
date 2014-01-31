@@ -9,6 +9,7 @@ import java.util.Map;
 import org.placebooks.model.PlaceBookItem;
 import org.placebooks.model.json.DateAdapter;
 import org.placebooks.model.json.GeometryAdapter;
+import org.placebooks.model.json.JsonIgnore;
 import org.placebooks.model.json.MapInstanceCreator;
 import org.placebooks.model.json.PlaceBookItemAdapter;
 import org.wornchaos.parser.Parser;
@@ -35,22 +36,12 @@ public class GsonParser implements Parser
 	
 	public GsonParser()
 	{
-		gson = createBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();
+		gson = createBuilder().setExclusionStrategies(new AnnotationExclusionStrategy(JsonIgnore.class)).create();
 	}
 
 	public GsonParser(final Class<? extends Annotation>... annotations)
 	{
 		gson = createBuilder().setExclusionStrategies(new AnnotationExclusionStrategy(annotations)).create();
-	}
-
-	public GsonParser(final Gson gson)
-	{
-		this.gson = gson;
-	}
-
-	public GsonParser(final GsonBuilder builder)
-	{
-		gson = builder.create();
 	}
 
 	@Override

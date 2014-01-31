@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -65,6 +66,7 @@ import org.placebooks.services.ServiceRegistry;
 import org.wornchaos.client.server.AsyncCallback;
 import org.wornchaos.logger.Log;
 import org.wornchaos.parser.Parser;
+import org.wornchaos.server.Exclude;
 import org.wornchaos.server.HTTPException;
 import org.wornchaos.server.Transact;
 
@@ -221,7 +223,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			@Override
 			public void run()
 			{
-				final EntityManager entityManager = getEntityManager(callback);
+				final EntityManager entityManager = createEntityManagerFactory().createEntityManager();
 				try
 				{
 					final User user = verifyUser(entityManager, callback);
@@ -1126,7 +1128,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 				
 				size = size * 1024 * 1024;
 				
-				if(file.getSize() > size)
+				if(size > 0 && file.getSize() > size)
 				{
 					throw new HTTPException(413, "Error: Item too Large\n");
 				}
@@ -1158,7 +1160,9 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 				else if (item instanceof GPSTraceItem)
 				{
 					((GPSTraceItem) item).setSourceURL(null);
-					((GPSTraceItem) item).readTrace(file.getInputStream());
+					((GPSTraceItem) item).readText(file.getInputStream());
+					
+					entityManager.merge(item);
 				}
 
 				entityManager.getTransaction().commit();
@@ -1317,6 +1321,20 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		recentBooks.addFirst(key);
 	}
 
+	@Override
+	protected Parser createParser(Method method)
+	{
+		if(method != null)
+		{
+			final Exclude exclude = method.getAnnotation(Exclude.class);
+			if(exclude != null)
+			{
+				return new GsonParser(exclude.value());
+			}
+		}
+		return new GsonParser();
+	}
+	
 	@Override
 	protected EntityManagerFactory createEntityManagerFactory()
 	{

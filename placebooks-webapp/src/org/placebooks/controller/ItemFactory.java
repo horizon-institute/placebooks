@@ -330,8 +330,8 @@ public class ItemFactory
 			{
 				final URLConnection con = CommunicationHelper.getConnection(tripGpxUrl);
 				final InputStream is = con.getInputStream();
-				gpsItem.readTrace(is);
-				gpxString = gpsItem.getTrace();
+				gpsItem.readText(is);
+				gpxString = gpsItem.getText();
 				log.debug("InputStream for tripGPX is (first ~50 chars): "
 						+ gpxString.substring(0, Math.min(50, gpxString.length())));
 				keepTrying = false;
@@ -430,7 +430,7 @@ public class ItemFactory
 
 		log.debug(trackGPXBuilder.toString());
 		final byte[] bytes = trackGPXBuilder.toString().getBytes("UTF-8");
-		gpsItem.readTrace(new ByteArrayInputStream(bytes));
+		gpsItem.readText(new ByteArrayInputStream(bytes));
 	}
 
 	/**

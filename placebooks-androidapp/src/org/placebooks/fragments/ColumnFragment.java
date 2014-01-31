@@ -162,6 +162,7 @@ public class ColumnFragment extends Fragment
 				case MapImageItem:
 					final MapCanvas mapView = new MapCanvas(container.getContext());
 					mapView.setImageURI(getURI(item));
+					mapView.setTrace(item.getText());
 					mapView.setScaleType(ScaleType.FIT_XY);
 					mapView.setAdjustViewBounds(true);
 					mapView.setGeometry(item.getGeom());
