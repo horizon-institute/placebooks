@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.placebooks.R;
 import org.placebooks.client.model.Item;
-import org.placebooks.client.model.Position;
 import org.wornchaos.logger.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -17,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -28,13 +28,13 @@ public class MapCanvas extends ImageView implements LocationListener
 
 	private final Paint trailPen;
 
-	private List<Item> mapItems = new ArrayList<Item>();
+	private final List<Item> mapItems = new ArrayList<Item>();
 	private double minLat;
 	private double maxLat;
 	private double minLong;
 	private double maxLong;
 	private Bitmap bullet;
-	private List<List<Position>> trails;
+	private final List<List<PointF>> trails = new ArrayList<List<PointF>>();
 
 	public MapCanvas(final Context c)
 	{
@@ -114,22 +114,17 @@ public class MapCanvas extends ImageView implements LocationListener
 
 		if(trails != null)
 		{
-			for(List<Position> trail: trails)
+			for(List<PointF> trail: trails)
 			{
-				float lastX = 0;
-				float lastY = 0;
-				for(int i = 0; i < trail.size(); i++)
-				{
-					final float y = getOffset(trail.get(i).getLatitude(), maxLat, minLat, getHeight());
-					final float x = getOffset(trail.get(i).getLongitude(), minLong, maxLong, getWidth());
-					
-					if(lastX != 0)
+				PointF lastPoint = null;
+				for(PointF point: trail)
+				{ 
+					if(lastPoint != null)
 					{
-						canvas.drawLine(lastX, lastY, x, y, trailPen);		
+						canvas.drawLine(lastPoint.x * getWidth(), lastPoint.y * getHeight(), point.x * getWidth(), point.y * getHeight(), trailPen);		
 					}
 					
-					lastX = x;
-					lastY = y;
+					lastPoint = point;
 				}
 			}
 		}
@@ -214,7 +209,7 @@ public class MapCanvas extends ImageView implements LocationListener
 	public void setTrace(final String trace)
 	{
 		try
-		{
+		{			
 			trails.clear();
 			if(trace == null)
 			{
@@ -225,42 +220,43 @@ public class MapCanvas extends ImageView implements LocationListener
 			final XmlPullParser parser = factory.newPullParser();	
 			parser.setInput(new StringReader(trace));
 			int eventType = parser.getEventType();
-			List<Position> trail = null;
+			List<PointF> trail = null;
 			while (eventType != XmlPullParser.END_DOCUMENT)
 			{
 				if (eventType == XmlPullParser.START_TAG)
 				{
-					System.out.println("Start tag " + parser.getName());
 					if(parser.getName().equals("trkseg"))
 					{
-						trail = new ArrayList<Position>();
+						trail = new ArrayList<PointF>();
 						trails.add(trail);
 					}
 					else if(parser.getName().equals("trkpt"))
 					{
 						if(trail != null)
 						{
-							double latitude = 0;
-							double longitude = 0;
+							final PointF point = new PointF();
 							try
 							{
-								longitude = Double.parseDouble(parser.getAttributeValue(null, "longitude"));
+								final double longitude = Double.parseDouble(parser.getAttributeValue(null, "lon"));
+								point.x = getOffset(longitude, minLong, maxLong, 1);
 							}
 							catch(Exception e)
 							{
-								
+								Log.error(e);
 							}
 							try
 							{
-								latitude = Double.parseDouble(parser.getAttributeValue(null, "latitude"));
+								final double latitude = Double.parseDouble(parser.getAttributeValue(null, "lat"));
+								point.y = getOffset(latitude, maxLat, minLat, 1);
 							}
 							catch(Exception e)
 							{
-								
+								Log.error(e);
 							}
-							if(latitude != 0 && longitude != 0)
+							if(point.x != 0 && point.y != 0)
 							{
-								trail.add(new Position(latitude, longitude));
+								Log.info("Point "+ point.x + ", " + point.y);
+								trail.add(point);
 							}
 						}
 					}

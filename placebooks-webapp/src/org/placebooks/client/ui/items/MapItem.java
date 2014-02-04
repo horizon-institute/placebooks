@@ -336,6 +336,8 @@ public class MapItem extends PlaceBookItemView
 	{
 		if (map == null) { return; }
 
+		Log.info("Create route");
+		
 		try
 		{
 			routeLayer.removeAllFeatures();

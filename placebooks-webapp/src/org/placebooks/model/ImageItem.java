@@ -91,7 +91,14 @@ public class ImageItem extends MediaItem
 		// User this for now before replacing later
 		super.writeDataToDisk(is);
 		is.close();
-		createThumbnail();
+		try
+		{
+			createThumbnail();
+		}
+		catch(Exception e)
+		{
+			Log.error(e);
+		}
 	}
 
 	protected void createThumbnail() throws IOException
@@ -113,6 +120,7 @@ public class ImageItem extends MediaItem
 				read.dispose();
 			}
 
+			thumbFile.createNewFile();
 			ImageIO.write(resizedImage, fmt, thumbFile);
 		}
 		else

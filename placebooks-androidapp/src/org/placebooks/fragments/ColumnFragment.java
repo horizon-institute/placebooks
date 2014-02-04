@@ -162,7 +162,6 @@ public class ColumnFragment extends Fragment
 				case MapImageItem:
 					final MapCanvas mapView = new MapCanvas(container.getContext());
 					mapView.setImageURI(getURI(item));
-					mapView.setTrace(item.getText());
 					mapView.setScaleType(ScaleType.FIT_XY);
 					mapView.setAdjustViewBounds(true);
 					mapView.setGeometry(item.getGeom());
@@ -171,6 +170,15 @@ public class ColumnFragment extends Fragment
 					mapView.setLayoutParams(new LinearLayout.LayoutParams(
 							android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 							android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+
+					for(final Item gpsItem: page.getItems())
+					{
+						if(gpsItem.is(Type.GPSTraceItem))
+						{
+							mapView.setTrace(gpsItem.getText());
+						}
+					}					
+					
 					for (final Page page : placebook.getPages())
 					{
 						for (final Item mapItem : page.getItems())
@@ -181,6 +189,7 @@ public class ColumnFragment extends Fragment
 							}
 						}
 					}
+
 
 					view = mapView;
 					break;
