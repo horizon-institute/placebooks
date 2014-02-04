@@ -255,7 +255,6 @@ public class MapCanvas extends ImageView implements LocationListener
 							}
 							if(point.x != 0 && point.y != 0)
 							{
-								Log.info("Point "+ point.x + ", " + point.y);
 								trail.add(point);
 							}
 						}
