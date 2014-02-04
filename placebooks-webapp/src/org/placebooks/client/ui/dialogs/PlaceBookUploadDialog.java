@@ -2,8 +2,8 @@ package org.placebooks.client.ui.dialogs;
 
 import org.placebooks.client.PlaceBooks;
 import org.placebooks.client.controllers.ServerInfoController;
-import org.placebooks.client.model.ServerInfo;
 import org.placebooks.client.model.Item.Type;
+import org.placebooks.client.model.ServerInfo;
 import org.placebooks.client.ui.UIMessages;
 import org.placebooks.client.ui.items.PlaceBookItemView;
 import org.wornchaos.client.controllers.ControllerState;
@@ -36,7 +36,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 
 	private static final UIMessages uiMessages = GWT.create(UIMessages.class);
 
-	private static UploadDialogUiBinder uiBinder = GWT.create(UploadDialogUiBinder.class);
+	private static final UploadDialogUiBinder uiBinder = GWT.create(UploadDialogUiBinder.class);
 
 	@UiField
 	Label infoLabel;
@@ -49,7 +49,7 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 
 	@UiField
 	Hidden type;
-	
+
 	@UiField
 	FileUpload upload;
 
@@ -77,8 +77,8 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 		ServerInfoController.getController().add(this);
 
 		type.setValue("test");
-		
-		if(item != null && item.getItem() != null && item.getItem().getType() != null)
+
+		if (item != null && item.getItem() != null && item.getItem().getType() != null)
 		{
 			type.setValue(item.getItem().getType().name());
 		}
@@ -93,29 +93,46 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 			{
 				try
 				{
-					final String result = event.getResults().replaceAll("(<([^>]+)>)", "");
+					final String result = event.getResults();
 					Log.info("Upload Complete: " + result);
-					
-					if(result.startsWith("Error"))
-					{
-						String[] lines = result.split("\\n");
-						setUploadState(false);						
-						setError(lines[0]);
-					}
-					else if(result == null || result.trim().isEmpty())
+
+					if (result == null)
 					{
 						setUploadState(false);
-						
+
 						item.getItem().setHash(null);
 						item.refresh();
 						item.getController().markChanged();
-						hide();						
+						hide();
+					}
+					else if (result.trim().isEmpty())
+					{
+						setUploadState(false);
+
+						item.getItem().setHash(null);
+						item.refresh();
+						item.getController().markChanged();
+						hide();
+					}
+					else if (result.startsWith("Error"))
+					{
+						final String[] lines = result.split("\\n");
+						setUploadState(false);
+						setError(lines[0]);
 					}
 					else
 					{
+						if (item.getItem().is(Type.GPSTraceItem))
+						{						
+							item.getItem().setText(result);
+						}
+						else
+						{
+							item.getItem().setHash(result);
+						}
+
 						setUploadState(false);
-	
-						item.getItem().setHash(result);
+
 						item.refresh();
 						item.getController().markChanged();
 						hide();
@@ -123,12 +140,20 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 				}
 				catch (final Exception e)
 				{
+					Log.error(e);
 					setError(uiMessages.uploadFailed());
 					refresh();
 				}
 			}
 		});
 
+		refresh();
+	}
+
+	@UiHandler("upload")
+	void fileChanged(final ChangeEvent event)
+	{
+		setError(null);
 		refresh();
 	}
 
@@ -159,6 +184,26 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 		}
 	}
 
+	private void refresh()
+	{
+		uploadButton.setEnabled(upload.getFilename() != null && !"Unknown".equals(upload.getFilename()));
+	}
+
+	private void setUploadState(final boolean uploading)
+	{
+		this.uploading = uploading;
+		if (uploading)
+		{
+			setProgressVisible(true, uiMessages.uploading());
+			uploadButton.setEnabled(false);
+			Log.info("Uploading " + item.getItem().getId());
+		}
+		else
+		{
+			setProgressVisible(false, null);
+		}
+	}
+
 	@Override
 	public void stateChanged(final ControllerState state)
 	{
@@ -168,13 +213,6 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 			itemKey.setValue(item.getItem().getId());
 			form.submit();
 		}
-	}
-
-	@UiHandler("upload")
-	void fileChanged(final ChangeEvent event)
-	{
-		setError(null);
-		refresh();
 	}
 
 	@UiHandler("uploadButton")
@@ -193,26 +231,6 @@ public class PlaceBookUploadDialog extends PlaceBookDialog implements Controller
 		{
 			itemKey.setValue(item.getItem().getId());
 			form.submit();
-		}
-	}
-
-	private void refresh()
-	{
-		uploadButton.setEnabled(upload.getFilename() != null && !"Unknown".equals(upload.getFilename()));
-	}
-
-	private void setUploadState(final boolean uploading)
-	{
-		this.uploading = uploading;
-		if (uploading)
-		{
-			setProgressVisible(true, uiMessages.uploading());
-			uploadButton.setEnabled(false);
-			Log.info("Uploading " + item.getItem().getId());
-		}
-		else
-		{
-			setProgressVisible(false, null);
 		}
 	}
 }

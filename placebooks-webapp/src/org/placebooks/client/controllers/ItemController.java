@@ -103,6 +103,10 @@ public class ItemController extends DelegateController<Item>
 			itemType = Item.Type.ImageItem;
 		}
 		
+		if(itemType == Item.Type.GPSTraceItem)
+		{
+			return PlaceBooks.getServer().getHostURL() + "media?hash=" + item.getId() + "&type=" + itemType.name();
+		}
 		if (item.getHash() != null) { return PlaceBooks.getServer().getHostURL() + "media?hash=" + item.getHash() + "&type=" + itemType.name(); }
 
 		return null;

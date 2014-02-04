@@ -101,7 +101,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		// entry.setAactivity = placebookBinder.getMetadataValue("activity");
 
 		if (binder.getGeometry() != null)
-		{		
+		{
 			entry.setCenter(binder.getGeometry().getEnvelope().getCentroid().toString());
 		}
 		return entry;
@@ -208,44 +208,12 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 	private static User getUser(final EntityManager entityManager, final AsyncCallback<?> callback)
 	{
 		final String sessionID = getResponse(callback).getSessionID(sessionName);
-		if (sessionID == null) { return null; }		
+		if (sessionID == null) { return null; }
 
-		final Session session = entityManager.find(Session.class, sessionID);	
+		final Session session = entityManager.find(Session.class, sessionID);
 		if (session == null) { return null; }
 
 		return session.getUser();
-	}
-
-	private void runSync(final AsyncCallback<?> callback, final String service)
-	{
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				final EntityManager entityManager = createEntityManagerFactory().createEntityManager();
-				try
-				{
-					final User user = verifyUser(entityManager, callback);
-					if (service == null)
-					{
-						ServiceRegistry.updateServices(entityManager, user);
-					}
-					else
-					{
-						ServiceRegistry.updateService(entityManager, user, service);
-					}
-				}
-				catch (final Exception e)
-				{
-					Log.error(e);
-				}
-				finally
-				{
-					entityManager.close();
-				}
-			}
-		}).start();
 	}
 
 	private static void startUserSession(final EntityManager entityManager, final AsyncCallback<?> callback,
@@ -297,8 +265,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			final PlaceBookGroup group = entityManager.find(PlaceBookGroup.class, groupID);
 			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, placebookID);
 
-			if (placebook == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND,
-					"PlaceBook not found"); }
+			if (placebook == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND, "PlaceBook not found"); }
 			if (group == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND, "Group not found"); }
 
 			entityManager.getTransaction().begin();
@@ -317,6 +284,24 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 	}
 
 	@Override
+	protected EntityManagerFactory createEntityManagerFactory()
+	{
+		final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
+		return Persistence.createEntityManagerFactory("placebooks", properties);
+	}
+
+	@Override
+	protected Parser createParser(final Method method)
+	{
+		if (method != null)
+		{
+			final Exclude exclude = method.getAnnotation(Exclude.class);
+			if (exclude != null) { return new GsonParser(exclude.value()); }
+		}
+		return new GsonParser();
+	}
+
+	@Override
 	public void deletePlaceBook(final String placebookID, final AsyncCallback<Shelf> callback)
 	{
 		final EntityManager entityManager = getEntityManager(callback);
@@ -325,8 +310,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			verifyUser(entityManager, callback);
 			entityManager.getTransaction().begin();
 			final PlaceBookBinder binder = entityManager.find(PlaceBookBinder.class, placebookID);
-			if (binder == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND,
-					"PlaceBook not found"); }
+			if (binder == null) { throw new HTTPException(HttpServletResponse.SC_NOT_FOUND, "PlaceBook not found"); }
 			for (final PlaceBook placebook : binder.getPlaceBooks())
 			{
 				for (final PlaceBookItem item : placebook.getItems())
@@ -334,8 +318,8 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 					item.deleteItemData();
 				}
 			}
-			
-			for(final PlaceBookGroup group: binder.getGroups())
+
+			for (final PlaceBookGroup group : binder.getGroups())
 			{
 				group.remove(binder);
 			}
@@ -429,6 +413,21 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			itemPath = PropertiesSingleton.get(this.getClass().getClassLoader())
 					.getProperty(PropertiesSingleton.IDEN_MEDIA, "") + File.separator + hash + "-mobile.ogg";
+		}
+		else if (type.equalsIgnoreCase("gpstraceitem"))
+		{
+			final EntityManager manager = getEntityManager(callback);
+			try
+			{
+				final GPSTraceItem item = manager.find(GPSTraceItem.class, hash);
+				getResponse(callback).setMimeType("application/gpx+xml");
+				getResponse(callback).write(item.getText());
+			}
+			catch (final Exception e)
+			{
+				Log.error(e);
+			}
+			return;
 		}
 		else
 		{
@@ -557,8 +556,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 						writer.println("<id>" + url + "#placebook:" + key + "</id>");
 						writer.println("<updated>" + formatter.format(placebook.getTimestamp()) + "</updated>");
 						writer.println("<link rel=\"self\" href=\"" + url + "#placebook:" + key + "\" />");
-						writer.println("<link rel=\"enclosure\" href=\"" + url + "/command/package/" + key
-								+ "\" />");
+						writer.println("<link rel=\"enclosure\" href=\"" + url + "/command/package/" + key + "\" />");
 						writer.println("<link rel=\"edit\" href=\"" + url + "#placebook:edit:" + key + "\" />");
 
 						writer.println("</entry>");
@@ -606,6 +604,21 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			callback.onFailure(e);
 		}
+	}
+
+	private void getShelf(final User user, final EntityManager entityManager, final AsyncCallback<Shelf> callback)
+	{
+		final TypedQuery<PlaceBookBinder> q = entityManager
+				.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
+								PlaceBookBinder.class);
+		q.setParameter("user", user);
+		q.setParameter("email", "%" + user.getEmail() + "%");
+
+		final Collection<PlaceBookBinder> pbs = q.getResultList();
+		Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
+		Log.info("User " + user.getName());
+
+		callback.onSuccess(createShelf(pbs, user));
 	}
 
 	@Override
@@ -721,12 +734,12 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			final Session session = entityManager.find(Session.class, sessionID);
 			if (session == null) { return; }
-			
+
 			entityManager.getTransaction().begin();
-			
+
 			entityManager.remove(session);
-			
-			entityManager.getTransaction().commit();			
+
+			entityManager.getTransaction().commit();
 
 			getResponse(callback).getResponse().reset();
 			getResponse(callback).write("Success");
@@ -775,11 +788,12 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			final User currentUser = getUser(entityManager, callback);
 			final PlaceBookBinder placebook = entityManager.find(PlaceBookBinder.class, id);
-			if (!placebook.canBeRead(currentUser)) { throw new HTTPException(
-					HttpServletResponse.SC_UNAUTHORIZED, "User doesn't have sufficient permissions"); }
+			if (!placebook.canBeRead(currentUser)) { throw new HTTPException(HttpServletResponse.SC_UNAUTHORIZED,
+					"User doesn't have sufficient permissions"); }
 
 			@SuppressWarnings("unchecked")
-			final File zipFile = PlaceBooksAdminHelper.makePackage(entityManager, placebook, new GsonParser(JsonDownloadIgnore.class, JsonIgnore.class));
+			final File zipFile = PlaceBooksAdminHelper.makePackage(entityManager, placebook, new GsonParser(
+					JsonDownloadIgnore.class, JsonIgnore.class));
 			if (zipFile == null)
 			{
 				Log.info("Failed to create zip file");
@@ -796,6 +810,20 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			callback.onFailure(e);
 		}
+	}
+
+	private void placebookViewed(final String key)
+	{
+		while (recentBooks.remove(key))
+		{
+		}
+
+		while (recentBooks.size() >= 10)
+		{
+			recentBooks.removeLast();
+		}
+
+		recentBooks.addFirst(key);
 	}
 
 	@Override
@@ -838,18 +866,15 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 
 			final String eTag = key;
 			final String ifNoneMatch = getResponse(callback).getRequest().getHeader("If-None-Match");
-			if(ifNoneMatch != null && ifNoneMatch.equals(eTag))
-			{
-				throw new HTTPException(304);
-			}			
-			
+			if (ifNoneMatch != null && ifNoneMatch.equals(eTag)) { throw new HTTPException(304); }
+
 			String hostURL = getResponse(callback).getHostURL();
-			if(!hostURL.endsWith("/"))
+			if (!hostURL.endsWith("/"))
 			{
 				hostURL = hostURL + "/";
 			}
 			final String url = hostURL + "?utm_medium=qrcode&utm_source=qrcode#" + type + ":" + key;
-			final QRCodeWriter writer = new QRCodeWriter();			
+			final QRCodeWriter writer = new QRCodeWriter();
 			final BitMatrix matrix = writer.encode(url, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
 			final MatrixToImageConfig config = new MatrixToImageConfig(MatrixToImageConfig.BLACK, 0x00FFFFFF);
 			final BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix, config);
@@ -872,22 +897,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			callback.onFailure(e);
 		}
 	}
-	
-	private void getShelf(final User user, final EntityManager entityManager, final AsyncCallback<Shelf> callback)
-	{
-		final TypedQuery<PlaceBookBinder> q = entityManager
-				.createQuery(	"SELECT p FROM PlaceBookBinder p WHERE p.owner = :user OR p.permsUsers LIKE :email",
-								PlaceBookBinder.class);
-		q.setParameter("user", user);
-		q.setParameter("email", "%" + user.getEmail() + "%");
 
-		final Collection<PlaceBookBinder> pbs = q.getResultList();
-		Log.info("Converting " + pbs.size() + " PlaceBookBinders to JSON");
-		Log.info("User " + user.getName());
-
-		callback.onSuccess(createShelf(pbs, user));		
-	}
-	
 	@Override
 	public void registerAccount(final String name, final String email, final String password,
 			final AsyncCallback<Shelf> callback)
@@ -905,13 +915,45 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			startUserSession(entityManager, callback, user);
 
 			getShelf(user, entityManager, callback);
-			
+
 			runSync(callback, null);
 		}
 		catch (final Exception e)
 		{
 			callback.onFailure(e);
 		}
+	}
+
+	private void runSync(final AsyncCallback<?> callback, final String service)
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				final EntityManager entityManager = createEntityManagerFactory().createEntityManager();
+				try
+				{
+					final User user = verifyUser(entityManager, callback);
+					if (service == null)
+					{
+						ServiceRegistry.updateServices(entityManager, user);
+					}
+					else
+					{
+						ServiceRegistry.updateService(entityManager, user, service);
+					}
+				}
+				catch (final Exception e)
+				{
+					Log.error(e);
+				}
+				finally
+				{
+					entityManager.close();
+				}
+			}
+		}).start();
 	}
 
 	@Override
@@ -1022,21 +1064,22 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		try
 		{
 			final Shelf shelf = new Shelf();
-			if(search == null || search.isEmpty())
+			if (search == null || search.isEmpty())
 			{
 				final TypedQuery<PlaceBookBinder> q = entityManager
 						.createQuery("SELECT p FROM PlaceBookBinder p WHERE p.state= :state", PlaceBookBinder.class);
 				q.setParameter("state", State.PUBLISHED);
-				List<PlaceBookBinder> binders = q.getResultList();
-				
-				for(PlaceBookBinder binder: binders)
+				final List<PlaceBookBinder> binders = q.getResultList();
+
+				for (final PlaceBookBinder binder : binders)
 				{
 					shelf.getEntries().add(createEntry(binder));
 				}
 			}
 			else
 			{
-				for (final Map.Entry<PlaceBookBinder, Integer> searchItem : PlaceBooksAdminHelper.search(entityManager, search))
+				for (final Map.Entry<PlaceBookBinder, Integer> searchItem : PlaceBooksAdminHelper
+						.search(entityManager, search))
 				{
 					final PlaceBookBinder p = searchItem.getKey();
 					if (p != null && p.getState() == PlaceBookBinder.State.PUBLISHED && searchItem.getValue() > 0)
@@ -1099,8 +1142,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 
 	@Transact
 	@Override
-	public void uploadFile(final String type, final String id, final FileItem file,
-			final AsyncCallback<String> callback)
+	public void uploadFile(final String type, final String id, final FileItem file, final AsyncCallback<String> callback)
 	{
 		final EntityManager entityManager = getEntityManager(callback);
 		Log.info("Uploading " + type + " for item " + id);
@@ -1109,31 +1151,28 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 			final User currentUser = verifyUser(entityManager, callback);
 			entityManager.getTransaction().begin();
 
-			if(type != null)
+			if (type != null)
 			{
-				ServerInfo info = getServerInfo();
+				final ServerInfo info = getServerInfo();
 				long size = 0;
-				if(type.equals("ImageItem"))
+				if (type.equals("ImageItem"))
 				{
 					size = info.getImageSize();
 				}
-				else if(type.equals("AudioItem"))
+				else if (type.equals("AudioItem"))
 				{
 					size = info.getAudioSize();
 				}
-				else if(type.equals("VideoItem"))
+				else if (type.equals("VideoItem"))
 				{
 					size = info.getVideoSize();
 				}
-				
+
 				size = size * 1024 * 1024;
-				
-				if(size > 0 && file.getSize() > size)
-				{
-					throw new HTTPException(413, "Error: Item too Large\n");
-				}
+
+				if (size > 0 && file.getSize() > size) { throw new HTTPException(413, "Error: Item too Large\n"); }
 			}
-			
+
 			PlaceBookItem item = null;
 			if (id != null)
 			{
@@ -1159,10 +1198,14 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 				}
 				else if (item instanceof GPSTraceItem)
 				{
-					((GPSTraceItem) item).setSourceURL(null);
-					((GPSTraceItem) item).readText(file.getInputStream());
+					final GPSTraceItem gpsItem = (GPSTraceItem)item;
+					gpsItem.setSourceURL(null);
+					gpsItem.readText(file.getInputStream());
 					
-					entityManager.merge(item);
+					getResponse(callback).setMimeType("text/html");
+					callback.onSuccess(gpsItem.getText());
+					
+					entityManager.merge(gpsItem);
 				}
 
 				entityManager.getTransaction().commit();
@@ -1305,40 +1348,5 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		{
 			callback.onFailure(e);
 		}
-	}
-
-	private void placebookViewed(final String key)
-	{
-		while (recentBooks.remove(key))
-		{
-		}
-
-		while (recentBooks.size() >= 10)
-		{
-			recentBooks.removeLast();
-		}
-
-		recentBooks.addFirst(key);
-	}
-
-	@Override
-	protected Parser createParser(Method method)
-	{
-		if(method != null)
-		{
-			final Exclude exclude = method.getAnnotation(Exclude.class);
-			if(exclude != null)
-			{
-				return new GsonParser(exclude.value());
-			}
-		}
-		return new GsonParser();
-	}
-	
-	@Override
-	protected EntityManagerFactory createEntityManagerFactory()
-	{
-		final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
-		return Persistence.createEntityManagerFactory("placebooks", properties);
 	}
 }

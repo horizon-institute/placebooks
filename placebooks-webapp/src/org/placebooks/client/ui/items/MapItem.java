@@ -16,11 +16,6 @@ import org.gwtopenmaps.openlayers.client.geometry.Point;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.Vector;
 import org.gwtopenmaps.openlayers.client.layer.VectorOptions;
-import org.gwtopenmaps.openlayers.client.protocol.HTTPProtocol;
-import org.gwtopenmaps.openlayers.client.protocol.HTTPProtocolOptions;
-import org.gwtopenmaps.openlayers.client.protocol.Protocol;
-import org.gwtopenmaps.openlayers.client.strategy.FixedStrategy;
-import org.gwtopenmaps.openlayers.client.strategy.Strategy;
 import org.gwtopenmaps.openlayers.client.util.JSObject;
 import org.placebooks.client.controllers.ItemController;
 import org.placebooks.client.controllers.ServerInfoController;
@@ -42,7 +37,8 @@ public class MapItem extends PlaceBookItemView
 	public final static String POINT_PREFIX = "POINT (";
 
 	public static final Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
-
+	public static final Projection TARGET_PROJECTION = new Projection("EPSG:900913");
+	
 	public static LonLat createLonLat(final String geometry)
 	{
 		if (geometry.startsWith(POINT_PREFIX))
@@ -83,15 +79,6 @@ public class MapItem extends PlaceBookItemView
 
 		return marker;
 	}
-
-	private final EventHandler loadHandler = new EventHandler()
-	{
-		@Override
-		public void onHandle(final EventObject eventObject)
-		{
-			recenter();
-		}
-	};
 
 	private final EventHandler moveHandler = new EventHandler()
 	{
@@ -332,46 +319,50 @@ public class MapItem extends PlaceBookItemView
 		
 		markerLayer = new Vector("Markers");
 		map.addLayer(markerLayer);		
+
+		final VectorOptions options = new VectorOptions();
+		
+		routeLayer = new Vector("Route", options);
+		map.addLayer(routeLayer);
+		map.raiseLayer(markerLayer, 10);
 		
 		panel.setWidget(mapWidget);		
 		
 		createRoute();
-		refreshMarkers();
-		
-		
+		refreshMarkers();		
 	}
 
 	private void createRoute()
 	{
 		if (map == null) { return; }
 
-		if (routeLayer != null)
+		try
 		{
-			map.removeLayer(routeLayer);
+			routeLayer.removeAllFeatures();
+		}
+		catch(Exception e)
+		{
+			
 		}
 
-		if (getItem().getHash() != null)
+		if (getItem().getText() != null)
 		{
 			try
 			{
-				// Create a KML layer
-				final VectorOptions gpxOptions = new VectorOptions();
-				gpxOptions.setStrategies(new Strategy[] { new FixedStrategy() });
-				final HTTPProtocolOptions protocolOptions = new HTTPProtocolOptions();
-				protocolOptions.setUrl(ItemController.getURL(getItem(), null));
-				final GPX gpx = new GPX();
-				protocolOptions.setFormat(gpx);
-				final Protocol protocol = new HTTPProtocol(protocolOptions);
-				gpxOptions.setProtocol(protocol);
-				routeLayer = new Vector("Route", gpxOptions);
-
-				if (loadHandler != null)
-				{
-					routeLayer.getEvents().register("loadend", routeLayer, loadHandler);
+				final GPX gpx = new GPX();				
+				final VectorFeature[] features = gpx.read(getItem().getText());
+				Log.info("" + features);
+				Log.info(map.getProjection());
+				if(features != null && features.length > 0)
+				{					
+					for(VectorFeature feature: features)
+					{
+						feature.getGeometry().transform(DEFAULT_PROJECTION, TARGET_PROJECTION);
+					}
+					routeLayer.addFeatures(features);
+					
+					recenter();
 				}
-
-				map.addLayer(routeLayer);
-				map.raiseLayer(markerLayer, 10);
 			}
 			catch (final Exception e)
 			{
@@ -384,19 +375,16 @@ public class MapItem extends PlaceBookItemView
 	private Bounds getLayerBounds()
 	{
 		Bounds bounds = markerLayer.getDataExtent();
-		if (routeLayer != null)
+		final Bounds routeBounds = routeLayer.getDataExtent();
+		if (routeBounds != null)
 		{
-			final Bounds routeBounds = routeLayer.getDataExtent();
-			if (routeBounds != null)
+			if (bounds == null)
 			{
-				if (bounds == null)
-				{
-					bounds = routeBounds;
-				}
-				else
-				{
-					bounds.extend(routeBounds);
-				}
+				bounds = routeBounds;
+			}
+			else
+			{
+				bounds.extend(routeBounds);
 			}
 		}
 		return bounds;

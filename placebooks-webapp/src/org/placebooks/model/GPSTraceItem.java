@@ -13,8 +13,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
-import org.placebooks.controller.CommunicationHelper;
-import org.placebooks.model.json.JsonIgnore;
 import org.wornchaos.logger.Log;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -23,7 +21,6 @@ import com.vividsolutions.jts.io.WKTReader;
 @Entity
 public class GPSTraceItem extends PlaceBookItem
 {
-	@JsonIgnore
 	@Lob
 	private String text;
 
@@ -81,23 +78,8 @@ public class GPSTraceItem extends PlaceBookItem
 		return GPSTraceItem.class.getName();
 	}
 
-	// @Persistent
-	// @Column(jdbcType = "CLOB")
 	public String getText()
 	{
-		if (text == null && getSourceURL() != null)
-		{
-			Log.warn("Attempting to redownload GPSTraceItem content for " + getKey() + " from URL " + getSourceURL());
-			try
-			{
-				readText(CommunicationHelper.getConnection(getSourceURL()).getInputStream());
-			}
-			catch (final Throwable e)
-			{
-				Log.error(e);
-			}
-		}
-
 		return text;
 	}
 
@@ -123,7 +105,7 @@ public class GPSTraceItem extends PlaceBookItem
 			this.text = null;
 			return;
 		}
-
+		
 		this.text = trace;
 
 		Geometry bounds = null;
@@ -226,5 +208,4 @@ public class GPSTraceItem extends PlaceBookItem
 			}
 		}
 	}
-
 }
