@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE project>
-<project name="placebooks-webapp" default="install" basedir=".">
+<project name="placebooks-webapp" default="war" basedir=".">
 	<property file="build.properties" />
 
 	<property name="basepackage.name" value="org.placebooks" />

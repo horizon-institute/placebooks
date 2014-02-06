@@ -438,14 +438,14 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 		// ?Is there a path to serve the file...
 		if (!itemPath.equalsIgnoreCase(""))
 		{
-			Log.debug("Looking to serve file:" + itemPath);
+			Log.info("Looking to serve file:" + itemPath);
 			File serveFile = new File(itemPath);
 			if (!serveFile.exists())
 			{
 				// Attempt to find other versions of the file... in case extension guess was
 				// wrong...
 				final String dirPath = itemPath.replace(serveFile.getName(), "");
-				Log.warn("Can't find file, trying alternatives in " + dirPath);
+				Log.warn("Cannot find " + serveFile.getAbsolutePath());
 				itemPath = MediaItem.FindClosestFile(dirPath, hash);
 				if (itemPath != null)
 				{
@@ -453,6 +453,8 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 					serveFile = new File(itemPath);
 				}
 			}
+			
+			Log.info("Serving file:" + serveFile.getAbsolutePath());
 
 			callback.onSuccess(serveFile);
 		}
@@ -1194,6 +1196,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 					((MediaItem) item).setSourceURL(null);
 					((MediaItem) item).writeDataToDisk(file.getInputStream());
 
+					getResponse(callback).setMimeType("text/html");
 					callback.onSuccess(((MediaItem) item).getHash());
 				}
 				else if (item instanceof GPSTraceItem)
