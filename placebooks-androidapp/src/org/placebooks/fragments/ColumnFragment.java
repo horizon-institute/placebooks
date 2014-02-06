@@ -149,7 +149,7 @@ public class ColumnFragment extends Fragment
 				case ImageItem:
 					final ImageView imageView = new ImageView(container.getContext());
 					imageView.setImageURI(getURI(item));
-					imageView.setScaleType(ScaleType.FIT_XY);
+					imageView.setScaleType(ScaleType.FIT_CENTER);
 					imageView.setAdjustViewBounds(true);
 					imageView.setPadding(20,20,20,20);
 					imageView.setBackgroundColor(Color.WHITE);
@@ -162,7 +162,7 @@ public class ColumnFragment extends Fragment
 				case MapImageItem:
 					final MapCanvas mapView = new MapCanvas(container.getContext());
 					mapView.setImageURI(getURI(item));
-					mapView.setScaleType(ScaleType.FIT_XY);
+					mapView.setScaleType(ScaleType.FIT_CENTER);
 					mapView.setAdjustViewBounds(true);
 					mapView.setGeometry(item.getGeom());
 					mapView.setPadding(20,20,20,20);
