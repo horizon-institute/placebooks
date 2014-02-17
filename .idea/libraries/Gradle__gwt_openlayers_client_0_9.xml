@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: gwt-openlayers-client-0.9">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.gwtopenmaps.openlayers/gwt-openlayers-client/0.9/8f7c7626e5a876679a92959a9dfa4ef0465eeb92/gwt-openlayers-client-0.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.gwtopenmaps.openlayers/gwt-openlayers-client/0.9/bd4fd3397a967954fc28fa63f2e283b0e3e8603e/gwt-openlayers-client-0.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

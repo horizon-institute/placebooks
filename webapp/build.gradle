@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/'
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.3'
+    }
+}
+
+repositories {
+    maven {
+        mavenCentral()
+        url 'http://xuggle.googlecode.com/svn/trunk/repo/share/java/'
+        mavenLocal()
+    }
+}
+
+apply plugin: "war"
+apply plugin: "gwt"
+
+evaluationDependsOn(':wornchaos:shared')
+evaluationDependsOn(':wornchaos:gwt')
+evaluationDependsOn(':wornchaos:webapp')
+evaluationDependsOn(':shared')
+
+gwt {
+    modules 'org.placebooks.PlaceBookEditor'
+
+    src += files(project(':shared').sourceSets.main.allJava.srcDirs) + files(project(':shared').sourceSets.main.output.resourcesDir)
+    src += files(project(':wornchaos:shared').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos:shared').sourceSets.main.output.resourcesDir)
+    src += files(project(':wornchaos:gwt').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos:gwt').sourceSets.main.output.resourcesDir)
+}
+
+dependencies {
+    compile project(":wornchaos:shared")
+    compile project(":wornchaos:gwt")
+    compile project(":wornchaos:webapp")
+    compile project(":shared")
+    compile "org.gwtopenmaps.openlayers:gwt-openlayers-client:+"
+    compile "org.eclipse.persistence:eclipselink:+"
+    compile "com.google.code.gson:gson:2.+"
+    compile "com.vividsolutions:jts:+"
+    compile "org.apache.lucene:lucene-analyzers:+"
+    compile "com.dropbox.core:dropbox-core-sdk:+"
+    compile "com.google.zxing:javase:+"
+    compile "org.imgscalr:imgscalr-lib:+"
+    compile "xuggle:xuggle-xuggler:+"
+    compile "commons-fileupload:commons-fileupload:1.+"
+    compile "com.google.guava:guava-gwt:+"
+}

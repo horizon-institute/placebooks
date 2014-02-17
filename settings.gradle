@@ -1,0 +1,10 @@
+include ':shared'
+include ':android'
+include ':webapp'
+include ':wornchaos:shared'
+project(':wornchaos').projectDir = new File(settingsDir, '../wornchaos')
+project(':wornchaos:shared').projectDir = new File(settingsDir, '../wornchaos/shared')
+include ':wornchaos:gwt'
+project(':wornchaos:gwt').projectDir = new File(settingsDir, '../wornchaos/gwt')
+include ':wornchaos:webapp'
+project(':wornchaos:webapp').projectDir = new File(settingsDir, '../wornchaos/webapp')
