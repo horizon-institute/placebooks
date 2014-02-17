@@ -27,7 +27,7 @@ android {
         releaseSigning {
             storeFile file(ANDROID_KEYSTORE)
             storePassword ANDROID_KEYSTORE_PASSWORD
-            keyAlias "placebooks"
+            keyAlias "placebook key"
             keyPassword PLACEBOOKS_PASSWORD
         }
     }

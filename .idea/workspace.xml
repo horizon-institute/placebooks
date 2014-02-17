@@ -12,668 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9797a40a-ed95-4323-bb5e-123db7b70b03" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/android/.gitignore" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/shared/.gitignore" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/webapp/.gitignore" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/.classpath" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/.project" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/AndroidManifest.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/default.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/libs/android-support-v13.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/libs/gpx-bindings.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/libs/gson-2.2.4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/libs/osmdroid-android-3.0.10.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/libs/wornchaos.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/lint.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/proguard.cfg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/project.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/cycle_7.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/fade.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/hold.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/hyperspace_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/hyperspace_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_animation_row_left_slide.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_animation_row_right_slide.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_animation_table.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_bottom_to_top_slide.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_grid_fade.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_grid_inverse_fade.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_random_fade.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/layout_wave_scale.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_left_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_left_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_right_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_right_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_up_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/push_up_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/shake.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_in_left.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_in_right.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_left.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_left_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_left_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_out_left.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_out_right.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_right.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_right_in.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_right_out.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/slide_top_to_bottom.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/wave_scale.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/zoom_enter.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/anim/zoom_exit.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-hdpi/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-hdpi/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-hdpi/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-ldpi/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-ldpi/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY-ldpi/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/downloads.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/nearbybooks.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/onlineshelf.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/placebooks_logo.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-cy-rCY/placebooks_logo2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/book_background.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/book_downloads_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/book_downloads_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/book_downloads_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/drawer_shadow.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/ic_action_search.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/ic_drawer.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/icon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/logout_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/logout_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/myshelf_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/myshelf_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/myshelf_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/page.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/page1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/page_background.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/photo_marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/placebooks_logo2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/search_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/search_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/search_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/settings.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-hdpi/videocontent.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/book_downloads_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/book_downloads_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/book_downloads_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/logout_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/logout_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/myshelf_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/myshelf_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/myshelf_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/search_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/search_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/search_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-ldpi/settings.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/book_downloads_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/book_downloads_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/book_downloads_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/bookshelf_backer.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/bookshelf_refresh.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/bookshelf_tile.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/bullet_blue.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/camera_icon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/downloads.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/drawer_shadow.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/ic_action_search.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/ic_drawer.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/ic_tab_artists_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/ic_tab_artists_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/icon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/login_background.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/logout.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/logout_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/logout_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/my_book_downloads.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/my_online_shelf.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/mylibrary.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/myshelf_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/myshelf_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/myshelf_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/nearbybooks.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/onlineshelf.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/pause.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/pcw_logo.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/photo_marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/photo_marker_50x32.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebook_blue.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebook_green.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebook_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebook_red.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebooks_logo.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/placebooks_logo2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/play.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/search_black.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/search_books.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/search_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/search_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/settings.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/settings_grey.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/settings_white.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/spinner.gif" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/splash.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/stop.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/videocontent.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/web_bundle_thumbnail.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/welcome.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/welcome_background.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/wood_overlay1000x200.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/woodtexture1000x1000.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/yah_marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-mdpi/yah_marker_30.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xhdpi/bullet_blue.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xhdpi/drawer_shadow.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xhdpi/ic_action_search.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xhdpi/ic_drawer.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xhdpi/icon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable-xxhdpi/ic_action_search.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/app_background.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/downloads_tab_icons.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker5.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker6.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker7.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/marker9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markera.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerb.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerc.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerd.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markere.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerf.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerg.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerh.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markeri.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerj.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerk.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerl.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerm.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markern.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markero.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerp.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerq.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerr.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markers.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markert.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markeru.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerv.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerw.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerx.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markery.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/markerz.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/myshelf_tab_icons.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/search_tab_icons.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/settings_tab_icons.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/tab_focus.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/tab_indicator.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/tab_press.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/tab_selected.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/drawable/tab_unselected.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/audioview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/column.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/drawer_list_item.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/frame.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/imageview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/login.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/mapimageview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/placebooklistitem.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/placebookview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/preferences.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/roundedbutton.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/textview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/videoview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/webbundleview.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/layout/welcome.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/menu/menu_main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/menu/menu_search.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values-cy/array.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values-cy/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values/array.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values/colors.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values/dimensions.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/values/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/res/xml/searchable.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/AndroidConnectionStatus.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/PlaceBookServerHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/PlaceBooks.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/UICallback.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activities/GroupActivity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activities/NavigationActivity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activities/PlaceBookActivity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activities/SearchActivity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activity/item/AudioViewer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activity/item/ImageViewer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activity/item/MapCanvas.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activity/item/TextViewer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/activity/item/VideoViewer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Entry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Group.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Item.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/LoginDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Page.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/PlaceBook.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/PlaceBookService.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Position.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/ServerInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/ServiceInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/Shelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/client/model/User.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/fragments/ColumnFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/fragments/DownloadsFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/fragments/NearestFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/fragments/ShelfFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/fragments/WelcomeFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/views/adapters/ColumnsAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/views/adapters/EntriesAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/views/adapters/PlaceBooksAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-androidapp/src/org/placebooks/views/adapters/ShelfAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.classpath" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/.jsdtscope" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/com.google.gdt.eclipse.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/com.google.gwt.eclipse.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.jdt.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.jpt.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.jst.j2ee.ejb.annotations.xdoclet.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.wst.common.component" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.wst.common.project.facet.core.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.wst.jsdt.ui.superType.container" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/.settings/org.eclipse.wst.jsdt.ui.superType.name" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/build.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/etc/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/apache-tomcat-6.0.32-deployer/catalina-ant.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/apache-tomcat-6.0.32-deployer/catalina-deployer.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/apache-tomcat-6.0.32-deployer/el-api.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/apache-tomcat-6.0.32-deployer/jasper-el.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/apache-tomcat-6.0.32-deployer/jasper.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/commons-cli.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/gwt-codeserver.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/gwt-dev.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/gwt-openlayers-client-1.0-SNAPSHOT.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/gwt-user.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/jsch-0.1.50.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/junit-4.8.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/logback-classic.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/logback-core.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/objectify-4.0rc1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/slf4j-api.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/validation-api-1.0.0.GA-sources.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/validation-api-1.0.0.GA.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/xuggle-xuggler-test.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/lib/xuggle-xuggler.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/META-INF/persistence.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/com/google/gwt/i18n/client/LocalizableResource_cy.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/com/google/gwt/i18n/client/LocalizableResource_en.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/cs-placebooks.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/logging.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/PlaceBookEditor.gwt.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/GoogleAnalytics.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/GoogleUniversalAnalytics.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/JavaScriptInjector.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/PlaceBookActivityMapper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/PlaceBookHistoryMapper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/PlaceBooks.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/Resources.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/controllers/GroupController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/controllers/ItemController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/controllers/PlaceBookController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/controllers/ServerInfoController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/controllers/UserController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/Entry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/Group.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/Item.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/LoginDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/Page.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/PlaceBook.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/PlaceBookService.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/ServerInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/ServiceInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/Shelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/model/User.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/UIMessages.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookAccountsDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookAccountsDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookConfirmDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookConfirmDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookCreateAccountDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookCreateAccountDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookDialogFrame.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookDialogFrame.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookGroupsDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookGroupsDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookLoginDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookLoginDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookMapsDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookMapsDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookPermissionsDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookPermissionsDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookPublishDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookPublishDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookUploadDialog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/dialogs/PlaceBookUploadDialog.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/Images.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/Placebook_016.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/Placebook_128.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/Placebook_Blue.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/Placebook_Brown.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/add.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/arrow_left.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/arrow_right.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/delete.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/dropMenuIcon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/error.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/headline.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/headline_cy.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_chrome.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_everytrail.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_logo.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_phone.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_video.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/listitem_youtube.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/Markers.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker5.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker6.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker7.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker_audio.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker_image.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker_text.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker_video.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/marker_web.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markera.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerb.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerc.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerd.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markere.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerf.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerg.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerh.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markeri.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerj.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerk.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerl.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerm.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markern.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markero.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerp.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerq.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerr.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markers.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markert.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markeru.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerv.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerw.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerx.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markery.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/markers/markerz.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/page_next.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/page_previous.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_audio.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_folder.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_image.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_map.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_text.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_video.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pallette_web.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/pcw_logo.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/placebook_open.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/progress.gif" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/progress2.gif" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/progress3.gif" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/search.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/splash.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/toolbar_create.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/toolbar_library.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/zoom_in.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/images/zoom_out.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/AudioItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/EditableTextItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/ImageItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/MapItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/MediaItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/PlaceBookItemView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/PlaceBookItemViewFactory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/TextItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/VideoItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/WebBundleItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemBlankFrame.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemDragFrame.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemFrame.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemFrameFactory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemFrameWidget.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemFrameWidget.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/frames/PlaceBookItemPopupFrame.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/maps/GPX.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/items/maps/GPXImpl.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/DeleteItemMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/EditMapMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/FitToContentMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/HideTrailMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/MenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/ShowTrailMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/menuItems/UploadMenuItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/GroupPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/GroupsPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/LibraryPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/PlaceBookPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/PlaceBookPlace.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/SearchPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/WelcomePage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupEditor.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupEditor.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupsView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/GroupsView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/KioskGroupView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/KioskGroupView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/KioskPlaceBookView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/KioskPlaceBookView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/LibraryView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/LibraryView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/PageView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/PlaceBookEditor.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/PlaceBookEditor.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/PlaceBookView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/PlaceBookView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/SearchView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/SearchView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/Welcome.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/pages/views/Welcome.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/Palette.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/PaletteBackItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/PaletteFolder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/PaletteItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/PaletteItem.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/palette/PalettePlaceBookItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/styles/PlaceBook.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/styles/PlaceBookCSS.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/styles/Styles.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/ColumnView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/DatePrinter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/DragController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/EnabledButtonCell.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PageView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PageView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PagesView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PagesView.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookBookPanel.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookController.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookEntryPreview.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookEntryPreview.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookEntryWidget.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookEntryWidget.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookGroupWidget.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookGroupWidget.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookList.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookList.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookPanel.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookSaveItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookShelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookShelf.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookToolbar.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/views/PlaceBookToolbar.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/AnchorPanel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/AndroidLink.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/Canvas.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/DropMenu.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/FacebookLikeButton.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/GooglePlusOne.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/MousePanel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/ProgressPanel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/ProgressPanel.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/RichTextArea.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/ToolbarItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/ToolbarItem.ui.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/client/ui/widgets/ToolbarLink.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/CommunicationHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/EMFSingleton.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/ExecTimer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/ItemFactory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/MapMetadata.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/MediaHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/OSMTileHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/OSTileHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/PlaceBooksAdminHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/PresetItemsHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/PropertiesSingleton.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/SearchHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/TranscodeHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/controller/YouTubeHelper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/AudioItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/BoundaryGenerator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/GPSTraceItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/ImageItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/LoginDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/MapImageItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/MediaItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBook.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBookBinder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBookBinderSearchIndex.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBookGroup.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBookItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/PlaceBookItemSearchIndex.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/SearchIndex.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/Session.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/TextItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/User.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/VideoItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/WebBundleItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/DateAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/GeometryAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/GroupShelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/JsonDownloadIgnore.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/JsonIgnore.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/MapInstanceCreator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookBinderDistanceEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookBinderEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookBinderOwnedEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookBinderSearchEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookItemAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookItemDistanceEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/PlaceBookItemEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/Shelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/ShelfEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/model/json/UserShelf.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/server/EMFJSONServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/server/EMFServerMethod.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/server/GsonParser.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/server/PlaceBookServerExt.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/server/PlaceBookServerImpl.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/DropBoxService.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/EverytrailService.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/PeoplesCollectionService.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/Service.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/ServiceRegistry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/EverytrailLoginResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/EverytrailPicturesResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/EverytrailResponseStatusData.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/EverytrailTripsResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/EverytrailVideosResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionGeometryLineString.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionGeometryPoint.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionItemFeature.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionItemResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionLoginResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionProperties.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionSearchTrailsResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailCRS.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailCentroid.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailListItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailProperties.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/services/model/PeoplesCollectionTrailsResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/utils/InitializeDatabase.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/org/placebooks/utils/MergeProperties.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/src/placebooks.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/commons-fileupload-1.2.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/commons-io-2.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/commons-lang-2.6.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/core-2.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/dropbox-java-sdk-1.5.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/eclipselink.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/gdata-core-1.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/gdata-media-1.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/gdata-youtube-2.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/gson-2.2.4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/gwt-servlet.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/h2-1.3.171.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/httpclient-4.0.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/httpcore-4.0.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/httpmime-4.0.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/imgscalr-lib-4.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/jakarta-oro-2.0.8.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/javase-2.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/javax.persistence_2.0.3.v201010191057.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/jcoord-1.1-b.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/jts-1.8.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/log4j-1.2.16.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/lucene-analyzers-3.1.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/lucene-core-3.1.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/mime-util-2.1.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/mysql-connector-java-5.1.18-bin.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/slf4j-api-1.6.6.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/slf4j-simple-1.6.6.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/standard.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/lib/wornchaos.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/WEB-INF/web.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/admin.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/back.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/icon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/screen recording3.mp4" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/test.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/placebooks-webapp/war/upload.html" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/build.gradle" afterPath="$PROJECT_DIR$/android/build.gradle" />
     </list>
     <ignored path="placebooks.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -754,91 +93,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="build.gradle" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../wornchaos/shared/build.gradle">
+      <file leaf-file-name="build.gradle" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/android/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="300">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="settings.gradle" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/settings.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="70" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="44" selection-end="44" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/android/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shared/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/webapp/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="44" selection-end="44" vertical-scroll-proportion="0.12437811" vertical-offset="0" max-vertical-offset="603">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../wornchaos/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="0" selection-end="44" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../wornchaos/gwt/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="6" selection-start="0" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../wornchaos/shared/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../wornchaos/android/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
+            <state line="29" column="35" selection-start="545" selection-end="545" vertical-scroll-proportion="0.6666667" vertical-offset="33" max-vertical-offset="945">
               <folding />
             </state>
           </provider>
@@ -2393,13 +1651,13 @@
         <option value="$PROJECT_DIR$/../wornchaos/gwt/src/main/resources/org/wornchaos/Wornchaos.gwt.xml" />
         <option value="$PROJECT_DIR$/../wornchaos/gwt/src/main/java/org/wornchaos/gwt/org/wornchaos/client/logger/Log.java" />
         <option value="$PROJECT_DIR$/android/proguard-rules.txt" />
-        <option value="$PROJECT_DIR$/android/build.gradle" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/../wornchaos/gwt/.gitignore" />
         <option value="$PROJECT_DIR$/../wornchaos/shared/.gitignore" />
         <option value="$PROJECT_DIR$/../wornchaos/android/.gitignore" />
         <option value="$PROJECT_DIR$/../wornchaos/.gitignore" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/android/build.gradle" />
       </list>
     </option>
   </component>
@@ -2447,16 +1705,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="placebooks" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="placebooks" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="wornchaos" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -2528,6 +1776,46 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="placebooks" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="placebooks" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="build" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="placebooks" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="placebooks" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="build" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes-proguard" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2671,19 +1959,6 @@
       </ExternalSystemSettings>
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -2709,6 +1984,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2837,7 +2125,6 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908705" sideWeight="0.50027734" order="7" side_tool="true" content_ui="tabs" />
@@ -2851,14 +2138,15 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908705" sideWeight="0.4997227" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24958402" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25235718" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.4997227" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287234" sideWeight="0.4997227" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25513035" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3287234" sideWeight="0.4997227" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294509" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.4997227" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -2884,16 +2172,12 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/shared/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="604">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="604" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/webapp/version.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="568">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="568" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/model/PlaceBookItem.java">
@@ -2968,9 +2252,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/model/MediaItem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="313" column="0" selection-start="7866" selection-end="7866" vertical-scroll-proportion="0.0" vertical-offset="3992" max-vertical-offset="6240">
-          <folding />
-        </state>
+        <state line="313" column="0" selection-start="7866" selection-end="7866" vertical-scroll-proportion="0.0" vertical-offset="3992" max-vertical-offset="6240" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/model/json/Shelf.java">
@@ -3018,9 +2300,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/utils/MergeProperties.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="19" selection-start="1268" selection-end="1268" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="1485">
-          <folding />
-        </state>
+        <state line="47" column="19" selection-start="1268" selection-end="1268" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="1485" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/model/TextItem.java">
@@ -3111,9 +2391,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/model/VideoItem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="43" selection-start="2169" selection-end="2169" vertical-scroll-proportion="0.0" vertical-offset="41" max-vertical-offset="1395">
-          <folding />
-        </state>
+        <state line="89" column="43" selection-start="2169" selection-end="2169" vertical-scroll-proportion="0.0" vertical-offset="41" max-vertical-offset="1395" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/controller/TranscodeHelper.java">
@@ -3138,16 +2416,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../wornchaos/gwt/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="221" selection-end="221" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="435">
-          <folding />
-        </state>
+        <state line="12" column="0" selection-start="221" selection-end="221" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="435" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/client/PlaceBooks.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="13" selection-start="907" selection-end="907" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1440">
-          <folding />
-        </state>
+        <state line="21" column="13" selection-start="907" selection-end="907" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1440" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/resources/org.placebooks/PlaceBookEditor.gwt.xml">
@@ -3159,23 +2433,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/PlaceBookEditor.gwt.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../wornchaos/gwt/src/main/resources/javax/annotation/Annotation.gwt.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="581">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="581" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="30" selection-start="615" selection-end="615" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="870">
-          <folding />
-        </state>
+        <state line="26" column="30" selection-start="615" selection-end="615" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="870" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../wornchaos/shared/src/main/java/org/wornchaos/parser/gson/GsonParser.java">
@@ -3187,9 +2455,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/src/main/java/org/placebooks/client/ui/widgets/AndroidLink.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="27" selection-start="343" selection-end="343" vertical-scroll-proportion="0.34034416" vertical-offset="32" max-vertical-offset="555">
-          <folding />
-        </state>
+        <state line="16" column="27" selection-start="343" selection-end="343" vertical-scroll-proportion="0.34034416" vertical-offset="32" max-vertical-offset="555" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../wornchaos/shared/src/main/java/org/wornchaos/logger/Log.java">
@@ -3220,13 +2486,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/android/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="29" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="945">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/settings.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state line="4" column="70" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
@@ -3234,37 +2493,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../wornchaos/gwt/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="6" selection-start="0" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../wornchaos/shared/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="603">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../wornchaos/shared/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../wornchaos/android/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="120">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../wornchaos/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="0" selection-end="44" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
           <folding />
         </state>
       </provider>
@@ -3292,7 +2523,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/webapp/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="44" selection-end="44" vertical-scroll-proportion="0.12437811" vertical-offset="0" max-vertical-offset="603">
+        <state line="5" column="0" selection-start="44" selection-end="44" vertical-scroll-proportion="0.08223684" vertical-offset="0" max-vertical-offset="912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../wornchaos/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="0" selection-start="0" selection-end="44" vertical-scroll-proportion="0.08223684" vertical-offset="0" max-vertical-offset="912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../wornchaos/gwt/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="6" selection-start="0" selection-end="22" vertical-scroll-proportion="0.032894738" vertical-offset="0" max-vertical-offset="912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../wornchaos/shared/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.032894738" vertical-offset="0" max-vertical-offset="912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../wornchaos/android/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="6" selection-start="22" selection-end="22" vertical-scroll-proportion="0.032894738" vertical-offset="0" max-vertical-offset="912">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="35" selection-start="545" selection-end="545" vertical-scroll-proportion="0.6666667" vertical-offset="33" max-vertical-offset="945">
           <folding />
         </state>
       </provider>

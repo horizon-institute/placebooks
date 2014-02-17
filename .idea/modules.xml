@@ -7,7 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/placebooks.iml" filepath="$PROJECT_DIR$/placebooks.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/webapp/webapp.iml" filepath="$PROJECT_DIR$/webapp/webapp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wornchaos/wornchaos.iml" filepath="$PROJECT_DIR$/wornchaos/wornchaos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../wornchaos/wornchaos.iml" filepath="$PROJECT_DIR$/../wornchaos/wornchaos.iml" />
       <module fileurl="file://$PROJECT_DIR$/../wornchaos/gwt/wornchaos-gwt.iml" filepath="$PROJECT_DIR$/../wornchaos/gwt/wornchaos-gwt.iml" />
       <module fileurl="file://$PROJECT_DIR$/../wornchaos/shared/wornchaos-shared.iml" filepath="$PROJECT_DIR$/../wornchaos/shared/wornchaos-shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/../wornchaos/webapp/wornchaos-webapp.iml" filepath="$PROJECT_DIR$/../wornchaos/webapp/wornchaos-webapp.iml" />
