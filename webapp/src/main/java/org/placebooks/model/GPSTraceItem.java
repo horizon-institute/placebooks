@@ -193,7 +193,7 @@ public class GPSTraceItem extends PlaceBookItem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see placebooks.model.PlaceBookItem#udpate(PlaceBookItem)
+	 * @see org.model.PlaceBookItem#udpate(PlaceBookItem)
 	 */
 	public void updateItem(final PlaceBookItem updateItem)
 	{

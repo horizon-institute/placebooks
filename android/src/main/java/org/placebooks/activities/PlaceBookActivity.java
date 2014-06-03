@@ -2,6 +2,7 @@ package org.placebooks.activities;
 
 import java.io.File;
 
+import android.app.ActionBar;
 import org.placebooks.PlaceBookServerHandler;
 import org.placebooks.PlaceBooks;
 import org.placebooks.R;
@@ -18,7 +19,6 @@ import org.wornchaos.logger.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
 public class PlaceBookActivity extends ActionBarActivity
@@ -85,7 +85,7 @@ public class PlaceBookActivity extends ActionBarActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		final ActionBar actionBar = getSupportActionBar();
+		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		// Set the content view to the xml reader file
@@ -119,25 +119,25 @@ public class PlaceBookActivity extends ActionBarActivity
 						Log.error(e);
 					}
 				}
-				else if(intent.getData().getScheme().equals("placebooks"))
+				else if(intent.getData().getScheme().equals("org"))
 				{
 					id = intent.getData().getLastPathSegment();
 					final String url = intent.getDataString();
-					if(url.contains("placebooks/group"))
+					if(url.contains("org/group"))
 					{
 						final Intent newIntent = new Intent(getApplicationContext(), GroupActivity.class);
 						newIntent.putExtra("id", id);
-						newIntent.putExtra("host", url.substring(0, url.indexOf("placebooks/group")).replace("placebooks://", "http://"));
+						newIntent.putExtra("host", url.substring(0, url.indexOf("org/group")).replace("org://", "http://"));
 						newIntent.setAction(Intent.ACTION_VIEW);
 						startActivity(newIntent);
 						return;						
 					}
-					else if(!url.contains("placebooks/placebook"))
+					else if(!url.contains("org/placebook"))
 					{
 						return;
 					}
 					
-					final String host = url.substring(0, url.indexOf("placebooks/placebook")).replace("placebooks://", "http://");
+					final String host = url.substring(0, url.indexOf("org/placebook")).replace("org://", "http://");
 					Log.info(host);
 					Log.info(id);
 					

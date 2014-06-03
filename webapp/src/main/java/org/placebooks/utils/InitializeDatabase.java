@@ -57,7 +57,7 @@ public class InitializeDatabase
 					PeoplesCollectionService.SERVICE_INFO.getName(), "placebooksTest", "placebooksTest", "testPass1!");
 			userTest.add(pcwLoginDetails);
 
-			final User userTest2 = new User("Test User", "placebooks.test@gmail.com",
+			final User userTest2 = new User("Test User", "org.test@gmail.com",
 					encodePassword("testPass!"));
 			// final LoginDetails ytLoginDetails = new LoginDetails(userTest2, "YouTube", "",
 			// "placebooksTest", "testPass1!");

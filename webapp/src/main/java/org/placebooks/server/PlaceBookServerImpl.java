@@ -81,7 +81,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 {
 	private static final String sessionName = "placebook_session";
 
-	private final static LinkedList<String> recentBooks = new LinkedList<String>();
+	private static final LinkedList<String> recentBooks = new LinkedList<String>();
 
 	private static MessageDigest passwordDigest;
 
@@ -287,7 +287,7 @@ public class PlaceBookServerImpl extends EMFJSONServer implements PlaceBookServe
 	protected EntityManagerFactory createEntityManagerFactory()
 	{
 		final Properties properties = PropertiesSingleton.get(EMFSingleton.class.getClassLoader());
-		return Persistence.createEntityManagerFactory("placebooks", properties);
+		return Persistence.createEntityManagerFactory("org", properties);
 	}
 
 	@Override

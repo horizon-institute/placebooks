@@ -1,10 +1,7 @@
-include ':shared'
-include ':android'
-include ':webapp'
-include ':wornchaos:shared'
-project(':wornchaos').projectDir = new File(settingsDir, '../wornchaos')
-project(':wornchaos:shared').projectDir = new File(settingsDir, '../wornchaos/shared')
-include ':wornchaos:gwt'
-project(':wornchaos:gwt').projectDir = new File(settingsDir, '../wornchaos/gwt')
-include ':wornchaos:webapp'
-project(':wornchaos:webapp').projectDir = new File(settingsDir, '../wornchaos/webapp')
+include ':android', ':core', ':webapp'
+include ':wornchaos-core'
+project(':wornchaos-core').projectDir = new File(settingsDir, '../wornchaos/wornchaos-core')
+include ':wornchaos-gwt'
+project(':wornchaos-gwt').projectDir = new File(settingsDir, '../wornchaos/wornchaos-gwt')
+include ':wornchaos-webapp'
+project(':wornchaos-webapp').projectDir = new File(settingsDir, '../wornchaos/wornchaos-webapp')

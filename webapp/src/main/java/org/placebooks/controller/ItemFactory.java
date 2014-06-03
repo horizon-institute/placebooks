@@ -366,7 +366,7 @@ public class ItemFactory
 		final StringBuilder trackGPXBuilder = new StringBuilder();
 		trackGPXBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		trackGPXBuilder
-				.append("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Placebooks - http://www.placebooks.org\" version=\"1.1\">");
+				.append("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"Placebooks - http://www.org.org\" version=\"1.1\">");
 
 		final Envelope envelope = new Envelope();
 		envelope.expandToInclude(trail.GetGeometry().getEnvelopeInternal());

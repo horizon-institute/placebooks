@@ -1,5 +1,17 @@
 package org.placebooks;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import org.placebooks.client.model.PlaceBook;
+import org.placebooks.client.model.PlaceBookService;
+import org.wornchaos.client.server.AsyncCallback;
+import org.wornchaos.client.server.JSONServerHandler;
+import org.wornchaos.client.server.Request;
+import org.wornchaos.logger.Log;
+import org.wornchaos.parser.Parser;
+import org.wornchaos.parser.gson.GsonParser;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,48 +22,42 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.apache.http.NameValuePair;
-import org.placebooks.client.model.PlaceBook;
-import org.placebooks.client.model.PlaceBookService;
-import org.wornchaos.client.server.AsyncCallback;
-import org.wornchaos.client.server.Request;
-import org.wornchaos.logger.Log;
-import org.wornchaos.parser.Parser;
-import org.wornchaos.parser.gson.GsonParser;
-import org.wornchaos.client.server.JSONServerHandler;
-
-import android.content.Context;
 
 public class PlaceBookServerHandler extends JSONServerHandler
 {
 	private static final Parser parser = new GsonParser();
 	private final Context context;
 
-	public static final PlaceBookService createServer(String host, Context context)
+	public static PlaceBookService createServer(String host, Context context)
 	{
-		final PlaceBookService service = (PlaceBookService) Proxy.newProxyInstance(	PlaceBookService.class.getClassLoader(),
-															new Class[] { PlaceBookService.class },
-															new PlaceBookServerHandler(context));
-		service.setHostURL(host);
-		service.setConnectionStatus(new AndroidConnectionStatus(context));
-		return service;
+		return (PlaceBookService) Proxy.newProxyInstance(PlaceBookService.class.getClassLoader(),
+				new Class[]{PlaceBookService.class},
+				new PlaceBookServerHandler(context, host));
 	}
 
-	public PlaceBookServerHandler(Context context)
+	public PlaceBookServerHandler(Context context, String host)
 	{
-		super(new GsonParser());
+		super(new GsonParser(), host);
 		this.context = context;
+	}
+
+	@Override
+	protected boolean isOnline()
+	{
+		final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
+		Log.info("Connected: " + (netInfo != null && netInfo.isConnected()));
+
+		return netInfo != null && netInfo.isConnected();
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
 	{
-		// TODO Auto-generated method stub
 		if (method.getName().equals("placebookPackage"))
 		{
 			final String id = (String) args[0];
@@ -60,7 +66,7 @@ public class PlaceBookServerHandler extends JSONServerHandler
 			try
 			{
 				final PlaceBook cached = getPlaceBook(getPlaceBookPath(id));
-				if(cached != null)
+				if (cached != null)
 				{
 					callback.onSuccess(cached);
 				}
@@ -69,45 +75,47 @@ public class PlaceBookServerHandler extends JSONServerHandler
 				{
 					return null;
 				}
-				
+
 				final Request request = method.getAnnotation(Request.class);
-				String url = getURL(method, request);
-				url = url.replace("{id}", id);
-				
-				call(	url, new HashMap<String, String>(), org.wornchaos.client.server.Request.Method.GET,
-						new AsyncCallback<InputStream>()
+				final String url = getURL(method, request);
+				final String finalURL = url.replace("{id}", id);
+
+				new Thread(new Runnable()
+				{
+					@Override
+					@SuppressWarnings("unchecked")
+					public void run()
+					{
+						try
 						{
-							@Override
-							public void onSuccess(final InputStream inputStream)
-							{
-								try
-								{
-									final File placebookPath = getPlaceBookPath(id);
-									final File cacheDir = context.getExternalCacheDir();
+							final Object result = call(finalURL, new HashMap<String, String>(), Request.Method.GET, InputStream.class);
+							final File placebookPath = getPlaceBookPath(id);
+							final File cacheDir = context.getExternalCacheDir();
 
-									final File download = new File(cacheDir, id + "_download.zip");
-									download.createNewFile();
+							final File download = new File(cacheDir, id + "_download.zip");
+							download.createNewFile();
 
-									final FileOutputStream fileOutput = new FileOutputStream(download);
+							final FileOutputStream fileOutput = new FileOutputStream(download);
 
-									copy(inputStream, fileOutput);
+							copy((InputStream) result, fileOutput);
 
-									fileOutput.flush();
-									fileOutput.close();
+							fileOutput.flush();
+							fileOutput.close();
 
-									unzip(new FileInputStream(download), placebookPath);
+							unzip(new FileInputStream(download), placebookPath);
 
-									download.delete();
+							download.delete();
 
-									getPlaceBook(placebookPath, callback);
-								}
-								catch (final Exception e)
-								{
-									Log.error(e);
-								}
-							}
-						}, InputStream.class);
-				return null;				
+							getPlaceBook(placebookPath, callback);
+						}
+						catch (Exception e)
+						{
+							callback.onFailure(e);
+						}
+					}
+				}).start();
+
+				return null;
 			}
 			catch (final Exception e)
 			{
@@ -123,20 +131,20 @@ public class PlaceBookServerHandler extends JSONServerHandler
 	{
 		final URL url = new URL(hostURL);
 		File file = new File(context.getExternalFilesDir(null), url.getHost());
-		if(url.getPath().length() != 0)
+		if (url.getPath().length() != 0)
 		{
 			file = new File(file, url.getPath());
 		}
-		
+
 		return new File(file, id);
 	}
-	
+
 	public static void getPlaceBook(final File placebookPath, final AsyncCallback<PlaceBook> callback)
 	{
 		try
 		{
 			final PlaceBook placebook = getPlaceBook(placebookPath);
-			if(placebook == null)
+			if (placebook == null)
 			{
 				callback.onFailure(new Exception("Not Found"));
 			}
@@ -145,12 +153,12 @@ public class PlaceBookServerHandler extends JSONServerHandler
 				callback.onSuccess(placebook);
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			callback.onFailure(e);
 		}
 	}
-	
+
 	private static PlaceBook getPlaceBook(final File placebookPath) throws IOException
 	{
 		if (placebookPath.exists())
@@ -166,10 +174,10 @@ public class PlaceBookServerHandler extends JSONServerHandler
 				return placebook;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private static void copy(final InputStream input, final OutputStream output) throws IOException
 	{
 		final byte[] buffer = new byte[4096];
@@ -187,7 +195,7 @@ public class PlaceBookServerHandler extends JSONServerHandler
 		try
 		{
 			ZipEntry entry;
-			while((entry = zipFile.getNextEntry()) != null)
+			while ((entry = zipFile.getNextEntry()) != null)
 			{
 				final File targetFile = new File(targetDir, entry.getName());
 				final OutputStream output = new FileOutputStream(targetFile);
@@ -204,6 +212,6 @@ public class PlaceBookServerHandler extends JSONServerHandler
 		finally
 		{
 			zipFile.close();
-		}	
+		}
 	}
 }

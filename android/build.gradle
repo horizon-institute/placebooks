@@ -4,55 +4,49 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.0'
+        classpath 'com.android.tools.build:gradle:+'
     }
 }
 
 apply plugin: 'android'
 
-configurations.all {
-    transitive = false
-}
+version='1.0'
+archivesBaseName = 'placebooks-android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.1"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
     }
 
-    signingConfigs {
-        releaseSigning {
-            storeFile file(ANDROID_KEYSTORE)
-            storePassword ANDROID_KEYSTORE_PASSWORD
-            keyAlias "placebook key"
-            keyPassword PLACEBOOKS_PASSWORD
-        }
-    }
+//    signingConfigs {
+//        releaseSigning {
+//            storeFile file(ANDROID_KEYSTORE)
+//            storePassword ANDROID_KEYSTORE_PASSWORD
+//            keyAlias "placebook key"
+//            keyPassword PLACEBOOKS_PASSWORD
+//        }
+//    }
 
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.releaseSigning
+//            signingConfig signingConfigs.releaseSigning
         }
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-evaluationDependsOn(':wornchaos:shared')
-evaluationDependsOn(':shared')
+evaluationDependsOn(':wornchaos-core')
+evaluationDependsOn(':core')
 
 dependencies {
-    compile project(":wornchaos:shared")
-    compile project(":shared")
-    compile "com.google.code.gson:gson:2.+"
-    compile "com.android.support:support-v4:+"
-    compile "com.android.support:appcompat-v7:+"
-    compile "com.android.support:support-v13:+"
+    compile project(":wornchaos-core")
+    compile project(":core")
+    compile "com.google.code.gson:gson:+"
+    compile 'com.android.support:support-v4:+'
+    compile 'com.android.support:appcompat-v7:+'
 }

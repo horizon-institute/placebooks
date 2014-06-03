@@ -8,7 +8,7 @@ import org.wornchaos.logger.Log;
 
 /**
  * Helper class to encapasulate calls to xuggler/ffmpeg, so that it can be disabled in the
- * placebooks.properties file and ItemFactory does not throw an exception when loaded and xuggleris
+ * org.properties file and ItemFactory does not throw an exception when loaded and xuggleris
  * not in the classpath
  * 
  * @author pszmp

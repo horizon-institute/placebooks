@@ -1,5 +1,7 @@
 package org.placebooks.activities;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 import org.placebooks.PlaceBookServerHandler;
 import org.placebooks.PlaceBooks;
 import org.placebooks.R;
@@ -10,8 +12,6 @@ import org.wornchaos.client.server.AsyncCallback;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 
 public class GroupActivity extends ActionBarActivity
 {

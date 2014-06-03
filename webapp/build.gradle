@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.3'
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.+'
     }
 }
 
@@ -21,24 +21,27 @@ repositories {
 apply plugin: "war"
 apply plugin: "gwt"
 
-evaluationDependsOn(':wornchaos:shared')
-evaluationDependsOn(':wornchaos:gwt')
-evaluationDependsOn(':wornchaos:webapp')
-evaluationDependsOn(':shared')
+version='1.0'
+archivesBaseName = 'placebooks-webapp'
+
+evaluationDependsOn(':wornchaos-core')
+evaluationDependsOn(':wornchaos-gwt')
+evaluationDependsOn(':wornchaos-webapp')
+evaluationDependsOn(':core')
 
 gwt {
     modules 'org.placebooks.PlaceBookEditor'
 
-    src += files(project(':shared').sourceSets.main.allJava.srcDirs) + files(project(':shared').sourceSets.main.output.resourcesDir)
-    src += files(project(':wornchaos:shared').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos:shared').sourceSets.main.output.resourcesDir)
-    src += files(project(':wornchaos:gwt').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos:gwt').sourceSets.main.output.resourcesDir)
+    src += files(project(':core').sourceSets.main.allJava.srcDirs) + files(project(':core').sourceSets.main.output.resourcesDir)
+    src += files(project(':wornchaos-core').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos-core').sourceSets.main.output.resourcesDir)
+    src += files(project(':wornchaos-gwt').sourceSets.main.allJava.srcDirs) + files(project(':wornchaos-gwt').sourceSets.main.output.resourcesDir)
 }
 
 dependencies {
-    compile project(":wornchaos:shared")
-    compile project(":wornchaos:gwt")
-    compile project(":wornchaos:webapp")
-    compile project(":shared")
+    compile project(":wornchaos-core")
+    compile project(":wornchaos-gwt")
+    compile project(":wornchaos-webapp")
+    compile project(":core")
     compile "org.gwtopenmaps.openlayers:gwt-openlayers-client:+"
     compile "org.eclipse.persistence:eclipselink:+"
     compile "com.google.code.gson:gson:2.+"

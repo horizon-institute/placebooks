@@ -1,0 +1,12 @@
+apply plugin: "java"
+
+version='1.0'
+archivesBaseName = 'placebooks-core'
+
+evaluationDependsOn(':wornchaos-core')
+
+dependencies {
+    compile project(":wornchaos-core")
+    compile "com.googlecode.objectify:objectify:4.+"
+    testCompile "junit:junit:4.+"
+}

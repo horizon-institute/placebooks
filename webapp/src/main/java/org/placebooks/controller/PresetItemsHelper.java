@@ -17,9 +17,9 @@ public class PresetItemsHelper
 {
 	// private static final Logger log = Logger.getLogger(CommunicationHelper.class.getName());
 
-	private static final String MAGIC_SEAWEED_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://magicseaweed.com/Borth-Ynyslas--Surf-Report/84/\",\"metadata\":{\"title\":\"Borth / Ynyslas Surf Report and Forecast\",\"source\":\"Live Data\"},\"parameters\":{\"height\":10000}}";
-	private static final String BBC_WEATHER_ITEM = "{\"@class\":\"placebooks.model.WebBundleItem\",\"sourceURL\":\"http://news.bbc.co.uk/weather/forecast/20/ObservationsEmbed.xhtml?target=_parent\",\"metadata\":{\"title\":\"BBC Weather Observations, Aberystwyth\",\"source\":\"Live Data\"},\"parameters\":{\"height\":6903}}";
-	private static final String METCHECK_ITEM = "{\"@class\":\"placebooks.model.TextItem\",\"metadata\":{\"title\":\"metcheck Forcast for Borth\",\"source\":\"Live Data\"},\"parameters\":{\"height\":4964},\"text\":\"<a href='http://www.metcheck.com/' target='_blank'><img src='http://www.metcheck.com/REMOTE/CLIENTS/UK/METCHECK/STICKIES/GEN_STICKY.ASP?LOCATIONID=4936&CO=UK' border='0' title='Latest Weather Forecast from www.metcheck.com - Click for full forecast'></a>\"}";
+	private static final String MAGIC_SEAWEED_ITEM = "{\"@class\":\"org.model.WebBundleItem\",\"sourceURL\":\"http://magicseaweed.com/Borth-Ynyslas--Surf-Report/84/\",\"metadata\":{\"title\":\"Borth / Ynyslas Surf Report and Forecast\",\"source\":\"Live Data\"},\"parameters\":{\"height\":10000}}";
+	private static final String BBC_WEATHER_ITEM = "{\"@class\":\"org.model.WebBundleItem\",\"sourceURL\":\"http://news.bbc.co.uk/weather/forecast/20/ObservationsEmbed.xhtml?target=_parent\",\"metadata\":{\"title\":\"BBC Weather Observations, Aberystwyth\",\"source\":\"Live Data\"},\"parameters\":{\"height\":6903}}";
+	private static final String METCHECK_ITEM = "{\"@class\":\"org.model.TextItem\",\"metadata\":{\"title\":\"metcheck Forcast for Borth\",\"source\":\"Live Data\"},\"parameters\":{\"height\":4964},\"text\":\"<a href='http://www.metcheck.com/' target='_blank'><img src='http://www.metcheck.com/REMOTE/CLIENTS/UK/METCHECK/STICKIES/GEN_STICKY.ASP?LOCATIONID=4936&CO=UK' border='0' title='Latest Weather Forecast from www.metcheck.com - Click for full forecast'></a>\"}";
 
 	protected static final Gson gson = new Gson();
 

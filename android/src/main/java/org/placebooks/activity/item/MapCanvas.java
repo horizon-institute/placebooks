@@ -94,7 +94,7 @@ public class MapCanvas extends ImageView implements LocationListener
 																						+ (char) item.getParameters()
 																								.get("marker")
 																								.intValue(),
-																				"drawable", "org.placebooks"));
+																				"drawable", "org.org"));
 		}
 		else
 		{

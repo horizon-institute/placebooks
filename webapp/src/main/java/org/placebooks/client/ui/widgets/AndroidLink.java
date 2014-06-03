@@ -23,7 +23,7 @@ public class AndroidLink extends Composite
 			{
 				uri = url.substring("http://".length());
 			}
-			html.setHTML("<a href=\"intent://"+uri+"#Intent;scheme=placebooks;package=" + packageName + ";end\"><img alt=\"Android app on Google Play\" height=\"35\" src=\"https://developer.android.com/images/brand/en_app_rgb_wo_45.png\" /></a>");			
+			html.setHTML("<a href=\"intent://"+uri+"#Intent;scheme=org;package=" + packageName + ";end\"><img alt=\"Android app on Google Play\" height=\"35\" src=\"https://developer.android.com/images/brand/en_app_rgb_wo_45.png\" /></a>");
 		}
 		else
 		{

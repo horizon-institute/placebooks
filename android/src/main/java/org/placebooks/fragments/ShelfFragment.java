@@ -1,5 +1,6 @@
 package org.placebooks.fragments;
 
+import android.support.v4.app.ListFragment;
 import org.placebooks.activities.PlaceBookActivity;
 import org.placebooks.client.model.Entry;
 import org.placebooks.client.model.PlaceBookService;
@@ -7,7 +8,6 @@ import org.placebooks.client.model.Shelf;
 import org.placebooks.views.adapters.ShelfAdapter;
 
 import android.content.Intent;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 

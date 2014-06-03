@@ -1,23 +1,22 @@
 package org.placebooks.activities;
 
+import android.app.Dialog;
+import android.app.SearchManager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.widget.SearchView;
 import org.placebooks.R;
 import org.placebooks.fragments.DownloadsFragment;
 import org.placebooks.fragments.NearestFragment;
 import org.placebooks.fragments.WelcomeFragment;
 
-import android.app.Dialog;
-import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,8 +24,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-//import android.content.res.Resources;
 
 public class NavigationActivity extends ActionBarActivity
 {
@@ -87,20 +84,20 @@ public class NavigationActivity extends ActionBarActivity
 			@Override
 			public void onDrawerClosed(final View view)
 			{
-				getSupportActionBar().setTitle(mTitle);
+				getActionBar().setTitle(mTitle);
 			}
 
 			@Override
 			public void onDrawerOpened(final View drawerView)
 			{
-				getSupportActionBar().setTitle(drawerTitle);
+				getActionBar().setTitle(drawerTitle);
 			}
 		};
 
 		drawerLayout.setDrawerListener(drawerToggle);
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 
 		selectItem(0);
 	}
@@ -143,7 +140,7 @@ public class NavigationActivity extends ActionBarActivity
 	public void setTitle(final CharSequence title)
 	{
 		mTitle = title;
-		getSupportActionBar().setTitle(mTitle);
+		getActionBar().setTitle(mTitle);
 	}
 
 	@Override
@@ -157,7 +154,7 @@ public class NavigationActivity extends ActionBarActivity
 	private void selectItem(final int position)
 	{
 		setTitle(mPlanetTitles[position]);
-		Fragment fragment = null;
+		android.support.v4.app.Fragment fragment = null;
 		if (position == 0)
 		{
 			fragment = new WelcomeFragment();

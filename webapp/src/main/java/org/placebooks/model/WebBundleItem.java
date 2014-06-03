@@ -127,7 +127,7 @@ public class WebBundleItem extends PlaceBookItem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 * @see org.model.PlaceBookItem#SaveUpdatedItem(org.model.PlaceBookItem)
 	 */
 	@Override
 	public PlaceBookItem saveUpdatedItem()

@@ -1,9 +1,0 @@
-apply plugin: "java"
-
-evaluationDependsOn(':wornchaos')
-
-dependencies {
-    compile project(":wornchaos:shared")
-    compile "com.googlecode.objectify:objectify:4.+"
-    testCompile "junit:junit:4.+"
-}

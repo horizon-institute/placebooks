@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import android.support.v4.app.ListFragment;
 import org.placebooks.activities.PlaceBookActivity;
 import org.placebooks.client.model.PlaceBook;
 import org.placebooks.views.adapters.PlaceBooksAdapter;
@@ -14,7 +15,6 @@ import org.wornchaos.parser.gson.GsonParser;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 

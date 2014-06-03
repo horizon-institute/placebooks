@@ -226,7 +226,7 @@ public abstract class MediaItem extends PlaceBookItem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see placebooks.model.PlaceBookItem#SaveUpdatedItem(placebooks.model.PlaceBookItem)
+	 * @see org.model.PlaceBookItem#SaveUpdatedItem(org.model.PlaceBookItem)
 	 */
 	@Override
 	public PlaceBookItem saveUpdatedItem()
@@ -274,7 +274,7 @@ public abstract class MediaItem extends PlaceBookItem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see placebooks.model.PlaceBookItem#udpateItem(PlaceBookItem)
+	 * @see org.model.PlaceBookItem#udpateItem(PlaceBookItem)
 	 */
 	@Override
 	public void updateItem(final PlaceBookItem item)

@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -75,11 +74,5 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name="org.placebooks.activity.item.ImageViewer" />
-        <activity android:name="org.placebooks.activity.item.VideoViewer" />
-        <activity android:name="org.placebooks.activity.item.TextViewer" />
-        <activity android:name="org.placebooks.activity.item.AudioViewer" />
-        <activity android:name="org.placebooks.activity.item.WebBundleViewer" />
-        <activity android:name="org.placebooks.activity.item.MapImageViewer" />
     </application>
 </manifest>

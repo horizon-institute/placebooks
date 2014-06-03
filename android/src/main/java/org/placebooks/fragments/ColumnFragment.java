@@ -98,7 +98,7 @@ public class ColumnFragment extends Fragment
 		if (item.getParameters().containsKey("marker"))
 		{
 			return getResources().getIdentifier("marker" + (char) item.getParameters().get("marker").intValue(),
-												"drawable", "org.placebooks");
+												"drawable", "org.org");
 		}
 		else
 		{

@@ -163,7 +163,7 @@ public class KioskPlaceBookView extends PageView implements View<PlaceBook>
 			Window.setTitle(uiMessages.placebooks());
 		}
 
-		android.setPackage("org.placebooks", PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId());
+		android.setPackage("org", PlaceBooks.getServer().getHostURL() + "placebook/" + placebook.getId());
 		
 		refresh();
 		loadingPanel.setVisible(false);
